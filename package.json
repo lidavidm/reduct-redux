@@ -1,0 +1,14 @@
+{
+  "name": "reduct-redux",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/lidavidm/reduct-redux.git",
+  "author": "David Li <li.davidm96@gmail.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "parcel-bundler": "^1.0.3"
+  },
+  "devDependencies": {
+    "redux": "^3.7.2"
+  }
+}
