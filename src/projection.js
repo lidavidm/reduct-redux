@@ -9,7 +9,7 @@ export const defaultView = {
     // Nested objects won't get cloned properly using Object.assign
     sx: 1,
     sy: 1,
-    radius: 5,
+    radius: 6,
     color: "lightgray",
     shadow: true,
     shadowOffset: 4,
@@ -28,11 +28,13 @@ export function initializeView(id, nodes, views) {
         return Object.assign({}, defaultView, {
             projection: roundedRect(),
             color: "#555555",
+            shadowOffset: -2,
         });
     case "add": {
         const textId = nextId();
         views[textId] = textView("+");
         return Object.assign({}, defaultView, {
+            color: "orange",
             projection: box("horizontal", function(id, nodes, views) {
                 const expr = nodes[id];
                 return [
@@ -91,7 +93,7 @@ function box(direction, childrenFunc, options={}) {
                 childView.y = 0;
                 childView.sx = options.subexpScale;
                 childView.sy = options.subexpScale;
-                childView.shadow = false;
+                childView.shadow = nodes[childId] ? !nodes[childId].locked : false;
                 childView.projection.prepare(childId, nodes, views, stage);
                 x += childView.w * childView.sx + options.padding.inner;
                 childView.y = (view.h * view.sy - childView.h * childView.sy) / 2;
@@ -169,18 +171,28 @@ function roundedRect(options={}) {
     };
 }
 
+const TEXT_SIZE_CACHE = {};
+
 function textProjection(options={}) {
     return {
         prepare: function(id, nodes, views, stage) {
-            views[id].w = views[id].h = 50;
+            const view = views[id];
+            const cacheKey = `${view.fontSize};${view.font};${view.text}`;
+            if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
+                stage.ctx.font = `${view.fontSize}px ${view.font}`;
+                TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(view.text).width;
+            }
+            views[id].h = 50;
+            views[id].w = TEXT_SIZE_CACHE[cacheKey];
         },
         draw: function(id, offset, nodes, views, stage) {
             const ctx = stage.ctx;
             const view = views[id];
             ctx.save();
             ctx.fillStyle = view.color;
+            ctx.textBaseline = "alphabetic";
             ctx.font = `${view.fontSize}px ${view.font}`;
-            ctx.fillText(view.text, offset.x + view.x, offset.y + view.y);
+            ctx.fillText(view.text, offset.x + view.x, offset.y + view.y + view.fontSize);
             ctx.restore();
         }
     };
