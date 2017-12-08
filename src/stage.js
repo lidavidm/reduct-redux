@@ -1,3 +1,4 @@
+import * as action from "./action";
 import * as projections from "./projections";
 
 export class Stage {
@@ -20,6 +21,7 @@ export class Stage {
         this.canvas.addEventListener("mouseup", (e) => this._mouseup(e));
 
         this._selectedNode = null;
+        this._dragged = false;
     }
 
     get view() {
@@ -73,10 +75,14 @@ export class Stage {
             view.x += e.movementX;
             view.y += e.movementY;
             this.draw();
+            this._dragged = true;
         }
     }
 
     _mouseup(e) {
-
+        if (!this._dragged && this._selectedNode) {
+            this.store.dispatch(action.click(this._selectedNode));
+        }
+        this._dragged = false;
     }
 }

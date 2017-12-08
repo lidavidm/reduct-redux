@@ -56,6 +56,11 @@ export function reduct(state=initialState, act) {
             toolbox: toolbox,
         });
     }
+    case action.CLICK: {
+        const node = state.nodes[act.nodeId];
+        console.log("Clicked", node);
+        return state;
+    }
     default: {
         console.error(`Unknown action ${act.type}`);
         return state;

@@ -20,7 +20,7 @@ store.subscribe(() => {
 
 store.dispatch(action.startLevel(
     [ expr.number(3) ],
-    [ expr.add(expr.missing(), expr.number(2)), expr.number(5) ],
+    [ expr.add(expr.missing(), expr.number(2)), expr.number(5), expr.add(expr.number(1), expr.number(2)) ],
     [ expr.number(1) ]
 ));
 
