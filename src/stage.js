@@ -1,5 +1,5 @@
 import * as action from "./action";
-import * as projections from "./projections";
+import * as projection from "./projection";
 
 export class Stage {
     constructor(width, height, store, views) {
@@ -45,7 +45,7 @@ export class Stage {
         const state = this.store.getState();
         for (const nodeId of state.board) {
             const node = state.nodes[nodeId];
-            projections.draw(node, state.nodes, this.views, this);
+            projection.draw(node, state.nodes, this.views, this);
         }
     }
 
@@ -62,7 +62,7 @@ export class Stage {
         const pos = this.getMousePos(e);
         for (const nodeId of state.board) {
             const node = state.nodes[nodeId];
-            if (projections.containsPoint(pos, node, state.nodes, this.views, this)) {
+            if (projection.containsPoint(pos, node, state.nodes, this.views, this)) {
                 this._selectedNode = nodeId;
                 console.log("selected", nodeId, node);
             }

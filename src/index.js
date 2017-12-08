@@ -3,7 +3,7 @@ import { reduct } from "./reducer";
 import * as action from "./action";
 import * as expr from "./expr";
 import * as stage from "./stage";
-import * as projections from "./projections";
+import * as projection from "./projection";
 
 let store = createStore(reduct);
 let views = {};
@@ -25,7 +25,7 @@ store.dispatch(action.startLevel(
 ));
 
 store.getState().board.forEach((nodeId) => {
-    views[nodeId] = Object.assign({}, projections.defaultView, {
+    views[nodeId] = Object.assign({}, projection.defaultView, {
         x: Math.floor(800 * Math.random()),
         y: Math.floor(600 * Math.random()),
     });
