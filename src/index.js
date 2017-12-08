@@ -24,9 +24,6 @@ store.dispatch(action.startLevel(
     [ expr.number(1) ]
 ));
 
-store.getState().board.forEach((nodeId) => {
-    views[nodeId] = Object.assign({}, projection.defaultView, {
-        x: Math.floor(800 * Math.random()),
-        y: Math.floor(600 * Math.random()),
-    });
+store.getState().nodes.forEach((node) => {
+    views[node.id] = projection.initializeView(node.id, store.getState().nodes, views);
 });

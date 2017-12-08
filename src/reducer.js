@@ -9,11 +9,15 @@ const initialState = {
 
 let idCounter = 0;
 
+export function nextId() {
+    return idCounter++;
+}
+
 function flatten(expr) {
     switch (expr.type) {
     case "number":
     case "missing": {
-        expr.id = idCounter++;
+        expr.id = nextId();
         return [expr];
     }
     case "add": {

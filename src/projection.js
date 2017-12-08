@@ -1,3 +1,6 @@
+// TODO: this should probably go somewhere else
+import { nextId } from "./reducer";
+
 export const defaultView = {
     x: 0,
     y: 0,
@@ -10,28 +13,151 @@ export const defaultView = {
     shadowColor: "black",
 };
 
-export function draw(expr, nodes, views, stage) {
-    if (!views[expr.id]) views[expr.id] = Object.assign({}, defaultView);
-
+export function initializeView(id, nodes, views) {
+    const expr = nodes[id];
     switch (expr.type) {
     case "number":
-        drawNumber(stage, expr, nodes, views);
-        break;
+        return Object.assign({}, defaultView, {
+            projection: roundedRect(),
+            color: "#FFF",
+        });
     case "missing":
-        drawMissing(stage, expr, nodes, views);
-        break;
-    case "add":
-        drawAdd(stage, expr, nodes, views);
-        break;
+        return Object.assign({}, defaultView, {
+            projection: roundedRect(),
+            color: "#555555",
+        });
+    case "add": {
+        const textId = nextId();
+        views[textId] = textView("+");
+        return Object.assign({}, defaultView, {
+            projection: box("horizontal", function(id, nodes, views) {
+                const expr = nodes[id];
+                return [
+                    expr.left,
+                    textId,
+                    expr.right,
+                ];
+            }, {}),
+        });
+    }
     default:
         console.error(`Undefined expr type ${expr.type}.`);
+        return null;
     }
 }
 
+export function textView(text) {
+    return Object.assign({}, defaultView, {
+        text: text,
+        projection: textProjection(),
+    });
+}
+
+export function draw(expr, nodes, views, stage) {
+    const view = views[expr.id];
+    view.projection.prepare(expr.id, nodes, views, stage);
+    view.projection.draw(expr.id, { x: 0, y: 0 }, nodes, views, stage);
+}
+
 export function containsPoint(pos, expr, nodes, views, stage) {
-    const view = views[expr.id] || defaultView;
+    const view = views[expr.id];
     return pos.x >= view.x && pos.x <= view.x + view.w &&
         pos.y >= view.y && pos.y <= view.y + view.h;
+}
+
+function box(direction, childrenFunc, options={}) {
+    options.subexpScale = options.subexpScale || 0.85;
+    options.padding = options.padding || { left: 10, inner: 10, right: 10 };
+
+    return {
+        prepare: function(id, nodes, views, stage) {
+            const children = childrenFunc(id, nodes, views);
+            const view = views[id];
+            let x = options.padding.left;
+            for (let childId of children) {
+                const childView = views[childId];
+                childView.x = x;
+                childView.y = 0;
+                childView.projection.prepare(childId, nodes, views, stage);
+                x += childView.w * options.subexpScale + options.padding.inner;
+            }
+            view.w = x + options.padding.right;
+        },
+        draw: function(id, offset, nodes, views, stage) {
+            const ctx = stage.ctx;
+            const view = views[id];
+            if (view.shadow) {
+                ctx.fillStyle = view.shadowColor;
+                roundRect(ctx,
+                          offset.x + view.x, offset.y + view.y + view.shadowOffset,
+                          view.w, view.h,
+                          view.radius,
+                          view.color ? true : false,
+                          view.stroke ? true : false,
+                          view.stroke ? view.stroke.opacity : null);
+            }
+
+            if (view.color) ctx.fillStyle = view.color;
+            roundRect(ctx,
+                      offset.x + view.x, offset.y + view.y,
+                      view.w, view.h,
+                      view.radius,
+                      view.color ? true : false,
+                      view.stroke ? true : false,
+                      view.stroke ? view.stroke.opacity : null);
+
+            const subOffset = Object.assign({}, offset, {
+                x: offset.x + view.x,
+                y: offset.y + view.y,
+            });
+            for (let childId of childrenFunc(id, nodes, views)) {
+                views[childId].projection.draw(childId, subOffset, nodes, views, stage);
+            }
+        }
+    };
+}
+
+function roundedRect(options={}) {
+    return {
+        prepare: function(id, nodes, views, stage) {
+            views[id].w = views[id].h = 50;
+        },
+        draw: function(id, offset, nodes, views, stage) {
+            const ctx = stage.ctx;
+            const view = views[id];
+            if (view.shadow) {
+                ctx.fillStyle = view.shadowColor;
+                roundRect(ctx,
+                          offset.x + view.x, offset.y + view.y + view.shadowOffset,
+                          view.w, view.h,
+                          view.radius/* view.absoluteScale.x */,
+                          view.color ? true : false,
+                          view.stroke ? true : false,
+                          view.stroke ? view.stroke.opacity : null);
+            }
+
+            if (view.color) ctx.fillStyle = view.color;
+            roundRect(ctx,
+                      offset.x + view.x, offset.y + view.y,
+                      view.w, view.h,
+                      view.radius/* view.absoluteScale.x */,
+                      view.color ? true : false,
+                      view.stroke ? true : false,
+                      view.stroke ? view.stroke.opacity : null);
+        }
+    };
+}
+
+function textProjection(options={}) {
+    return {
+        prepare: function(id, nodes, views, stage) {
+            views[id].w = views[id].h = 50;
+        },
+        draw: function(id, nodes, views, stage) {
+            const ctx = stage.ctx;
+            // ctx.fillText(view.text, view.x, view.y);
+        }
+    };
 }
 
 function drawDefault(stage, expr, nodes, views) {
@@ -64,6 +190,7 @@ export function drawNumber(stage, expr, nodes, views) {
 }
 
 export function drawMissing(stage, expr, nodes, views) {
+    views[expr.id].color = "#555555";
     drawDefault(stage, expr, nodes, views);
 
 }
