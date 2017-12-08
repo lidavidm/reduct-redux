@@ -6,6 +6,9 @@ export const defaultView = {
     y: 0,
     w: 50,
     h: 50,
+    // Nested objects won't get cloned properly using Object.assign
+    sx: 1,
+    sy: 1,
     radius: 5,
     color: "lightgray",
     shadow: true,
@@ -50,13 +53,21 @@ export function textView(text) {
     return Object.assign({}, defaultView, {
         text: text,
         projection: textProjection(),
+        fontSize: 35,
+        font: "Consolas, Monaco, monospace",
+        color: "#000",
     });
 }
 
 export function draw(expr, nodes, views, stage) {
     const view = views[expr.id];
     view.projection.prepare(expr.id, nodes, views, stage);
-    view.projection.draw(expr.id, { x: 0, y: 0 }, nodes, views, stage);
+    view.projection.draw(expr.id, {
+        x: 0,
+        y: 0,
+        sx: 1,
+        sy: 1,
+    }, nodes, views, stage);
 }
 
 export function containsPoint(pos, expr, nodes, views, stage) {
@@ -78,8 +89,12 @@ function box(direction, childrenFunc, options={}) {
                 const childView = views[childId];
                 childView.x = x;
                 childView.y = 0;
+                childView.sx = options.subexpScale;
+                childView.sy = options.subexpScale;
+                childView.shadow = false;
                 childView.projection.prepare(childId, nodes, views, stage);
-                x += childView.w * options.subexpScale + options.padding.inner;
+                x += childView.w * childView.sx + options.padding.inner;
+                childView.y = (view.h * view.sy - childView.h * childView.sy) / 2;
             }
             view.w = x + options.padding.right;
         },
@@ -90,8 +105,9 @@ function box(direction, childrenFunc, options={}) {
                 ctx.fillStyle = view.shadowColor;
                 roundRect(ctx,
                           offset.x + view.x, offset.y + view.y + view.shadowOffset,
-                          view.w, view.h,
-                          view.radius,
+                          offset.sx * view.sx * view.w,
+                          offset.sy * view.sy * view.h,
+                          offset.sx * view.radius,
                           view.color ? true : false,
                           view.stroke ? true : false,
                           view.stroke ? view.stroke.opacity : null);
@@ -100,8 +116,9 @@ function box(direction, childrenFunc, options={}) {
             if (view.color) ctx.fillStyle = view.color;
             roundRect(ctx,
                       offset.x + view.x, offset.y + view.y,
-                      view.w, view.h,
-                      view.radius,
+                      offset.sx * view.sx * view.w,
+                      offset.sy * view.sy * view.h,
+                      offset.sx * view.radius,
                       view.color ? true : false,
                       view.stroke ? true : false,
                       view.stroke ? view.stroke.opacity : null);
@@ -109,6 +126,8 @@ function box(direction, childrenFunc, options={}) {
             const subOffset = Object.assign({}, offset, {
                 x: offset.x + view.x,
                 y: offset.y + view.y,
+                sx: offset.sx * view.sx,
+                sy: offset.sy * view.sy,
             });
             for (let childId of childrenFunc(id, nodes, views)) {
                 views[childId].projection.draw(childId, subOffset, nodes, views, stage);
@@ -129,8 +148,9 @@ function roundedRect(options={}) {
                 ctx.fillStyle = view.shadowColor;
                 roundRect(ctx,
                           offset.x + view.x, offset.y + view.y + view.shadowOffset,
-                          view.w, view.h,
-                          view.radius/* view.absoluteScale.x */,
+                          offset.sx * view.sx * view.w,
+                          offset.sy * view.sy * view.h,
+                          offset.sx * view.radius,
                           view.color ? true : false,
                           view.stroke ? true : false,
                           view.stroke ? view.stroke.opacity : null);
@@ -139,8 +159,9 @@ function roundedRect(options={}) {
             if (view.color) ctx.fillStyle = view.color;
             roundRect(ctx,
                       offset.x + view.x, offset.y + view.y,
-                      view.w, view.h,
-                      view.radius/* view.absoluteScale.x */,
+                      offset.sx * view.sx * view.w,
+                      offset.sy * view.sy * view.h,
+                      offset.sx * view.radius,
                       view.color ? true : false,
                       view.stroke ? true : false,
                       view.stroke ? view.stroke.opacity : null);
@@ -153,9 +174,14 @@ function textProjection(options={}) {
         prepare: function(id, nodes, views, stage) {
             views[id].w = views[id].h = 50;
         },
-        draw: function(id, nodes, views, stage) {
+        draw: function(id, offset, nodes, views, stage) {
             const ctx = stage.ctx;
-            // ctx.fillText(view.text, view.x, view.y);
+            const view = views[id];
+            ctx.save();
+            ctx.fillStyle = view.color;
+            ctx.font = `${view.fontSize}px ${view.font}`;
+            ctx.fillText(view.text, offset.x + view.x, offset.y + view.y);
+            ctx.restore();
         }
     };
 }
