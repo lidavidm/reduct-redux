@@ -1,11 +1,12 @@
 import { createStore } from "redux";
-import { reduct } from "./reducer";
+import * as reducer from "./reducer";
 import * as action from "./action";
-import * as expr from "./expr";
+import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
 import * as projection from "./projection";
 
-let store = createStore(reduct);
+const reduct = reducer.reduct(defaultSemantics);
+let store = createStore(reduct.reducer);
 let views = {};
 
 const stg = new stage.Stage(800, 600, store, views);
@@ -18,12 +19,17 @@ store.subscribe(() => {
 });
 
 store.dispatch(action.startLevel(
-    [ expr.number(3) ],
-    [ expr.add(expr.missing(), expr.number(2)), expr.number(5), expr.add(expr.number(1), expr.number(2)) ],
-    [ expr.number(1) ]
+    [ defaultSemantics.number(3) ],
+    [
+        defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.number(2)),
+        defaultSemantics.number(5),
+        defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.number(2)),
+    ],
+    [ defaultSemantics.number(1) ]
 ));
 
 store.getState().nodes.forEach((node) => {
+    console.log(node);
     views[node.id] = projection.initializeView(node.id, store.getState().nodes, views);
 });
 store.getState().board.forEach((id) => {
