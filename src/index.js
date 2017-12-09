@@ -28,11 +28,10 @@ store.dispatch(action.startLevel(
     [ defaultSemantics.number(1) ]
 ));
 
-store.getState().nodes.forEach((node) => {
-    console.log(node);
-    views[node.id] = projection.initializeView(node.id, store.getState().nodes, views);
+store.getState().get("nodes").forEach((node) => {
+    views[node.get("id")] = projection.initializeView(node.get("id"), store.getState().get("nodes"), views);
 });
-store.getState().board.forEach((id) => {
+store.getState().get("board").forEach((id) => {
     views[id].x = 100 + Math.floor(Math.random() * 600);
     views[id].y = 100 + Math.floor(Math.random() * 400);
 });

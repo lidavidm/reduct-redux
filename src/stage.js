@@ -44,8 +44,8 @@ export class Stage {
         this._redrawPending = false;
 
         const state = this.store.getState();
-        for (const nodeId of state.board) {
-            const node = state.nodes[nodeId];
+        for (const nodeId of state.get("board")) {
+            const node = state.get("nodes").get(nodeId);
             projection.draw(node, state, this.views, this);
         }
     }
@@ -62,9 +62,9 @@ export class Stage {
         const state = this.store.getState();
         const pos = this.getMousePos(e);
         this._selectedNode = null;
-        for (const nodeId of state.board) {
-            const node = state.nodes[nodeId];
-            if (projection.containsPoint(pos, node, state.nodes, this.views, this)) {
+        for (const nodeId of state.get("board")) {
+            const node = state.getIn([ "nodes", nodeId ]);
+            if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
                 this._selectedNode = nodeId;
                 console.log("selected", nodeId, node);
             }
@@ -83,9 +83,9 @@ export class Stage {
         this._hoverNode = null;
         const state = this.store.getState();
         const pos = this.getMousePos(e);
-        for (const nodeId of state.board) {
-            const node = state.nodes[nodeId];
-            if (projection.containsPoint(pos, node, state.nodes, this.views, this)) {
+        for (const nodeId of state.get("board")) {
+            const node = state.getIn([ "nodes", nodeId ]);
+            if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
                 this._hoverNode = nodeId;
             }
         }
@@ -95,7 +95,9 @@ export class Stage {
     _mouseup(e) {
         if (!this._dragged && this._selectedNode) {
             const state = this.store.getState();
-            this.semantics.reduce(state.nodes, state.nodes[this._selectedNode]).then((res) => {
+            const nodes = state.get("nodes");
+            const node = nodes.get(this._selectedNode);
+            this.semantics.reduce(nodes, node).then((res) => {
                 // TODO: have semantics tell us which root node changed
                 if (!res) return;
 
@@ -106,7 +108,7 @@ export class Stage {
                 while (queue.length > 0) {
                     const current = queue.pop();
                     delete this.views[current];
-                    for (const subexp of this.semantics.subexpressions(state.nodes[current])) {
+                    for (const subexp of this.semantics.subexpressions(state.getIn([ "nodes", current ]))) {
                         queue.push(subexp);
                     }
                 }
@@ -115,7 +117,7 @@ export class Stage {
 
                 state = this.store.getState();
                 for (const node of nodes) {
-                    this.views[node.id] = projection.initializeView(node.id, state.nodes, this.views);
+                    this.views[node.id] = projection.initializeView(node.id, state.get("nodes"), this.views);
                 }
 
                 // Preserve position (TODO: better way)

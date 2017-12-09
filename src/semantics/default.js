@@ -13,12 +13,12 @@ export function add(expr1, expr2) {
 }
 
 export function subexpressions(expr) {
-    switch (expr.type) {
+    switch (expr.get("type")) {
     case "number":
     case "missing":
         return [];
     case "add":
-        return [expr.left, expr.right];
+        return [expr.get("left"), expr.get("right")];
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];
@@ -48,12 +48,12 @@ export function flatten(expr) {
 }
 
 export function smallStep(nodes, expr) {
-    switch (expr.type) {
+    switch (expr.get("type")) {
     case "add": {
-        const left = nodes[expr.left];
-        const right = nodes[expr.right];
-        if (left.type === "number" && right.type === "number") {
-            return number(left.value + right.value);
+        const left = nodes.get(expr.get("left"));
+        const right = nodes.get(expr.get("right"));
+        if (left.get("type") === "number" && right.get("type") === "number") {
+            return number(left.get("value") + right.get("value"));
         }
         break;
     }

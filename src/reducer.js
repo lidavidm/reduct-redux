@@ -1,12 +1,14 @@
+import * as immutable from "immutable";
+
 import * as action from "./action";
 
-const initialState = {
-    nodes: {},
-    goal: [],
-    board: [],
-    toolbox: [],
+const initialState = immutable.Map({
+    nodes: immutable.Map(),
+    goal: immutable.List(),
+    board: immutable.List(),
+    toolbox: immutable.List(),
     hover: null,
-};
+});
 
 let idCounter = 0;
 
@@ -34,11 +36,12 @@ export function reduct(semantics) {
                 nodes = nodes.concat(semantics.flatten(expr));
                 toolbox.push(expr.id);
             }
-            return Object.assign({}, state, {
-                nodes: nodes,
+            return state.merge({
+                nodes: immutable.Map(nodes.map((n) => [ n.id, immutable.Map(n) ])),
                 goal: goal,
                 board: board,
                 toolbox: toolbox,
+                hover: null,
             });
         }
         case action.SMALL_STEP: {
@@ -48,33 +51,22 @@ export function reduct(semantics) {
             while (queue.length > 0) {
                 const current = queue.pop();
                 removedNodes[current] = true;
-                for (const subexp of semantics.subexpressions(state.nodes[current])) {
+                for (const subexp of semantics.subexpressions(state.getIn([ "nodes", current ]))) {
                     queue.push(subexp);
                 }
             }
 
-            const newNodes = {};
-            for (const [ id, node ] of Object.entries(state.nodes)) {
-                if (removedNodes[id]) continue;
-                newNodes[id] = node;
-            }
-            for (const node of act.newNodes) {
-                newNodes[node.id] = node;
-            }
-            const result = Object.assign({}, state, {
-                nodes: newNodes,
-                board: [
-                    ...state.board.filter((id) => !removedNodes[id]),
-                    act.newNode.id,
-                ]
-            });
-            console.log(result, act.newNodes);
-            return result;
+            const newNodes = state.get("nodes").filter(function (key, value) {
+                return !removedNodes[key];
+            }).merge(immutable.Map(act.newNodes.map((n) => [ n.id, immutable.Map(n) ])));
+
+            return state
+                .set("nodes", newNodes)
+                .set("board",
+                     state.get("board").filter((id) => !removedNodes[id]).push(act.newNode.id));
         }
         case action.HOVER: {
-            return Object.assign({}, state, {
-                hover: act.nodeId,
-            });
+            return state.set("hover", act.nodeId);
         }
         default: {
             console.error(`Unknown action ${act.type}`);

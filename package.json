@@ -6,6 +6,7 @@
     "author": "David Li <li.davidm96@gmail.com>",
     "license": "MPL-2.0",
     "dependencies": {
+        "immutable": "^3.8.2",
         "parcel-bundler": "^1.0.3"
     },
     "devDependencies": {

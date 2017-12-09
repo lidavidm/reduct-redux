@@ -17,11 +17,11 @@ export const defaultView = {
 };
 
 export function initializeView(id, nodes, views) {
-    const expr = nodes[id];
-    switch (expr.type) {
+    const expr = nodes.get(id);
+    switch (expr.get("type")) {
     case "number": {
         const textId = nextId();
-        views[textId] = textView(expr.value.toString());
+        views[textId] = textView(expr.get("value").toString());
         return Object.assign({}, defaultView, {
             projection: box("horizontal", function(id, nodes, views) {
                 return [ textId ];
@@ -41,11 +41,11 @@ export function initializeView(id, nodes, views) {
         return Object.assign({}, defaultView, {
             color: "orange",
             projection: box("horizontal", function(id, nodes, views) {
-                const expr = nodes[id];
+                const expr = nodes.get(id);
                 return [
-                    expr.left,
+                    expr.get("left"),
                     textId,
-                    expr.right,
+                    expr.get("right"),
                 ];
             }, {}),
         });
@@ -67,9 +67,10 @@ export function textView(text) {
 }
 
 export function draw(expr, state, views, stage) {
-    const view = views[expr.id];
-    view.projection.prepare(expr.id, state, views, stage);
-    view.projection.draw(expr.id, {
+    const id = expr.get("id");
+    const view = views[id];
+    view.projection.prepare(id, state, views, stage);
+    view.projection.draw(id, {
         x: 0,
         y: 0,
         sx: 1,
@@ -78,7 +79,7 @@ export function draw(expr, state, views, stage) {
 }
 
 export function containsPoint(pos, expr, nodes, views, stage) {
-    const view = views[expr.id];
+    const view = views[expr.get("id")];
     return pos.x >= view.x && pos.x <= view.x + view.w &&
         pos.y >= view.y && pos.y <= view.y + view.h;
 }
@@ -91,7 +92,7 @@ function box(direction, childrenFunc, options={}) {
 
     return {
         prepare: function(id, state, views, stage) {
-            const children = childrenFunc(id, state.nodes, views);
+            const children = childrenFunc(id, state.get("nodes"), views);
             const view = views[id];
             let x = options.padding.left;
             for (let childId of children) {
@@ -100,7 +101,8 @@ function box(direction, childrenFunc, options={}) {
                 childView.y = 0;
                 childView.sx = options.subexpScale;
                 childView.sy = options.subexpScale;
-                childView.shadow = state.nodes[childId] ? !state.nodes[childId].locked : false;
+                const childNode = state.getIn([ "nodes", childId ]);
+                childView.shadow = childNode ? !childNode.get("locked") : false;
                 childView.projection.prepare(childId, state, views, stage);
                 x += childView.w * childView.sx + options.padding.inner;
                 childView.y = (view.h * view.sy - childView.h * childView.sy) / 2;
@@ -118,7 +120,7 @@ function box(direction, childrenFunc, options={}) {
                 sx: offset.sx * view.sx,
                 sy: offset.sy * view.sy,
             });
-            for (let childId of childrenFunc(id, state.nodes, views)) {
+            for (let childId of childrenFunc(id, state.get("nodes"), views)) {
                 views[childId].projection.draw(childId, subOffset, state, views, stage);
             }
         }
@@ -147,7 +149,7 @@ function roundedRect(options={}) {
             }
 
             if (view.color) ctx.fillStyle = view.color;
-            if (state.hover === id) {
+            if (state.get("hover") === id) {
                 ctx.strokeStyle = "yellow";
                 ctx.lineWidth = 2;
             }
