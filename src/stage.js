@@ -96,11 +96,13 @@ export class Stage {
         if (!this._dragged && this._selectedNode) {
             const state = this.store.getState();
             this.semantics.reduce(state.nodes, state.nodes[this._selectedNode]).then((res) => {
+                // TODO: have semantics tell us which root node changed
                 if (!res) return;
 
                 const [ result, nodes ] = res;
                 let state = this.store.getState();
                 const queue = [ this._selectedNode ];
+                const topView = this.views[this._selectedNode];
                 while (queue.length > 0) {
                     const current = queue.pop();
                     delete this.views[current];
@@ -115,6 +117,10 @@ export class Stage {
                 for (const node of nodes) {
                     this.views[node.id] = projection.initializeView(node.id, state.nodes, this.views);
                 }
+
+                // Preserve position (TODO: better way)
+                this.views[nodes[0].id].x = topView.x;
+                this.views[nodes[0].id].y = topView.y;
 
                 this._selectedNode = null;
             });
