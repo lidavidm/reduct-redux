@@ -2,9 +2,10 @@ import * as action from "./action";
 import * as projection from "./projection";
 
 export class Stage {
-    constructor(width, height, store, views) {
+    constructor(width, height, store, views, semantics) {
         this.store = store;
         this.views = views;
+        this.semantics = semantics;
 
         this.canvas = document.createElement("canvas");
         this.canvas.setAttribute("width", width);
@@ -93,7 +94,30 @@ export class Stage {
 
     _mouseup(e) {
         if (!this._dragged && this._selectedNode) {
-            this.store.dispatch(action.click(this._selectedNode));
+            const state = this.store.getState();
+            this.semantics.reduce(state.nodes, state.nodes[this._selectedNode]).then((res) => {
+                if (!res) return;
+
+                const [ result, nodes ] = res;
+                let state = this.store.getState();
+                const queue = [ this._selectedNode ];
+                while (queue.length > 0) {
+                    const current = queue.pop();
+                    delete this.views[current];
+                    for (const subexp of this.semantics.subexpressions(state.nodes[current])) {
+                        queue.push(subexp);
+                    }
+                }
+
+                this.store.dispatch(action.smallStep(this._selectedNode, result, nodes));
+
+                state = this.store.getState();
+                for (const node of nodes) {
+                    this.views[node.id] = projection.initializeView(node.id, state.nodes, this.views);
+                }
+
+                this._selectedNode = null;
+            });
         }
         this._dragged = false;
     }

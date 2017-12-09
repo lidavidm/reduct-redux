@@ -1,4 +1,3 @@
-export const CLICK = "click";
 export const HOVER = "hover";
 export const SMALL_STEP = "small-step";
 export const START_LEVEL = "start-level";
@@ -12,10 +11,12 @@ export function startLevel(goal, board, toolbox) {
     };
 }
 
-export function click(nodeId) {
+export function smallStep(nodeId, newNode, newNodes) {
     return {
-        type: CLICK,
+        type: SMALL_STEP,
         nodeId: nodeId,
+        newNode: newNode,
+        newNodes: newNodes,
     };
 }
 

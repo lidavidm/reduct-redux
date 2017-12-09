@@ -1,3 +1,5 @@
+import { nextId } from "../reducer";
+
 export function number(value) {
     return { type: "number", value: value, locked: true };
 }
@@ -23,7 +25,7 @@ export function subexpressions(expr) {
     }
 }
 
-export function flatten(nextId, expr) {
+export function flatten(expr) {
     switch (expr.type) {
     case "number":
     case "missing":
@@ -33,10 +35,10 @@ export function flatten(nextId, expr) {
         let result = [expr];
         expr.id = nextId();
         expr.left.parent = expr.id;
-        result = result.concat(flatten(nextId, expr.left));
+        result = result.concat(flatten(expr.left));
         expr.left = expr.left.id;
         expr.right.parent = expr.id;
-        result = result.concat(flatten(nextId, expr.right));
+        result = result.concat(flatten(expr.right));
         expr.right = expr.right.id;
         return result;
     default:
@@ -66,12 +68,9 @@ export function animateStep(nodes, exp) {
 
 export function reduce(nodes, exp) {
     return animateStep(nodes, exp).then((result) => {
+        if (!result) return null;
         // Flatten the result
-
-        // Clean up the views
-
-        // Dispatch the Redux action
-
-        return result;
+        const nodes = flatten(result);
+        return [ result, nodes ];
     });
 }

@@ -9,7 +9,7 @@ const reduct = reducer.reduct(defaultSemantics);
 let store = createStore(reduct.reducer);
 let views = {};
 
-const stg = new stage.Stage(800, 600, store, views);
+const stg = new stage.Stage(800, 600, store, views, defaultSemantics);
 document.body.appendChild(stg.view);
 
 store.subscribe(() => {
