@@ -45,7 +45,7 @@ export class Stage {
         const state = this.store.getState();
         for (const nodeId of state.board) {
             const node = state.nodes[nodeId];
-            projection.draw(node, state.nodes, this.views, this);
+            projection.draw(node, state, this.views, this);
         }
     }
 
@@ -60,6 +60,7 @@ export class Stage {
     _mousedown(e) {
         const state = this.store.getState();
         const pos = this.getMousePos(e);
+        this._selectedNode = null;
         for (const nodeId of state.board) {
             const node = state.nodes[nodeId];
             if (projection.containsPoint(pos, node, state.nodes, this.views, this)) {
@@ -77,6 +78,17 @@ export class Stage {
             this.draw();
             this._dragged = true;
         }
+
+        this._hoverNode = null;
+        const state = this.store.getState();
+        const pos = this.getMousePos(e);
+        for (const nodeId of state.board) {
+            const node = state.nodes[nodeId];
+            if (projection.containsPoint(pos, node, state.nodes, this.views, this)) {
+                this._hoverNode = nodeId;
+            }
+        }
+        this.store.dispatch(action.hover(this._hoverNode));
     }
 
     _mouseup(e) {

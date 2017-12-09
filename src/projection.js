@@ -61,15 +61,15 @@ export function textView(text) {
     });
 }
 
-export function draw(expr, nodes, views, stage) {
+export function draw(expr, state, views, stage) {
     const view = views[expr.id];
-    view.projection.prepare(expr.id, nodes, views, stage);
+    view.projection.prepare(expr.id, state, views, stage);
     view.projection.draw(expr.id, {
         x: 0,
         y: 0,
         sx: 1,
         sy: 1,
-    }, nodes, views, stage);
+    }, state, views, stage);
 }
 
 export function containsPoint(pos, expr, nodes, views, stage) {
@@ -82,9 +82,11 @@ function box(direction, childrenFunc, options={}) {
     options.subexpScale = options.subexpScale || 0.85;
     options.padding = options.padding || { left: 10, inner: 10, right: 10 };
 
+    const base = roundedRect();
+
     return {
-        prepare: function(id, nodes, views, stage) {
-            const children = childrenFunc(id, nodes, views);
+        prepare: function(id, state, views, stage) {
+            const children = childrenFunc(id, state.nodes, views);
             const view = views[id];
             let x = options.padding.left;
             for (let childId of children) {
@@ -93,46 +95,26 @@ function box(direction, childrenFunc, options={}) {
                 childView.y = 0;
                 childView.sx = options.subexpScale;
                 childView.sy = options.subexpScale;
-                childView.shadow = nodes[childId] ? !nodes[childId].locked : false;
-                childView.projection.prepare(childId, nodes, views, stage);
+                childView.shadow = state.nodes[childId] ? !state.nodes[childId].locked : false;
+                childView.projection.prepare(childId, state, views, stage);
                 x += childView.w * childView.sx + options.padding.inner;
                 childView.y = (view.h * view.sy - childView.h * childView.sy) / 2;
             }
-            view.w = x + options.padding.right;
+            view.w = x;
+            // view.w = x + options.padding.right;
         },
-        draw: function(id, offset, nodes, views, stage) {
-            const ctx = stage.ctx;
+        draw: function(id, offset, state, views, stage) {
+            base.draw(id, offset, state, views, stage);
+
             const view = views[id];
-            if (view.shadow) {
-                ctx.fillStyle = view.shadowColor;
-                roundRect(ctx,
-                          offset.x + view.x, offset.y + view.y + view.shadowOffset,
-                          offset.sx * view.sx * view.w,
-                          offset.sy * view.sy * view.h,
-                          offset.sx * view.radius,
-                          view.color ? true : false,
-                          view.stroke ? true : false,
-                          view.stroke ? view.stroke.opacity : null);
-            }
-
-            if (view.color) ctx.fillStyle = view.color;
-            roundRect(ctx,
-                      offset.x + view.x, offset.y + view.y,
-                      offset.sx * view.sx * view.w,
-                      offset.sy * view.sy * view.h,
-                      offset.sx * view.radius,
-                      view.color ? true : false,
-                      view.stroke ? true : false,
-                      view.stroke ? view.stroke.opacity : null);
-
             const subOffset = Object.assign({}, offset, {
                 x: offset.x + view.x,
                 y: offset.y + view.y,
                 sx: offset.sx * view.sx,
                 sy: offset.sy * view.sy,
             });
-            for (let childId of childrenFunc(id, nodes, views)) {
-                views[childId].projection.draw(childId, subOffset, nodes, views, stage);
+            for (let childId of childrenFunc(id, state.nodes, views)) {
+                views[childId].projection.draw(childId, subOffset, state, views, stage);
             }
         }
     };
@@ -140,12 +122,13 @@ function box(direction, childrenFunc, options={}) {
 
 function roundedRect(options={}) {
     return {
-        prepare: function(id, nodes, views, stage) {
+        prepare: function(id, state, views, stage) {
             views[id].w = views[id].h = 50;
         },
-        draw: function(id, offset, nodes, views, stage) {
+        draw: function(id, offset, state, views, stage) {
             const ctx = stage.ctx;
             const view = views[id];
+            ctx.save();
             if (view.shadow) {
                 ctx.fillStyle = view.shadowColor;
                 roundRect(ctx,
@@ -159,14 +142,19 @@ function roundedRect(options={}) {
             }
 
             if (view.color) ctx.fillStyle = view.color;
+            if (state.hover === id) {
+                ctx.strokeStyle = "yellow";
+                ctx.lineWidth = 2;
+            }
             roundRect(ctx,
                       offset.x + view.x, offset.y + view.y,
                       offset.sx * view.sx * view.w,
                       offset.sy * view.sy * view.h,
                       offset.sx * view.radius,
                       view.color ? true : false,
-                      view.stroke ? true : false,
+                      state.hover === id,
                       view.stroke ? view.stroke.opacity : null);
+            ctx.restore();
         }
     };
 }
@@ -175,7 +163,7 @@ const TEXT_SIZE_CACHE = {};
 
 function textProjection(options={}) {
     return {
-        prepare: function(id, nodes, views, stage) {
+        prepare: function(id, state, views, stage) {
             const view = views[id];
             const cacheKey = `${view.fontSize};${view.font};${view.text}`;
             if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
@@ -185,7 +173,7 @@ function textProjection(options={}) {
             views[id].h = 50;
             views[id].w = TEXT_SIZE_CACHE[cacheKey];
         },
-        draw: function(id, offset, nodes, views, stage) {
+        draw: function(id, offset, state, views, stage) {
             const ctx = stage.ctx;
             const view = views[id];
             ctx.save();
@@ -281,4 +269,14 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke, strokeOpacity
     ctx.closePath();
     if (fill) ctx.fill();
     if (stroke) strokeWithOpacity(ctx, strokeOpacity);
+}
+
+function strokeWithOpacity(ctx, opacity) {
+    if (!opacity || opacity >= 1.0) ctx.stroke();
+    else {
+        let a = ctx.globalAlpha;
+        ctx.globalAlpha = a * opacity;
+        ctx.stroke();
+        ctx.globalAlpha = a;
+    }
 }

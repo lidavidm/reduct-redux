@@ -5,6 +5,7 @@ const initialState = {
     goal: [],
     board: [],
     toolbox: [],
+    hover: null,
 };
 
 let idCounter = 0;
@@ -64,6 +65,11 @@ export function reduct(state=initialState, act) {
         const node = state.nodes[act.nodeId];
         console.log("Clicked", node);
         return state;
+    }
+    case action.HOVER: {
+        return Object.assign({}, state, {
+            hover: act.nodeId,
+        });
     }
     default: {
         console.error(`Unknown action ${act.type}`);

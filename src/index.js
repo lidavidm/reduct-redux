@@ -13,7 +13,6 @@ document.body.appendChild(stg.view);
 
 store.subscribe(() => {
     const state = store.getState();
-    console.log(state);
 
     stg.draw();
 });
