@@ -43,7 +43,7 @@ export class Stage {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this._redrawPending = false;
 
-        const state = this.store.getState();
+        const state = this.store.getState().get("program");
         for (const nodeId of state.get("board")) {
             const node = state.get("nodes").get(nodeId);
             projection.draw(node, state, this.views, this);
@@ -59,7 +59,7 @@ export class Stage {
     }
 
     _mousedown(e) {
-        const state = this.store.getState();
+        const state = this.store.getState().get("program");
         const pos = this.getMousePos(e);
         this._selectedNode = null;
         for (const nodeId of state.get("board")) {
@@ -81,7 +81,7 @@ export class Stage {
         }
 
         this._hoverNode = null;
-        const state = this.store.getState();
+        const state = this.store.getState().get("program");
         const pos = this.getMousePos(e);
         for (const nodeId of state.get("board")) {
             const node = state.getIn([ "nodes", nodeId ]);
@@ -94,7 +94,7 @@ export class Stage {
 
     _mouseup(e) {
         if (!this._dragged && this._selectedNode) {
-            const state = this.store.getState();
+            const state = this.store.getState().get("program");
             const nodes = state.get("nodes");
             const node = nodes.get(this._selectedNode);
             this.semantics.reduce(nodes, node).then((res) => {
@@ -102,7 +102,7 @@ export class Stage {
                 if (!res) return;
 
                 const [ result, nodes ] = res;
-                let state = this.store.getState();
+                let state = this.store.getState().get("program");
                 const queue = [ this._selectedNode ];
                 const topView = this.views[this._selectedNode];
                 while (queue.length > 0) {
@@ -115,7 +115,7 @@ export class Stage {
 
                 this.store.dispatch(action.smallStep(this._selectedNode, result, nodes));
 
-                state = this.store.getState();
+                state = this.store.getState().get("program");
                 for (const node of nodes) {
                     this.views[node.id] = projection.initializeView(node.id, state.get("nodes"), this.views);
                 }

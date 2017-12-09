@@ -1,12 +1,16 @@
 import * as immutable from "immutable";
+import { combineReducers } from 'redux-immutable';
 
 import * as action from "./action";
 
-const initialState = immutable.Map({
+const initialProgram = immutable.Map({
     nodes: immutable.Map(),
     goal: immutable.List(),
     board: immutable.List(),
     toolbox: immutable.List(),
+});
+const initialState = immutable.Map({
+    program: initialProgram,
     hover: null,
 });
 
@@ -16,8 +20,17 @@ export function nextId() {
     return idCounter++;
 }
 
+
 export function reduct(semantics) {
-    function reducer(state=initialState, act) {
+    function hover(state=null, act) {
+        switch(act.type) {
+        case action.HOVER: {
+            return act.nodeId;
+        }
+        default: return state;
+        }
+    }
+    function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
             let nodes = [];
@@ -65,17 +78,15 @@ export function reduct(semantics) {
                 .set("board",
                      state.get("board").filter((id) => !removedNodes[id]).push(act.newNode.id));
         }
-        case action.HOVER: {
-            return state.set("hover", act.nodeId);
-        }
-        default: {
-            console.error(`Unknown action ${act.type}`);
-            return state;
-        }
+        default: return state;
         }
     }
+
     return {
-        reducer: reducer,
+        reducer: combineReducers({
+            hover,
+            program,
+        }),
     };
 }
 
