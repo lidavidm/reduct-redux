@@ -1,7 +1,8 @@
 import * as immutable from "immutable";
-import { combineReducers } from 'redux-immutable';
+import { combineReducers } from "redux-immutable";
 
 import * as action from "./action";
+import { undoable } from "./undo";
 
 const initialProgram = immutable.Map({
     nodes: immutable.Map(),
@@ -19,7 +20,6 @@ let idCounter = 0;
 export function nextId() {
     return idCounter++;
 }
-
 
 export function reduct(semantics) {
     function hover(state=null, act) {
@@ -85,7 +85,7 @@ export function reduct(semantics) {
     return {
         reducer: combineReducers({
             hover,
-            program,
+            program: undoable(program),
         }),
     };
 }
