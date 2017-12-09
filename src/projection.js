@@ -19,11 +19,16 @@ export const defaultView = {
 export function initializeView(id, nodes, views) {
     const expr = nodes[id];
     switch (expr.type) {
-    case "number":
+    case "number": {
+        const textId = nextId();
+        views[textId] = textView(expr.value.toString());
         return Object.assign({}, defaultView, {
-            projection: roundedRect(),
+            projection: box("horizontal", function(id, nodes, views) {
+                return [ textId ];
+            }),
             color: "#FFF",
         });
+    }
     case "missing":
         return Object.assign({}, defaultView, {
             projection: roundedRect(),
