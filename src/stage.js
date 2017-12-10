@@ -1,5 +1,5 @@
 import * as action from "./action";
-import * as projection from "./projection";
+import { nextId } from "./reducer";
 
 export class Stage {
     constructor(width, height, store, views, semantics) {
@@ -23,6 +23,12 @@ export class Stage {
 
         this._selectedNode = null;
         this._dragged = false;
+    }
+
+    allocate(projection) {
+        const id = nextId();
+        this.views[id] = projection;
+        return id;
     }
 
     get view() {
@@ -50,7 +56,9 @@ export class Stage {
         const state = this.getState();
         for (const nodeId of state.get("board")) {
             const node = state.get("nodes").get(nodeId);
-            projection.draw(node, state, this.views, this);
+            const projection = this.views[nodeId];
+            projection.prepare(nodeId, state, this);
+            projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
         }
     }
 
@@ -68,6 +76,7 @@ export class Stage {
         this._selectedNode = null;
         for (const nodeId of state.get("board")) {
             const node = state.getIn([ "nodes", nodeId ]);
+            const projection = this.views[nodeId];
             if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
                 this._selectedNode = nodeId;
                 console.log("selected", nodeId, node);
@@ -78,8 +87,8 @@ export class Stage {
     _mousemove(e) {
         if (e.buttons > 0 && this._selectedNode !== null) {
             const view = this.views[this._selectedNode];
-            view.x += e.movementX;
-            view.y += e.movementY;
+            view.pos.x += e.movementX;
+            view.pos.y += e.movementY;
             this.draw();
             this._dragged = true;
         }
@@ -89,6 +98,7 @@ export class Stage {
         const pos = this.getMousePos(e);
         for (const nodeId of state.get("board")) {
             const node = state.getIn([ "nodes", nodeId ]);
+            const projection = this.views[nodeId];
             if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
                 this._hoverNode = nodeId;
             }
@@ -121,12 +131,12 @@ export class Stage {
 
                 state = this.getState();
                 for (const node of nodes) {
-                    this.views[node.id] = projection.initializeView(node.id, state.get("nodes"), this.views);
+                    this.views[node.id] = this.semantics.project(this, state.getIn([ "nodes", node.id ]));
                 }
 
                 // Preserve position (TODO: better way)
-                this.views[nodes[0].id].x = topView.x;
-                this.views[nodes[0].id].y = topView.y;
+                this.views[nodes[0].id].pos.x = topView.pos.x;
+                this.views[nodes[0].id].pos.y = topView.pos.y;
 
                 this._selectedNode = null;
             });

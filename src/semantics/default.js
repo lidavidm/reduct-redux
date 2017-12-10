@@ -1,4 +1,5 @@
 import { nextId } from "../reducer";
+import * as gfx from "../gfx/core";
 
 export function number(value) {
     return { type: "number", value: value, locked: true };
@@ -10,6 +11,34 @@ export function missing() {
 
 export function add(expr1, expr2) {
     return { type: "add", left: expr1, right: expr2, locked: true };
+}
+
+export function project(stage, expr) {
+    switch (expr.get("type")) {
+    case "number":
+        return gfx.hbox(
+            gfx.constant(stage.allocate(gfx.text(expr.get("value").toString()))),
+            {
+                color: "#FFF",
+            });
+    case "missing":
+        return gfx.roundedRect({
+            color: "#555",
+            shadowOffset: -2,
+        });
+    case "add":
+        const textId = stage.allocate(gfx.text("+"));
+        return gfx.hbox((id, nodes) => [
+            nodes.getIn([ id, "left" ]),
+            textId,
+            nodes.getIn([ id, "right" ]),
+        ], {
+            color: "orange",
+        });
+    default:
+        console.error(`Undefined expression type ${expr.type}.`);
+        return [];
+    }
 }
 
 export function subexpressions(expr) {

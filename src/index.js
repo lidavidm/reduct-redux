@@ -3,7 +3,6 @@ import * as reducer from "./reducer";
 import * as action from "./action";
 import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
-import * as projection from "./projection";
 import * as undo from "./undo";
 
 const reduct = reducer.reduct(defaultSemantics);
@@ -33,11 +32,11 @@ store.dispatch(action.startLevel(
 
 const nodes = store.getState().getIn([ "program", "$present" ]).get("nodes");
 nodes.forEach((node) => {
-    views[node.get("id")] = projection.initializeView(node.get("id"), nodes, views);
+    views[node.get("id")] = defaultSemantics.project(stg, node);
 });
 store.getState().getIn([ "program", "$present" ]).get("board").forEach((id) => {
-    views[id].x = 100 + Math.floor(Math.random() * 600);
-    views[id].y = 100 + Math.floor(Math.random() * 400);
+    views[id].pos.x = 100 + Math.floor(Math.random() * 600);
+    views[id].pos.y = 100 + Math.floor(Math.random() * 400);
 });
 
 document.querySelector("#undo").addEventListener("click", () => {
