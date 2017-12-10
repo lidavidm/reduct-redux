@@ -15,7 +15,7 @@ export function redo() {
     };
 }
 
-export function undoable(reducer) {
+export function undoable(reducer, options={}) {
     const initialState = immutable.Map({
         $present: reducer(undefined, {}),
         $past: immutable.Stack(),
@@ -52,6 +52,9 @@ export function undoable(reducer) {
             const newPresent = reducer($present, action);
             if (newPresent === $present) {
                 return state;
+            }
+            else if (options.actionFilter && options.actionFilter(action)) {
+                return state.set("$present", newPresent);
             }
             return state.withMutations(map => {
                 map

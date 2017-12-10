@@ -58,6 +58,14 @@ export function reduct(semantics) {
                 hover: null,
             });
         }
+        case action.RAISE: {
+            const board = state.get("board");
+            if (board.contains(act.nodeId)) {
+                const newBoard = board.filter((n) => n !== act.nodeId).push(act.nodeId);
+                return state.set("board", newBoard);
+            }
+            return state;
+        }
         case action.SMALL_STEP: {
             const queue = [ act.nodeId ];
             const removedNodes = {};
@@ -140,7 +148,9 @@ export function reduct(semantics) {
     return {
         reducer: combineReducers({
             hover,
-            program: undoable(program),
+            program: undoable(program, {
+                actionFilter: (act) => act.type === action.RAISE,
+            }),
         }),
     };
 }

@@ -1,4 +1,5 @@
 export const HOVER = "hover";
+export const RAISE = "raise";
 export const DETACH = "detach";
 export const FILL_HOLE = "fill-hole";
 export const SMALL_STEP = "small-step";
@@ -25,6 +26,13 @@ export function smallStep(nodeId, newNode, newNodes) {
 export function hover(nodeId) {
     return {
         type: HOVER,
+        nodeId: nodeId,
+    };
+}
+
+export function raise(nodeId) {
+    return {
+        type: RAISE,
         nodeId: nodeId,
     };
 }

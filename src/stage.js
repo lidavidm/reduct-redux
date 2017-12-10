@@ -120,6 +120,9 @@ export class Stage {
         const state = this.getState();
         const pos = this.getMousePos(e);
         [ this._selectedNode, this._targetNode ] = this.getNodeAtPos(pos);
+        if (this._selectedNode !== null) {
+            this.store.dispatch(action.raise(this._selectedNode));
+        }
     }
 
     _mousemove(e) {
@@ -151,7 +154,7 @@ export class Stage {
     _mouseup(e) {
         const state = this.getState();
 
-        if (!this._dragged && this._selectedNode) {
+        if (!this._dragged && this._selectedNode !== null) {
             const selectedNode = this._selectedNode;
 
             const nodes = state.get("nodes");
