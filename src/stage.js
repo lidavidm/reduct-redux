@@ -22,6 +22,8 @@ export class Stage {
         this.canvas.addEventListener("mouseup", (e) => this._mouseup(e));
 
         this._selectedNode = null;
+        this._hoverNode = null;
+        this._targetNode = null;
         this._dragged = false;
     }
 
@@ -70,39 +72,19 @@ export class Stage {
         });
     }
 
-    _mousedown(e) {
+    getNodeAtPos(pos) {
         const state = this.getState();
-        const pos = this.getMousePos(e);
-        this._selectedNode = null;
-        for (const nodeId of state.get("board")) {
-            const node = state.getIn([ "nodes", nodeId ]);
-            const projection = this.views[nodeId];
-            if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
-                this._selectedNode = nodeId;
-                console.log("selected", nodeId, node);
-            }
-        }
-    }
+        let result = null;
+        let root = null;
 
-    _mousemove(e) {
-        if (e.buttons > 0 && this._selectedNode !== null) {
-            const view = this.views[this._selectedNode];
-            view.pos.x += e.movementX;
-            view.pos.y += e.movementY;
-            this.draw();
-            this._dragged = true;
-        }
-
-        this._hoverNode = null;
-        const state = this.getState();
-        const pos = this.getMousePos(e);
         for (const nodeId of state.get("board")) {
             if (nodeId == this._selectedNode) continue;
 
             const node = state.getIn([ "nodes", nodeId ]);
             const projection = this.views[nodeId];
+
             if (projection.containsPoint(pos)) {
-                this._hoverNode = nodeId;
+                root = result = nodeId;
 
                 let subexprIds = this.semantics.subexpressions(state.getIn([ "nodes", nodeId ]));
 
@@ -116,7 +98,7 @@ export class Stage {
                             const node = state.getIn([ "nodes", subexprId ]);
                             if (node.get("locked")) break outerLoop;
 
-                            this._hoverNode = subexprId;
+                            result = subexprId;
                             subexprIds = this.semantics.subexpressions(node);
                             pos.x -= this.views[subexprId].pos.x;
                             pos.y -= this.views[subexprId].pos.y;
@@ -127,23 +109,49 @@ export class Stage {
                 }
             }
         }
-        this.store.dispatch(action.hover(this._hoverNode));
+
+        return [ root, result ];
+    }
+
+    _mousedown(e) {
+        const state = this.getState();
+        const pos = this.getMousePos(e);
+        [ this._selectedNode, this._targetNode ] = this.getNodeAtPos(pos);
+    }
+
+    _mousemove(e) {
+        if (e.buttons > 0 && this._selectedNode !== null) {
+            const view = this.views[this._selectedNode];
+            view.pos.x += e.movementX;
+            view.pos.y += e.movementY;
+            this.draw();
+            this._dragged = true;
+        }
+
+        const before = this._hoverNode;
+        const [ root, target ] = this.getNodeAtPos(this.getMousePos(e));
+        this._hoverNode = target;
+        if (target !== before) {
+            this.store.dispatch(action.hover(this._hoverNode));
+        }
     }
 
     _mouseup(e) {
         const state = this.getState();
 
         if (!this._dragged && this._selectedNode) {
+            const selectedNode = this._selectedNode;
+
             const nodes = state.get("nodes");
-            const node = nodes.get(this._selectedNode);
+            const node = nodes.get(selectedNode);
             this.semantics.reduce(nodes, node).then((res) => {
                 // TODO: have semantics tell us which root node changed
                 if (!res) return;
 
                 const [ result, nodes ] = res;
                 let state = this.getState();
-                const queue = [ this._selectedNode ];
-                const topView = this.views[this._selectedNode];
+                const queue = [ selectedNode ];
+                const topView = this.views[selectedNode];
                 while (queue.length > 0) {
                     const current = queue.pop();
                     // delete this.views[current];
@@ -152,7 +160,7 @@ export class Stage {
                     }
                 }
 
-                this.store.dispatch(action.smallStep(this._selectedNode, result, nodes));
+                this.store.dispatch(action.smallStep(selectedNode, result, nodes));
 
                 state = this.getState();
                 for (const node of nodes) {
@@ -162,8 +170,6 @@ export class Stage {
                 // Preserve position (TODO: better way)
                 this.views[nodes[0].id].pos.x = topView.pos.x;
                 this.views[nodes[0].id].pos.y = topView.pos.y;
-
-                this._selectedNode = null;
             });
         }
 
@@ -175,5 +181,6 @@ export class Stage {
         }
 
         this._dragged = false;
+        this._selectedNode = null;
     }
 }
