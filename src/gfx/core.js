@@ -135,11 +135,17 @@ export function text(text, options) {
     };
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
+        const sx = offset.sx * projection.scale.x;
+        const sy = offset.sy * projection.scale.y;
+
         ctx.save();
+        ctx.scale(sx, sy);
         ctx.fillStyle = projection.color;
         ctx.textBaseline = "alphabetic";
         ctx.font = `${projection.fontSize}px ${projection.font}`;
-        ctx.fillText(projection.text, offset.x + projection.pos.x, offset.y + projection.pos.y + projection.fontSize);
+        ctx.fillText(projection.text,
+                     (offset.x + projection.pos.x) / sx,
+                     (offset.y + projection.pos.y) / sy + 1.1 * projection.fontSize);
         ctx.restore();
     };
     return projection;
