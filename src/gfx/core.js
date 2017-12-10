@@ -125,13 +125,14 @@ export function roundedRect(options={}) {
         }
 
         if (projection.color) ctx.fillStyle = projection.color;
-        const shouldStroke = node && node.get("parent") && node.get("locked");
+        const shouldStroke = !!(node && node.get("parent") && node.get("locked"));
         if (stage._hoverNode === id) {
             ctx.strokeStyle = "yellow";
             ctx.lineWidth = 2;
         }
         else if (shouldStroke) {
-            ctx.strokeStyle = "#000";
+            // Stroke if we have a parent to make it clearer.
+            ctx.strokeStyle = "gray";
             ctx.lineWidth = 1;
         }
         primitive.roundRect(
