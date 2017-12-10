@@ -1,4 +1,5 @@
 import * as action from "./action";
+import * as animate from "./gfx/animate";
 import { nextId } from "./reducer";
 
 export class Stage {
@@ -25,6 +26,10 @@ export class Stage {
         this._hoverNode = null;
         this._targetNode = null;
         this._dragged = false;
+
+        animate.addUpdateListener(() => {
+            this.drawImpl();
+        });
     }
 
     allocate(projection) {
@@ -170,28 +175,32 @@ export class Stage {
                 // TODO: have semantics tell us which root node changed
                 if (!res) return;
 
-                const [ result, nodes ] = res;
-                let state = this.getState();
-                const queue = [ selectedNode ];
                 const topView = this.views[selectedNode];
-                while (queue.length > 0) {
-                    const current = queue.pop();
-                    // delete this.views[current];
-                    for (const subexp of this.semantics.subexpressions(state.getIn([ "nodes", current ]))) {
-                        queue.push(subexp);
+                topView.opacity = 1.0;
+                animate.tween(topView, { opacity: 0 }).then(() => {
+                    const [ result, nodes ] = res;
+                    let state = this.getState();
+                    const queue = [ selectedNode ];
+                    const topView = this.views[selectedNode];
+                    while (queue.length > 0) {
+                        const current = queue.pop();
+                        // delete this.views[current];
+                        for (const subexp of this.semantics.subexpressions(state.getIn([ "nodes", current ]))) {
+                            queue.push(subexp);
+                        }
                     }
-                }
 
-                this.store.dispatch(action.smallStep(selectedNode, result, nodes));
+                    this.store.dispatch(action.smallStep(selectedNode, result, nodes));
 
-                state = this.getState();
-                for (const node of nodes) {
-                    this.views[node.id] = this.semantics.project(this, state.getIn([ "nodes", node.id ]));
-                }
+                    state = this.getState();
+                    for (const node of nodes) {
+                        this.views[node.id] = this.semantics.project(this, state.getIn([ "nodes", node.id ]));
+                    }
 
-                // Preserve position (TODO: better way)
-                this.views[nodes[0].id].pos.x = topView.pos.x;
-                this.views[nodes[0].id].pos.y = topView.pos.y;
+                    // Preserve position (TODO: better way)
+                    this.views[nodes[0].id].pos.x = topView.pos.x;
+                    this.views[nodes[0].id].pos.y = topView.pos.y;
+                });
             });
         }
 

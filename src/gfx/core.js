@@ -16,6 +16,7 @@ function baseProjection() {
         pos: { x: 0, y: 0 },
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
+        opacity: 1.0,
     };
 
     projection.containsPoint = function(pos) {
@@ -135,6 +136,9 @@ export function roundedRect(options={}) {
             ctx.strokeStyle = "gray";
             ctx.lineWidth = 1;
         }
+
+        if (projection.opacity) ctx.globalAlpha = projection.opacity;
+
         primitive.roundRect(
             ctx,
             offset.x + projection.pos.x * offset.sx,
