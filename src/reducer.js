@@ -91,11 +91,42 @@ export function reduct(semantics) {
             return state.withMutations(map => {
                 map.set("board", map.get("board").filter((n) => n != act.childId));
                 map.set("nodes", map.get("nodes").withMutations(nodes => {
-                    nodes.set(holeParent, nodes.get(holeParent).set(hole.get("parentField"), act.childId));
+                    nodes.set(holeParent, nodes.get(holeParent).withMutations(holeParent => {
+                        holeParent.set(hole.get("parentField") + "__hole", holeParent.get(hole.get("parentField")));
+                        holeParent.set(hole.get("parentField"), act.childId);
+                    }));
                     nodes.set(act.childId, child.withMutations(child => {
                         child.set("parentField", hole.get("parentField"));
                         child.set("parent", holeParent);
                         child.set("locked", false);
+                    }));
+                }));
+            });
+
+            return state;
+        }
+        case action.DETACH: {
+            const node = state.getIn([ "nodes", act.nodeId ]);
+
+            const parent = state.getIn([ "nodes", act.nodeId, "parent" ]);
+            if (parent === undefined) throw `Can't detach node ${act.nodeId} with no parent!`;
+
+            return state.withMutations(map => {
+                map.set("board", map.get("board").push(act.nodeId));
+                map.set("nodes", map.get("nodes").withMutations(nodes => {
+                    nodes.set(parent, nodes.get(parent).withMutations(parent => {
+                        const oldHole = parent.get(node.get("parentField") + "__hole");
+                        if (oldHole) {
+                            parent.set(node.get("parentField"), oldHole);
+                            parent.delete(node.get("parentField") + "__hole");
+                        }
+                        else {
+                            throw `Unimplemented: creating new hole`;
+                        }
+                    }));
+                    nodes.set(act.nodeId, node.withMutations(node => {
+                        node.delete("parentField");
+                        node.delete("parent");
                     }));
                 }));
             });
