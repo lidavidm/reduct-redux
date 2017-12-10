@@ -34,6 +34,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         const children = childrenFunc(id, state.get("nodes"));
         let x = projection.padding.left;
 
+
         for (let childId of children) {
             const childProjection = stage.views[childId];
 
@@ -55,8 +56,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
 
         const subOffset = Object.assign({}, offset, {
-            x: offset.x + projection.pos.x * sx,
-            y: offset.y + projection.pos.y * sy,
+            x: offset.x + projection.pos.x * offset.sx,
+            y: offset.y + projection.pos.y * offset.sy,
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
@@ -90,8 +91,8 @@ export function roundedRect(options={}) {
             ctx.fillStyle = projection.shadowColor;
             primitive.roundRect(
                 ctx,
-                offset.x + projection.pos.x * sx,
-                offset.y + (projection.pos.y + projection.shadowOffset) * sy,
+                offset.x + projection.pos.x * offset.sx,
+                offset.y + (projection.pos.y + projection.shadowOffset) * offset.sy,
                 offset.sx * projection.scale.x * projection.size.w,
                 offset.sy * projection.scale.y * projection.size.h,
                 sx * projection.radius,
@@ -112,8 +113,8 @@ export function roundedRect(options={}) {
         }
         primitive.roundRect(
             ctx,
-            offset.x + projection.pos.x * sx,
-            offset.y + projection.pos.y * sy,
+            offset.x + projection.pos.x * offset.sx,
+            offset.y + projection.pos.y * offset.sy,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * projection.radius,
@@ -122,7 +123,7 @@ export function roundedRect(options={}) {
             projection.stroke ? projection.stroke.opacity : null);
 
         ctx.strokeStyle = 'blue'; ctx.lineWidth = 1;
-        ctx.strokeRect(offset.x + sx * projection.pos.x, offset.y + sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+        ctx.strokeRect(offset.x + offset.sx * projection.pos.x, offset.y + offset.sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
 
         ctx.restore();
     };
@@ -157,7 +158,7 @@ export function text(text, options) {
         ctx.save();
 
         ctx.strokeStyle = 'green'; ctx.lineWidth = 1;
-        ctx.strokeRect(offset.x + sx * projection.pos.x, offset.y + sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+        ctx.strokeRect(offset.x + offset.sx * projection.pos.x, offset.y + offset.sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
 
         ctx.scale(sx, sy);
         ctx.fillStyle = projection.color;
