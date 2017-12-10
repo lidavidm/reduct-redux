@@ -1,4 +1,5 @@
 import * as primitive from "./primitive";
+import * as util from "./util";
 
 function baseProjection() {
     const projection = {
@@ -43,7 +44,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.prepare(childId, state, stage);
             x += childProjection.size.w * childProjection.scale.x + projection.padding.inner;
-            childProjection.pos.y = (projection.size.h * projection.scale.y - childProjection.size.h * childProjection.scale.y) / 2;
+            childProjection.pos.y = (projection.size.h * projection.scale.y - childProjection.size.h * childProjection.scale.y * projection.scale.y) / 2;
         }
         projection.size.w = x;
         projection.size.y = 50;
@@ -51,9 +52,11 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.draw = function(id, state, stage, offset) {
         baseDraw(id, state, stage, offset);
 
+        const [ sx, sy ] = util.absoluteScale(projection, offset);
+
         const subOffset = Object.assign({}, offset, {
-            x: offset.x + projection.pos.x,
-            y: offset.y + projection.pos.y,
+            x: offset.x + projection.pos.x * sx,
+            y: offset.y + projection.pos.y * sy,
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
@@ -69,7 +72,7 @@ export function roundedRect(options={}) {
     projection.size.w = projection.size.h = 50;
     Object.assign(projection, {
         color: "lightgray",
-        radius: 6,
+        radius: 20,
         shadowColor: "#000",
         shadowOffset: 2,
     }, options);
@@ -80,34 +83,47 @@ export function roundedRect(options={}) {
         const ctx = stage.ctx;
         ctx.save();
 
+        const [ sx, sy ] = util.absoluteScale(projection, offset);
+
         const node = state.getIn([ "nodes", id ]);
         if (projection.shadow || (node && !node.get("parent") || !node.get("locked"))) {
             ctx.fillStyle = projection.shadowColor;
             primitive.roundRect(
                 ctx,
-                offset.x + projection.pos.x, offset.y + projection.pos.y + projection.shadowOffset,
+                offset.x + projection.pos.x * sx,
+                offset.y + (projection.pos.y + projection.shadowOffset) * sy,
                 offset.sx * projection.scale.x * projection.size.w,
                 offset.sy * projection.scale.y * projection.size.h,
-                offset.sx * projection.radius,
+                sx * projection.radius,
                 projection.color ? true : false,
                 projection.stroke ? true : false,
                 projection.stroke ? projection.stroke.opacity : null);
         }
 
         if (projection.color) ctx.fillStyle = projection.color;
+        const shouldStroke = node && node.get("parent") && node.get("locked");
         if (stage._hoverNode === id) {
             ctx.strokeStyle = "yellow";
             ctx.lineWidth = 2;
         }
+        else if (shouldStroke) {
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 1;
+        }
         primitive.roundRect(
             ctx,
-            offset.x + projection.pos.x, offset.y + projection.pos.y,
+            offset.x + projection.pos.x * sx,
+            offset.y + projection.pos.y * sy,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
-            offset.sx * projection.radius,
+            sx * projection.radius,
             projection.color ? true : false,
-            stage._hoverNode === id,
+            stage._hoverNode === id || shouldStroke,
             projection.stroke ? projection.stroke.opacity : null);
+
+        ctx.strokeStyle = 'blue'; ctx.lineWidth = 1;
+        ctx.strokeRect(offset.x + sx * projection.pos.x, offset.y + sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+
         ctx.restore();
     };
     return projection;
@@ -135,10 +151,14 @@ export function text(text, options) {
     };
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
-        const sx = offset.sx * projection.scale.x;
-        const sy = offset.sy * projection.scale.y;
+
+        const [ sx, sy ] = util.absoluteScale(projection, offset);
 
         ctx.save();
+
+        ctx.strokeStyle = 'green'; ctx.lineWidth = 1;
+        ctx.strokeRect(offset.x + sx * projection.pos.x, offset.y + sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+
         ctx.scale(sx, sy);
         ctx.fillStyle = projection.color;
         ctx.textBaseline = "alphabetic";

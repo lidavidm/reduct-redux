@@ -25,6 +25,7 @@ export function project(stage, expr) {
         return gfx.roundedRect({
             color: "#555",
             shadowOffset: -2,
+            radius: 22,
         });
     case "add":
         const textId = stage.allocate(gfx.text("+"));
