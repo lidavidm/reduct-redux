@@ -78,14 +78,25 @@ export function reduct(semantics) {
                 }
             }
 
-            const newNodes = state.get("nodes").filter(function (key, value) {
+            const oldNode = state.getIn([ "nodes", act.nodeId ]);
+
+            let newNodes = state.get("nodes").filter(function (key, value) {
                 return !removedNodes[key];
             }).merge(immutable.Map(act.newNodes.map((n) => [ n.id, immutable.Map(n) ])));
 
+            let newBoard = state.get("board").filter((id) => !removedNodes[id]);
+            if (!oldNode.get("parent")) {
+                newBoard = newBoard.push(act.newNode.id);
+            }
+            else {
+                const parent = newNodes.get(oldNode.get("parent"))
+                      .set(oldNode.get("parentField"), act.newNode.id);
+                newNodes = newNodes.set(oldNode.get("parent"), parent);
+            }
+
             return state
                 .set("nodes", newNodes)
-                .set("board",
-                     state.get("board").filter((id) => !removedNodes[id]).push(act.newNode.id));
+                .set("board", newBoard);
         }
         case action.FILL_HOLE: {
             const hole = state.getIn([ "nodes", act.holeId ]);

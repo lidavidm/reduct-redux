@@ -155,7 +155,14 @@ export class Stage {
         const state = this.getState();
 
         if (!this._dragged && this._selectedNode !== null) {
-            const selectedNode = this._selectedNode;
+            let selectedNode = this._selectedNode;
+
+            if (this._targetNode) {
+                const targetLocked = state.getIn([ "nodes", this._targetNode, "locked" ]);
+                if (!targetLocked) {
+                    selectedNode = this._targetNode;
+                }
+            }
 
             const nodes = state.get("nodes");
             const node = nodes.get(selectedNode);
