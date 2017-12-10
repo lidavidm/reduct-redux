@@ -1,6 +1,16 @@
 import * as primitive from "./primitive";
 import * as util from "./util";
 
+let DEBUG = false;
+const DEBUG_COLORS = {
+    "hbox": "blue",
+    "text": "green",
+};
+
+document.body.addEventListener("keyup", (e) => {
+    if (e.key === "F2") DEBUG = !DEBUG;
+});
+
 function baseProjection() {
     const projection = {
         pos: { x: 0, y: 0 },
@@ -14,6 +24,20 @@ function baseProjection() {
     };
 
     return projection;
+}
+
+function debugDraw(ctx, projection, offset) {
+    if (DEBUG) {
+        const [ sx, sy ] = util.absoluteScale(projection, offset);
+        ctx.save();
+        ctx.strokeStyle = DEBUG_COLORS[projection.type] || "red";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(offset.x + offset.sx * projection.pos.x,
+                       offset.y + offset.sy * projection.pos.y,
+                       projection.size.w * sx,
+                       projection.size.h * sy);
+        ctx.restore();
+    }
 }
 
 export function constant(...projections) {
@@ -33,7 +57,6 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.prepare = function(id, state, stage) {
         const children = childrenFunc(id, state.get("nodes"));
         let x = projection.padding.left;
-
 
         for (let childId of children) {
             const childProjection = stage.views[childId];
@@ -122,8 +145,7 @@ export function roundedRect(options={}) {
             stage._hoverNode === id || shouldStroke,
             projection.stroke ? projection.stroke.opacity : null);
 
-        ctx.strokeStyle = 'blue'; ctx.lineWidth = 1;
-        ctx.strokeRect(offset.x + offset.sx * projection.pos.x, offset.y + offset.sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+        debugDraw(ctx, projection, offset);
 
         ctx.restore();
     };
@@ -157,8 +179,7 @@ export function text(text, options) {
 
         ctx.save();
 
-        ctx.strokeStyle = 'green'; ctx.lineWidth = 1;
-        ctx.strokeRect(offset.x + offset.sx * projection.pos.x, offset.y + offset.sy * projection.pos.y, projection.size.w * sx, projection.size.h * sy);
+        debugDraw(ctx, projection, offset);
 
         ctx.scale(sx, sy);
         ctx.fillStyle = projection.color;
