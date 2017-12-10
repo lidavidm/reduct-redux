@@ -24,6 +24,7 @@ store.dispatch(action.startLevel(
         defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.number(2)),
         defaultSemantics.number(5),
         defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.number(2)),
+        defaultSemantics.add(defaultSemantics.add(defaultSemantics.number(7), defaultSemantics.missing()), defaultSemantics.number(2)),
         defaultSemantics.add(defaultSemantics.number(3), defaultSemantics.number(5)),
         defaultSemantics.add(defaultSemantics.number(4), defaultSemantics.number(7)),
     ],
