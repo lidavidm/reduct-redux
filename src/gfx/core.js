@@ -19,8 +19,8 @@ export function constant(...projections) {
     return () => projections;
 }
 
-export function hbox(childrenFunc, options={}) {
-    const projection = roundedRect(options);
+export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
+    const projection = baseProjection(options);
     const basePrepare = projection.prepare;
     const baseDraw = projection.draw;
     projection.padding = { left: 10, inner: 10, right: 10 };

@@ -64,9 +64,11 @@ export function flatten(expr) {
         let result = [expr];
         expr.id = nextId();
         expr.left.parent = expr.id;
+        expr.left.parentField = "left";
         result = result.concat(flatten(expr.left));
         expr.left = expr.left.id;
         expr.right.parent = expr.id;
+        expr.right.parentField = "right";
         result = result.concat(flatten(expr.right));
         expr.right = expr.right.id;
         return result;

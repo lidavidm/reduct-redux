@@ -1,4 +1,5 @@
 export const HOVER = "hover";
+export const FILL_HOLE = "fill-hole";
 export const SMALL_STEP = "small-step";
 export const START_LEVEL = "start-level";
 
@@ -24,5 +25,13 @@ export function hover(nodeId) {
     return {
         type: HOVER,
         nodeId: nodeId,
+    };
+}
+
+export function fillHole(holeId, childId) {
+    return {
+        type: FILL_HOLE,
+        holeId: holeId,
+        childId: childId,
     };
 }

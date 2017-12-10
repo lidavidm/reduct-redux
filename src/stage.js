@@ -97,18 +97,43 @@ export class Stage {
         const state = this.getState();
         const pos = this.getMousePos(e);
         for (const nodeId of state.get("board")) {
+            if (nodeId == this._selectedNode) continue;
+
             const node = state.getIn([ "nodes", nodeId ]);
             const projection = this.views[nodeId];
-            if (projection.containsPoint(pos, node, state.get("nodes"), this.views, this)) {
+            if (projection.containsPoint(pos)) {
                 this._hoverNode = nodeId;
+
+                let subexprIds = this.semantics.subexpressions(state.getIn([ "nodes", nodeId ]));
+
+                pos.x -= projection.pos.x;
+                pos.y -= projection.pos.y;
+
+                outerLoop:
+                while (subexprIds.length > 0) {
+                    for (let subexprId of subexprIds) {
+                        if (this.views[subexprId].containsPoint(pos)) {
+                            const node = state.getIn([ "nodes", subexprId ]);
+                            if (node.get("locked")) break outerLoop;
+
+                            this._hoverNode = subexprId;
+                            subexprIds = this.semantics.subexpressions(node);
+                            pos.x -= this.views[subexprId].pos.x;
+                            pos.y -= this.views[subexprId].pos.y;
+                            continue outerLoop;
+                        }
+                    }
+                    subexprIds = [];
+                }
             }
         }
         this.store.dispatch(action.hover(this._hoverNode));
     }
 
     _mouseup(e) {
+        const state = this.getState();
+
         if (!this._dragged && this._selectedNode) {
-            const state = this.getState();
             const nodes = state.get("nodes");
             const node = nodes.get(this._selectedNode);
             this.semantics.reduce(nodes, node).then((res) => {
@@ -141,6 +166,14 @@ export class Stage {
                 this._selectedNode = null;
             });
         }
+
+        if (this._dragged && this._hoverNode) {
+            const node = state.getIn([ "nodes", this._hoverNode ]);
+            if (node.get("type") === "missing") {
+                this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+            }
+        }
+
         this._dragged = false;
     }
 }

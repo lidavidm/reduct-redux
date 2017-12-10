@@ -30,6 +30,7 @@ export function reduct(semantics) {
         default: return state;
         }
     }
+
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
@@ -78,6 +79,29 @@ export function reduct(semantics) {
                 .set("board",
                      state.get("board").filter((id) => !removedNodes[id]).push(act.newNode.id));
         }
+        case action.FILL_HOLE: {
+            const hole = state.getIn([ "nodes", act.holeId ]);
+
+            const holeParent = state.getIn([ "nodes", act.holeId, "parent" ]);
+            if (holeParent === undefined) throw `Hole ${act.holeId} has no parent!`;
+
+            const child = state.getIn([ "nodes", act.childId ]);
+            if (child.get("parent")) throw `Dragging objects from one hole to another is unsupported.`;
+
+            return state.withMutations(map => {
+                map.set("board", map.get("board").filter((n) => n != act.childId));
+                map.set("nodes", map.get("nodes").withMutations(nodes => {
+                    nodes.set(holeParent, nodes.get(holeParent).set(hole.get("parentField"), act.childId));
+                    nodes.set(act.childId, child.withMutations(child => {
+                        child.set("parentField", hole.get("parentField"));
+                        child.set("parent", holeParent);
+                        child.set("locked", false);
+                    }));
+                }));
+            });
+
+            return state;
+        }
         default: return state;
         }
     }
@@ -87,33 +111,5 @@ export function reduct(semantics) {
             hover,
             program: undoable(program),
         }),
-    };
-}
-
-function stepExpr(nodes, board, node) {
-    let topParent = node;
-
-    while (nodes[topParent].parent) {
-        topParent = nodes[topParent].parent;
-    }
-
-    if (board.indexOf(topParent) === -1) {
-        return {
-            nodes: nodes,
-            board: board,
-        };
-    }
-
-    switch (node.type) {
-    case "add": {
-        break;
-    }
-    default:
-        break;
-    }
-
-    return {
-        nodes: nodes,
-        board: board,
     };
 }
