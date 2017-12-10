@@ -59,6 +59,8 @@ export class Stage {
         for (const nodeId of state.get("board")) {
             const node = state.get("nodes").get(nodeId);
             const projection = this.views[nodeId];
+            // TODO: autoresizing
+            projection.scale.x = projection.scale.y = 1;
             projection.prepare(nodeId, state, this);
             projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
         }
