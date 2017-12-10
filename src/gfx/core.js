@@ -45,6 +45,18 @@ export function constant(...projections) {
     return () => projections;
 }
 
+export function absolutePos(projection) {
+    let { x, y } = projection.pos;
+    while (projection.parent) {
+        projection = projection.parent;
+        x *= projection.scale.x;
+        y *= projection.scale.y;
+        x += projection.pos.x;
+        y += projection.pos.y;
+    }
+    return { x: x, y: y };
+}
+
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     const projection = baseProjection(options);
     const basePrepare = projection.prepare;
@@ -61,6 +73,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
         for (let childId of children) {
             const childProjection = stage.views[childId];
+
+            childProjection.parent = projection;
 
             childProjection.pos.x = x;
             childProjection.pos.y = 0;

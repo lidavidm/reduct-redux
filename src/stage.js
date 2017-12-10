@@ -1,5 +1,6 @@
 import * as action from "./action";
 import * as animate from "./gfx/animate";
+import * as gfxCore from "./gfx/core";
 import { nextId } from "./reducer";
 
 export class Stage {
@@ -65,6 +66,7 @@ export class Stage {
             const node = state.get("nodes").get(nodeId);
             const projection = this.views[nodeId];
             // TODO: autoresizing
+            projection.parent = null;
             projection.scale.x = projection.scale.y = 1;
             projection.prepare(nodeId, state, this);
             projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
@@ -143,8 +145,10 @@ export class Stage {
             const target = this.getState().getIn([ "nodes", this._targetNode ]);
             if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
                 // Detach
+                const pos = gfxCore.absolutePos(this.views[this._targetNode]);
                 this.store.dispatch(action.detach(this._targetNode));
                 this._selectedNode = this._targetNode;
+                this.views[this._selectedNode].pos = pos;
             }
         }
 
