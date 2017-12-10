@@ -186,7 +186,7 @@ export function text(text, options) {
         ctx.textBaseline = "alphabetic";
         ctx.font = `${projection.fontSize}px ${projection.font}`;
         ctx.fillText(projection.text,
-                     (offset.x + projection.pos.x) / sx,
+                     (offset.x + projection.pos.x * offset.sx) / sx,
                      (offset.y + projection.pos.y) / sy + 1.1 * projection.fontSize);
         ctx.restore();
     };
