@@ -130,7 +130,7 @@ export class Stage {
 
         if (e.buttons > 0 && this._targetNode && this._targetNode !== this._selectedNode) {
             const target = this.getState().getIn([ "nodes", this._targetNode ]);
-            if (!target.get("locked") && target.get("parent")) {
+            if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
                 // Detach
                 this.store.dispatch(action.detach(this._targetNode));
                 this._selectedNode = this._targetNode;
