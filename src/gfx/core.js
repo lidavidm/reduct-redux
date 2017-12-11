@@ -14,13 +14,15 @@ document.body.addEventListener("keyup", (e) => {
     if (e.key === "F2") DEBUG = !DEBUG;
 });
 
-function baseProjection() {
+export function baseProjection() {
     const projection = {
         pos: { x: 0, y: 0 },
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
         opacity: 1.0,
     };
+
+    projection.draw = projection.prepare = function() {};
 
     projection.containsPoint = function(pos) {
         return pos.x >= projection.pos.x && pos.x <= projection.pos.x + projection.size.w &&
@@ -69,11 +71,16 @@ export function hexpand(projection) {
     return projection;
 }
 
-export function sticky(projection) {
+export function sticky(projection, direction) {
     const origPrepare = projection.prepare;
     projection.prepare = function(id, state, stage) {
         origPrepare(id, state, stage);
-        projection.pos.y = stage.height - projection.size.h;
+        if (direction === "bottom") {
+            projection.pos.y = stage.height - projection.size.h;
+        }
+        else if (direction === "top") {
+            projection.pos.y = 0;
+        }
     };
     return projection;
 }
@@ -116,9 +123,10 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     Object.assign(projection, options);
 
     projection.prepare = function(id, state, stage) {
-        const children = childrenFunc(id, state.get("nodes"));
+        const children = childrenFunc(id, state.get("nodes"), state);
         let x = projection.padding.left;
 
+        let maxY = 50;
         for (let childId of children) {
             const childProjection = stage.views[childId];
 
@@ -131,10 +139,14 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.prepare(childId, state, stage);
             x += childProjection.size.w * childProjection.scale.x + projection.padding.inner;
-            childProjection.pos.y = (projection.size.h * projection.scale.y - childProjection.size.h * childProjection.scale.y * projection.scale.y) / 2;
+            maxY = Math.max(maxY, childProjection.size.h);
         }
         projection.size.w = x;
-        projection.size.y = 50;
+        projection.size.h = maxY;
+        for (let childId of children) {
+            const childProjection = stage.views[childId];
+            childProjection.pos.y = (projection.size.h * projection.scale.y - childProjection.size.h * childProjection.scale.y * projection.scale.y) / 2;
+        }
     };
     projection.draw = function(id, state, stage, offset) {
         baseDraw(id, state, stage, offset);
@@ -147,7 +159,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
-        for (let childId of childrenFunc(id, state.get("nodes"), stage, offset)) {
+        for (let childId of childrenFunc(id, state.get("nodes"), state)) {
             stage.views[childId].draw(childId, state, stage, subOffset);
         }
     };
@@ -173,7 +185,7 @@ export function roundedRect(options={}) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
 
         const node = state.getIn([ "nodes", id ]);
-        if (projection.shadow || (node && !node.get("parent") || !node.get("locked"))) {
+        if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
             ctx.fillStyle = projection.shadowColor;
             primitive.roundRect(
                 ctx,

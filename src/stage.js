@@ -3,6 +3,7 @@ import * as animate from "./gfx/animate";
 import * as gfxCore from "./gfx/core";
 import { nextId } from "./reducer/reducer";
 import Loader from "./loader";
+import Goal from "./ui/goal";
 import Toolbox from "./ui/toolbox";
 
 export class Stage {
@@ -34,6 +35,7 @@ export class Stage {
         this._dragged = false;
 
         this.toolbox = new Toolbox(this);
+        this.goal = new Goal(this);
 
         animate.addUpdateListener(() => {
             this.drawImpl();
@@ -80,6 +82,7 @@ export class Stage {
 
         const state = this.getState();
         this.toolbox.drawImpl(state);
+        this.goal.drawImpl(state);
 
         for (const nodeId of state.get("board")) {
             this.drawProjection(state, nodeId);

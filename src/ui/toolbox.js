@@ -7,7 +7,7 @@ export default class Toolbox {
         this.bg = stage.allocate(gfx.sticky(gfx.hexpand(gfx.sprite({
             image: Loader.images["toolbox-bg"],
             size: { h: 90 },
-        }))));
+        })), "bottom"));
     }
 
     drawImpl(state) {
