@@ -1,4 +1,5 @@
 import * as gfx from "../gfx/core";
+import * as animate from "../gfx/animate";
 import Loader from "../loader";
 
 export default class Toolbox {
@@ -8,6 +9,8 @@ export default class Toolbox {
             image: Loader.images["toolbox-bg"],
             size: { h: 90 },
         })), "bottom"));
+
+        this._firstRender = true;
     }
 
     containsPoint(pos) {
@@ -41,13 +44,27 @@ export default class Toolbox {
         for (const nodeId of state.get("toolbox")) {
             const node = state.get("nodes").get(nodeId);
             const projection = this.stage.views[nodeId];
+            projection.scale = { x: 1, y: 1 };
+            const nodeY = y + (90 - projection.size.h) / 2;
             projection.prepare(nodeId, state, this.stage);
-            if (nodeId !== this.stage._selectedNode) {
-                projection.pos.x = x;
-                projection.pos.y = y + (90 - projection.size.h) / 2;
+            if (nodeId === this.stage._selectedNode) {
+                // Do nothing
             }
+            else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
+                projection.animating = true;
+                animate
+                    .tween(projection.pos, { x: x, y: nodeY })
+                    .then(() => projection.animating = false);
+            }
+            else if (!projection.animating) {
+                projection.pos.x = x;
+                projection.pos.y = nodeY;
+            }
+
             x += projection.size.w + 20;
             projection.draw(nodeId, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
         }
+
+        this._firstRender = false;
     }
 }
