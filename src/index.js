@@ -7,10 +7,15 @@ import * as undo from "./reducer/undo";
 import Loader from "./loader";
 
 import spritesheetUrl from "../resources/graphics/assets.png";
+import menuUrl from "../resources/graphics/menu-assets.png";
 Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/assets.json"),
-                      // TODO: in master, we shouldn't need this concat
+                      // TODO: in ParcelJS master, we shouldn't need this concat
                       "dist/" + spritesheetUrl);
+Loader.loadImageAtlas("spritesheet",
+                      import("../resources/graphics/menu-assets.json"),
+                      // TODO: in ParcelJS master, we shouldn't need this concat
+                      "dist/" + menuUrl);
 Loader.finished.then(start);
 
 function start() {
