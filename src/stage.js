@@ -32,6 +32,7 @@ export class Stage {
         this._selectedNode = null;
         this._hoverNode = null;
         this._targetNode = null;
+        this._fromToolbox = false;
         this._dragged = false;
 
         this.toolbox = new Toolbox(this);
@@ -148,7 +149,7 @@ export class Stage {
     _mousedown(e) {
         const state = this.getState();
         const pos = this.getMousePos(e);
-        [ this._selectedNode, this._targetNode ] = this.getNodeAtPos(pos);
+        [ this._selectedNode, this._targetNode, this._fromToolbox ] = this.getNodeAtPos(pos);
         if (this._selectedNode !== null) {
             this.store.dispatch(action.raise(this._selectedNode));
         }
@@ -229,11 +230,12 @@ export class Stage {
                 });
             });
         }
-        else if (this._dragged && this._hoverNode) {
-            const node = state.getIn([ "nodes", this._hoverNode ]);
-            if (node.get("type") === "missing") {
-                this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
-            }
+        else if (this._dragged && this._hoverNode &&
+                 state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
+            this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+        }
+        else if (this._dragged && this._fromToolbox) {
+            this.store.dispatch(action.useToolbox(this._selectedNode));
         }
         else {
             const projection = this.views[this._selectedNode];
@@ -244,5 +246,6 @@ export class Stage {
 
         this._dragged = false;
         this._selectedNode = null;
+        this._fromToolbox = false;
     }
 }

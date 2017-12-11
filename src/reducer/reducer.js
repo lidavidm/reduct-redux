@@ -110,6 +110,15 @@ export function reduct(semantics, views) {
 
             return state;
         }
+        case action.USE_TOOLBOX: {
+            if (state.get("toolbox").contains(act.nodeId)) {
+                return state.withMutations(state => {
+                    state.set("board", state.get("board").push(act.nodeId));
+                    state.set("toolbox", state.get("toolbox").filter((n) => n != act.nodeId));
+                });
+            }
+            return state;
+        }
         case action.DETACH: {
             const node = state.getIn([ "nodes", act.nodeId ]);
 

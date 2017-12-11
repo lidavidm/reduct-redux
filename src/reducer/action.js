@@ -1,6 +1,7 @@
 import * as immutable from "immutable";
 
 export const HOVER = "hover";
+export const USE_TOOLBOX = "use-toolbox";
 export const RAISE = "raise";
 export const DETACH = "detach";
 export const FILL_HOLE = "fill-hole";
@@ -84,5 +85,12 @@ export function fillHole(holeId, childId) {
         type: FILL_HOLE,
         holeId: holeId,
         childId: childId,
+    };
+}
+
+export function useToolbox(nodeId) {
+    return {
+        type: USE_TOOLBOX,
+        nodeId: nodeId,
     };
 }
