@@ -29,10 +29,10 @@ export function project(stage, expr) {
         });
     case "add":
         const textId = stage.allocate(gfx.text("+"));
-        return gfx.layout.hbox((id, nodes) => [
-            nodes.getIn([ id, "left" ]),
+        return gfx.layout.hbox((id, state) => [
+            state.getIn([ "nodes", id, "left" ]),
             textId,
-            nodes.getIn([ id, "right" ]),
+            state.getIn([ "nodes", id, "right" ]),
         ], {
             color: "orange",
         });

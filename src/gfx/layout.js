@@ -36,7 +36,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     Object.assign(projection, options);
 
     projection.prepare = function(id, state, stage) {
-        const children = childrenFunc(id, state.get("nodes"), state);
+        const children = childrenFunc(id, state);
         let x = projection.padding.left;
 
         let maxY = 50;
@@ -72,7 +72,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
-        for (let childId of childrenFunc(id, state.get("nodes"), state)) {
+        for (let childId of childrenFunc(id, state)) {
             stage.views[childId].draw(childId, state, stage, subOffset);
         }
     };
