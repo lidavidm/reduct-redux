@@ -1,7 +1,7 @@
-import * as action from "./action";
+import * as action from "./reducer/action";
 import * as animate from "./gfx/animate";
 import * as gfxCore from "./gfx/core";
-import { nextId } from "./reducer";
+import { nextId } from "./reducer/reducer";
 
 export class Stage {
     constructor(width, height, store, views, semantics) {

@@ -1,9 +1,9 @@
 import { createStore } from "redux";
-import * as reducer from "./reducer";
-import * as action from "./action";
+import * as reducer from "./reducer/reducer";
+import * as action from "./reducer/action";
 import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
-import * as undo from "./undo";
+import * as undo from "./reducer/undo";
 
 const views = {};
 const reduct = reducer.reduct(defaultSemantics, views);
