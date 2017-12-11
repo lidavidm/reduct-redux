@@ -10,6 +10,20 @@ export default class Toolbox {
         })), "bottom"));
     }
 
+    getNodeAtPos(state, pos) {
+        if (!this.stage.views[this.bg].containsPoint(pos)) return [ null, null ];
+
+        for (const nodeId of state.get("toolbox")) {
+            const projection = this.stage.views[nodeId];
+
+            if (projection.containsPoint(pos)) {
+                return [ nodeId, nodeId ];
+            }
+        }
+
+        return [ null, null ];
+    }
+
     drawImpl(state) {
         this.stage.views[this.bg].prepare(null, state, this.stage);
         this.stage.views[this.bg].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
@@ -20,8 +34,10 @@ export default class Toolbox {
             const node = state.get("nodes").get(nodeId);
             const projection = this.stage.views[nodeId];
             projection.prepare(nodeId, state, this.stage);
-            projection.pos.x = x;
-            projection.pos.y = y + (90 - projection.size.h) / 2;
+            if (nodeId !== this.stage._selectedNode) {
+                projection.pos.x = x;
+                projection.pos.y = y + (90 - projection.size.h) / 2;
+            }
             x += projection.size.w + 20;
             projection.draw(nodeId, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
         }

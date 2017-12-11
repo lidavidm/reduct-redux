@@ -101,6 +101,7 @@ export class Stage {
         const state = this.getState();
         let result = null;
         let root = null;
+        let toolbox = false;
 
         for (const nodeId of state.get("board")) {
             if (nodeId == this._selectedNode) continue;
@@ -136,7 +137,12 @@ export class Stage {
             }
         }
 
-        return [ root, result ];
+        if (!result && !root) {
+            [ result, root ] = this.toolbox.getNodeAtPos(state, pos);
+            toolbox = true;
+        }
+
+        return [ root, result, toolbox ];
     }
 
     _mousedown(e) {

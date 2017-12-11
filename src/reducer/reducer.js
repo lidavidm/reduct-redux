@@ -94,6 +94,7 @@ export function reduct(semantics, views) {
 
             return state.withMutations(map => {
                 map.set("board", map.get("board").filter((n) => n != act.childId));
+                map.set("toolbox", map.get("toolbox").filter((n) => n != act.childId));
                 map.set("nodes", map.get("nodes").withMutations(nodes => {
                     nodes.set(holeParent, nodes.get(holeParent).withMutations(holeParent => {
                         holeParent.set(hole.get("parentField") + "__hole", holeParent.get(hole.get("parentField")));
