@@ -1,4 +1,4 @@
-import { nextId } from "../reducer";
+import { nextId } from "../reducer/reducer";
 import * as gfx from "../gfx/core";
 
 export function number(value) {

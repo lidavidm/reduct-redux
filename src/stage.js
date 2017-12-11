@@ -2,12 +2,16 @@ import * as action from "./reducer/action";
 import * as animate from "./gfx/animate";
 import * as gfxCore from "./gfx/core";
 import { nextId } from "./reducer/reducer";
+import Loader from "./loader";
 
 export class Stage {
     constructor(width, height, store, views, semantics) {
         this.store = store;
         this.views = views;
         this.semantics = semantics;
+
+        this.width = width;
+        this.height = height;
 
         this.canvas = document.createElement("canvas");
         this.canvas.setAttribute("width", width);
@@ -27,6 +31,12 @@ export class Stage {
         this._hoverNode = null;
         this._targetNode = null;
         this._dragged = false;
+
+        this.toolbox = nextId();
+        this.views[this.toolbox] = gfxCore.sticky(gfxCore.hexpand(gfxCore.sprite({
+            image: Loader.images["toolbox-bg"],
+            size: { h: 90 },
+        })));
 
         animate.addUpdateListener(() => {
             this.drawImpl();
@@ -62,6 +72,9 @@ export class Stage {
         this._redrawPending = false;
 
         const state = this.getState();
+        this.views[this.toolbox].prepare(null, state, this);
+        this.views[this.toolbox].draw(null, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+
         for (const nodeId of state.get("board")) {
             const node = state.get("nodes").get(nodeId);
             const projection = this.views[nodeId];
