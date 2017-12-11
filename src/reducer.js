@@ -21,7 +21,7 @@ export function nextId() {
     return idCounter++;
 }
 
-export function reduct(semantics) {
+export function reduct(semantics, views) {
     function hover(state=null, act) {
         switch(act.type) {
         case action.HOVER: {
@@ -161,6 +161,23 @@ export function reduct(semantics) {
             hover,
             program: undoable(program, {
                 actionFilter: (act) => act.type === action.RAISE,
+                extraState: (state) => {
+                    const result = {};
+                    for (const id of state.get("board")) {
+                        if (views[id]) {
+                            result[id] = Object.assign({}, views[id].pos);
+                        }
+                    }
+                    return result;
+                },
+                restoreExtraState: (state, oldState, extraState) => {
+                    for (const id of state.get("board")) {
+                        if (extraState[id] && !oldState.get("board").contains(id)) {
+                            views[id].pos.x = extraState[id].x;
+                            views[id].pos.y = extraState[id].y;
+                        }
+                    }
+                },
             }),
         }),
     };

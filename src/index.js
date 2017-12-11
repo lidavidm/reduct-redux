@@ -5,16 +5,15 @@ import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
 import * as undo from "./undo";
 
-const reduct = reducer.reduct(defaultSemantics);
-let store = createStore(reduct.reducer);
-let views = {};
+const views = {};
+const reduct = reducer.reduct(defaultSemantics, views);
+const store = createStore(reduct.reducer);
 
 const stg = new stage.Stage(800, 600, store, views, defaultSemantics);
 document.body.appendChild(stg.view);
 
 store.subscribe(() => {
     const state = store.getState();
-
     stg.draw();
 });
 
