@@ -10,8 +10,16 @@ export default class Toolbox {
         })), "bottom"));
     }
 
+    containsPoint(pos) {
+        return pos.y >= this.stage.views[this.bg].pos.y;
+    }
+
+    get pos() {
+        return this.stage.views[this.bg].pos;
+    }
+
     getNodeAtPos(state, pos) {
-        if (!this.stage.views[this.bg].containsPoint(pos)) return [ null, null ];
+        if (!this.containsPoint(pos)) return [ null, null ];
 
         for (const nodeId of state.get("toolbox")) {
             const projection = this.stage.views[nodeId];

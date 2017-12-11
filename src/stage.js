@@ -229,11 +229,16 @@ export class Stage {
                 });
             });
         }
-
-        if (this._dragged && this._hoverNode) {
+        else if (this._dragged && this._hoverNode) {
             const node = state.getIn([ "nodes", this._hoverNode ]);
             if (node.get("type") === "missing") {
                 this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+            }
+        }
+        else {
+            const projection = this.views[this._selectedNode];
+            if (projection && this.toolbox.containsPoint({ x: 0, y: projection.pos.y + projection.size.h })) {
+                animate.tween(projection.pos, { y: this.toolbox.pos.y - projection.size.h - 25 });
             }
         }
 
