@@ -34,8 +34,10 @@ export function startLevel(stage, goal, board, toolbox) {
         finalNodes.push(immNode);
         stage.views[node.id] = semantics.project(stage, immNode);
         // TODO: real layout algorithm
-        stage.views[node.id].pos.x = 100 + Math.floor(Math.random() * 600);
-        stage.views[node.id].pos.y = 100 + Math.floor(Math.random() * 400);
+        if (_board.indexOf(node.id) >= 0) {
+            stage.views[node.id].pos.x = 50 + Math.floor(Math.random() * 500);
+            stage.views[node.id].pos.y = 100 + Math.floor(Math.random() * 300);
+        }
     }
 
     return {

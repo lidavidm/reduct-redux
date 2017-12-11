@@ -37,7 +37,7 @@ function start() {
             defaultSemantics.add(defaultSemantics.number(3), defaultSemantics.number(5)),
             defaultSemantics.add(defaultSemantics.number(4), defaultSemantics.number(7)),
         ],
-        [ defaultSemantics.number(1) ]
+        [ defaultSemantics.number(1), defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.missing()) ]
     ));
 
     document.querySelector("#undo").addEventListener("click", () => {

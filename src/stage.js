@@ -3,6 +3,7 @@ import * as animate from "./gfx/animate";
 import * as gfxCore from "./gfx/core";
 import { nextId } from "./reducer/reducer";
 import Loader from "./loader";
+import Toolbox from "./ui/toolbox";
 
 export class Stage {
     constructor(width, height, store, views, semantics) {
@@ -32,11 +33,7 @@ export class Stage {
         this._targetNode = null;
         this._dragged = false;
 
-        this.toolbox = nextId();
-        this.views[this.toolbox] = gfxCore.sticky(gfxCore.hexpand(gfxCore.sprite({
-            image: Loader.images["toolbox-bg"],
-            size: { h: 90 },
-        })));
+        this.toolbox = new Toolbox(this);
 
         animate.addUpdateListener(() => {
             this.drawImpl();
@@ -66,23 +63,26 @@ export class Stage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
+    drawProjection(state, nodeId) {
+        const node = state.get("nodes").get(nodeId);
+        const projection = this.views[nodeId];
+        // TODO: autoresizing
+        projection.parent = null;
+        projection.scale.x = projection.scale.y = 1;
+        projection.prepare(nodeId, state, this);
+        projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+    }
+
     drawImpl() {
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this._redrawPending = false;
 
         const state = this.getState();
-        this.views[this.toolbox].prepare(null, state, this);
-        this.views[this.toolbox].draw(null, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+        this.toolbox.drawImpl(state);
 
         for (const nodeId of state.get("board")) {
-            const node = state.get("nodes").get(nodeId);
-            const projection = this.views[nodeId];
-            // TODO: autoresizing
-            projection.parent = null;
-            projection.scale.x = projection.scale.y = 1;
-            projection.prepare(nodeId, state, this);
-            projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+            this.drawProjection(state, nodeId);
         }
     }
 
