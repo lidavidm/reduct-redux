@@ -16,7 +16,7 @@ export function add(expr1, expr2) {
 export function project(stage, expr) {
     switch (expr.get("type")) {
     case "number":
-        return gfx.hbox(
+        return gfx.layout.hbox(
             gfx.constant(stage.allocate(gfx.text(expr.get("value").toString()))),
             {
                 color: "#FFF",
@@ -29,7 +29,7 @@ export function project(stage, expr) {
         });
     case "add":
         const textId = stage.allocate(gfx.text("+"));
-        return gfx.hbox((id, nodes) => [
+        return gfx.layout.hbox((id, nodes) => [
             nodes.getIn([ id, "left" ]),
             textId,
             nodes.getIn([ id, "right" ]),

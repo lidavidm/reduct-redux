@@ -4,7 +4,7 @@ import Loader from "../loader";
 export default class Toolbox {
     constructor(stage) {
         this.stage = stage;
-        this.bg = stage.allocate(gfx.sticky(gfx.hexpand(gfx.sprite({
+        this.bg = stage.allocate(gfx.layout.sticky(gfx.layout.hexpand(gfx.sprite({
             image: Loader.images["toolbox-bg"],
             size: { h: 90 },
         })), "bottom"));
