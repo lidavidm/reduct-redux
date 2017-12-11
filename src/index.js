@@ -18,6 +18,7 @@ store.subscribe(() => {
 });
 
 store.dispatch(action.startLevel(
+    stg,
     [ defaultSemantics.number(3) ],
     [
         defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.number(2)),
@@ -29,15 +30,6 @@ store.dispatch(action.startLevel(
     ],
     [ defaultSemantics.number(1) ]
 ));
-
-const nodes = store.getState().getIn([ "program", "$present" ]).get("nodes");
-nodes.forEach((node) => {
-    views[node.get("id")] = defaultSemantics.project(stg, node);
-});
-store.getState().getIn([ "program", "$present" ]).get("board").forEach((id) => {
-    views[id].pos.x = 100 + Math.floor(Math.random() * 600);
-    views[id].pos.y = 100 + Math.floor(Math.random() * 400);
-});
 
 document.querySelector("#undo").addEventListener("click", () => {
     store.dispatch(undo.undo());

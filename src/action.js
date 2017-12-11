@@ -1,3 +1,5 @@
+import * as immutable from "immutable";
+
 export const HOVER = "hover";
 export const RAISE = "raise";
 export const DETACH = "detach";
@@ -5,12 +7,43 @@ export const FILL_HOLE = "fill-hole";
 export const SMALL_STEP = "small-step";
 export const START_LEVEL = "start-level";
 
-export function startLevel(goal, board, toolbox) {
+export function startLevel(stage, goal, board, toolbox) {
+    const semantics = stage.semantics;
+
+    let _nodes = [];
+    let _goal = [];
+    let _board = [];
+    let _toolbox = [];
+    for (const expr of goal) {
+        _nodes = _nodes.concat(semantics.flatten(expr));
+        _goal.push(expr.id);
+    }
+    for (const expr of board) {
+        _nodes = _nodes.concat(semantics.flatten(expr));
+        _board.push(expr.id);
+    }
+    for (const expr of toolbox) {
+        _nodes = _nodes.concat(semantics.flatten(expr));
+        _toolbox.push(expr.id);
+    }
+
+    const finalNodes = [];
+
+    for (const node of _nodes) {
+        const immNode = immutable.Map(node);
+        finalNodes.push(immNode);
+        stage.views[node.id] = semantics.project(stage, immNode);
+        // TODO: real layout algorithm
+        stage.views[node.id].pos.x = 100 + Math.floor(Math.random() * 600);
+        stage.views[node.id].pos.y = 100 + Math.floor(Math.random() * 400);
+    }
+
     return {
         type: START_LEVEL,
-        goal: goal,
-        board: board,
-        toolbox: toolbox,
+        nodes: finalNodes,
+        goal: _goal,
+        board: _board,
+        toolbox: _toolbox,
     };
 }
 

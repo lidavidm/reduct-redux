@@ -34,27 +34,12 @@ export function reduct(semantics, views) {
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
-            let nodes = [];
-            let goal = [];
-            let board = [];
-            let toolbox = [];
-            for (const expr of act.goal) {
-                nodes = nodes.concat(semantics.flatten(expr));
-                goal.push(expr.id);
-            }
-            for (const expr of act.board) {
-                nodes = nodes.concat(semantics.flatten(expr));
-                board.push(expr.id);
-            }
-            for (const expr of act.toolbox) {
-                nodes = nodes.concat(semantics.flatten(expr));
-                toolbox.push(expr.id);
-            }
+            const nodes = immutable.Map(act.nodes.map((n) => [ n.get("id"), n ]));
             return state.merge({
-                nodes: immutable.Map(nodes.map((n) => [ n.id, immutable.Map(n) ])),
-                goal: goal,
-                board: board,
-                toolbox: toolbox,
+                nodes: nodes,
+                goal: act.goal,
+                board: act.board,
+                toolbox: act.toolbox,
                 hover: null,
             });
         }
