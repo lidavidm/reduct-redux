@@ -147,6 +147,15 @@ export class Stage {
         return [ root, result, toolbox ];
     }
 
+    findHoverNode(pos) {
+        const before = this._hoverNode;
+        const [ root, target ] = this.getNodeAtPos(pos);
+        this._hoverNode = target;
+        if (target !== before) {
+            this.store.dispatch(action.hover(this._hoverNode));
+        }
+    }
+
     _mousedown(e) {
         const state = this.getState();
         const pos = this.getMousePos(e);
@@ -176,12 +185,7 @@ export class Stage {
             }
         }
 
-        const before = this._hoverNode;
-        const [ root, target ] = this.getNodeAtPos(this.getMousePos(e));
-        this._hoverNode = target;
-        if (target !== before) {
-            this.store.dispatch(action.hover(this._hoverNode));
-        }
+        this.findHoverNode(this.getMousePos(e));
     }
 
     _mouseup(e) {
@@ -245,8 +249,6 @@ export class Stage {
             }
         }
 
-        this._dragged = false;
-        this._selectedNode = null;
-        this._fromToolbox = false;
+        this.findHoverNode(this.getMousePos(e));
     }
 }
