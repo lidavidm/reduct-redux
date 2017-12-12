@@ -188,6 +188,7 @@ export function text(text, options) {
 }
 
 import * as layout from "./layout";
+import * as shapes from "./shapes";
 
 export * from "./sprite";
-export { layout };
+export { layout, shapes };

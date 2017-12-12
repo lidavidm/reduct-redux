@@ -32,6 +32,13 @@ export function lambdaVar(name) {
     return { type: "var", name: name, locked: true };
 }
 
+export function symbol(name) {
+    if (name !== "star" && name !== "circle" && name !== "triangle" && name !== "rect") {
+        throw `Unrecognized symbol ${name}.`;
+    }
+    return { type: "symbol", name: name, locked: true };
+}
+
 export function project(stage, expr) {
     switch (expr.get("type")) {
     case "number":
@@ -68,8 +75,23 @@ export function project(stage, expr) {
         return gfx.text(`(${expr.get("name")})`);
     case "var":
         return gfx.text(`${expr.get("name")}`);
+    case "symbol": {
+        switch (expr.get("name")) {
+        case "star":
+            return gfx.shapes.star();
+        case "rect":
+            return gfx.shapes.rectangle();
+        case "circle":
+            return gfx.shapes.circle();
+        case "triangle":
+            return gfx.shapes.triangle();
+        default:
+            console.error(`Undefined symbol type ${expr.get("name")}.`);
+            return [];
+        }
+    }
     default:
-        console.error(`Undefined expression type ${expr.type}.`);
+        console.error(`Undefined expression type ${expr.get("type")}.`);
         return [];
     }
 }
@@ -84,6 +106,7 @@ export function subexpressions(expr) {
     case "missing":
     case "lambdaArg":
     case "var":
+    case "symbol":
         return [];
     case "add":
         return ["left", "right"];
