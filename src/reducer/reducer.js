@@ -69,15 +69,48 @@ export function reduct(semantics, views) {
 
             let newNodes = state.get("nodes").filter(function (key, value) {
                 return !removedNodes[key];
-            }).merge(immutable.Map(act.newNodes.map((n) => [ n.id, immutable.Map(n) ])));
+            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get ? n.get("id") : n.id, immutable.Map(n) ])));
 
             let newBoard = state.get("board").filter((id) => !removedNodes[id]);
             if (!oldNode.get("parent")) {
-                newBoard = newBoard.push(act.newNode.id);
+                newBoard = newBoard.push(act.newNode);
             }
             else {
                 const parent = newNodes.get(oldNode.get("parent"))
-                      .set(oldNode.get("parentField"), act.newNode.id);
+                      .set(oldNode.get("parentField"), act.newNode);
+                newNodes = newNodes.set(oldNode.get("parent"), parent);
+            }
+
+            return state
+                .set("nodes", newNodes)
+                .set("board", newBoard);
+        }
+        case action.BETA_REDUCE: {
+            const queue = [ act.topNodeId, act.argNodeId ];
+            const removedNodes = {};
+
+            while (queue.length > 0) {
+                const current = queue.pop();
+                const currentNode = state.getIn([ "nodes", current ]);
+                removedNodes[current] = true;
+                for (const subexpField of semantics.subexpressions(currentNode)) {
+                    queue.push(currentNode.get(subexpField));
+                }
+            }
+
+            const oldNode = state.getIn([ "nodes", act.topNodeId ]);
+
+            let newNodes = state.get("nodes").filter(function (key, value) {
+                return !removedNodes[key];
+            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get("id"), n ])));
+
+            let newBoard = state.get("board").filter((id) => !removedNodes[id]);
+            if (!oldNode.get("parent")) {
+                newBoard = newBoard.push(act.newNode);
+            }
+            else {
+                const parent = newNodes.get(oldNode.get("parent"))
+                      .set(oldNode.get("parentField"), act.newNode);
                 newNodes = newNodes.set(oldNode.get("parent"), parent);
             }
 

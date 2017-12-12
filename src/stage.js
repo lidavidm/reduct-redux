@@ -226,7 +226,7 @@ export class Stage {
                         }
                     }
 
-                    this.store.dispatch(action.smallStep(selectedNode, result, nodes));
+                    this.store.dispatch(action.smallStep(selectedNode, result.id, nodes));
 
                     state = this.getState();
                     for (const node of nodes) {
@@ -242,6 +242,20 @@ export class Stage {
         else if (this._dragged && this._hoverNode &&
                  state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
             this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+        }
+        else if (this._dragged && this._hoverNode && this._selectedNode) {
+            const state = this.getState();
+            const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, this._selectedNode);
+            if (result) {
+                const [ topNode, newNode, newNodes ] = result;
+                this.store.dispatch(action.betaReduce(topNode, this._selectedNode, newNode.get("id"), newNodes));
+                for (const node of newNodes) {
+                    this.views[node.get("id")] = this.semantics.project(this, node);
+                }
+                // Preserve position (TODO: better way)
+                this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
+                this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
+            }
         }
         else if (this._dragged && this._fromToolbox) {
             this.store.dispatch(action.useToolbox(this._selectedNode));

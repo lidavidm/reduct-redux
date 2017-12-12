@@ -6,6 +6,7 @@ export const RAISE = "raise";
 export const DETACH = "detach";
 export const FILL_HOLE = "fill-hole";
 export const SMALL_STEP = "small-step";
+export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
 
 export function startLevel(stage, goal, board, toolbox) {
@@ -54,6 +55,16 @@ export function smallStep(nodeId, newNode, newNodes) {
     return {
         type: SMALL_STEP,
         nodeId: nodeId,
+        newNode: newNode,
+        newNodes: newNodes,
+    };
+}
+
+export function betaReduce(topNodeId, argNodeId, newNode, newNodes) {
+    return {
+        type: BETA_REDUCE,
+        topNodeId: topNodeId,
+        argNodeId: argNodeId,
         newNode: newNode,
         newNodes: newNodes,
     };

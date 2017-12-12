@@ -39,7 +39,8 @@ function start() {
             defaultSemantics.number(5),
             defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.number(2)),
             // defaultSemantics.add(defaultSemantics.add(defaultSemantics.number(8), defaultSemantics.missing()), defaultSemantics.number(2)),
-            defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.missing()),
+            defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.lambdaVar("x"))),
+            // defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.number(1)),
         ],
         [ defaultSemantics.number(1), defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.missing()) ]
     ));
