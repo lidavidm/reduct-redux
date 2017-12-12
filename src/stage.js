@@ -108,33 +108,34 @@ export class Stage {
         for (const nodeId of state.get("board")) {
             if (nodeId == this._selectedNode) continue;
 
-            const node = state.getIn([ "nodes", nodeId ]);
+            let node = state.getIn([ "nodes", nodeId ]);
             const projection = this.views[nodeId];
 
             if (projection.containsPoint(pos)) {
                 root = result = nodeId;
 
-                let subexprIds = this.semantics.subexpressions(state.getIn([ "nodes", nodeId ]));
+                let subexprFields = this.semantics.subexpressions(node);
 
                 pos.x -= projection.pos.x;
                 pos.y -= projection.pos.y;
 
                 outerLoop:
-                while (subexprIds.length > 0) {
-                    for (let subexprId of subexprIds) {
+                while (subexprFields.length > 0) {
+                    for (const subexprField of subexprFields) {
+                        const subexprId = node.get(subexprField);
                         if (this.views[subexprId].containsPoint(pos)) {
-                            const node = state.getIn([ "nodes", subexprId ]);
+                            node = state.getIn([ "nodes", subexprId ]);
                             if (this.semantics.targetable(node)) {
                                 result = subexprId;
                             }
 
-                            subexprIds = this.semantics.subexpressions(node);
+                            subexprFields = this.semantics.subexpressions(node);
                             pos.x -= this.views[subexprId].pos.x;
                             pos.y -= this.views[subexprId].pos.y;
                             continue outerLoop;
                         }
                     }
-                    subexprIds = [];
+                    subexprFields = [];
                 }
             }
         }
@@ -217,8 +218,10 @@ export class Stage {
                     while (queue.length > 0) {
                         const current = queue.pop();
                         // delete this.views[current];
-                        for (const subexp of this.semantics.subexpressions(state.getIn([ "nodes", current ]))) {
-                            queue.push(subexp);
+                        const currentNode = state.getIn([ "nodes", current ]);
+                        for (const subexpField of this.semantics.subexpressions(currentNode)) {
+                            console.log(subexpField, currentNode.get(subexpField));
+                            queue.push(currentNode.get(subexpField));
                         }
                     }
 
@@ -250,5 +253,6 @@ export class Stage {
         }
 
         this.findHoverNode(this.getMousePos(e));
+        this._dragged = false;
     }
 }

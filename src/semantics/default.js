@@ -74,9 +74,9 @@ export function subexpressions(expr) {
     case "lambdaArg":
         return [];
     case "add":
-        return [expr.get("left"), expr.get("right")];
+        return ["left", "right"];
     case "lambda":
-        return [expr.get("arg"), expr.get("body")];
+        return ["arg", "body"];
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];

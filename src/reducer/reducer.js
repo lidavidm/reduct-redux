@@ -58,9 +58,10 @@ export function reduct(semantics, views) {
 
             while (queue.length > 0) {
                 const current = queue.pop();
+                const currentNode = state.getIn([ "nodes", current ]);
                 removedNodes[current] = true;
-                for (const subexp of semantics.subexpressions(state.getIn([ "nodes", current ]))) {
-                    queue.push(subexp);
+                for (const subexpField of semantics.subexpressions(currentNode)) {
+                    queue.push(currentNode.get(subexpField));
                 }
             }
 
