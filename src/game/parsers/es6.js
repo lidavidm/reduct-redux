@@ -24,7 +24,14 @@ function parseNode(node, macros) {
     case "Identifier": {
         if (node.name === "_") return jssemant.missing();
 
-        if (macros && macros[node.name]) return macros[node.name];
+        // Each macro is a thunk
+        if (macros && macros[node.name]) return macros[node.name]();
+        if (node.name === "star" ||
+            node.name === "circle" ||
+            node.name === "triangle" ||
+            node.name === "rect") {
+            return jssemant.symbol(node.name);
+        }
 
         return jssemant.lambdaVar(node.name);
     }
@@ -42,7 +49,7 @@ function parseNode(node, macros) {
     }
     case "ArrowFunctionExpression": {
         if (node.params.length === 1 && node.params[0].type === "Identifier") {
-            let body = parseNode(node.body);
+            let body = parseNode(node.body, macros);
             return jssemant.lambda(jssemant.lambdaArg(node.params[0].name), body);
         }
         else {
