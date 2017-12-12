@@ -13,6 +13,14 @@ export function add(expr1, expr2) {
     return { type: "add", left: expr1, right: expr2, locked: true };
 }
 
+export function lambda(arg, body) {
+    return { type: "lambda", arg: arg, body: body, locked: true };
+}
+
+export function lambdaArg(name) {
+    return { type: "lambdaArg", name: name, locked: false };
+}
+
 export function project(stage, expr) {
     switch (expr.get("type")) {
     case "number":
@@ -27,7 +35,7 @@ export function project(stage, expr) {
             shadowOffset: -2,
             radius: 22,
         });
-    case "add":
+    case "add": {
         const textId = stage.allocate(gfx.text("+"));
         return gfx.layout.hbox((id, state) => [
             state.getIn([ "nodes", id, "left" ]),
@@ -36,6 +44,17 @@ export function project(stage, expr) {
         ], {
             color: "orange",
         });
+    }
+    case "lambda": {
+        const arrowTextId = stage.allocate(gfx.text("=>"));
+        return gfx.layout.hbox((id, state) => [
+            state.getIn([ "nodes", id, "arg" ]),
+            arrowTextId,
+            state.getIn([ "nodes", id, "body" ]),
+        ]);
+    }
+    case "lambdaArg":
+        return gfx.text(`(${expr.get("name")})`);
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];
@@ -46,9 +65,12 @@ export function subexpressions(expr) {
     switch (expr.get("type")) {
     case "number":
     case "missing":
+    case "lambdaArg":
         return [];
     case "add":
         return [expr.get("left"), expr.get("right")];
+    case "lambda":
+        return [expr.get("arg"), expr.get("body")];
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];
@@ -56,14 +78,15 @@ export function subexpressions(expr) {
 }
 
 export function flatten(expr) {
+    // TODO: rewrite generically in terms of subexpressions()
+    expr.id = nextId();
+    let result = [expr];
     switch (expr.type) {
     case "number":
     case "missing":
-        expr.id = nextId();
-        return [expr];
+    case "lambdaArg":
+        return result;
     case "add":
-        let result = [expr];
-        expr.id = nextId();
         expr.left.parent = expr.id;
         expr.left.parentField = "left";
         result = result.concat(flatten(expr.left));
@@ -72,6 +95,17 @@ export function flatten(expr) {
         expr.right.parentField = "right";
         result = result.concat(flatten(expr.right));
         expr.right = expr.right.id;
+        return result;
+    case "lambda":
+        expr.arg.parent = expr.id;
+        expr.arg.parentField = "arg";
+        result = result.concat(flatten(expr.arg));
+        expr.arg = expr.arg.id;
+
+        expr.body.parent = expr.id;
+        expr.body.parentField = "body";
+        result = result.concat(flatten(expr.body));
+        expr.body = expr.body.id;
         return result;
     default:
         console.error(`Undefined expression type ${expr.type}.`);
