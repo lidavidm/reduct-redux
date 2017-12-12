@@ -10,6 +10,7 @@ export class Stage {
     constructor(width, height, store, views, semantics) {
         this.store = store;
         this.views = views;
+        this.internalViews = {};
         this.semantics = semantics;
 
         this.width = width;
@@ -47,6 +48,18 @@ export class Stage {
         const id = nextId();
         this.views[id] = projection;
         return id;
+    }
+
+    allocateInternal(projection) {
+        const id = nextId();
+        this.internalViews[id] = projection;
+        return id;
+    }
+
+    reset() {
+        for (const key in this.views) delete this.views[key];
+        delete this.goal;
+        this.goal = new Goal(this);
     }
 
     get view() {
@@ -268,5 +281,6 @@ export class Stage {
         this._selectedNode = this._targetNode = null;
         this.findHoverNode(this.getMousePos(e));
         this._dragged = false;
+        this.draw();
     }
 }

@@ -48,9 +48,7 @@ function initialize() {
 }
 
 function start() {
-    // TODO: stage needs its own view store
-    // for (const key in views) delete views[key];
-    // TODO: reset stage
+    stg.reset();
 
     level.startLevel({
         goal: ["3", "'star'"],

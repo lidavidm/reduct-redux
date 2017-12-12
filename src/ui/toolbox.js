@@ -5,7 +5,7 @@ import Loader from "../loader";
 export default class Toolbox {
     constructor(stage) {
         this.stage = stage;
-        this.bg = stage.allocate(gfx.layout.sticky(gfx.layout.hexpand(gfx.sprite({
+        this.bg = stage.allocateInternal(gfx.layout.sticky(gfx.layout.hexpand(gfx.sprite({
             image: Loader.images["toolbox-bg"],
             size: { h: 90 },
         })), "bottom"));
@@ -14,11 +14,11 @@ export default class Toolbox {
     }
 
     containsPoint(pos) {
-        return pos.y >= this.stage.views[this.bg].pos.y;
+        return pos.y >= this.stage.internalViews[this.bg].pos.y;
     }
 
     get pos() {
-        return this.stage.views[this.bg].pos;
+        return this.stage.internalViews[this.bg].pos;
     }
 
     getNodeAtPos(state, pos) {
@@ -36,13 +36,13 @@ export default class Toolbox {
     }
 
     drawBase(state) {
-        this.stage.views[this.bg].prepare(null, state, this.stage);
-        this.stage.views[this.bg].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+        this.stage.internalViews[this.bg].prepare(null, state, this.stage);
+        this.stage.internalViews[this.bg].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
     }
 
     drawImpl(state) {
         let x = 20;
-        let y = this.stage.views[this.bg].pos.y;
+        let y = this.stage.internalViews[this.bg].pos.y;
         for (const nodeId of state.get("toolbox")) {
             const node = state.get("nodes").get(nodeId);
             const projection = this.stage.views[nodeId];
