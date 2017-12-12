@@ -35,10 +35,12 @@ export default class Toolbox {
         return [ null, null ];
     }
 
-    drawImpl(state) {
+    drawBase(state) {
         this.stage.views[this.bg].prepare(null, state, this.stage);
         this.stage.views[this.bg].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+    }
 
+    drawImpl(state) {
         let x = 20;
         let y = this.stage.views[this.bg].pos.y;
         for (const nodeId of state.get("toolbox")) {

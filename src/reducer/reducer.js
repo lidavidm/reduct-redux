@@ -2,6 +2,7 @@ import * as immutable from "immutable";
 import { combineReducers } from "redux-immutable";
 
 import * as action from "./action";
+import * as gfx from "../gfx/core";
 import { undoable } from "./undo";
 
 const initialProgram = immutable.Map({
@@ -156,20 +157,36 @@ export function reduct(semantics, views) {
             hover,
             program: undoable(program, {
                 actionFilter: (act) => act.type === action.RAISE,
-                extraState: (state) => {
+                extraState: (state, newState) => {
                     const result = {};
                     for (const id of state.get("board")) {
                         if (views[id]) {
-                            result[id] = Object.assign({}, views[id].pos);
+                            result[id] = Object.assign({}, gfx.absolutePos(views[id]));
+                        }
+                    }
+                    for (const id of newState.get("board")) {
+                        if (views[id]) {
+                            result[id] = Object.assign({}, gfx.absolutePos(views[id]));
                         }
                     }
                     return result;
                 },
                 restoreExtraState: (state, oldState, extraState) => {
                     for (const id of state.get("board")) {
-                        if (extraState[id] && !oldState.get("board").contains(id)) {
-                            views[id].pos.x = extraState[id].x;
-                            views[id].pos.y = extraState[id].y;
+                        if (!oldState.get("board").contains(id)) {
+                            if (extraState[id]) {
+                                console.log(id);
+                                views[id].pos.x = extraState[id].x;
+                                views[id].pos.y = extraState[id].y;
+                            }
+                            else {
+                                console.log("No extra state", id);
+                            }
+                        }
+                    }
+                    for (const id of state.get("toolbox")) {
+                        if (!oldState.get("toolbox").contains(id)) {
+                            views[id].pos = gfx.absolutePos(views[id]);
                         }
                     }
                 },

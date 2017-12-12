@@ -82,12 +82,13 @@ export class Stage {
         this._redrawPending = false;
 
         const state = this.getState();
-        this.toolbox.drawImpl(state);
+        this.toolbox.drawBase(state);
         this.goal.drawImpl(state);
 
         for (const nodeId of state.get("board")) {
             this.drawProjection(state, nodeId);
         }
+        this.toolbox.drawImpl(state);
     }
 
     draw() {

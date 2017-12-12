@@ -75,7 +75,7 @@ export function undoable(reducer, options={}) {
                 return state.set("$present", newPresent);
             }
 
-            const extraState = options.extraState(newPresent);
+            const extraState = options.extraState($present, newPresent);
             return state.withMutations(map => {
                 map
                     .set("$past", $past.unshift($present))
