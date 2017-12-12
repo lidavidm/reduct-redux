@@ -1,11 +1,12 @@
 import { createStore } from "redux";
 import * as reducer from "./reducer/reducer";
-import * as action from "./reducer/action";
 import * as level from "./game/level";
 import * as es6 from "./game/parsers/es6";
+import * as progression from "./game/progression";
 import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
 import * as undo from "./reducer/undo";
+
 import Loader from "./loader";
 
 import spritesheetUrl from "../resources/graphics/assets.png";
@@ -18,12 +19,14 @@ Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/menu-assets.json"),
                       // TODO: in ParcelJS master, we shouldn't need this concat
                       "dist/" + menuUrl);
+Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Loader.finished.then(initialize);
 
 const views = {};
 let store;
 let stg;
+
 function initialize() {
     const reduct = reducer.reduct(defaultSemantics, views);
     store = createStore(reduct.reducer);
