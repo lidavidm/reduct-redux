@@ -265,6 +265,7 @@ export class Stage {
             }
         }
 
+        this._selectedNode = this._targetNode = null;
         this.findHoverNode(this.getMousePos(e));
         this._dragged = false;
     }
