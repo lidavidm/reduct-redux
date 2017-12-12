@@ -1,16 +1,3 @@
-function getJSON(path) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-            console.log(xhr.response);
-        };
-
-        xhr.open("GET", path);
-        xhr.responseType = "text";
-        xhr.send();
-    });
-}
-
 export class ImageAtlas {
     constructor(alias, jsonPromise, imageSrc) {
         this.finished = new Promise((resolve, reject) => {
