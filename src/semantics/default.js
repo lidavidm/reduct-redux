@@ -1,6 +1,8 @@
 import { nextId } from "../reducer/reducer";
 import * as gfx from "../gfx/core";
 
+// TODO: pin down the signature for a semantics module
+
 export function number(value) {
     return { type: "number", value: value, locked: true };
 }
@@ -18,7 +20,11 @@ export function lambda(arg, body) {
 }
 
 export function lambdaArg(name) {
-    return { type: "lambdaArg", name: name, locked: false };
+    return { type: "lambdaArg", name: name, locked: true };
+}
+
+export function targetable(expr) {
+    return !expr.get("locked") || expr.get("type") === "lambdaArg";
 }
 
 export function project(stage, expr) {

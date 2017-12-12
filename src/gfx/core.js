@@ -46,6 +46,23 @@ export function debugDraw(ctx, projection, offset) {
     }
 }
 
+export function hoverOutline(id, projection, stage, offset) {
+    if (stage._hoverNode === id) {
+        stage.ctx.strokeStyle = "yellow";
+        stage.ctx.lineWidth = 2;
+        primitive.roundRect(
+            stage.ctx,
+            offset.x + projection.pos.x * offset.sx,
+            offset.y + projection.pos.y * offset.sy,
+            offset.sx * projection.scale.x * projection.size.w,
+            offset.sy * projection.scale.y * projection.size.h,
+            projection.scale.x * offset.sx * (projection.radius || 15),
+            false,
+            true,
+            projection.stroke ? projection.stroke.opacity : null);
+    }
+}
+
 export function constant(...projections) {
     return () => projections;
 }
@@ -97,11 +114,7 @@ export function roundedRect(options={}) {
 
         if (projection.color) ctx.fillStyle = projection.color;
         const shouldStroke = !!(node && node.get("parent") && node.get("locked"));
-        if (stage._hoverNode === id) {
-            ctx.strokeStyle = "yellow";
-            ctx.lineWidth = 2;
-        }
-        else if (shouldStroke) {
+        if (shouldStroke) {
             // Stroke if we have a parent to make it clearer.
             ctx.strokeStyle = "gray";
             ctx.lineWidth = 1;
@@ -117,8 +130,10 @@ export function roundedRect(options={}) {
             offset.sy * projection.scale.y * projection.size.h,
             sx * projection.radius,
             projection.color ? true : false,
-            stage._hoverNode === id || shouldStroke,
+            shouldStroke,
             projection.stroke ? projection.stroke.opacity : null);
+
+        hoverOutline(id, projection, stage, offset);
 
         debugDraw(ctx, projection, offset);
 
@@ -162,7 +177,11 @@ export function text(text, options) {
         ctx.font = `${projection.fontSize}px ${projection.font}`;
         ctx.fillText(projection.text,
                      (offset.x + projection.pos.x * offset.sx) / sx,
-                     (offset.y + projection.pos.y) / sy + 1.1 * projection.fontSize);
+                     (offset.y + projection.pos.y * offset.sy) / sy + 1.1 * projection.fontSize);
+        ctx.restore();
+
+        ctx.save();
+        hoverOutline(id, projection, stage, offset);
         ctx.restore();
     };
     return projection;

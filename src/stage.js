@@ -124,7 +124,7 @@ export class Stage {
                     for (let subexprId of subexprIds) {
                         if (this.views[subexprId].containsPoint(pos)) {
                             const node = state.getIn([ "nodes", subexprId ]);
-                            if (!node.get("locked")) {
+                            if (this.semantics.targetable(node)) {
                                 result = subexprId;
                             }
 
