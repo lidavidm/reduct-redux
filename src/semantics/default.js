@@ -1,5 +1,6 @@
 import { nextId } from "../reducer/reducer";
 import * as gfx from "../gfx/core";
+import { genericFlatten } from "./core";
 
 // TODO: pin down the signature for a semantics module
 
@@ -68,7 +69,11 @@ export function project(stage, expr) {
 }
 
 export function subexpressions(expr) {
-    switch (expr.get("type")) {
+    let type;
+    if (expr.type) type = expr.type;
+    else type = expr.get("type");
+
+    switch (type) {
     case "number":
     case "missing":
     case "lambdaArg":
@@ -80,42 +85,6 @@ export function subexpressions(expr) {
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];
-    }
-}
-
-export function flatten(expr) {
-    // TODO: rewrite generically in terms of subexpressions()
-    expr.id = nextId();
-    let result = [expr];
-    switch (expr.type) {
-    case "number":
-    case "missing":
-    case "lambdaArg":
-        return result;
-    case "add":
-        expr.left.parent = expr.id;
-        expr.left.parentField = "left";
-        result = result.concat(flatten(expr.left));
-        expr.left = expr.left.id;
-        expr.right.parent = expr.id;
-        expr.right.parentField = "right";
-        result = result.concat(flatten(expr.right));
-        expr.right = expr.right.id;
-        return result;
-    case "lambda":
-        expr.arg.parent = expr.id;
-        expr.arg.parentField = "arg";
-        result = result.concat(flatten(expr.arg));
-        expr.arg = expr.arg.id;
-
-        expr.body.parent = expr.id;
-        expr.body.parentField = "body";
-        result = result.concat(flatten(expr.body));
-        expr.body = expr.body.id;
-        return result;
-    default:
-        console.error(`Undefined expression type ${expr.type}.`);
-        return [expr];
     }
 }
 
@@ -133,6 +102,8 @@ export function smallStep(nodes, expr) {
         break;
     }
 }
+
+export const flatten = genericFlatten(nextId, subexpressions);
 
 export function animateStep(nodes, exp) {
     return Promise.resolve(smallStep(nodes, exp));

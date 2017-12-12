@@ -191,6 +191,7 @@ export class Stage {
 
     _mouseup(e) {
         const state = this.getState();
+        console.log(this._selectedNode, this._targetNode, this._dragged);
 
         if (!this._dragged && this._selectedNode !== null) {
             let selectedNode = this._selectedNode;
