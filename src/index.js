@@ -1,6 +1,8 @@
 import { createStore } from "redux";
 import * as reducer from "./reducer/reducer";
 import * as action from "./reducer/action";
+import * as level from "./game/level";
+import * as es6 from "./game/parsers/es6";
 import * as defaultSemantics from "./semantics/default";
 import * as stage from "./stage";
 import * as undo from "./reducer/undo";
@@ -16,38 +18,26 @@ Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/menu-assets.json"),
                       // TODO: in ParcelJS master, we shouldn't need this concat
                       "dist/" + menuUrl);
-Loader.finished.then(start);
 
-function start() {
-    const views = {};
+Loader.finished.then(initialize);
+
+const views = {};
+let store;
+let stg;
+function initialize() {
     const reduct = reducer.reduct(defaultSemantics, views);
-    const store = createStore(reduct.reducer);
+    store = createStore(reduct.reducer);
 
-    const stg = new stage.Stage(800, 600, store, views, defaultSemantics);
+    stg = new stage.Stage(800, 600, store, views, defaultSemantics);
     document.body.appendChild(stg.view);
 
     store.subscribe(() => {
         stg.draw();
     });
 
-    store.dispatch(action.startLevel(
-        stg,
-        [ defaultSemantics.number(3) ],
-        [
-            defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.number(2)),
-            // defaultSemantics.number(5),
-            // defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.number(2)),
-            // defaultSemantics.add(defaultSemantics.add(defaultSemantics.number(8), defaultSemantics.missing()), defaultSemantics.number(2)),
-            // defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.add(defaultSemantics.number(1), defaultSemantics.lambdaVar("x"))),
-            // defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.number(1)),
-            defaultSemantics.lambda(defaultSemantics.lambdaArg("x"), defaultSemantics.lambdaVar("x")),
-            defaultSemantics.symbol("star"),
-            defaultSemantics.symbol("rect"),
-            defaultSemantics.symbol("circle"),
-            defaultSemantics.symbol("triangle"),
-        ],
-        [ defaultSemantics.number(1), defaultSemantics.add(defaultSemantics.missing(), defaultSemantics.missing()) ]
-    ));
+    start();
+
+    window.stage = stg;
 
     document.querySelector("#undo").addEventListener("click", () => {
         store.dispatch(undo.undo());
@@ -55,6 +45,16 @@ function start() {
     document.querySelector("#redo").addEventListener("click", () => {
         store.dispatch(undo.redo());
     });
+}
 
-    window.stage = stg;
+function start() {
+    // TODO: stage needs its own view store
+    // for (const key in views) delete views[key];
+    // TODO: reset stage
+
+    level.startLevel({
+        goal: ["3", "'star'"],
+        board: ["1", "(x) => _"],
+        toolbox: ["2", "'circle'", "'rect'", "'triangle'", "'star'", "x + _"],
+    }, es6.parse, store, stg);
 }

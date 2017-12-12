@@ -11,6 +11,7 @@
         "redux-immutable": "^4.0.0"
     },
     "devDependencies": {
+        "esprima": "^4.0.0",
         "redux": "^3.7.2"
     },
     "scripts": {
