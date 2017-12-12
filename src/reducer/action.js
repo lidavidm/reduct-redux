@@ -12,6 +12,8 @@ export const START_LEVEL = "start-level";
 export function startLevel(stage, goal, board, toolbox) {
     const semantics = stage.semantics;
 
+    console.info("action.startLevel: starting with", goal, board, toolbox);
+
     let _nodes = [];
     let _goal = [];
     let _board = [];

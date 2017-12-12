@@ -53,9 +53,12 @@ function initialize() {
 function start() {
     stg.reset();
 
-    level.startLevel({
-        goal: ["3", "'star'"],
-        board: ["1", "(x) => _"],
-        toolbox: ["2", "'circle'", "'rect'", "'triangle'", "'star'", "x + _"],
-    }, es6.parse, store, stg);
+    level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
+                     es6.parse, store, stg);
+
+    // level.startLevel({
+    //     goal: ["3", "'star'"],
+    //     board: ["1", "(x) => _"],
+    //     toolbox: ["2", "'circle'", "'rect'", "'triangle'", "'star'", "x + _"],
+    // }, es6.parse, store, stg);
 }
