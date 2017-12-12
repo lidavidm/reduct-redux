@@ -27,7 +27,6 @@ function start() {
     document.body.appendChild(stg.view);
 
     store.subscribe(() => {
-        const state = store.getState();
         stg.draw();
     });
 

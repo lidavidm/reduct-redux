@@ -191,7 +191,6 @@ export class Stage {
 
     _mouseup(e) {
         const state = this.getState();
-        console.log(this._selectedNode, this._targetNode, this._dragged);
 
         if (!this._dragged && this._selectedNode !== null) {
             let selectedNode = this._selectedNode;
@@ -221,7 +220,6 @@ export class Stage {
                         // delete this.views[current];
                         const currentNode = state.getIn([ "nodes", current ]);
                         for (const subexpField of this.semantics.subexpressions(currentNode)) {
-                            console.log(subexpField, currentNode.get(subexpField));
                             queue.push(currentNode.get(subexpField));
                         }
                     }
