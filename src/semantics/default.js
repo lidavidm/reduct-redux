@@ -231,6 +231,11 @@ export function shallowEqual(n1, n2) {
     switch (n1.get("type")) {
     case "symbol":
         return n1.get("name") === n2.get("name");
+    case "lambda":
+        // TODO: should do alpha renaming or something
+        return true;
+    case "number":
+        return n1.get("value") == n2.get("value");
     default:
         console.error(`Cannot compare ${n1.get("type")} for shallow equality.`);
         return false;
