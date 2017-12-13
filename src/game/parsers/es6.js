@@ -37,6 +37,10 @@ function parseNode(node, macros) {
             return jssemant.symbol(node.name);
         }
 
+        if (node.name === "xx") {
+            return jssemant.vtuple([ jssemant.lambdaVar("x"), jssemant.lambdaVar("x") ]);
+        }
+
         return jssemant.lambdaVar(node.name);
     }
     case "Literal": {

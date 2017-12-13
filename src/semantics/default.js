@@ -39,6 +39,16 @@ export function symbol(name) {
     return { type: "symbol", name: name, locked: true };
 }
 
+export function vtuple(children) {
+    const result = { type: "vtuple", locked: true, numChildren: children.length };
+    let i = 0;
+    for (let child of children) {
+        result["child" + i.toString()] = child;
+        i++;
+    }
+    return result;
+}
+
 export function project(stage, expr) {
     switch (expr.get("type")) {
     case "number":
@@ -70,6 +80,16 @@ export function project(stage, expr) {
             arrowTextId,
             state.getIn([ "nodes", id, "body" ]),
         ]);
+    }
+    case "vtuple": {
+        return gfx.layout.vbox((id, state) => {
+            const node = state.getIn([ "nodes", id ]);
+            const result = [];
+            for (let i = 0; i < node.get("numChildren"); i++) {
+                result.push(node.get(`child${i}`));
+            }
+            return result;
+        }, { padding: { top: 0, inner: 5, bottom: 0, left: 0, right: 0 } });
     }
     case "lambdaArg":
         return gfx.text(`(${expr.get("name")})`);
@@ -112,6 +132,14 @@ export function subexpressions(expr) {
         return ["left", "right"];
     case "lambda":
         return ["arg", "body"];
+    case "vtuple": {
+        const result = [];
+        const nc = expr.get ? expr.get("numChildren") : expr.numChildren;
+        for (let i = 0; i < nc; i++) {
+            result.push(`child${i}`);
+        }
+        return result;
+    }
     default:
         console.error(`Undefined expression type ${expr.type}.`);
         return [];
