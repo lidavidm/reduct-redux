@@ -89,6 +89,7 @@ export class Loader {
                 if (json.macros) lvl.macros = json.macros;
                 if (typeof lvl.goal === "string") lvl.goal = [lvl.goal];
                 if (!lvl.toolbox) lvl.toolbox = [];
+                if (typeof lvl.board === "string") lvl.board = [lvl.board];
                 if (typeof lvl.toolbox === "string") lvl.toolbox = [lvl.toolbox];
 
                 d.levels.push(lvl);
