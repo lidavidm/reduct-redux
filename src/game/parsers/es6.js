@@ -5,10 +5,14 @@ export function parse(program, macros) {
     const ast = esprima.parse(program);
 
     if (ast.body.length === 1) {
-        return parseNode(ast.body[0], macros);
+        const result = parseNode(ast.body[0], macros);
+        if (result === null) {
+            return fail(`Cannot parse program.`, program);
+        }
+        return result;
     }
     else {
-        return null;
+        return fail(`Cannot parse multi-statement programs at the moment.`, program);
     }
 }
 
