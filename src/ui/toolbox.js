@@ -43,6 +43,8 @@ export default class Toolbox {
     drawImpl(state) {
         let x = 20;
         let y = this.stage.internalViews[this.bg].pos.y;
+        let i = 0;
+
         for (const nodeId of state.get("toolbox")) {
             const node = state.get("nodes").get(nodeId);
             const projection = this.stage.views[nodeId];
@@ -51,6 +53,15 @@ export default class Toolbox {
             projection.prepare(nodeId, state, this.stage);
             if (nodeId === this.stage._selectedNode) {
                 // Do nothing
+            }
+            else if (this._firstRender) {
+                projection.pos.x = x + 800;
+                projection.pos.y = nodeY;
+                projection.animating = true;
+                animate
+                    .tween(projection.pos, { x: x })
+                    .delay(150 * i)
+                    .then(() => projection.animating = false);
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
                 projection.animating = true;
@@ -65,6 +76,7 @@ export default class Toolbox {
 
             x += projection.size.w + 20;
             projection.draw(nodeId, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+            i++;
         }
 
         this._firstRender = false;

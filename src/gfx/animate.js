@@ -5,22 +5,36 @@ export function linearEase() {
 }
 
 export class Tween {
-    constructor(target, property, start, stop, duration, easing) {
+    constructor(clock, target, properties, duration) {
+        this.clock = clock;
         this.target = target;
-        this.property = property;
-        this.start = start;
-        this.stop = stop;
+        this.properties = properties;
         this.duration = duration;
         this.remaining = duration;
-        this.easing = easing;
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
+
+        this.status = "running";
     }
 
     update(t) {
-        this.target[this.property] = this.easing(this.start, this.stop, t);
+        for (const property in this.properties) {
+            const { start, end, easing } = this.properties[property];
+            this.target[property] = easing(start, end, t);
+        }
+    }
+
+    then(cb1, cb2) { return this.promise.then(cb1, cb2); }
+
+    delay(ms) {
+        this.status = "paused";
+        setTimeout(() => {
+            this.status = "running";
+            this.clock.start();
+        }, ms);
+        return this;
     }
 
     completed() {
@@ -44,7 +58,11 @@ export class Clock {
     tick(t) {
         let dt = t - this.lastTimestamp;
         let completed = [];
+        let running = false;
         for (let tween of this.tweens) {
+            if (tween.status !== "running") continue;
+
+            running = true;
             tween.remaining -= dt;
             if (tween.remaining <= 0) {
                 tween.completed();
@@ -59,7 +77,7 @@ export class Clock {
             this.tweens.splice(this.tweens.indexOf(tween), 1);
         }
 
-        this.running = this.tweens.length > 0;
+        this.running = this.tweens.length > 0 && running;
 
         if (this.running) {
             this.lastTimestamp = t;
@@ -76,21 +94,25 @@ export class Clock {
 
     tween(target, properties, options) {
         let duration = options.duration || 300;
-        let promises = [];
-
+        let props = {};
         for (let [prop, final] of Object.entries(properties)) {
-            let tween = new Tween(target, prop, target[prop], final, duration, linearEase());
-            this.tweens.push(tween);
-            promises.push(tween.promise);
+            props[prop] = { start: target[prop], end: final, easing: linearEase() };
         }
+
+        let tween = new Tween(this, target, props, duration);
+        this.tweens.push(tween);
 
         if (!this.running) {
-            this.running = true;
-            this.lastTimestamp = window.performance.now();
-            window.requestAnimationFrame(this.tick.bind(this));
+            this.start();
         }
 
-        return Promise.all(promises);
+        return tween;
+    }
+
+    start() {
+        this.running = true;
+        this.lastTimestamp = window.performance.now();
+        window.requestAnimationFrame(this.tick.bind(this));
     }
 }
 

@@ -60,6 +60,7 @@ export class Stage {
         for (const key in this.views) delete this.views[key];
         delete this.goal;
         this.goal = new Goal(this);
+        this.toolbox._firstRender = true;
     }
 
     get view() {
