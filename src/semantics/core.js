@@ -16,12 +16,12 @@ export function genericFlatten(nextId, subexpressions) {
 
 export function genericMap(subexpressions) {
     const innerMap = function(nodes, nodeId, f) {
-        const node = f(nodes, nodeId);
-        return node.withMutations(n => {
-            for (const field of subexpressions(node)) {
+        const node = nodes.get(nodeId).withMutations(n => {
+            for (const field of subexpressions(n)) {
                 n.set(field, innerMap(nodes, n.get(field), f).get("id"));
             }
         });
+        return f(nodes, node.get("id"));
     };
     return innerMap;
 }
