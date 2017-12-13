@@ -15,3 +15,32 @@ export function startLevel(description, parse, store, stage) {
         description.toolbox.map((str) => parse(str, macros))
     ));
 }
+
+export function checkVictory(state, semantics) {
+    const board = state.get("board");
+    const goal = state.get("goal");
+
+    if (board.size !== goal.size) {
+        return false;
+    }
+
+    const used = {};
+    let success = true;
+    goal.forEach((nodeId) => {
+        let found = false;
+        board.forEach((candidateId, idx) => {
+            if (used[idx]) return;
+            if (semantics.equal(nodeId, candidateId, state)) {
+                used[idx] = true;
+                found = true;
+                return false;
+            }
+        });
+        if (!found) {
+            success = false;
+            return false;
+        }
+    });
+
+    return success;
+}

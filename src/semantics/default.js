@@ -224,3 +224,28 @@ export function reduce(nodes, exp) {
         return [ result, nodes ];
     });
 }
+
+export function shallowEqual(n1, n2) {
+    if (n1.get("type") !== n2.get("type")) return false;
+
+    switch (n1.get("type")) {
+    case "symbol":
+        return n1.get("name") === n2.get("name");
+    default:
+        console.error(`Cannot compare ${n1.get("type")} for shallow equality.`);
+        return false;
+    }
+}
+
+export function equal(id1, id2, state) {
+    const n1 = state.getIn([ "nodes", id1 ]);
+    const n2 = state.getIn([ "nodes", id2 ]);
+
+    if (!shallowEqual(n1, n2)) return false;
+    for (const field of subexpressions(n1)) {
+        if (!equal(n1.get(field), n2.get(field), state)) {
+            return false;
+        }
+    }
+    return true;
+}

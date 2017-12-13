@@ -38,6 +38,10 @@ function initialize() {
 
     store.subscribe(() => {
         stg.draw();
+
+        if (level.checkVictory(stg.getState(), defaultSemantics)) {
+            next();
+        }
     });
 
     start();
