@@ -41,3 +41,18 @@ export function genericSearch(subexpressions) {
         return false;
     };
 }
+
+export function genericEqual(subexpressions, shallowEqual) {
+    return function equal(id1, id2, state) {
+        const n1 = state.getIn([ "nodes", id1 ]);
+        const n2 = state.getIn([ "nodes", id2 ]);
+
+        if (!shallowEqual(n1, n2)) return false;
+        for (const field of subexpressions(n1)) {
+            if (!equal(n1.get(field), n2.get(field), state)) {
+                return false;
+            }
+        }
+        return true;
+    };
+}

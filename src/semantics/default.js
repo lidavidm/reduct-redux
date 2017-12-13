@@ -237,15 +237,4 @@ export function shallowEqual(n1, n2) {
     }
 }
 
-export function equal(id1, id2, state) {
-    const n1 = state.getIn([ "nodes", id1 ]);
-    const n2 = state.getIn([ "nodes", id2 ]);
-
-    if (!shallowEqual(n1, n2)) return false;
-    for (const field of subexpressions(n1)) {
-        if (!equal(n1.get(field), n2.get(field), state)) {
-            return false;
-        }
-    }
-    return true;
-}
+export const equal = core.genericEqual(subexpressions, shallowEqual);
