@@ -89,8 +89,15 @@ export function reduct(semantics, views) {
             const queue = [ act.topNodeId, act.argNodeId ];
             const removedNodes = {};
 
-            const addedNodes = immutable.Map(act.newNodes.map((n) => [ n.get("id"), n ]));
-            const isVTuple = addedNodes.getIn([ act.newNode, "type" ]) === "vtuple";
+            const addedNodes = immutable.Map(act.addedNodes.map((n) => {
+                const id = n.get("id");
+                if (act.newNodeIds.indexOf(id) >= 0) {
+                    return [ id, n.delete("parent").delete("parentField") ];
+                }
+                else {
+                    return [ id, n ];
+                }
+            }));
 
             while (queue.length > 0) {
                 const current = queue.pop();
@@ -109,31 +116,15 @@ export function reduct(semantics, views) {
 
             let newBoard = state.get("board").filter((id) => !removedNodes[id]);
             if (!oldNode.get("parent")) {
-                // vtuples get special treatment, as they spill their contents onto the board
-                if (isVTuple) {
-                    newNodes = newNodes.delete(act.newNode);
-                    const vtuple = addedNodes.get(act.newNode);
-                    newNodes = newNodes.withMutations(nn => {
-                        newBoard = newBoard.withMutations(nb => {
-                            for (const field of semantics.subexpressions(vtuple)) {
-                                nb.push(vtuple.get(field));
-                                nn.set(vtuple.get(field),
-                                       nn.get(vtuple.get(field)).withMutations(n => {
-                                           n.delete("parent");
-                                           n.delete("parentField");
-                                       }));
-                            }
-                        });
-                    });
-                    console.log(newBoard.toArray());
-                }
-                else {
-                    newBoard = newBoard.push(act.newNode);
-                }
+                newBoard = newBoard.concat(act.newNodeIds);
             }
             else {
+                if (act.newNodeIds.length > 1) {
+                    console.error(`Can't beta reduce nested lambda that produced multiple new nodes!`);
+                    return null;
+                }
                 const parent = newNodes.get(oldNode.get("parent"))
-                      .set(oldNode.get("parentField"), act.newNode);
+                      .set(oldNode.get("parentField"), act.newNodeIds[0]);
                 newNodes = newNodes.set(oldNode.get("parent"), parent);
             }
 

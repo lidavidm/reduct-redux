@@ -63,14 +63,14 @@ export function smallStep(nodeId, newNode, newNodes) {
     };
 }
 
-export function betaReduce(topNodeId, argNodeId, newNode, newNodes) {
-    console.debug(`betaReduce: apply ${topNodeId} to ${argNodeId}, resulting in ${newNode}`);
+export function betaReduce(topNodeId, argNodeId, newNodeIds, addedNodes) {
+    console.debug(`betaReduce: apply ${topNodeId} to ${argNodeId}, resulting in ${newNodeIds}`);
     return {
         type: BETA_REDUCE,
         topNodeId: topNodeId,
         argNodeId: argNodeId,
-        newNode: newNode,
-        newNodes: newNodes,
+        newNodeIds: newNodeIds,
+        addedNodes: addedNodes,
     };
 }
 

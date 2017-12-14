@@ -239,11 +239,21 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
     });
     newTop = newTop.delete("parent").delete("parentField");
 
-    return [
-        topNode.get("id"),
-        newTop,
-        newNodes.slice(1).concat([newTop]),
-    ];
+    if (newTop.get("type") === "vtuple") {
+        // Spill vtuple onto the board
+        return [
+            topNode.get("id"),
+            subexpressions(newTop).map(field => newTop.get(field)),
+            newNodes.slice(1),
+        ];
+    }
+    else {
+        return [
+            topNode.get("id"),
+            [ newTop.get("id") ],
+            newNodes.slice(1).concat([newTop]),
+        ];
+    }
 }
 
 export const flatten = core.genericFlatten(nextId, subexpressions);

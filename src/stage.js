@@ -261,22 +261,22 @@ export class Stage {
             const arg = this._selectedNode;
             const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, arg);
             if (result) {
-                const [ topNode, newNode, newNodes ] = result;
+                const [ topNode, resultNodeIds, newNodes ] = result;
                 for (const node of newNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }
                 // Preserve position (TODO: better way)
                 const topNodeRecord = state.getIn([ "nodes", topNode ]);
-                if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
-                    const body = topNodeRecord.get("body");
-                    this.views[newNode.get("id")].pos.x = gfxCore.absolutePos(this.views[body]).x;
-                    this.views[newNode.get("id")].pos.y = gfxCore.absolutePos(this.views[body]).y;
-                }
-                else {
-                    this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
-                    this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
-                }
-                this.store.dispatch(action.betaReduce(topNode, arg, newNode.get("id"), newNodes));
+                // if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
+                //     const body = topNodeRecord.get("body");
+                //     this.views[newNode.get("id")].pos.x = gfxCore.absolutePos(this.views[body]).x;
+                //     this.views[newNode.get("id")].pos.y = gfxCore.absolutePos(this.views[body]).y;
+                // }
+                // else {
+                //     this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
+                //     this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
+                // }
+                this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
             }
         }
         else if (this._dragged && this._fromToolbox) {
