@@ -265,17 +265,33 @@ export class Stage {
                 for (const node of newNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }
+
                 // Preserve position (TODO: better way)
                 const topNodeRecord = state.getIn([ "nodes", topNode ]);
-                // if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
-                //     const body = topNodeRecord.get("body");
-                //     this.views[newNode.get("id")].pos.x = gfxCore.absolutePos(this.views[body]).x;
-                //     this.views[newNode.get("id")].pos.y = gfxCore.absolutePos(this.views[body]).y;
-                // }
-                // else {
-                //     this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
-                //     this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
-                // }
+                if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
+                    const body = topNodeRecord.get("body");
+                    const spacing = 10;
+                    let totalHeight = 0;
+                    for (const newNodeId of resultNodeIds) {
+                        totalHeight += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                    }
+                    totalHeight -= spacing;
+
+                    const ap = gfxCore.absolutePos(this.views[body]);
+                    const x = ap.x;
+                    let y = ap.y + gfxCore.absoluteSize(this.views[body]).h / 2 - totalHeight / 2;
+                    for (const newNodeId of resultNodeIds) {
+                        this.views[newNodeId].pos.x = x;
+                        this.views[newNodeId].pos.y = y;
+                        y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                    }
+                }
+                else {
+                    for (const newNodeId of resultNodeIds) {
+                        this.views[newNodeId].pos.x = this.views[topNode].pos.x;
+                        this.views[newNodeId].pos.y = this.views[topNode].pos.y;
+                    }
+                }
                 this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
             }
         }
