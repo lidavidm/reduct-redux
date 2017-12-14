@@ -16,12 +16,18 @@ export function genericFlatten(nextId, subexpressions) {
 
 export function genericMap(subexpressions) {
     const innerMap = function(nodes, nodeId, f) {
-        const node = nodes.get(nodeId).withMutations(n => {
+        let currentStore = nodes;
+        const currentNode = nodes.get(nodeId);
+        const node = currentNode.withMutations(n => {
             for (const field of subexpressions(n)) {
-                n.set(field, innerMap(nodes, n.get(field), f).get("id"));
+                const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f);
+                console.debug(`genericMap: traversing ${currentNode.get("type")}.${field}, set to new node ${newNode.get("id")}`);
+                currentStore = newStore.set(newNode.get("id"), newNode);
+                n.set(field, newNode.get("id"));
             }
         });
-        return f(nodes, node.get("id"));
+        // Function returns new node and new store
+        return f(currentStore.set(node.get("id"), node), node.get("id"));
     };
     return innerMap;
 }

@@ -165,12 +165,14 @@ export function clone(id, nodes) {
     const node = nodes.get(id);
     let newNodes = [];
 
+    let currentStore = nodes;
     const result = node.withMutations(n => {
         const newId = nextId();
         n.set("id", newId);
 
         for (const field of subexpressions(node)) {
-            const [ subclone, subclones ] = clone(node.get(field), nodes);
+            const [ subclone, subclones, nodesStore ] = clone(node.get(field), currentStore);
+            currentStore = nodesStore;
             const result = subclone.withMutations(sc => {
                 sc.set("parent", newId);
                 sc.set("parentField", field);
@@ -180,9 +182,11 @@ export function clone(id, nodes) {
 
             n.set(field, subclone.get("id"));
         }
+
+        currentStore = currentStore.set(newId, n);
     });
 
-    return [ result, newNodes ];
+    return [ result, newNodes, currentStore ];
 }
 
 export function betaReduce(nodes, targetNodeId, argNodeId) {
@@ -207,29 +211,31 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
     // TODO: need to do a noncapturing substitution
     const name = targetNode.get("name");
     let newNodes = [];
-    const newTop = map(nodes, topNode.get("body"), (nodes, id) => {
+    const [ newTop, _ ] = map(nodes, topNode.get("body"), (nodes, id) => {
         const node = nodes.get(id);
         if (node.get("type") === "var" && node.get("name") === name) {
-            const [ cloned, resultNewNodes ] = clone(argNodeId, nodes);
+            const [ cloned, resultNewNodes, nodesStore ] = clone(argNodeId, nodes);
             const result = cloned.withMutations(n => {
                 n.set("parent", node.get("parent"));
                 n.set("parentField", node.get("parentField"));
             });
             newNodes.push(result);
             newNodes = newNodes.concat(resultNewNodes);
-            return result;
+            return [ result, nodesStore.set(result.get("id"), result) ];
         }
         else {
-            const result = node.set("id", nextId());
+            const [ result, resultNewNodes, nodesStore ] = clone(id, nodes);
             newNodes.push(result);
-            return result;
+            newNodes = newNodes.concat(resultNewNodes);
+            return [ result, nodesStore.set(result.get("id", result)) ];
         }
-    }).delete("parent").delete("parentField");
+    });
+    const finalNewTop = newTop.delete("parent").delete("parentField");
 
     return [
         topNode.get("id"),
-        newTop,
-        newNodes.slice(1).concat([newTop]),
+        finalNewTop,
+        newNodes.slice(1).concat([finalNewTop]),
     ];
 }
 
@@ -260,7 +266,13 @@ export function shallowEqual(n1, n2) {
         // TODO: should do alpha renaming or something
         return true;
     case "number":
-        return n1.get("value") == n2.get("value");
+        return n1.get("value") === n2.get("value");
+    case "lambdaArg":
+        // TODO: should do alpha renaming or something
+        return n1.get("name") === n2.get("name");
+    case "var":
+        // TODO: should do alpha renaming or something
+        return n1.get("name") === n2.get("name");
     default:
         console.error(`Cannot compare ${n1.get("type")} for shallow equality.`);
         return false;

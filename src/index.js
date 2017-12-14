@@ -28,8 +28,6 @@ let store;
 let stg;
 
 function initialize() {
-    console.log(Loader.progressions["progression"]);
-
     const reduct = reducer.reduct(defaultSemantics, views);
     store = createStore(reduct.reducer);
 
