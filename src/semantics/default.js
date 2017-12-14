@@ -39,6 +39,13 @@ export function symbol(name) {
     return { type: "symbol", name: name, locked: true };
 }
 
+/**
+ * A "virtual tuple" which kind of bleeds presentation into the
+ * semantics.
+ *
+ * We probably want to move this and other game primitives (like
+ * missing) into their own module.
+ */
 export function vtuple(children) {
     const result = { type: "vtuple", locked: true, numChildren: children.length };
     let i = 0;
@@ -211,7 +218,7 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
     // TODO: need to do a noncapturing substitution
     const name = targetNode.get("name");
     let newNodes = [];
-    const [ newTop, _ ] = map(nodes, topNode.get("body"), (nodes, id) => {
+    let [ newTop, _ ] = map(nodes, topNode.get("body"), (nodes, id) => {
         const node = nodes.get(id);
         if (node.get("type") === "var" && node.get("name") === name) {
             const [ cloned, resultNewNodes, nodesStore ] = clone(argNodeId, nodes);
@@ -230,12 +237,12 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
             return [ result, nodesStore.set(result.get("id", result)) ];
         }
     });
-    const finalNewTop = newTop.delete("parent").delete("parentField");
+    newTop = newTop.delete("parent").delete("parentField");
 
     return [
         topNode.get("id"),
-        finalNewTop,
-        newNodes.slice(1).concat([finalNewTop]),
+        newTop,
+        newNodes.slice(1).concat([newTop]),
     ];
 }
 

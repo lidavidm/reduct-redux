@@ -89,6 +89,9 @@ export function reduct(semantics, views) {
             const queue = [ act.topNodeId, act.argNodeId ];
             const removedNodes = {};
 
+            const addedNodes = immutable.Map(act.newNodes.map((n) => [ n.get("id"), n ]));
+            const isVTuple = addedNodes.getIn([ act.newNode, "type" ]) === "vtuple";
+
             while (queue.length > 0) {
                 const current = queue.pop();
                 const currentNode = state.getIn([ "nodes", current ]);
@@ -102,11 +105,31 @@ export function reduct(semantics, views) {
 
             let newNodes = state.get("nodes").filter(function (key, value) {
                 return !removedNodes[key];
-            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get("id"), n ])));
+            }).merge(addedNodes);
 
             let newBoard = state.get("board").filter((id) => !removedNodes[id]);
             if (!oldNode.get("parent")) {
-                newBoard = newBoard.push(act.newNode);
+                // vtuples get special treatment, as they spill their contents onto the board
+                if (isVTuple) {
+                    newNodes = newNodes.delete(act.newNode);
+                    const vtuple = addedNodes.get(act.newNode);
+                    newNodes = newNodes.withMutations(nn => {
+                        newBoard = newBoard.withMutations(nb => {
+                            for (const field of semantics.subexpressions(vtuple)) {
+                                nb.push(vtuple.get(field));
+                                nn.set(vtuple.get(field),
+                                       nn.get(vtuple.get(field)).withMutations(n => {
+                                           n.delete("parent");
+                                           n.delete("parentField");
+                                       }));
+                            }
+                        });
+                    });
+                    console.log(newBoard.toArray());
+                }
+                else {
+                    newBoard = newBoard.push(act.newNode);
+                }
             }
             else {
                 const parent = newNodes.get(oldNode.get("parent"))
