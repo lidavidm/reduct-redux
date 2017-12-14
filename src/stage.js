@@ -238,8 +238,6 @@ export class Stage {
                         }
                     }
 
-                    this.store.dispatch(action.smallStep(selectedNode, result.id, nodes));
-
                     state = this.getState();
                     for (const node of nodes) {
                         this.views[node.id] = this.semantics.project(this, state.getIn([ "nodes", node.id ]));
@@ -248,6 +246,9 @@ export class Stage {
                     // Preserve position (TODO: better way)
                     this.views[nodes[0].id].pos.x = topView.pos.x;
                     this.views[nodes[0].id].pos.y = topView.pos.y;
+
+                    this.store.dispatch(action.smallStep(selectedNode, result.id, nodes));
+
                 });
             });
         }
@@ -261,13 +262,13 @@ export class Stage {
             const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, arg);
             if (result) {
                 const [ topNode, newNode, newNodes ] = result;
-                this.store.dispatch(action.betaReduce(topNode, arg, newNode.get("id"), newNodes));
                 for (const node of newNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }
                 // Preserve position (TODO: better way)
                 this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
                 this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
+                this.store.dispatch(action.betaReduce(topNode, arg, newNode.get("id"), newNodes));
             }
         }
         else if (this._dragged && this._fromToolbox) {
