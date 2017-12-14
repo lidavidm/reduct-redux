@@ -1,3 +1,4 @@
+import * as immutable from "immutable";
 import { nextId } from "../reducer/reducer";
 import * as gfx from "../gfx/core";
 import * as core from "./core";
@@ -159,7 +160,7 @@ export function smallStep(nodes, expr) {
         const left = nodes.get(expr.get("left"));
         const right = nodes.get(expr.get("right"));
         if (left.get("type") === "number" && right.get("type") === "number") {
-            return number(left.get("value") + right.get("value"));
+            return immutable.Map(number(left.get("value") + right.get("value"))).set("id", nextId());
         }
         break;
     }

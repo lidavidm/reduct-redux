@@ -69,7 +69,7 @@ export function reduct(semantics, views) {
 
             let newNodes = state.get("nodes").filter(function (key, value) {
                 return !removedNodes[key];
-            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get ? n.get("id") : n.id, immutable.Map(n) ])));
+            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get("id"), immutable.Map(n) ])));
 
             let newBoard = state.get("board").filter((id) => !removedNodes[id]);
             if (!oldNode.get("parent")) {

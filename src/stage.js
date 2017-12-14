@@ -207,6 +207,7 @@ export class Stage {
         const state = this.getState();
 
         if (!this._dragged && this._selectedNode !== null) {
+            // Click on object to reduce
             let selectedNode = this._selectedNode;
 
             if (this._targetNode) {
@@ -216,89 +217,26 @@ export class Stage {
                 }
             }
 
-            const nodes = state.get("nodes");
-            const node = nodes.get(selectedNode);
-            this.semantics.reduce(nodes, node).then((res) => {
-                // TODO: have semantics tell us which root node changed
-                if (!res) return;
-
-                const topView = this.views[selectedNode];
-                topView.opacity = 1.0;
-                animate.tween(topView, { opacity: 0 }).then(() => {
-                    const [ result, nodes ] = res;
-                    let state = this.getState();
-                    const queue = [ selectedNode ];
-                    const topView = this.views[selectedNode];
-                    while (queue.length > 0) {
-                        const current = queue.pop();
-                        // delete this.views[current];
-                        const currentNode = state.getIn([ "nodes", current ]);
-                        for (const subexpField of this.semantics.subexpressions(currentNode)) {
-                            queue.push(currentNode.get(subexpField));
-                        }
-                    }
-
-                    state = this.getState();
-                    for (const node of nodes) {
-                        this.views[node.id] = this.semantics.project(this, state.getIn([ "nodes", node.id ]));
-                    }
-
-                    // Preserve position (TODO: better way)
-                    this.views[nodes[0].id].pos.x = topView.pos.x;
-                    this.views[nodes[0].id].pos.y = topView.pos.y;
-
-                    this.store.dispatch(action.smallStep(selectedNode, result.id, nodes));
-
-                });
-            });
+            this.step(state, selectedNode);
         }
         else if (this._dragged && this._hoverNode &&
                  state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
+            // Drag something into hole
             this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
         }
         else if (this._dragged && this._hoverNode && this._selectedNode) {
+            // Apply to lambda
             const state = this.getState();
             const arg = this._selectedNode;
-            const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, arg);
-            if (result) {
-                const [ topNode, resultNodeIds, newNodes ] = result;
-                for (const node of newNodes) {
-                    this.views[node.get("id")] = this.semantics.project(this, node);
-                }
-
-                // Preserve position (TODO: better way)
-                const topNodeRecord = state.getIn([ "nodes", topNode ]);
-                if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
-                    const body = topNodeRecord.get("body");
-                    const spacing = 10;
-                    let totalHeight = 0;
-                    for (const newNodeId of resultNodeIds) {
-                        totalHeight += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
-                    }
-                    totalHeight -= spacing;
-
-                    const ap = gfxCore.absolutePos(this.views[body]);
-                    const x = ap.x;
-                    let y = ap.y + gfxCore.absoluteSize(this.views[body]).h / 2 - totalHeight / 2;
-                    for (const newNodeId of resultNodeIds) {
-                        this.views[newNodeId].pos.x = x;
-                        this.views[newNodeId].pos.y = y;
-                        y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
-                    }
-                }
-                else {
-                    for (const newNodeId of resultNodeIds) {
-                        this.views[newNodeId].pos.x = this.views[topNode].pos.x;
-                        this.views[newNodeId].pos.y = this.views[topNode].pos.y;
-                    }
-                }
-                this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
-            }
+            const target = this._hoverNode;
+            this.betaReduce(state, target, arg);
         }
         else if (this._dragged && this._fromToolbox) {
+            // Take item out of toolbox
             this.store.dispatch(action.useToolbox(this._selectedNode));
         }
         else {
+            // Bump items out of toolbox
             const projection = this.views[this._selectedNode];
             if (projection && this.toolbox.containsPoint({ x: 0, y: projection.pos.y + projection.size.h })) {
                 animate.tween(projection.pos, { y: this.toolbox.pos.y - projection.size.h - 25 });
@@ -309,5 +247,70 @@ export class Stage {
         this.findHoverNode(this.getMousePos(e));
         this._dragged = false;
         this.draw();
+    }
+
+    step(state, selectedNode) {
+        const nodes = state.get("nodes");
+        const node = nodes.get(selectedNode);
+        this.semantics.reduce(nodes, node).then((res) => {
+            // TODO: have semantics tell us which root node changed
+            if (!res) return;
+
+            const topView = this.views[selectedNode];
+            topView.opacity = 1.0;
+            animate.tween(topView, { opacity: 0 }).then(() => {
+                const [ result, nodes ] = res;
+
+                const state = this.getState();
+                for (const node of nodes) {
+                    console.log("projecting", node.get("id"));
+                    this.views[node.get("id")] = this.semantics.project(this, node);
+                }
+
+                // Preserve position (TODO: better way)
+                this.views[nodes[0].get("id")].pos.x = topView.pos.x;
+                this.views[nodes[0].get("id")].pos.y = topView.pos.y;
+
+                this.store.dispatch(action.smallStep(selectedNode, result.get("id"), nodes));
+            });
+        });
+    }
+
+    betaReduce(state, target, arg) {
+        const result = this.semantics.betaReduce(state.get("nodes"), target, arg);
+        if (result) {
+            const [ topNode, resultNodeIds, newNodes ] = result;
+            for (const node of newNodes) {
+                this.views[node.get("id")] = this.semantics.project(this, node);
+            }
+
+            // Preserve position (TODO: better way)
+            const topNodeRecord = state.getIn([ "nodes", topNode ]);
+            if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
+                const body = topNodeRecord.get("body");
+                const spacing = 10;
+                let totalHeight = 0;
+                for (const newNodeId of resultNodeIds) {
+                    totalHeight += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                }
+                totalHeight -= spacing;
+
+                const ap = gfxCore.absolutePos(this.views[body]);
+                const x = ap.x;
+                let y = ap.y + gfxCore.absoluteSize(this.views[body]).h / 2 - totalHeight / 2;
+                for (const newNodeId of resultNodeIds) {
+                    this.views[newNodeId].pos.x = x;
+                    this.views[newNodeId].pos.y = y;
+                    y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                }
+            }
+            else {
+                for (const newNodeId of resultNodeIds) {
+                    this.views[newNodeId].pos.x = this.views[topNode].pos.x;
+                    this.views[newNodeId].pos.y = this.views[topNode].pos.y;
+                }
+            }
+            this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
+        }
     }
 }
