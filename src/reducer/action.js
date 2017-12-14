@@ -54,6 +54,7 @@ export function startLevel(stage, goal, board, toolbox) {
 }
 
 export function smallStep(nodeId, newNode, newNodes) {
+    console.debug(`smallStep: ${nodeId} became ${newNode}`);
     return {
         type: SMALL_STEP,
         nodeId: nodeId,
@@ -63,6 +64,7 @@ export function smallStep(nodeId, newNode, newNodes) {
 }
 
 export function betaReduce(topNodeId, argNodeId, newNode, newNodes) {
+    console.debug(`betaReduce: apply ${topNodeId} to ${argNodeId}, resulting in ${newNode}`);
     return {
         type: BETA_REDUCE,
         topNodeId: topNodeId,

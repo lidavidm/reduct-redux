@@ -257,10 +257,11 @@ export class Stage {
         }
         else if (this._dragged && this._hoverNode && this._selectedNode) {
             const state = this.getState();
-            const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, this._selectedNode);
+            const arg = this._selectedNode;
+            const result = this.semantics.betaReduce(state.get("nodes"), this._hoverNode, arg);
             if (result) {
                 const [ topNode, newNode, newNodes ] = result;
-                this.store.dispatch(action.betaReduce(topNode, this._selectedNode, newNode.get("id"), newNodes));
+                this.store.dispatch(action.betaReduce(topNode, arg, newNode.get("id"), newNodes));
                 for (const node of newNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }

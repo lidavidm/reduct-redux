@@ -161,6 +161,30 @@ export function smallStep(nodes, expr) {
     }
 }
 
+export function clone(id, nodes) {
+    const node = nodes.get(id);
+    let newNodes = [];
+
+    const result = node.withMutations(n => {
+        const newId = nextId();
+        n.set("id", newId);
+
+        for (const field of subexpressions(node)) {
+            const [ subclone, subclones ] = clone(node.get(field), nodes);
+            const result = subclone.withMutations(sc => {
+                sc.set("parent", newId);
+                sc.set("parentField", field);
+            });
+            newNodes = newNodes.concat(subclones);
+            newNodes.push(result);
+
+            n.set(field, subclone.get("id"));
+        }
+    });
+
+    return [ result, newNodes ];
+}
+
 export function betaReduce(nodes, targetNodeId, argNodeId) {
     const targetNode = nodes.get(targetNodeId);
     const argNode = nodes.get(argNodeId);
@@ -182,16 +206,17 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
     // TODO: check for unbound names
     // TODO: need to do a noncapturing substitution
     const name = targetNode.get("name");
-    const newNodes = [];
+    let newNodes = [];
     const newTop = map(nodes, topNode.get("body"), (nodes, id) => {
         const node = nodes.get(id);
         if (node.get("type") === "var" && node.get("name") === name) {
-            const result = argNode.withMutations(n => {
-                n.set("id", nextId());
+            const [ cloned, resultNewNodes ] = clone(argNodeId, nodes);
+            const result = cloned.withMutations(n => {
                 n.set("parent", node.get("parent"));
                 n.set("parentField", node.get("parentField"));
             });
             newNodes.push(result);
+            newNodes = newNodes.concat(resultNewNodes);
             return result;
         }
         else {
@@ -199,7 +224,7 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
             newNodes.push(result);
             return result;
         }
-    }).delete("parent");
+    }).delete("parent").delete("parentField");
 
     return [
         topNode.get("id"),
