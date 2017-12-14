@@ -114,9 +114,11 @@ export function reduct(semantics, views) {
                 newNodes = newNodes.set(oldNode.get("parent"), parent);
             }
 
-            return state
-                .set("nodes", newNodes)
-                .set("board", newBoard);
+            return state.withMutations(s => {
+                s.set("nodes", newNodes);
+                s.set("board", newBoard);
+                s.set("toolbox", s.get("toolbox").filter((id) => !removedNodes[id]));
+            });
         }
         case action.FILL_HOLE: {
             const hole = state.getIn([ "nodes", act.holeId ]);
