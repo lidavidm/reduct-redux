@@ -79,6 +79,18 @@ export function absolutePos(projection) {
     return { x: x, y: y };
 }
 
+export function absoluteSize(projection) {
+    let { w, h } = projection.size;
+    w *= projection.scale.x;
+    h *= projection.scale.y;
+    while (projection.parent) {
+        projection = projection.parent;
+        w *= projection.scale.x;
+        h *= projection.scale.y;
+    }
+    return { w: w, h: h };
+}
+
 export function roundedRect(options={}) {
     const projection = baseProjection();
     projection.size.w = projection.size.h = 50;

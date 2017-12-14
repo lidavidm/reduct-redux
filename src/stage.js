@@ -266,8 +266,16 @@ export class Stage {
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }
                 // Preserve position (TODO: better way)
-                this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
-                this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
+                const topNodeRecord = state.getIn([ "nodes", topNode ]);
+                if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
+                    const body = topNodeRecord.get("body");
+                    this.views[newNode.get("id")].pos.x = gfxCore.absolutePos(this.views[body]).x;
+                    this.views[newNode.get("id")].pos.y = gfxCore.absolutePos(this.views[body]).y;
+                }
+                else {
+                    this.views[newNode.get("id")].pos.x = this.views[topNode].pos.x;
+                    this.views[newNode.get("id")].pos.y = this.views[topNode].pos.y;
+                }
                 this.store.dispatch(action.betaReduce(topNode, arg, newNode.get("id"), newNodes));
             }
         }
