@@ -97,7 +97,11 @@ export function project(stage, expr) {
                 result.push(node.get(`child${i}`));
             }
             return result;
-        }, { padding: { top: 0, inner: 5, bottom: 0, left: 0, right: 0 } });
+        }, {
+            padding: { top: 0, inner: 5, bottom: 0, left: 0, right: 0 },
+            strokeWhenChild: false,
+            subexpScale: 1,
+        });
     }
     case "lambdaArg":
         return gfx.text(`(${expr.get("name")})`);
