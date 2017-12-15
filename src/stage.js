@@ -85,7 +85,6 @@ export class Stage {
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
-        projection.scale.x = projection.scale.y = 1;
         projection.prepare(nodeId, state, this);
         projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
     }
@@ -197,6 +196,8 @@ export class Stage {
                 this.store.dispatch(action.detach(this._targetNode));
                 this._selectedNode = this._targetNode;
                 this.views[this._selectedNode].pos = pos;
+                this.views[this._selectedNode].scale.x = 1;
+                this.views[this._selectedNode].scale.y = 1;
             }
         }
 

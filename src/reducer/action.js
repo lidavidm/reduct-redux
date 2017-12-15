@@ -1,4 +1,5 @@
 import * as immutable from "immutable";
+import * as animate from "../gfx/animate";
 
 export const HOVER = "hover";
 export const USE_TOOLBOX = "use-toolbox";
@@ -37,6 +38,8 @@ export function startLevel(stage, goal, board, toolbox) {
         const immNode = immutable.Map(node);
         finalNodes.push(immNode);
         stage.views[node.id] = semantics.project(stage, immNode);
+        stage.views[node.id].scale = { x: 0.0, y: 0.0 };
+        animate.tween(stage.views[node.id].scale, { x: 1.0, y: 1.0 });
         // TODO: real layout algorithm
         if (_board.indexOf(node.id) >= 0) {
             stage.views[node.id].pos.x = 50 + Math.floor(Math.random() * 500);
