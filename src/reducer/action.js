@@ -38,13 +38,17 @@ export function startLevel(stage, goal, board, toolbox) {
         const immNode = immutable.Map(node);
         finalNodes.push(immNode);
         stage.views[node.id] = semantics.project(stage, immNode);
-        stage.views[node.id].scale = { x: 0.0, y: 0.0 };
-        animate.tween(stage.views[node.id].scale, { x: 1.0, y: 1.0 });
         // TODO: real layout algorithm
         if (_board.indexOf(node.id) >= 0) {
             stage.views[node.id].pos.x = 50 + Math.floor(Math.random() * 500);
             stage.views[node.id].pos.y = 100 + Math.floor(Math.random() * 300);
         }
+    }
+
+    for (const nodeId of _board) {
+        stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
+        stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
+        animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 });
     }
 
     return {

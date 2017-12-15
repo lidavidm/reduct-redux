@@ -81,7 +81,7 @@ export function triangle(options={}) {
         drawPrimitive(id, projection, state, stage, offset, (dy) => {
             let w = offset.sx * projection.scale.x * projection.size.w;
             let h = offset.sy * projection.scale.y * projection.size.h;
-            let { x, y } = topLeftPos(offset, projection);
+            let { x, y } = util.topLeftPos(projection, offset);
             x += 0.15 * w;
             y += 0.15 * h;
             w *= 0.7;
@@ -98,17 +98,6 @@ export function triangle(options={}) {
     return projection;
 }
 
-function topLeftPos(offset, projection) {
-    const relW = projection.scale.x * projection.size.w;
-    const relH = projection.scale.y * projection.size.h;
-    const relX = projection.pos.x - projection.anchor.x * relW;
-    const relY = projection.pos.y - projection.anchor.y * relH;
-    return {
-        x: offset.x + relX * offset.sx,
-        y: offset.y + relY * offset.sy,
-    };
-}
-
 export function circle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "circle";
@@ -119,7 +108,7 @@ export function circle(options={}) {
         drawPrimitive(id, projection, state, stage, offset, (dy) => {
             let w = offset.sx * projection.scale.x * projection.size.w;
             let h = offset.sy * projection.scale.y * projection.size.h;
-            let { x, y } = topLeftPos(offset, projection);
+            let { x, y } = util.topLeftPos(projection, offset);
             x += 0.15 * w;
             y += 0.15 * h;
             w *= 0.7;
@@ -143,7 +132,7 @@ export function rectangle(options={}) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         let w = offset.sx * projection.scale.x * projection.size.w;
         let h = offset.sy * projection.scale.y * projection.size.h;
-        let { x, y } = topLeftPos(offset, projection);
+        let { x, y } = util.topLeftPos(projection, offset);
         x += 0.15 * w;
         y += 0.15 * h;
         w *= 0.7;
@@ -167,7 +156,7 @@ export function star(options={}) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         let w = offset.sx * projection.scale.x * projection.size.w;
         let h = offset.sy * projection.scale.y * projection.size.h;
-        let { x, y } = topLeftPos(offset, projection);
+        let { x, y } = util.topLeftPos(projection, offset);
         x += 0.15 * w;
         y += 0.15 * h;
         w *= 0.7;

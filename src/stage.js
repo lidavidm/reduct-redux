@@ -129,8 +129,8 @@ export class Stage {
 
                 let subexprFields = this.semantics.subexpressions(node);
 
-                pos.x -= projection.pos.x;
-                pos.y -= projection.pos.y;
+                pos.x -= projection.pos.x - projection.anchor.x * projection.size.w * projection.scale.x;
+                pos.y -= projection.pos.y - projection.anchor.y * projection.size.h * projection.scale.y;
 
                 outerLoop:
                 while (subexprFields.length > 0) {

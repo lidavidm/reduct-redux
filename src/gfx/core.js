@@ -26,8 +26,9 @@ export function baseProjection() {
     projection.draw = projection.prepare = function() {};
 
     projection.containsPoint = function(pos) {
-        return pos.x >= projection.pos.x && pos.x <= projection.pos.x + projection.size.w &&
-            pos.y >= projection.pos.y && pos.y <= projection.pos.y + projection.size.h;
+        const { x, y } = util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
+        return pos.x >= x && pos.x <= x + projection.size.w &&
+            pos.y >= y && pos.y <= y + projection.size.h;
     };
 
     return projection;
@@ -36,11 +37,11 @@ export function baseProjection() {
 export function debugDraw(ctx, projection, offset) {
     if (DEBUG) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
+        const { x, y } = util.topLeftPos(projection, offset);
         ctx.save();
         ctx.strokeStyle = DEBUG_COLORS[projection.type] || "red";
         ctx.lineWidth = 1;
-        ctx.strokeRect(offset.x + offset.sx * projection.pos.x,
-                       offset.y + offset.sy * projection.pos.y,
+        ctx.strokeRect(x, y,
                        projection.size.w * sx,
                        projection.size.h * sy);
         ctx.restore();
@@ -49,12 +50,12 @@ export function debugDraw(ctx, projection, offset) {
 
 export function hoverOutline(id, projection, stage, offset) {
     if (stage._hoverNode === id) {
+        const { x, y } = util.topLeftPos(projection, offset);
         stage.ctx.strokeStyle = "yellow";
         stage.ctx.lineWidth = 2;
         primitive.roundRect(
             stage.ctx,
-            offset.x + projection.pos.x * offset.sx,
-            offset.y + projection.pos.y * offset.sy,
+            x, y,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             projection.scale.x * offset.sx * (projection.radius || 15),
@@ -70,12 +71,15 @@ export function constant(...projections) {
 
 export function absolutePos(projection) {
     let { x, y } = projection.pos;
+    x -= projection.anchor.x * projection.size.w * projection.scale.x;
+    y -= projection.anchor.y * projection.size.h * projection.scale.y;
+
     while (projection.parent) {
         projection = projection.parent;
         x *= projection.scale.x;
         y *= projection.scale.y;
-        x += projection.pos.x;
-        y += projection.pos.y;
+        x += projection.pos.x - projection.anchor.x * projection.size.w * projection.scale.x;
+        y += projection.pos.y - projection.anchor.y * projection.size.h * projection.scale.y;
     }
     return { x: x, y: y };
 }
@@ -111,13 +115,14 @@ export function roundedRect(options={}) {
 
         const [ sx, sy ] = util.absoluteScale(projection, offset);
 
+        const { x, y } = util.topLeftPos(projection, offset);
+
         const node = state.getIn([ "nodes", id ]);
         if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
             ctx.fillStyle = projection.shadowColor;
             primitive.roundRect(
                 ctx,
-                offset.x + projection.pos.x * offset.sx,
-                offset.y + (projection.pos.y + projection.shadowOffset) * offset.sy,
+                x, y + projection.shadowOffset * offset.sy,
                 offset.sx * projection.scale.x * projection.size.w,
                 offset.sy * projection.scale.y * projection.size.h,
                 sx * projection.radius,
@@ -139,8 +144,7 @@ export function roundedRect(options={}) {
 
         primitive.roundRect(
             ctx,
-            offset.x + projection.pos.x * offset.sx,
-            offset.y + projection.pos.y * offset.sy,
+            x, y,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * projection.radius,

@@ -63,10 +63,11 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         baseDraw(id, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(projection, offset);
+        const { x, y } = util.topLeftPos(projection, offset);
 
         const subOffset = Object.assign({}, offset, {
-            x: offset.x + projection.pos.x * offset.sx,
-            y: offset.y + projection.pos.y * offset.sy,
+            x: x,
+            y: y,
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
@@ -118,10 +119,11 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         baseDraw(id, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(projection, offset);
+        const { x, y } = util.topLeftPos(projection, offset);
 
         const subOffset = Object.assign({}, offset, {
-            x: offset.x + projection.pos.x * offset.sx,
-            y: offset.y + projection.pos.y * offset.sy,
+            x: x,
+            y: y,
             sx: offset.sx * projection.scale.x,
             sy: offset.sy * projection.scale.y,
         });
