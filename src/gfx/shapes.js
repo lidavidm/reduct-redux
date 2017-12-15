@@ -19,23 +19,38 @@ function drawPrimitive(id, projection, state, stage, offset,
     const node = state.getIn([ "nodes", id ]);
     const hasParent = node && Number.isInteger(node.get("parent"));
     const locked = !node || node.get("locked");
-
-    shadow(ctx, id, projection, state, drawFunction);
-
     let stroke = false;
-    if (hasParent && locked) {
-        // Stroke if we have a parent to make it clearer.
-        ctx.strokeStyle = "gray";
-        ctx.lineWidth = 1;
-        stroke = true;
+    if (hasParent && !locked) {
+        const [ sx, sy ] = util.absoluteScale(projection, offset);
+        ctx.fillStyle = "#000";
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 2;
+        primitive.roundRect(
+            ctx,
+            offset.x + projection.pos.x * offset.sx,
+            offset.y + (projection.pos.y + 2) * offset.sy,
+            offset.sx * projection.scale.x * projection.size.w,
+            offset.sy * projection.scale.y * projection.size.h,
+            sx * 22,
+            true, stage._hoverNode === id, null);
+        ctx.fillStyle = "#555";
+        primitive.roundRect(
+            ctx,
+            offset.x + projection.pos.x * offset.sx,
+            offset.y + projection.pos.y * offset.sy,
+            offset.sx * projection.scale.x * projection.size.w,
+            offset.sy * projection.scale.y * projection.size.h,
+            sx * 22,
+            true, stage._hoverNode === id, null);
     }
     else if ((!hasParent || !locked) && stage._hoverNode === id) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         stroke = true;
     }
-    if (projection.opacity) ctx.globalAlpha = projection.opacity;
 
+    shadow(ctx, id, projection, state, drawFunction);
+    if (projection.opacity) ctx.globalAlpha = projection.opacity;
     if (projection.color) ctx.fillStyle = projection.color;
     drawFunction(0);
     if (stroke && strokeFunction) strokeFunction();
@@ -52,6 +67,7 @@ function shapeProjection(options) {
         color: "gold",
         shadowColor: "#000",
         shadowOffset: 2,
+        shadow: true,  // Always draw shadow
     }, options);
 }
 
