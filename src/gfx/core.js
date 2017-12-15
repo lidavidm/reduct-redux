@@ -17,6 +17,7 @@ document.body.addEventListener("keyup", (e) => {
 export function baseProjection() {
     const projection = {
         pos: { x: 0, y: 0 },
+        anchor: { x: 0, y: 0 },
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
         opacity: 1.0,
