@@ -158,8 +158,6 @@ export function reduct(semantics, views) {
                     }));
                 }));
             });
-
-            return state;
         }
         case action.USE_TOOLBOX: {
             if (state.get("toolbox").contains(act.nodeId)) {
@@ -195,8 +193,6 @@ export function reduct(semantics, views) {
                     }));
                 }));
             });
-
-            return state;
         }
         default: return state;
         }

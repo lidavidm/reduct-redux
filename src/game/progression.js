@@ -23,4 +23,4 @@ export const ACTIVE_PROGRESSION = 'Elementary';
 
 export const ACTIVE_PROGRESSION_DEFINITION = PROGRESSIONS[ACTIVE_PROGRESSION];
 
-export let currentLevelIdx = 26;
+export let currentLevelIdx = 0;
