@@ -52,6 +52,15 @@ function initialize() {
     document.querySelector("#redo").addEventListener("click", () => {
         store.dispatch(undo.redo());
     });
+    document.querySelector("#prev").addEventListener("click", () => {
+        window.prev();
+    });
+    document.querySelector("#reset").addEventListener("click", () => {
+        window.reset();
+    });
+    document.querySelector("#next").addEventListener("click", () => {
+        window.next();
+    });
 }
 
 const start = window.reset = function start() {
@@ -65,7 +74,7 @@ window.next = function next() {
     progression.currentLevelIdx++;
     start();
 };
-window.prev = function next() {
+window.prev = function prev() {
     progression.currentLevelIdx--;
     start();
 };

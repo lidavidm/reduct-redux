@@ -3,16 +3,26 @@
     <head>
         <title>Reduct Redux: A Game to Teach Coding Comprehension</title>
         <style>
+         body {
+             background: #594764;
+         }
          canvas {
              display: block;
+             margin: 0 auto;
+         }
+         #nav {
+             width: 800px;
              margin: 0 auto;
          }
         </style>
     </head>
     <body>
-        <div>
-        <button id="undo">Undo!</button>
-        <button id="redo">Redo!</button>
+        <div id="nav">
+            <button id="undo">Undo!</button>
+            <button id="redo">Redo!</button>
+            <button id="prev">Prev</button>
+            <button id="reset">Reset</button>
+            <button id="next">Next</button>
         </div>
         <script src="./src/index.js"></script>
     </body>
