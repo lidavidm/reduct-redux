@@ -99,6 +99,7 @@ export function roundedRect(options={}) {
         radius: 20,
         shadowColor: "#000",
         shadowOffset: 2,
+        strokeWhenChild: true,  // Draw border when child of another expression
     }, options);
     projection.type = "roundedRect";
 
@@ -125,7 +126,8 @@ export function roundedRect(options={}) {
         }
 
         if (projection.color) ctx.fillStyle = projection.color;
-        const shouldStroke = !!(node && node.get("parent") && node.get("locked"));
+        const shouldStroke = !!(node && node.get("parent") && node.get("locked")) &&
+              projection.strokeWhenChild;
         if (shouldStroke) {
             // Stroke if we have a parent to make it clearer.
             ctx.strokeStyle = "gray";

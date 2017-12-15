@@ -102,7 +102,11 @@ export function project(stage, expr) {
     case "lambdaArg":
         return gfx.text(`(${expr.get("name")})`);
     case "var":
-        return gfx.text(`${expr.get("name")}`);
+        return gfx.layout.hbox(
+            gfx.constant(stage.allocate(gfx.text(expr.get("name")))),
+            {
+                strokeWhenChild: false,
+            });
     case "symbol": {
         switch (expr.get("name")) {
         case "star":
