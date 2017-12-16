@@ -1,8 +1,21 @@
-export function linearEase() {
-    return function(start, stop, t) {
+export const Easing = {
+    Linear: (start, stop, t) => {
         return start + t * (stop - start);
-    };
-}
+    },
+
+    Quadratic: {
+        In: (start, stop, t) => {
+            return start + t*t*(stop-start);
+        },
+    },
+
+    Cubic: {
+        In: (start, stop, t) => {
+            return start + t*t*t*(stop-start);
+        },
+    },
+};
+
 
 export class Tween {
     constructor(clock, target, properties, duration) {
@@ -95,8 +108,9 @@ export class Clock {
     tween(target, properties, options) {
         let duration = options.duration || 300;
         let props = {};
+        let easing = options.easing || Easing.Linear;
         for (let [prop, final] of Object.entries(properties)) {
-            props[prop] = { start: target[prop], end: final, easing: linearEase() };
+            props[prop] = { start: target[prop], end: final, easing: easing };
         }
 
         let tween = new Tween(this, target, props, duration);

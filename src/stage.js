@@ -305,11 +305,17 @@ export class Stage {
                     this.views[newNodeId].pos.y = y;
                     this.views[newNodeId].anchor.x = 0.5;
                     this.views[newNodeId].anchor.y = 0.5;
-                    animate.tween(this.views[newNodeId].pos, { y: y - 50 });
+                    animate.tween(this.views[newNodeId].pos, { y: y - 50 }, {
+                        duration: 250,
+                        easing: animate.Easing.Cubic.In,
+                    });
                     y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
                     this.views[newNodeId].scale.x = 0.0;
                     this.views[newNodeId].scale.y = 0.0;
-                    animate.tween(this.views[newNodeId].scale, { x: 1, y: 1 });
+                    animate.tween(this.views[newNodeId].scale, { x: 1, y: 1 }, {
+                        duration: 250,
+                        easing: animate.Easing.Cubic.In,
+                    });
                 }
             }
             else {
