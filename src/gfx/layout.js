@@ -45,6 +45,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.parent = projection;
 
             childProjection.pos.x = x;
+            childProjection.anchor.x = childProjection.anchor.y = 0;
             childProjection.scale.x = projection.subexpScale;
             childProjection.scale.y = projection.subexpScale;
 
