@@ -3,6 +3,7 @@ import { combineReducers } from "redux-immutable";
 
 import * as action from "./action";
 import * as gfx from "../gfx/core";
+import * as animate from "../gfx/animate";
 import { undoable } from "./undo";
 
 const initialProgram = immutable.Map({
@@ -218,15 +219,15 @@ export function reduct(semantics, views) {
                     return result;
                 },
                 restoreExtraState: (state, oldState, extraState) => {
+                    if (!extraState) return;
+
                     for (const id of state.get("board")) {
                         if (!oldState.get("board").contains(id)) {
                             if (extraState[id]) {
-                                console.log(id);
-                                views[id].pos.x = extraState[id].x;
-                                views[id].pos.y = extraState[id].y;
-                            }
-                            else {
-                                console.log("No extra state", id);
+                                animate.tween(views[id].pos, extraState[id], {
+                                    duration: 250,
+                                    easing: animate.Easing.Cubic.Out,
+                                });
                             }
                         }
                     }
