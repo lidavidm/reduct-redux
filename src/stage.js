@@ -297,12 +297,19 @@ export class Stage {
                 totalHeight -= spacing;
 
                 const ap = gfxCore.absolutePos(this.views[body]);
+                const as = gfxCore.absoluteSize(this.views[body]);
                 const x = ap.x;
-                let y = ap.y + gfxCore.absoluteSize(this.views[body]).h / 2 - totalHeight / 2;
+                let y = ap.y + as.h - totalHeight / 2;
                 for (const newNodeId of resultNodeIds) {
-                    this.views[newNodeId].pos.x = x;
+                    this.views[newNodeId].pos.x = x + as.w / 2;
                     this.views[newNodeId].pos.y = y;
+                    this.views[newNodeId].anchor.x = 0.5;
+                    this.views[newNodeId].anchor.y = 0.5;
+                    animate.tween(this.views[newNodeId].pos, { y: y - 50 });
                     y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                    this.views[newNodeId].scale.x = 0.0;
+                    this.views[newNodeId].scale.y = 0.0;
+                    animate.tween(this.views[newNodeId].scale, { x: 1, y: 1 });
                 }
             }
             else {
