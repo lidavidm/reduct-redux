@@ -13,6 +13,10 @@ export const Easing = {
         In: (start, stop, t) => {
             return start + t*t*t*(stop-start);
         },
+        Out: (start, stop, t) => {
+            t -= 1;
+            return start + (t*t*t + 1)*(stop-start);
+        },
     },
 };
 

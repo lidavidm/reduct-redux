@@ -240,7 +240,10 @@ export class Stage {
             // Bump items out of toolbox
             const projection = this.views[this._selectedNode];
             if (projection && this.toolbox.containsPoint({ x: 0, y: projection.pos.y + projection.size.h })) {
-                animate.tween(projection.pos, { y: this.toolbox.pos.y - projection.size.h - 25 });
+                animate.tween(projection.pos, { y: this.toolbox.pos.y - projection.size.h - 25 }, {
+                    duration: 250,
+                    easing: animate.Easing.Cubic.Out,
+                });
             }
         }
 
