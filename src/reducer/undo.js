@@ -15,11 +15,15 @@ export function redo() {
     };
 }
 
+/**
+ * Given a reducer, return a reducer that supports undo/redo.
+ */
 export function undoable(reducer, options={}) {
     const initialState = immutable.Map({
         $present: reducer(undefined, {}),
         $past: immutable.Stack(),
         $future: immutable.Stack(),
+        // "Extra" state (used to store node positions)
         $presentExtra: {},
         $pastExtra: immutable.Stack(),
         $futureExtra: immutable.Stack(),

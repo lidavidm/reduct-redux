@@ -6,10 +6,15 @@ import Loader from "./loader";
 import Goal from "./ui/goal";
 import Toolbox from "./ui/toolbox";
 
+/**
+ * Handle drawing responsibilites for Reduct.
+ */
 export class Stage {
     constructor(width, height, store, views, semantics) {
         this.store = store;
         this.views = views;
+        // A set of views for the toolbox, etc. that aren't cleared
+        // when changing levels.
         this.internalViews = {};
         this.semantics = semantics;
 
@@ -17,6 +22,7 @@ export class Stage {
         this.height = height;
 
         this.canvas = document.createElement("canvas");
+        // TODO: dynamic resizing
         this.canvas.setAttribute("width", width);
         this.canvas.setAttribute("height", height);
         this.ctx = this.canvas.getContext("2d");
@@ -44,6 +50,13 @@ export class Stage {
         });
     }
 
+    /**
+     * Allocate an ID for the given projection.
+     *
+     * Used for projections that don't directly correspond to nodes
+     * and are static (e.g. the text view for the arow in a lambda),
+     * but still need an ID.
+     */
     allocate(projection) {
         const id = nextId();
         this.views[id] = projection;
@@ -112,6 +125,11 @@ export class Stage {
         });
     }
 
+    /**
+     * Get the node at the given position.
+     *
+     * TODO: return all possible nodes?
+     */
     getNodeAtPos(pos) {
         const state = this.getState();
         let result = null;
@@ -253,6 +271,9 @@ export class Stage {
         this.draw();
     }
 
+    /**
+     * Helper that handles animation and updating the store for a small-step.
+     */
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
@@ -262,6 +283,8 @@ export class Stage {
 
             const topView = this.views[selectedNode];
             topView.opacity = 1.0;
+            // Right now the animation is hard-coded, but it should be
+            // moved into semantics#animateStep.
             animate.tween(topView, { opacity: 0 }).then(() => {
                 const [ result, nodes ] = res;
 
@@ -280,6 +303,9 @@ export class Stage {
         });
     }
 
+    /**
+     * Helper that handles animation and updating the store for a beta reduction.
+     */
     betaReduce(state, target, arg) {
         const result = this.semantics.betaReduce(state.get("nodes"), target, arg);
         if (result) {

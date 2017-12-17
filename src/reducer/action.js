@@ -10,6 +10,15 @@ export const SMALL_STEP = "small-step";
 export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
 
+/**
+ * Redux action to start a new level.
+ *
+ * Takes trees of normal AST nodes and flattens them into immutable
+ * nodes, suitable to store in Redux.
+ *
+ * Flattened trees are doubly-linked: children know their parent, and
+ * which parent field they are stored in.
+ */
 export function startLevel(stage, goal, board, toolbox) {
     const semantics = stage.semantics;
 
@@ -63,6 +72,10 @@ export function startLevel(stage, goal, board, toolbox) {
     };
 }
 
+/**
+ * Node `nodeId` took a small step to produce `newNode` which contains
+ * `newNodes` as nested nodes.
+ */
 export function smallStep(nodeId, newNode, newNodes) {
     console.debug(`smallStep: ${nodeId} became ${newNode}`);
     return {
@@ -73,6 +86,12 @@ export function smallStep(nodeId, newNode, newNodes) {
     };
 }
 
+/**
+ * Node `topNodeId` was applied to `argNodeId` to produce `newNodeIds`
+ * which contain `addedNodes` as nested nodes.
+ *
+ * A beta-reduction can produce multiple result nodes due to replicators.
+ */
 export function betaReduce(topNodeId, argNodeId, newNodeIds, addedNodes) {
     console.debug(`betaReduce: apply ${topNodeId} to ${argNodeId}, resulting in ${newNodeIds}`);
     return {
@@ -91,6 +110,15 @@ export function hover(nodeId) {
     };
 }
 
+/**
+ * Raise the given node to the top.
+ *
+ * This is a visual concern, but the stage draws nodes in the order
+ * they are in the store, so this changes the z-index. We could make
+ * the board an immutable.Set and store the draw-order elsewhere, but
+ * we would have to synchronize it with any changes to the store. I
+ * figured it was easier to just break separation in this case.
+ */
 export function raise(nodeId) {
     return {
         type: RAISE,
@@ -98,6 +126,9 @@ export function raise(nodeId) {
     };
 }
 
+/**
+ * Detach the given node from its parent.
+ */
 export function detach(nodeId) {
     return {
         type: DETACH,
@@ -105,6 +136,9 @@ export function detach(nodeId) {
     };
 }
 
+/**
+ * Replace the given hole by the given expression.
+ */
 export function fillHole(holeId, childId) {
     return {
         type: FILL_HOLE,
@@ -113,6 +147,9 @@ export function fillHole(holeId, childId) {
     };
 }
 
+/**
+ * Take the given node out of the toolbox.
+ */
 export function useToolbox(nodeId) {
     return {
         type: USE_TOOLBOX,

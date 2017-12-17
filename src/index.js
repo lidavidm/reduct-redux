@@ -9,6 +9,8 @@ import * as undo from "./reducer/undo";
 
 import Loader from "./loader";
 
+// Load assets. Kinda wonky due to the build system, need to look at
+// this later.
 import spritesheetUrl from "../resources/graphics/assets.png";
 import menuUrl from "../resources/graphics/menu-assets.png";
 Loader.loadImageAtlas("spritesheet",
@@ -28,15 +30,19 @@ let store;
 let stg;
 
 function initialize() {
+    // Reducer needs access to the views in order to save their state
+    // for undo/redo.
     const reduct = reducer.reduct(defaultSemantics, views);
     store = createStore(reduct.reducer);
 
     stg = new stage.Stage(800, 600, store, views, defaultSemantics);
     document.body.appendChild(stg.view);
 
+    // When the state changes, redraw the state.
     store.subscribe(() => {
         stg.draw();
 
+        // Right now it just goes on, but we would want the animation here.
         if (level.checkVictory(stg.getState(), defaultSemantics)) {
             next();
         }

@@ -1,9 +1,20 @@
+/**
+ * Defines the semantics for a ES6-like language.
+ */
 import * as immutable from "immutable";
 import { nextId } from "../reducer/reducer";
 import * as gfx from "../gfx/core";
 import * as core from "./core";
 
 // TODO: pin down the signature for a semantics module
+
+/**
+ * A set of helpers to construct an AST.
+ *
+ * These construct a regular AST of nested objects, but in Redux
+ * you're expected to flatten the AST. See reducer/action#startLevel
+ * for more.
+ */
 
 export function number(value) {
     return { type: "number", value: value, locked: true };
@@ -42,7 +53,8 @@ export function symbol(name) {
 
 /**
  * A "virtual tuple" which kind of bleeds presentation into the
- * semantics.
+ * semantics. Represents a set of values that go together, but spill
+ * onto the board when they are the top-level node.
  *
  * We probably want to move this and other game primitives (like
  * missing) into their own module.
@@ -57,6 +69,12 @@ export function vtuple(children) {
     return result;
 }
 
+/**
+ * Given an expression, return the projection used to represent it.
+ *
+ * The expression should already be flattened, and is thus an
+ * Immutable.js object.
+ */
 export function project(stage, expr) {
     switch (expr.get("type")) {
     case "number":
@@ -132,6 +150,10 @@ export function project(stage, expr) {
     }
 }
 
+/**
+ * Given an expression, return a list of fields that contain
+ * subexpressions.
+ */
 export function subexpressions(expr) {
     let type;
     if (expr.type) type = expr.type;
@@ -149,6 +171,10 @@ export function subexpressions(expr) {
     case "lambda":
         return ["arg", "body"];
     case "vtuple": {
+        // vtuple is awkward since it might have an arbitrary number
+        // of children, but since we can't override indexing in JS (I
+        // think), we can't just return a list of indices - we have to
+        // construct a field for each child
         const result = [];
         const nc = expr.get ? expr.get("numChildren") : expr.numChildren;
         for (let i = 0; i < nc; i++) {
@@ -162,6 +188,11 @@ export function subexpressions(expr) {
     }
 }
 
+/**
+ * Given an expression and the Redux node store, return a new
+ * immutable expression representing the result of that expression
+ * taking a small step, or null if it cannot step.
+ */
 export function smallStep(nodes, expr) {
     switch (expr.get("type")) {
     case "add": {
@@ -177,6 +208,11 @@ export function smallStep(nodes, expr) {
     }
 }
 
+/**
+ * Create a clone of an immutable node by ID.
+ *
+ * This should be moved somewhere else, as it isn't semantics-specific.
+ */
 export function clone(id, nodes) {
     const node = nodes.get(id);
     let newNodes = [];
@@ -205,6 +241,10 @@ export function clone(id, nodes) {
     return [ result, newNodes, currentStore ];
 }
 
+/**
+ * Given the node store and the IDs of two nodes, try to preform a
+ * beta reduction. Return null if not possible.
+ */
 export function betaReduce(nodes, targetNodeId, argNodeId) {
     const targetNode = nodes.get(targetNodeId);
     const argNode = nodes.get(argNodeId);
@@ -265,14 +305,27 @@ export function betaReduce(nodes, targetNodeId, argNodeId) {
     }
 }
 
+// Create specialized copies of generic algorithms.
 export const flatten = core.genericFlatten(nextId, subexpressions);
 export const map = core.genericMap(subexpressions);
 export const search = core.genericSearch(subexpressions);
 
+/**
+ * Construct the animation for the small-step that the given
+ * expression would take.
+ */
 export function animateStep(nodes, exp) {
     return Promise.resolve(smallStep(nodes, exp));
 }
 
+/**
+ * A helper function that should abstract over big-step, small-step,
+ * multi-step, and any necessary animation.
+ *
+ * TODO: it needs to also insert intermediate states into the
+ * undo/redo stack, and mark which undo/redo states are big-steps,
+ * small-steps, etc. to allow fine-grained undo/redo.
+ */
 export function reduce(nodes, exp) {
     return animateStep(nodes, exp).then((result) => {
         if (!result) return null;
@@ -282,6 +335,9 @@ export function reduce(nodes, exp) {
     });
 }
 
+/**
+ * Shallow equality (does not compare children)
+ */
 export function shallowEqual(n1, n2) {
     if (n1.get("type") !== n2.get("type")) return false;
 
@@ -305,4 +361,5 @@ export function shallowEqual(n1, n2) {
     }
 }
 
+// Generic equality
 export const equal = core.genericEqual(subexpressions, shallowEqual);

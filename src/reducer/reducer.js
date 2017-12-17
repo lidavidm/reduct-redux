@@ -24,6 +24,10 @@ export function nextId() {
 }
 
 export function reduct(semantics, views) {
+    // Could remove this. Originally ID of currently hovered node was
+    // in store, but it's better to just keep it as a property of the
+    // stage. But right now updating the store triggers a redraw, so
+    // just removing this will cause visual issues.
     function hover(state=null, act) {
         switch(act.type) {
         case action.HOVER: {
@@ -149,6 +153,9 @@ export function reduct(semantics, views) {
                 map.set("toolbox", map.get("toolbox").filter((n) => n != act.childId));
                 map.set("nodes", map.get("nodes").withMutations(nodes => {
                     nodes.set(holeParent, nodes.get(holeParent).withMutations(holeParent => {
+                        // Cache the hole in the parent, so that we
+                        // don't have to create a new hole if they
+                        // detach the field later.
                         holeParent.set(hole.get("parentField") + "__hole", holeParent.get(hole.get("parentField")));
                         holeParent.set(hole.get("parentField"), act.childId);
                     }));
