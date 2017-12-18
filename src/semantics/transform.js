@@ -5,8 +5,13 @@ import { nextId } from "../reducer/reducer";
 
 function defaultProjector(definition) {
     const options = {};
-    // TODO: shape
-    if (definition.projection.color) options.color = definition.projection.color;
+    const optionFields = ["color", "strokeWhenChild"];
+    for (const field of optionFields) {
+        if (typeof definition.projection[field] !== "undefined") {
+            options[field] = definition.projection[field];
+        }
+    }
+    // TODO: shape option
 
     return function(stage, expr) {
         let childrenFunc = (id, state) => {
