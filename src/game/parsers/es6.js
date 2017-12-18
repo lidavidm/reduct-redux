@@ -1,5 +1,5 @@
 import * as esprima from "esprima";
-import * as jssemant from "../../semantics/default";
+import jssemant from "../../semantics/es6";
 
 export function parse(program, macros) {
     const ast = esprima.parse(program);

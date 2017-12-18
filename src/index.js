@@ -3,7 +3,7 @@ import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
 import * as es6 from "./game/parsers/es6";
 import * as progression from "./game/progression";
-import * as defaultSemantics from "./semantics/default";
+import defaultSemantics from "./semantics/es6";
 import * as stage from "./stage";
 import * as undo from "./reducer/undo";
 

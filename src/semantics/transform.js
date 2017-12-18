@@ -91,7 +91,25 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
-    // TODO: add default definitions for missing, vtuple
+    // Add default definitions for missing, vtuple
+    module.missing = function missing() {
+        return { type: "missing", locked: false };
+    };
+
+    /**
+     * A "virtual tuple" which kind of bleeds presentation into the
+     * semantics. Represents a set of values that go together, but spill
+     * onto the board when they are the top-level node.
+     */
+    module.vtuple = function vtuple(children) {
+        const result = { type: "vtuple", locked: true, numChildren: children.length };
+        let i = 0;
+        for (let child of children) {
+            result["child" + i.toString()] = child;
+            i++;
+        }
+        return result;
+    };
 
     for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
         module[exprName] = function() {
@@ -103,6 +121,7 @@ export default function transform(definition) {
             for (const fieldName of exprDefinition.subexpressions) {
                 result[fieldName] = arguments[argPointer++];
             }
+            return result;
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
 
@@ -112,11 +131,15 @@ export default function transform(definition) {
     module.subexpressions = function subexpressions(expr) {
         const type = expr.type || expr.get("type");
         // TODO: account for missing, vtuple
+        if (type === "missing") return [];
+        if (!definition.expressions[type]) throw `Unrecognized expression type ${type}`;
         return definition.expressions[type].subexpressions;
     };
 
     module.project = function project(stage, expr) {
-        return module.projections[expr.get("type")](stage, expr);
+        const type = expr.get("type");
+        if (!module.projections[type]) throw `Unrecognized expression type ${type}`;
+        return module.projections[type](stage, expr);
     };
 
     module.smallStep = function smallStep(nodes, expr) {
