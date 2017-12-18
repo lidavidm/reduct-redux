@@ -103,6 +103,13 @@ export default function transform(definition) {
     module.missing = function missing() {
         return { type: "missing", locked: false };
     };
+    module.projections.missing = function(stage, expr) {
+        return gfx.roundedRect({
+            color: "#555",
+            shadowOffset: -2,
+            radius: 22,
+        });
+    };
 
     /**
      * A "virtual tuple" which kind of bleeds presentation into the
