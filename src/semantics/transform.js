@@ -9,16 +9,34 @@ function defaultProjector(definition) {
     if (definition.projection.color) options.color = definition.projection.color;
 
     return function(stage, expr) {
-        return gfx.layout.hbox((id, state) => {
-            // TODO: overridable order, fields
+        let childrenFunc = (id, state) => {
             return definition.subexpressions.map((field) => state.getIn([ "nodes", id, field ]));
-        }, options);
+        };
+
+        if (definition.projection.fields) {
+            const fields = [];
+            for (const field of definition.projection.fields) {
+                const match = field.match(/'(.+)'/);
+                if (match) {
+                    fields.push(stage.allocate(gfx.text(match[1])));
+                }
+                else {
+                    fields.push(field);
+                }
+            }
+            childrenFunc = (id, state) => fields.map((field) => {
+                if (typeof field === "number") return field;
+                return state.getIn([ "nodes", id, field ]);
+            });
+        }
+
+        return gfx.layout.hbox(childrenFunc, options);
     };
 }
 
 function textProjector(definition) {
     return function(stage, expr) {
-        return gfx.text(definition.text.replace(/\{([a-zA-Z0-9]+)\}/, (match, field) => {
+        return gfx.text(definition.projection.text.replace(/\{([a-zA-Z0-9]+)\}/, (match, field) => {
             return expr.get(field);
         }));
     };

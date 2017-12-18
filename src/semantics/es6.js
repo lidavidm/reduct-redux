@@ -41,6 +41,7 @@ export default transform({
             projection: {
                 type: "default",
                 shape: "()",
+                fields: ["arg", "'=>'", "body"],
             },
             betaReduce: (semant, expr, args) => null,
         },
