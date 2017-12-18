@@ -191,6 +191,14 @@ export default function transform(definition) {
         return null;
     };
 
+    module.betaReduce = function(nodes, exprId, argIds) {
+        const target = nodes.get(exprId);
+        const reducer = definition.expressions[target.get("type")].betaReduce;
+        if (!reducer) return null;
+
+        return reducer(module, nodes, target, argIds);
+    };
+
     /**
      * Construct the animation for the small-step that the given
      * expression would take.
