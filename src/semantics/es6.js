@@ -12,6 +12,7 @@ export default transform({
                 type: "default",
                 shape: "()",
                 color: "white",
+                fields: ["value"],
             },
         },
 

@@ -67,7 +67,10 @@ function parseNode(node, macros) {
 
     case "BinaryExpression":
         // TODO: need ExprManager
-        return jssemant.add(parseNode(node.left, macros), parseNode(node.right, macros));
+        // TODO: don't hardcode op
+        return jssemant.binop(parseNode(node.left, macros),
+                              jssemant.op("+"),
+                              parseNode(node.right, macros));
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
     }
 }
