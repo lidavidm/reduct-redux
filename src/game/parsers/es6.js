@@ -40,6 +40,13 @@ function parseNode(node, macros) {
         if (node.name === "xx") {
             return jssemant.vtuple([ jssemant.lambdaVar("x"), jssemant.lambdaVar("x") ]);
         }
+        else if (node.name === "xxx") {
+            return jssemant.vtuple([
+                jssemant.lambdaVar("x"),
+                jssemant.lambdaVar("x"),
+                jssemant.lambdaVar("x"),
+            ]);
+        }
 
         return jssemant.lambdaVar(node.name);
     }
