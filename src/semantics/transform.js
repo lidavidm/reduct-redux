@@ -1,3 +1,4 @@
+import * as immutable from "immutable";
 import * as gfx from "../gfx/core";
 import * as core from "./core";
 
@@ -180,13 +181,40 @@ export default function transform(definition) {
 
     module.smallStep = function smallStep(nodes, expr) {
         const type = expr.type || expr.get("type");
-        if (definition.expressions[type].smallStep) {
-            return definition.expressions[type].smallStep(module, nodes, expr);
+        const stepper = definition.expressions[type].smallStep;
+        if (stepper) {
+            // TODO: figure out where is best to do mutable->Immutable
+            // conversion
+            const result = stepper(module, nodes, expr);
+            return immutable.Map(result);
         }
         return null;
     };
 
-    // module.clone = genericClone
+    /**
+     * Construct the animation for the small-step that the given
+     * expression would take.
+     */
+    module.animateStep = function animateStep(nodes, exp) {
+        return Promise.resolve(module.smallStep(nodes, exp));
+    };
+
+    /**
+     * A helper function that should abstract over big-step, small-step,
+     * multi-step, and any necessary animation.
+     *
+     * TODO: it needs to also insert intermediate states into the
+     * undo/redo stack, and mark which undo/redo states are big-steps,
+     * small-steps, etc. to allow fine-grained undo/redo.
+     */
+    module.reduce = function reduce(nodes, exp) {
+        return module.animateStep(nodes, exp).then((result) => {
+            if (!result) return null;
+            // Flatten the result
+            const nodes = module.flatten(result);
+            return [ result, nodes ];
+        });
+    };
 
     module.shallowEqual = function shallowEqual(n1, n2) {
         if (n1.get("type") !== n2.get("type")) return false;

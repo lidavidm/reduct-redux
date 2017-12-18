@@ -33,7 +33,9 @@ export default transform({
                 shape: "()",
                 color: "orange",
             },
-            smallStep: (semant, expr) => semant.number(expr.left.value + expr.right.value),
+            // TODO: switch to Immutable.Record to clean this up
+            smallStep: (semant, expr) => semant.number(expr.getIn([ "left", "value" ]) +
+                                                       expr.getIn([ "right", "value" ])),
         },
 
         lambda: {
