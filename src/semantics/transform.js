@@ -20,6 +20,9 @@ function defaultProjector(definition) {
                 if (match) {
                     fields.push(stage.allocate(gfx.text(match[1])));
                 }
+                else if (definition.fields.indexOf(field) > -1) {
+                    fields.push(stage.allocate(gfx.text(expr.get(field))));
+                }
                 else {
                     fields.push(field);
                 }

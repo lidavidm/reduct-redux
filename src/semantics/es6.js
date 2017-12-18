@@ -62,6 +62,7 @@ export default transform({
                 type: "default",
                 shape: "()",
                 strokeWhenChild: false,
+                fields: ["name"],
             },
         },
 
