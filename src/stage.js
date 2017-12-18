@@ -283,6 +283,7 @@ export class Stage {
 
             const topView = this.views[selectedNode];
             topView.opacity = 1.0;
+            const origPos = gfxCore.absolutePos(topView);
             // Right now the animation is hard-coded, but it should be
             // moved into semantics#animateStep.
             animate.tween(topView, { opacity: 0 }).then(() => {
@@ -295,8 +296,8 @@ export class Stage {
                 }
 
                 // Preserve position (TODO: better way)
-                this.views[nodes[0].get("id")].pos.x = topView.pos.x;
-                this.views[nodes[0].get("id")].pos.y = topView.pos.y;
+                this.views[nodes[0].get("id")].pos.x = origPos.x;
+                this.views[nodes[0].get("id")].pos.y = origPos.y;
 
                 this.store.dispatch(action.smallStep(selectedNode, result.get("id"), nodes));
             });
