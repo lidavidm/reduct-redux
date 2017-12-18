@@ -198,6 +198,11 @@ export default function transform(definition) {
         return true;
     };
 
+    module.targetable = function(expr) {
+        const defn = definition.expressions[expr.get("type")];
+        return !expr.get("locked") || (defn && defn.targetable);
+    };
+
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
     module.map = core.genericMap(module.subexpressions);

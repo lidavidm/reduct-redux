@@ -50,6 +50,7 @@ export default transform({
         lambdaArg: {
             fields: ["name"],
             subexpressions: [],
+            targetable: true,
             projection: {
                 type: "text",
                 text: "({name})",
