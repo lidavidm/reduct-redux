@@ -64,3 +64,33 @@ export function genericEqual(subexpressions, shallowEqual) {
         return true;
     };
 }
+
+export function genericClone(nextId, subexpressions) {
+    return function clone(id, nodes) {
+        const node = nodes.get(id);
+        let newNodes = [];
+
+        let currentStore = nodes;
+        const result = node.withMutations(n => {
+            const newId = nextId();
+            n.set("id", newId);
+
+            for (const field of subexpressions(node)) {
+                const [ subclone, subclones, nodesStore ] = clone(node.get(field), currentStore);
+                currentStore = nodesStore;
+                const result = subclone.withMutations(sc => {
+                    sc.set("parent", newId);
+                    sc.set("parentField", field);
+                });
+                newNodes = newNodes.concat(subclones);
+                newNodes.push(result);
+
+                n.set(field, subclone.get("id"));
+            }
+
+            currentStore = currentStore.set(newId, n);
+        });
+
+        return [ result, newNodes, currentStore ];
+    };
+}

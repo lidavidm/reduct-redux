@@ -200,6 +200,9 @@ export default function transform(definition) {
 
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
+    module.map = core.genericMap(module.subexpressions);
+    module.search = core.genericSearch(module.subexpressions);
+    module.clone = core.genericClone(nextId, module.subexpressions);
 
     return module;
 }
