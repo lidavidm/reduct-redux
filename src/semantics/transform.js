@@ -125,6 +125,20 @@ export default function transform(definition) {
         }
         return result;
     };
+    module.projections.vtuple = function(stage, expr) {
+        return gfx.layout.vbox((id, state) => {
+            const node = state.getIn([ "nodes", id ]);
+            const result = [];
+            for (let i = 0; i < node.get("numChildren"); i++) {
+                result.push(node.get(`child${i}`));
+            }
+            return result;
+        }, {
+            padding: { top: 0, inner: 5, bottom: 0, left: 0, right: 0 },
+            strokeWhenChild: false,
+            subexpScale: 1,
+        });
+    };
 
     for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
         module[exprName] = function() {
@@ -145,8 +159,15 @@ export default function transform(definition) {
 
     module.subexpressions = function subexpressions(expr) {
         const type = expr.type || expr.get("type");
-        // TODO: account for missing, vtuple
         if (type === "missing") return [];
+        if (type === "vtuple") {
+            const result = [];
+            const nc = expr.get ? expr.get("numChildren") : expr.numChildren;
+            for (let i = 0; i < nc; i++) {
+                result.push(`child${i}`);
+            }
+            return result;
+        }
         if (!definition.expressions[type]) throw `Unrecognized expression type ${type}`;
         return definition.expressions[type].subexpressions;
     };
