@@ -287,19 +287,23 @@ export class Stage {
             // Right now the animation is hard-coded, but it should be
             // moved into semantics#animateStep.
             animate.tween(topView, { opacity: 0 }).then(() => {
-                const [ result, nodes ] = res;
+                const [ _, newNodeIds, addedNodes ] = res;
+
+                if (newNodeIds.length !== 1) {
+                    throw "Stepping to produce multiple expressions is currently unsupported.";
+                }
 
                 const state = this.getState();
-                for (const node of nodes) {
+                for (const node of addedNodes) {
                     console.log("projecting", node.get("id"));
                     this.views[node.get("id")] = this.semantics.project(this, node);
                 }
 
                 // Preserve position (TODO: better way)
-                this.views[nodes[0].get("id")].pos.x = origPos.x;
-                this.views[nodes[0].get("id")].pos.y = origPos.y;
+                this.views[newNodeIds[0]].pos.x = origPos.x;
+                this.views[newNodeIds[0]].pos.y = origPos.y;
 
-                this.store.dispatch(action.smallStep(selectedNode, result.get("id"), nodes));
+                this.store.dispatch(action.smallStep(selectedNode, newNodeIds, addedNodes));
             });
         });
     }

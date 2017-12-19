@@ -186,7 +186,12 @@ export default function transform(definition) {
             // TODO: figure out where is best to do mutable->Immutable
             // conversion
             const result = stepper(module, nodes, expr);
-            return immutable.Map(result).set("id", nextId());
+            if (Array.isArray(result)) return result;
+
+            // Return [topLevelNodeId, newNodeIds[], addedNodes[]]
+            const imm = immutable.Map(result).set("id", nextId());
+            const addedNodes = module.flatten(imm);
+            return [ expr.get("id"), [ imm.get("id") ], addedNodes ];
         }
         return null;
     };
@@ -216,12 +221,7 @@ export default function transform(definition) {
      * small-steps, etc. to allow fine-grained undo/redo.
      */
     module.reduce = function reduce(nodes, exp) {
-        return module.animateStep(nodes, exp).then((result) => {
-            if (!result) return null;
-            // Flatten the result
-            const nodes = module.flatten(result);
-            return [ result, nodes ];
-        });
+        return module.animateStep(nodes, exp);
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {

@@ -76,13 +76,13 @@ export function startLevel(stage, goal, board, toolbox) {
  * Node `nodeId` took a small step to produce `newNode` which contains
  * `newNodes` as nested nodes.
  */
-export function smallStep(nodeId, newNode, newNodes) {
-    console.debug(`smallStep: ${nodeId} became ${newNode}`);
+export function smallStep(nodeId, newNodeIds, newNodes) {
+    console.debug(`smallStep: ${nodeId} became ${newNodeIds}`);
     return {
         type: SMALL_STEP,
-        nodeId: nodeId,
-        newNode: newNode,
-        newNodes: newNodes,
+        topNodeId: nodeId,
+        newNodeIds: newNodeIds,
+        addedNodes: newNodes,
     };
 }
 

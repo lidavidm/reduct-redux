@@ -58,7 +58,7 @@ export function reduct(semantics, views) {
             return state;
         }
         case action.SMALL_STEP: {
-            const queue = [ act.nodeId ];
+            const queue = [ act.topNodeId ];
             const removedNodes = {};
 
             while (queue.length > 0) {
@@ -70,19 +70,23 @@ export function reduct(semantics, views) {
                 }
             }
 
-            const oldNode = state.getIn([ "nodes", act.nodeId ]);
+            const oldNode = state.getIn([ "nodes", act.topNodeId ]);
 
             let newNodes = state.get("nodes").filter(function (key, value) {
                 return !removedNodes[key];
-            }).merge(immutable.Map(act.newNodes.map((n) => [ n.get("id"), immutable.Map(n) ])));
+            }).merge(immutable.Map(act.addedNodes.map((n) => [ n.get("id"), immutable.Map(n) ])));
 
             let newBoard = state.get("board").filter((id) => !removedNodes[id]);
             if (!oldNode.get("parent")) {
-                newBoard = newBoard.push(act.newNode);
+                newBoard = newBoard.concat(act.newNodeIds);
+            }
+            else if (act.newNodeIds.length !== 1) {
+                throw "Cannot small-step a child expression to multiple new expressions.";
+                // TODO: handle this more gracefully? Create a vtuple?
             }
             else {
                 const parent = newNodes.get(oldNode.get("parent"))
-                      .set(oldNode.get("parentField"), act.newNode);
+                      .set(oldNode.get("parentField"), act.newNodeIds[0]);
                 newNodes = newNodes.set(oldNode.get("parent"), parent);
             }
 
