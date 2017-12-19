@@ -228,7 +228,7 @@ export default function transform(definition) {
         if (n1.get("type") !== n2.get("type")) return false;
 
         for (const field of definition.expressions[n1.get("type")].fields) {
-            if (n1.get(field) !== n2.get("field")) return false;
+            if (n1.get(field) !== n2.get(field)) return false;
         }
 
         return true;
