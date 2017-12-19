@@ -38,6 +38,11 @@ export default transform({
                         shape: "()",
                         color: "orange",
                     },
+                    "-": {
+                        type: "default",
+                        shape: "()",
+                        color: "orange",
+                    },
                     "==": {
                         type: "default",
                         shape: "<>",
@@ -49,6 +54,10 @@ export default transform({
             smallStep: (semant, nodes, expr) => {
                 const op = nodes.get(expr.get("op")).get("name");
                 if (op === "+") {
+                    return semant.number(nodes.get(expr.get("left")).get("value") +
+                                         nodes.get(expr.get("right")).get("value"));
+                }
+                else if (op === "-") {
                     return semant.number(nodes.get(expr.get("left")).get("value") +
                                          nodes.get(expr.get("right")).get("value"));
                 }
