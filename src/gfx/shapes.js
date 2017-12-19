@@ -48,6 +48,11 @@ function drawPrimitive(id, projection, state, stage, offset,
         ctx.lineWidth = 2;
         stroke = true;
     }
+    else if (projection.stroke) {
+        ctx.lineWidth = projection.stroke.lineWidth;
+        ctx.strokeStyle = projection.stroke.color;
+        stroke = true;
+    }
 
     shadow(ctx, id, projection, state, drawFunction);
     if (projection.opacity) ctx.globalAlpha = projection.opacity;

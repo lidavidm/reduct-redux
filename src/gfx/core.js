@@ -96,6 +96,14 @@ export function absoluteSize(projection) {
     return { w: w, h: h };
 }
 
+export function centerPos(projection) {
+    const { x, y } = absolutePos(projection);
+    const { w, h } = absoluteSize(projection);
+    return {
+        x: x + (w / 2),
+        y: y + (h / 2),
+    };
+}
 
 export function baseShape(name, defaults, draw) {
     return function(options) {

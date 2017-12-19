@@ -393,7 +393,7 @@ export class Stage {
         return Promise.all(tweens).then(() => {
             const subtweens = [];
             for (const nodeId of state.get("goal").concat(state.get("board"))) {
-                subtweens.push(animate.fx.splosion(this, gfxCore.absolutePos(this.views[nodeId])));
+                subtweens.push(animate.fx.splosion(this, gfxCore.centerPos(this.views[nodeId])));
             }
             this.store.dispatch(action.victory());
             return Promise.all(subtweens);
