@@ -12,7 +12,10 @@ function defaultProjector(definition) {
             options[field] = definition.projection[field];
         }
     }
-    // TODO: shape option
+    let baseProjection = gfx.roundedRect;
+    if (definition.projection.shape === "<>") {
+        baseProjection = gfx.hexaRect;
+    }
 
     return function(stage, nodes, expr) {
         let childrenFunc = (id, state) => {
@@ -39,7 +42,7 @@ function defaultProjector(definition) {
             });
         }
 
-        return gfx.layout.hbox(childrenFunc, options);
+        return gfx.layout.hbox(childrenFunc, options, baseProjection);
     };
 }
 
@@ -67,7 +70,6 @@ function casesProjector(definition) {
         if (typeof cases[key] === "undefined") {
             throw `Unrecognized case ${key} for projection of ${definition}`;
         }
-        console.log(expr, key, cases[key]);
         return cases[key](stage, expr);
     };
 }
