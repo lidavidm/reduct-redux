@@ -73,10 +73,10 @@ export class Clock {
     }
 
     tick(t) {
-        let dt = t - this.lastTimestamp;
-        let completed = [];
+        const dt = t - this.lastTimestamp;
+        const completed = [];
         let running = false;
-        for (let tween of this.tweens) {
+        for (const tween of this.tweens) {
             if (tween.status !== "running") continue;
 
             running = true;
@@ -86,11 +86,11 @@ export class Clock {
                 completed.push(tween);
             }
             else {
-                tween.update(Math.max(0, 1 - tween.remaining / tween.duration));
+                tween.update(Math.max(0, 1 - (tween.remaining / tween.duration)));
             }
         }
 
-        for (let tween of completed) {
+        for (const tween of completed) {
             this.tweens.splice(this.tweens.indexOf(tween), 1);
         }
 
@@ -104,20 +104,20 @@ export class Clock {
             this.lastTimestamp = null;
         }
 
-        for (let listener of this.listeners) {
+        for (const listener of this.listeners) {
             listener();
         }
     }
 
     tween(target, properties, options) {
-        let duration = options.duration || 300;
-        let props = {};
-        let easing = options.easing || Easing.Linear;
-        for (let [prop, final] of Object.entries(properties)) {
-            props[prop] = { start: target[prop], end: final, easing: easing };
+        const duration = options.duration || 300;
+        const props = {};
+        const easing = options.easing || Easing.Linear;
+        for (const [ prop, final ] of Object.entries(properties)) {
+            props[prop] = { start: target[prop], end: final, easing };
         }
 
-        let tween = new Tween(this, target, props, duration);
+        const tween = new Tween(this, target, props, duration);
         this.tweens.push(tween);
 
         if (!this.running) {
@@ -134,7 +134,7 @@ export class Clock {
     }
 }
 
-let clock = new Clock();
+const clock = new Clock();
 
 export function addUpdateListener(f) {
     clock.addUpdateListener(f);
