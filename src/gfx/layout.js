@@ -25,35 +25,34 @@ export function sticky(projection, direction) {
 }
 
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
-    const projection = baseProjection(options);
-    const basePrepare = projection.prepare;
+    const projection = baseProjection(Object.assign({}, {
+        padding: { left: 10, inner: 10, right: 10 },
+        subexpScale: 0.85,
+    }, options));
     const baseDraw = projection.draw;
-    projection.padding = { left: 10, inner: 10, right: 10 };
-    projection.subexpScale = 0.85;
     projection.type = "hbox";
-
-    Object.assign(projection, options);
 
     projection.prepare = function(id, state, stage) {
         const children = childrenFunc(id, state);
         let x = projection.padding.left;
 
         let maxY = 50;
-        for (let childId of children) {
+        for (const childId of children) {
             const childProjection = stage.views[childId];
 
             childProjection.parent = projection;
 
             childProjection.pos.x = x;
-            childProjection.anchor.x = childProjection.anchor.y = 0;
+            childProjection.anchor.x = 0;
+            childProjection.anchor.y = 0;
             childProjection.scale.x = projection.subexpScale;
             childProjection.scale.y = projection.subexpScale;
 
             childProjection.prepare(childId, state, stage);
-            x += childProjection.size.w * childProjection.scale.x + projection.padding.inner;
+            x += (childProjection.size.w * childProjection.scale.x) + projection.padding.inner;
             maxY = Math.max(maxY, childProjection.size.h);
         }
-        projection.size.w = x;
+        projection.size.w = x - projection.padding.inner + projection.padding.right;
         projection.size.h = maxY;
         for (let childId of children) {
             const childProjection = stage.views[childId];

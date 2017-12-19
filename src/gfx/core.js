@@ -14,14 +14,14 @@ document.body.addEventListener("keyup", (e) => {
     if (e.key === "F2") DEBUG = !DEBUG;
 });
 
-export function baseProjection() {
-    const projection = {
+export function baseProjection(options) {
+    const projection = Object.assign({
         pos: { x: 0, y: 0 },
         anchor: { x: 0, y: 0 },
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
         opacity: 1.0,
-    };
+    }, options);
 
     projection.draw = projection.prepare = function() {};
 
@@ -99,9 +99,8 @@ export function absoluteSize(projection) {
 
 export function baseShape(name, defaults, draw) {
     return function(options) {
-        const projection = baseProjection();
+        const projection = Object.assign(baseProjection(), defaults, options);
         projection.size.w = projection.size.h = 50;
-        Object.assign(projection, defaults, options);
         projection.type = name;
 
         projection.prepare = function(id, state, stage) {};
@@ -172,7 +171,6 @@ export const hexaRect = baseShape("hexaRect", {
     shadowColor: "#000",
     shadowOffset: 2,
     strokeWhenChild: true,  // Draw border when child of another expression
-    padding: { left: 30, right: 30, top: 10, inner: 10 },
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
     primitive.hexaRect(
         ctx,

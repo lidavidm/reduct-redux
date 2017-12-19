@@ -6,15 +6,17 @@ import { nextId } from "../reducer/reducer";
 
 function defaultProjector(definition) {
     const options = {};
+    let baseProjection = gfx.roundedRect;
+    if (definition.projection.shape === "<>") {
+        baseProjection = gfx.hexaRect;
+        options.padding = { left: 18, right: 18, inner: 10 };
+    }
+
     const optionFields = ["color", "strokeWhenChild"];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
         }
-    }
-    let baseProjection = gfx.roundedRect;
-    if (definition.projection.shape === "<>") {
-        baseProjection = gfx.hexaRect;
     }
 
     return function defaultProjectorFactory(stage, nodes, expr) {
