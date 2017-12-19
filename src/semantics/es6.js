@@ -62,8 +62,8 @@ export default transform({
                                          nodes.get(expr.get("right")).get("value"));
                 }
                 else if (op === "==") {
-                    return semant.bool(nodes.get(expr.get("left")).get("value") ==
-                                       nodes.get(expr.get("right")).get("value"));
+                    return semant.bool(semant.shallowEqual(nodes.get(expr.get("left")),
+                                                           nodes.get(expr.get("right"))));
                 }
                 else {
                     throw `Unrecognized operator ${op}`;
