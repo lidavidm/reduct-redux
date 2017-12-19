@@ -86,6 +86,7 @@ export function genericClone(nextId, subexpressions) {
                 newNodes.push(result);
 
                 n.set(field, subclone.get("id"));
+                // TODO: delete any cached __missing fields
             }
 
             currentStore = currentStore.set(newId, n);
@@ -93,4 +94,60 @@ export function genericClone(nextId, subexpressions) {
 
         return [ result, newNodes, currentStore ];
     };
+}
+
+export function genericBetaReduce(semant, nodes, config) {
+    const { topNode, targetNode, argIds } = config;
+    // Prevent application when there are missing nodes
+    // TODO: move this check into the core?
+    if (semant.search(nodes, topNode.get("id"),
+                      (n) => n.get("type") === "missing")) {
+        return null;
+    }
+
+    if (argIds.length !== 1) {
+        // TODO: will we ever have multi-argument application?
+        return null;
+    }
+
+    // TODO: check for unbound names
+    // TODO: need to do a noncapturing substitution
+    const name = config.targetName(targetNode);
+    let newNodes = [];
+    let [ newTop, _ ] = semant.map(nodes, topNode.get("body"), (nodes, id) => {
+        const node = nodes.get(id);
+        if (config.isVar(node) && config.varName(node) === name) {
+            const [ cloned, resultNewNodes, nodesStore ] = semant.clone(argIds[0], nodes);
+            const result = cloned.withMutations(n => {
+                n.set("parent", node.get("parent"));
+                n.set("parentField", node.get("parentField"));
+            });
+            newNodes.push(result);
+            newNodes = newNodes.concat(resultNewNodes);
+            return [ result, nodesStore.set(result.get("id"), result) ];
+        }
+        else {
+            const [ result, resultNewNodes, nodesStore ] = semant.clone(id, nodes);
+            newNodes.push(result);
+            newNodes = newNodes.concat(resultNewNodes);
+            return [ result, nodesStore.set(result.get("id", result)) ];
+        }
+    });
+    newTop = newTop.delete("parent").delete("parentField");
+
+    if (newTop.get("type") === "vtuple") {
+        // Spill vtuple onto the board
+        return [
+            topNode.get("id"),
+            semant.subexpressions(newTop).map(field => newTop.get(field)),
+            newNodes.slice(1),
+        ];
+    }
+    else {
+        return [
+            topNode.get("id"),
+            [ newTop.get("id") ],
+            newNodes.slice(1).concat([newTop]),
+        ];
+    }
 }
