@@ -53,6 +53,17 @@ export default transform({
                                   [ expr.get("argument") ])
         },
 
+        bool: {
+            fields: ["value"],
+            subexpressions: [],
+            projection: {
+                type: "default",
+                shape: "<>",
+                color: "hotpink",
+                fields: ["value"],
+            }
+        },
+
         lambda: {
             fields: [],
             subexpressions: ["arg", "body"],
