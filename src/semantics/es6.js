@@ -40,6 +40,19 @@ export default transform({
                               nodes.get(expr.get("right")).get("value")),
         },
 
+        apply: {
+            fields: [],
+            subexpressions: ["callee", "argument"],
+            projection: {
+                type: "default",
+                shape: "()",
+                fields: ["callee", "'('", "argument", "')'"],
+            },
+            smallStep: (semant, nodes, expr) =>
+                semant.betaReduce(nodes, expr.get("callee"),
+                                  [ expr.get("argument") ])
+        },
+
         lambda: {
             fields: [],
             subexpressions: ["arg", "body"],

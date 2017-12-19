@@ -25,6 +25,7 @@ function parseNode(node, macros) {
     switch (node.type) {
     case "ExpressionStatement":
         return parseNode(node.expression, macros);
+
     case "Identifier": {
         if (node.name === "_") return jssemant.missing();
 
@@ -50,6 +51,7 @@ function parseNode(node, macros) {
 
         return jssemant.lambdaVar(node.name);
     }
+
     case "Literal": {
         if (typeof node.value === "number") return jssemant.number(node.value);
 
@@ -62,6 +64,7 @@ function parseNode(node, macros) {
 
         return fail(`parsers.es6: Unrecognized value ${node.value}`, node);
     }
+
     case "ArrowFunctionExpression": {
         if (node.params.length === 1 && node.params[0].type === "Identifier") {
             let body = parseNode(node.body, macros);
@@ -78,6 +81,16 @@ function parseNode(node, macros) {
         return jssemant.binop(parseNode(node.left, macros),
                               jssemant.op("+"),
                               parseNode(node.right, macros));
+
+    case "CallExpression": {
+        if (node.arguments.length !== 1) {
+            return fail("Call expressions with zero or more than one argument are currently unsupported", node);
+        }
+
+        return jssemant.apply(parseNode(node.callee, macros),
+                              parseNode(node.arguments[0], macros));
+    }
+
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
     }
 }
