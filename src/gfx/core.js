@@ -96,70 +96,91 @@ export function absoluteSize(projection) {
     return { w: w, h: h };
 }
 
-export function roundedRect(options={}) {
-    const projection = baseProjection();
-    projection.size.w = projection.size.h = 50;
-    Object.assign(projection, {
-        color: "lightgray",
-        radius: 20,
-        shadowColor: "#000",
-        shadowOffset: 2,
-        strokeWhenChild: true,  // Draw border when child of another expression
-    }, options);
-    projection.type = "roundedRect";
 
-    projection.prepare = function(id, state, stage) {};
-    projection.draw = function(id, state, stage, offset) {
-        const ctx = stage.ctx;
-        ctx.save();
+export function baseShape(name, defaults, draw) {
+    return function(options) {
+        const projection = baseProjection();
+        projection.size.w = projection.size.h = 50;
+        Object.assign(projection, defaults, options);
+        projection.type = name;
 
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
+        projection.prepare = function(id, state, stage) {};
+        projection.draw = function(id, state, stage, offset) {
+            const ctx = stage.ctx;
+            ctx.save();
 
-        const { x, y } = util.topLeftPos(projection, offset);
+            const [ sx, sy ] = util.absoluteScale(projection, offset);
 
-        const node = state.getIn([ "nodes", id ]);
-        if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
-            ctx.fillStyle = projection.shadowColor;
-            primitive.roundRect(
-                ctx,
-                x, y + projection.shadowOffset * offset.sy,
-                offset.sx * projection.scale.x * projection.size.w,
-                offset.sy * projection.scale.y * projection.size.h,
-                sx * projection.radius,
-                projection.color ? true : false,
-                projection.stroke ? true : false,
-                projection.stroke ? projection.stroke.opacity : null);
-        }
+            const { x, y } = util.topLeftPos(projection, offset);
 
-        if (projection.color) ctx.fillStyle = projection.color;
-        const shouldStroke = !!(node && node.get("parent") && node.get("locked")) &&
-              projection.strokeWhenChild;
-        if (shouldStroke) {
-            // Stroke if we have a parent to make it clearer.
-            ctx.strokeStyle = "gray";
-            ctx.lineWidth = 1;
-        }
+            const node = state.getIn([ "nodes", id ]);
+            if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
+                ctx.fillStyle = projection.shadowColor;
+                draw(ctx, projection,
+                     x, y + projection.shadowOffset * offset.sy,
+                     offset.sx * projection.scale.x * projection.size.w,
+                     offset.sy * projection.scale.y * projection.size.h,
+                     sx, sy,
+                     projection.stroke);
+            }
 
-        if (projection.opacity) ctx.globalAlpha = projection.opacity;
+            if (projection.color) ctx.fillStyle = projection.color;
+            const shouldStroke = !!(node && node.get("parent") && node.get("locked")) &&
+                  projection.strokeWhenChild;
+            if (shouldStroke) {
+                // Stroke if we have a parent to make it clearer.
+                ctx.strokeStyle = "gray";
+                ctx.lineWidth = 1;
+            }
 
-        primitive.roundRect(
-            ctx,
-            x, y,
-            offset.sx * projection.scale.x * projection.size.w,
-            offset.sy * projection.scale.y * projection.size.h,
-            sx * projection.radius,
-            projection.color ? true : false,
-            shouldStroke,
-            projection.stroke ? projection.stroke.opacity : null);
+            if (projection.opacity) ctx.globalAlpha = projection.opacity;
 
-        hoverOutline(id, projection, stage, offset);
+            draw(ctx, projection,
+                 x, y,
+                 offset.sx * projection.scale.x * projection.size.w,
+                 offset.sy * projection.scale.y * projection.size.h,
+                 sx, sy,
+                 projection.stroke || shouldStroke);
+            hoverOutline(id, projection, stage, offset);
+            debugDraw(ctx, projection, offset);
 
-        debugDraw(ctx, projection, offset);
-
-        ctx.restore();
+            ctx.restore();
+        };
+        return projection;
     };
-    return projection;
 }
+
+export const roundedRect = baseShape("roundedRect", {
+    color: "lightgray",
+    radius: 20,
+    shadowColor: "#000",
+    shadowOffset: 2,
+    strokeWhenChild: true,  // Draw border when child of another expression
+}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
+    primitive.roundRect(
+        ctx,
+        x, y, w, h,
+        sx * projection.radius,
+        projection.color ? true : false,
+        shouldStroke,
+        projection.stroke ? projection.stroke.opacity : null);
+});
+
+export const hexaRect = baseShape("hexaRect", {
+    color: "lightgray",
+    radius: 20,
+    shadowColor: "#000",
+    shadowOffset: 2,
+    strokeWhenChild: true,  // Draw border when child of another expression
+    padding: { left: 30, right: 30, top: 10, inner: 10 },
+}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
+    primitive.hexaRect(
+        ctx,
+        x, y, w, h,
+        projection.color ? true : false,
+        shouldStroke,
+        projection.stroke ? projection.stroke.opacity : null);
+});
 
 // TODO: make this part of the stage instead?
 const TEXT_SIZE_CACHE = {};

@@ -82,3 +82,17 @@ export function strokeWithOpacity(ctx, opacity) {
         ctx.globalAlpha = a;
     }
 }
+
+export function hexaRect(ctx, x, y, width, height, fill, stroke, strokeOpacity) {
+    var h2 = height / 2.0;
+    ctx.beginPath();
+    ctx.moveTo(x + h2, y);
+    ctx.lineTo(x + width - h2, y);
+    ctx.lineTo(x + width, y + h2);
+    ctx.lineTo(x + width - h2, y + height);
+    ctx.lineTo(x + h2, y + height);
+    ctx.lineTo(x, y + h2);
+    ctx.closePath();
+    if (fill) ctx.fill();
+    if (stroke) strokeWithOpacity(ctx, strokeOpacity);
+}
