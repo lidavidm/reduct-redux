@@ -44,7 +44,7 @@ function initialize() {
 
         // Right now it just goes on, but we would want the animation here.
         if (level.checkVictory(stg.getState(), defaultSemantics)) {
-            next();
+            window.next();
         }
     });
 
@@ -69,12 +69,14 @@ function initialize() {
     });
 }
 
-const start = window.reset = function start() {
+const start = function start() {
     stg.reset();
 
     level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
                      es6.parse, store, stg);
 };
+
+window.reset = start;
 
 window.next = function next() {
     progression.currentLevelIdx++;

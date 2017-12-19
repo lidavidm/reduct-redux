@@ -17,6 +17,17 @@ export default transform({
             },
         },
 
+        dynamicVariant: {
+            fields: ["variant", "value"],
+            subexpressions: [],
+            projection: {
+                type: "default",
+                shape: "()",
+                color: "purple",
+                fields: ["value"],
+            },
+        },
+
         op: {
             fields: ["name"],
             subexpressions: [],

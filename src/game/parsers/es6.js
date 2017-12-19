@@ -48,6 +48,14 @@ function parseNode(node, macros) {
                 jssemant.lambdaVar("x"),
             ]);
         }
+        else if (node.name.slice(0, 9) === "__variant") {
+            const [ variant, value ] = node.name.slice(10).split("_");
+            if (!variant || !value) {
+                throw `Invalid dynamic variant ${node.name}`;
+            }
+
+            return jssemant.dynamicVariant(variant, value);
+        }
 
         return jssemant.lambdaVar(node.name);
     }
