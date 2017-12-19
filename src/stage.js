@@ -372,4 +372,18 @@ export class Stage {
             this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
         }
     }
+
+    animateVictory(_matching) {
+        const state = this.getState();
+        let tween = null;
+        for (const nodeId of state.get("goal").concat(state.get("board"))) {
+            this.views[nodeId].stroke = { color: "#0FF", lineWidth: 0.1 };
+            tween = animate.tween(this.views[nodeId].stroke, { lineWidth: 3 }, {
+                reverse: true,
+                repeat: 4,
+                duration: 600,
+            });
+        }
+        return tween;
+    }
 }

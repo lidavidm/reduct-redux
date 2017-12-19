@@ -131,6 +131,10 @@ export function baseShape(name, defaults, draw) {
                 ctx.strokeStyle = "gray";
                 ctx.lineWidth = 1;
             }
+            else if (projection.stroke) {
+                ctx.lineWidth = projection.stroke.lineWidth;
+                ctx.strokeStyle = projection.stroke.color;
+            }
 
             if (projection.opacity) ctx.globalAlpha = projection.opacity;
 

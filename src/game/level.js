@@ -25,22 +25,29 @@ export function checkVictory(state, semantics) {
     }
 
     const used = {};
+    const matching = {};
     let success = true;
     goal.forEach((nodeId) => {
         let found = false;
         board.forEach((candidateId, idx) => {
-            if (used[idx]) return;
+            if (used[idx]) return true;
             if (semantics.equal(nodeId, candidateId, state)) {
                 used[idx] = true;
+                matching[nodeId] = candidateId;
                 found = true;
                 return false;
             }
+            return true;
         });
         if (!found) {
             success = false;
             return false;
         }
+        return true;
     });
 
-    return success;
+    if (success) {
+        return matching;
+    }
+    return {};
 }

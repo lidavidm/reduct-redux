@@ -22,7 +22,7 @@ export const Easing = {
 
 
 export class Tween {
-    constructor(clock, target, properties, duration) {
+    constructor(clock, target, properties, duration, reverse=false, repeat=1) {
         this.clock = clock;
         this.target = target;
         this.properties = properties;
@@ -32,6 +32,9 @@ export class Tween {
             this.resolve = resolve;
             this.reject = reject;
         });
+        this.reverse = reverse;
+        this.repeat = repeat;
+        this.reversing = false;
 
         this.status = "running";
     }
@@ -56,6 +59,7 @@ export class Tween {
 
     completed() {
         this.update(1.0);
+        this.status = "completed";
         this.resolve();
     }
 }
@@ -80,10 +84,29 @@ export class Clock {
             if (tween.status !== "running") continue;
 
             running = true;
-            tween.remaining -= dt;
-            if (tween.remaining <= 0) {
-                tween.completed();
-                completed.push(tween);
+            if (tween.reversing) {
+                tween.remaining += dt;
+            }
+            else {
+                tween.remaining -= dt;
+            }
+
+            if ((!tween.reversing && tween.remaining <= 0) ||
+                (tween.reversing && tween.remaining >= tween.duration)) {
+                tween.repeat -= 1;
+                if (tween.repeat <= 0) {
+                    tween.completed();
+                    completed.push(tween);
+                }
+                else {
+                    // TODO: should update the tween on this frame too
+                    if (tween.reverse) {
+                        tween.reversing = !tween.reversing;
+                    }
+                    else {
+                        tween.remaining = tween.duration;
+                    }
+                }
             }
             else {
                 tween.update(Math.max(0, 1 - (tween.remaining / tween.duration)));
@@ -117,7 +140,7 @@ export class Clock {
             props[prop] = { start: target[prop], end: final, easing };
         }
 
-        const tween = new Tween(this, target, props, duration);
+        const tween = new Tween(this, target, props, duration, options.reverse, options.repeat || 1);
         this.tweens.push(tween);
 
         if (!this.running) {
