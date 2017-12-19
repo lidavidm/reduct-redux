@@ -9,6 +9,7 @@ export const FILL_HOLE = "fill-hole";
 export const SMALL_STEP = "small-step";
 export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
+export const VICTORY = "victory";
 
 /**
  * Redux action to start a new level.
@@ -24,10 +25,10 @@ export function startLevel(stage, goal, board, toolbox) {
 
     console.info("action.startLevel: starting with", goal, board, toolbox);
 
-    let _nodes = {};
-    let _goal = [];
-    let _board = [];
-    let _toolbox = [];
+    const _nodes = {};
+    const _goal = [];
+    const _board = [];
+    const _toolbox = [];
     for (const expr of goal) {
         for (const newExpr of semantics.flatten(expr)) {
             _nodes[newExpr.id] = newExpr;
@@ -47,7 +48,7 @@ export function startLevel(stage, goal, board, toolbox) {
         _toolbox.push(expr.id);
     }
 
-    const finalNodes = immutable.Map().withMutations(fn => {
+    const finalNodes = immutable.Map().withMutations((fn) => {
         for (const node of Object.values(_nodes)) {
             fn.set(node.id, immutable.Map(node));
         }
@@ -162,5 +163,17 @@ export function useToolbox(nodeId) {
     return {
         type: USE_TOOLBOX,
         nodeId: nodeId,
+    };
+}
+
+/**
+ * We've won the level.
+ *
+ * Clear the board/goal, which has the side effect of stopping them
+ * from drawing anymore.
+ */
+export function victory() {
+    return {
+        type: VICTORY,
     };
 }

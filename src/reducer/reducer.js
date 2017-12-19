@@ -206,6 +206,12 @@ export function reduct(semantics, views) {
                 }));
             });
         }
+        case action.VICTORY: {
+            return state.withMutations(map => {
+                map.set("board", immutable.List());
+                map.set("goal", immutable.List());
+            });
+        }
         default: return state;
         }
     }

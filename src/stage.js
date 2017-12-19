@@ -18,6 +18,8 @@ export class Stage {
         this.internalViews = {};
         this.semantics = semantics;
 
+        this.effects = {};
+
         this.width = width;
         this.height = height;
 
@@ -115,6 +117,10 @@ export class Stage {
             this.drawProjection(state, nodeId);
         }
         this.toolbox.drawImpl(state);
+
+        for (const fx of Object.values(this.effects)) {
+            fx.draw();
+        }
     }
 
     draw() {
@@ -375,15 +381,33 @@ export class Stage {
 
     animateVictory(_matching) {
         const state = this.getState();
-        let tween = null;
+        const tweens = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
             this.views[nodeId].stroke = { color: "#0FF", lineWidth: 0.1 };
-            tween = animate.tween(this.views[nodeId].stroke, { lineWidth: 3 }, {
+            tweens.push(animate.tween(this.views[nodeId].stroke, { lineWidth: 3 }, {
                 reverse: true,
                 repeat: 4,
                 duration: 600,
-            });
+            }));
         }
-        return tween;
+
+        return Promise.all(tweens).then(() => {
+            const subtweens = [];
+            for (const nodeId of state.get("goal").concat(state.get("board"))) {
+                subtweens.push(animate.fx.splosion(this, gfxCore.absolutePos(this.views[nodeId])));
+            }
+            this.store.dispatch(action.victory());
+            return Promise.all(subtweens);
+        });
+    }
+
+    addEffect(fx) {
+        const id = nextId();
+        this.effects[id] = fx;
+        return id;
+    }
+
+    removeEffect(id) {
+        delete this.effects[id];
     }
 }

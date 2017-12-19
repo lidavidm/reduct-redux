@@ -166,3 +166,6 @@ export function addUpdateListener(f) {
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
 }
+
+import * as fx from "./fx/fx";
+export { fx };

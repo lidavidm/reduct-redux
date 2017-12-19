@@ -24,6 +24,8 @@
         ],
         "func-names": "off",
         "no-plusplus": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "no-console": "off",
+        "no-underscore-dangle": "off"
     }
 }
