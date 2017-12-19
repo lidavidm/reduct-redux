@@ -21,6 +21,8 @@
             {
                 "argsIgnorePattern": "^_"
             }
-        ]
+        ],
+        "func-names": "off",
+        "no-plusplus": "off"
     }
 }

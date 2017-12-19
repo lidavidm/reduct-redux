@@ -136,7 +136,7 @@ export default function transform(definition) {
         }
         return result;
     };
-    module.projections.vtuple = function(stage, expr) {
+    module.projections.vtuple = function(_stage, _expr) {
         return gfx.layout.vbox((id, state) => {
             const node = state.getIn([ "nodes", id ]);
             const result = [];
@@ -145,21 +145,27 @@ export default function transform(definition) {
             }
             return result;
         }, {
-            padding: { top: 0, inner: 5, bottom: 0, left: 0, right: 0 },
+            padding: {
+                top: 0,
+                inner: 5,
+                bottom: 0,
+                left: 0,
+                right: 0,
+            },
             strokeWhenChild: false,
             subexpScale: 1,
         });
     };
 
     for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
-        module[exprName] = function() {
+        module[exprName] = function(...params) {
             const result = { type: exprName, locked: true };
             let argPointer = 0;
             for (const fieldName of exprDefinition.fields) {
-                result[fieldName] = arguments[argPointer++];
+                result[fieldName] = params[argPointer++];
             }
             for (const fieldName of exprDefinition.subexpressions) {
-                result[fieldName] = arguments[argPointer++];
+                result[fieldName] = params[argPointer++];
             }
             return result;
         };
