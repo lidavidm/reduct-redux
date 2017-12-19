@@ -1,6 +1,7 @@
 import * as action from "./reducer/action";
 import * as animate from "./gfx/animate";
 import * as gfxCore from "./gfx/core";
+import * as progression from "./game/progression";
 import { nextId } from "./reducer/reducer";
 import Loader from "./loader";
 import Goal from "./ui/goal";
@@ -383,11 +384,9 @@ export class Stage {
         const state = this.getState();
         const tweens = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
-            this.views[nodeId].stroke = { color: "#0FF", lineWidth: 0.1 };
-            tweens.push(animate.tween(this.views[nodeId].stroke, { lineWidth: 3 }, {
-                reverse: true,
-                repeat: 4,
-                duration: 600,
+            tweens.push(animate.fx.blink(this.views[nodeId], {
+                times: progression.currentLevelIdx === 0 ? 2 : 1,
+                color: "#0FF",
             }));
         }
 
