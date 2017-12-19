@@ -5,6 +5,22 @@
         "quotes": [ "error", "double" ],
         "no-continue": "off",
         "no-restricted-syntax": "off",
-        "brace-style": [ "error", "stroustrup" ]
+        "brace-style": [ "error", "stroustrup" ],
+        "array-bracket-spacing": "off",
+        "comma-dangle": [
+            "error",
+            "always-multiline",
+            {
+                "functions": "never"
+            }
+        ],
+        "space-before-function-paren": "off",
+        "no-use-before-define": "off",
+        "no-unused-vars": [
+            "warn",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ]
     }
 }

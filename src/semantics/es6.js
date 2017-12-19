@@ -73,12 +73,12 @@ export default transform({
                                          nodes.get(expr.get("right")).get("value"));
                 }
                 else if (op === "==") {
-                    return semant.bool(semant.shallowEqual(nodes.get(expr.get("left")),
-                                                           nodes.get(expr.get("right"))));
+                    return semant.bool(semant.shallowEqual(
+                        nodes.get(expr.get("left")),
+                        nodes.get(expr.get("right"))
+                    ));
                 }
-                else {
-                    throw `Unrecognized operator ${op}`;
-                }
+                throw `Unrecognized operator ${op}`;
             },
         },
 
@@ -91,8 +91,10 @@ export default transform({
                 fields: ["callee", "'('", "argument", "')'"],
             },
             smallStep: (semant, nodes, expr) =>
-                semant.betaReduce(nodes, expr.get("callee"),
-                                  [ expr.get("argument") ])
+                semant.betaReduce(
+                    nodes, expr.get("callee"),
+                    [ expr.get("argument") ]
+                ),
         },
 
         bool: {
@@ -103,7 +105,7 @@ export default transform({
                 shape: "<>",
                 color: "hotpink",
                 fields: ["value"],
-            }
+            },
         },
 
         lambda: {
@@ -114,16 +116,15 @@ export default transform({
                 shape: "()",
                 fields: ["arg", "'=>'", "body"],
             },
-            betaReduce: (semant, nodes, expr, argIds) => {
-                return core.genericBetaReduce(semant, nodes, {
-                    topNode:    expr,
+            betaReduce: (semant, nodes, expr, argIds) =>
+                core.genericBetaReduce(semant, nodes, {
+                    topNode: expr,
                     targetNode: nodes.get(expr.get("arg")),
-                    argIds:     argIds,
-                    targetName: (node) => node.get("name"),
-                    isVar:      (node) => node.get("type") === "lambdaVar",
-                    varName:    (node) => node.get("name"),
-                });
-            },
+                    argIds,
+                    targetName: node => node.get("name"),
+                    isVar: node => node.get("type") === "lambdaVar",
+                    varName: node => node.get("name"),
+                }),
         },
 
         lambdaArg: {
@@ -176,8 +177,8 @@ export default transform({
                         type: "symbol",
                         symbol: "rect",
                     },
-                }
+                },
             },
-        }
+        },
     },
 });

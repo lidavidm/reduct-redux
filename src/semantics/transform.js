@@ -17,10 +17,9 @@ function defaultProjector(definition) {
         baseProjection = gfx.hexaRect;
     }
 
-    return function(stage, nodes, expr) {
-        let childrenFunc = (id, state) => {
-            return definition.subexpressions.map((field) => state.getIn([ "nodes", id, field ]));
-        };
+    return function defaultProjectorFactory(stage, nodes, expr) {
+        let childrenFunc = (id, state) =>
+            definition.subexpressions.map(field => state.getIn([ "nodes", id, field ]));
 
         if (definition.projection.fields) {
             const fields = [];
@@ -47,10 +46,11 @@ function defaultProjector(definition) {
 }
 
 function textProjector(definition) {
-    return function(stage, nodes, expr) {
-        return gfx.text(definition.projection.text.replace(/\{([a-zA-Z0-9]+)\}/, (match, field) => {
-            return expr.get(field);
-        }));
+    return function textProjectorFactory(stage, nodes, expr) {
+        return gfx.text(definition.projection.text.replace(
+            /\{([a-zA-Z0-9]+)\}/,
+            (match, field) => expr.get(field)
+        ));
     };
 }
 
@@ -61,7 +61,7 @@ function casesProjector(definition) {
             projection: defn,
         }));
     }
-    return function(stage, nodes, expr) {
+    return function casesProjectorFactory(stage, nodes, expr) {
         // TODO: better error handling if not found
         let key = expr.get(definition.projection.on);
         if (definition.projection.key) {
@@ -114,7 +114,7 @@ export default function transform(definition) {
     module.missing = function missing() {
         return { type: "missing", locked: false };
     };
-    module.projections.missing = function(stage, expr) {
+    module.projections.missing = function projectMissing(_stage, _expr) {
         return gfx.roundedRect({
             color: "#555",
             shadowOffset: -2,
@@ -130,9 +130,9 @@ export default function transform(definition) {
     module.vtuple = function vtuple(children) {
         const result = { type: "vtuple", locked: true, numChildren: children.length };
         let i = 0;
-        for (let child of children) {
-            result["child" + i.toString()] = child;
-            i++;
+        for (const child of children) {
+            result[`child${i}`] = child;
+            i += 1;
         }
         return result;
     };
