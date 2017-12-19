@@ -78,9 +78,8 @@ function parseNode(node, macros) {
 
     case "BinaryExpression":
         // TODO: need ExprManager
-        // TODO: don't hardcode op
         return jssemant.binop(parseNode(node.left, macros),
-                              jssemant.op("+"),
+                              jssemant.op(node.operator),
                               parseNode(node.right, macros));
 
     case "CallExpression": {

@@ -40,9 +40,9 @@ export function reduct(semantics, views) {
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
-            const nodes = immutable.Map(act.nodes.map((n) => [ n.get("id"), n ]));
+            // const nodes = immutable.Map(act.nodes.map((n) => [ n.get("id"), n ]));
             return state.merge({
-                nodes: nodes,
+                nodes: act.nodes,
                 goal: act.goal,
                 board: act.board,
                 toolbox: act.toolbox,

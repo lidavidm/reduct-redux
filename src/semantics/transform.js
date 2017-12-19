@@ -14,7 +14,7 @@ function defaultProjector(definition) {
     }
     // TODO: shape option
 
-    return function(stage, expr) {
+    return function(stage, nodes, expr) {
         let childrenFunc = (id, state) => {
             return definition.subexpressions.map((field) => state.getIn([ "nodes", id, field ]));
         };
@@ -44,7 +44,7 @@ function defaultProjector(definition) {
 }
 
 function textProjector(definition) {
-    return function(stage, expr) {
+    return function(stage, nodes, expr) {
         return gfx.text(definition.projection.text.replace(/\{([a-zA-Z0-9]+)\}/, (match, field) => {
             return expr.get(field);
         }));
@@ -58,9 +58,17 @@ function casesProjector(definition) {
             projection: defn,
         }));
     }
-    return function(stage, expr) {
+    return function(stage, nodes, expr) {
         // TODO: better error handling if not found
-        return cases[expr.get(definition.projection.on)](stage, expr);
+        let key = expr.get(definition.projection.on);
+        if (definition.projection.key) {
+            key = definition.projection.key(nodes, expr);
+        }
+        if (typeof cases[key] === "undefined") {
+            throw `Unrecognized case ${key} for projection of ${definition}`;
+        }
+        console.log(expr, key, cases[key]);
+        return cases[key](stage, expr);
     };
 }
 
@@ -173,10 +181,14 @@ export default function transform(definition) {
         return definition.expressions[type].subexpressions;
     };
 
-    module.project = function project(stage, expr) {
+    /**
+     * @param nodes - We have to provide the node map since the store
+     * won't have been updated yet.
+     */
+    module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");
         if (!module.projections[type]) throw `Unrecognized expression type ${type}`;
-        return module.projections[type](stage, expr);
+        return module.projections[type](stage, nodes, expr);
     };
 
     module.smallStep = function smallStep(nodes, expr) {

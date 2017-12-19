@@ -294,9 +294,14 @@ export class Stage {
                 }
 
                 const state = this.getState();
+                const tempNodes = state.get("nodes").withMutations(nodes => {
+                    for (const node of addedNodes) {
+                        nodes.set(node.get("id"), node);
+                    }
+                });
                 for (const node of addedNodes) {
                     console.log("projecting", node.get("id"));
-                    this.views[node.get("id")] = this.semantics.project(this, node);
+                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
                 // Preserve position (TODO: better way)
@@ -315,8 +320,14 @@ export class Stage {
         const result = this.semantics.betaReduce(state.get("nodes"), target, [ arg ]);
         if (result) {
             const [ topNode, resultNodeIds, newNodes ] = result;
+            const tempNodes = state.get("nodes").withMutations(nodes => {
+                for (const node of newNodes) {
+                    nodes.set(node.get("id"), node);
+                }
+            });
+
             for (const node of newNodes) {
-                this.views[node.get("id")] = this.semantics.project(this, node);
+                this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
             }
 
             // Preserve position (TODO: better way)

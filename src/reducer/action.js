@@ -24,35 +24,43 @@ export function startLevel(stage, goal, board, toolbox) {
 
     console.info("action.startLevel: starting with", goal, board, toolbox);
 
-    let _nodes = [];
+    let _nodes = {};
     let _goal = [];
     let _board = [];
     let _toolbox = [];
     for (const expr of goal) {
-        _nodes = _nodes.concat(semantics.flatten(expr));
+        for (const newExpr of semantics.flatten(expr)) {
+            _nodes[newExpr.id] = newExpr;
+        }
         _goal.push(expr.id);
     }
     for (const expr of board) {
-        _nodes = _nodes.concat(semantics.flatten(expr));
+        for (const newExpr of semantics.flatten(expr)) {
+            _nodes[newExpr.id] = newExpr;
+        }
         _board.push(expr.id);
     }
     for (const expr of toolbox) {
-        _nodes = _nodes.concat(semantics.flatten(expr));
+        for (const newExpr of semantics.flatten(expr)) {
+            _nodes[newExpr.id] = newExpr;
+        }
         _toolbox.push(expr.id);
     }
 
-    const finalNodes = [];
-
-    for (const node of _nodes) {
-        const immNode = immutable.Map(node);
-        finalNodes.push(immNode);
-        stage.views[node.id] = semantics.project(stage, immNode);
-        // TODO: real layout algorithm
-        if (_board.indexOf(node.id) >= 0) {
-            stage.views[node.id].pos.x = 50 + Math.floor(Math.random() * 500);
-            stage.views[node.id].pos.y = 100 + Math.floor(Math.random() * 300);
+    const finalNodes = immutable.Map().withMutations(fn => {
+        for (const node of Object.values(_nodes)) {
+            fn.set(node.id, immutable.Map(node));
         }
-    }
+    });
+
+    finalNodes.map((node, nodeId) => {
+        stage.views[nodeId] = semantics.project(stage, finalNodes, node);
+        // TODO: real layout algorithm
+        if (_board.indexOf(nodeId) >= 0) {
+            stage.views[nodeId].pos.x = 50 + Math.floor(Math.random() * 500);
+            stage.views[nodeId].pos.y = 100 + Math.floor(Math.random() * 300);
+        }
+    });
 
     for (const nodeId of _board) {
         stage.views[nodeId].scale = { x: 0.0, y: 0.0 };

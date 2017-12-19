@@ -30,9 +30,20 @@ export default transform({
             fields: [],
             subexpressions: ["left", "op", "right"],
             projection: {
-                type: "default",
-                shape: "()",
-                color: "orange",
+                type: "case",
+                key: (nodes, expr) => nodes.get(expr.get("op")).get("name"),
+                cases: {
+                    "+": {
+                        type: "default",
+                        shape: "()",
+                        color: "orange",
+                    },
+                    "==": {
+                        type: "default",
+                        shape: "<>",
+                        color: "hotpink",
+                    },
+                },
             },
             // TODO: switch to Immutable.Record to clean this up
             smallStep: (semant, nodes, expr) =>
