@@ -46,9 +46,20 @@ export default transform({
                 },
             },
             // TODO: switch to Immutable.Record to clean this up
-            smallStep: (semant, nodes, expr) =>
-                semant.number(nodes.get(expr.get("left")).get("value") +
-                              nodes.get(expr.get("right")).get("value")),
+            smallStep: (semant, nodes, expr) => {
+                const op = nodes.get(expr.get("op")).get("name");
+                if (op === "+") {
+                    return semant.number(nodes.get(expr.get("left")).get("value") +
+                                         nodes.get(expr.get("right")).get("value"));
+                }
+                else if (op === "==") {
+                    return semant.bool(nodes.get(expr.get("left")).get("value") ==
+                                       nodes.get(expr.get("right")).get("value"));
+                }
+                else {
+                    throw `Unrecognized operator ${op}`;
+                }
+            },
         },
 
         apply: {
