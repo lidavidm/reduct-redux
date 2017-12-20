@@ -243,25 +243,28 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.reduce = function reduce(stage, nodes, exp, callback) {
+    module.reduce = function reduce(stage, nodes, exp, callback, errorCallback) {
         // Single-step mode
 
         const kind = module.kind(exp);
-        if (kind !== "expression") return;
+        if (kind !== "expression") {
+            errorCallback(exp.get("id"));
+            return;
+        }
 
         for (const field of module.subexpressions(exp)) {
             const subexprId = exp.get(field);
             const subexpr = nodes.get(subexprId);
             const subexprKind = module.kind(subexpr);
             if (subexprKind !== "value" && subexprKind !== "syntax") {
-                module.reduce(stage, nodes, subexpr, callback);
+                module.reduce(stage, nodes, subexpr, callback, errorCallback);
                 return;
             }
         }
 
-        const errorExp = module.validateStep(nodes, exp);
-        if (errorExp !== null) {
-            // TODO: highlight error
+        const errorExpId = module.validateStep(nodes, exp);
+        if (errorExpId !== null) {
+            errorCallback(errorExpId);
             return;
         }
 
