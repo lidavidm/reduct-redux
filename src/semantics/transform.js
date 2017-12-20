@@ -244,6 +244,23 @@ export default function transform(definition) {
      * small-steps, etc. to allow fine-grained undo/redo.
      */
     module.reduce = function reduce(stage, nodes, exp, callback) {
+        // Single-step mode
+        for (const field of module.subexpressions(exp)) {
+            const subexprId = exp.get(field);
+            const subexpr = nodes.get(subexprId);
+            const kind = module.kind(subexpr);
+            if (kind !== "value" && kind !== "syntax") {
+                module.reduce(stage, nodes, subexpr, callback);
+                return;
+            }
+        }
+
+        const errorExp = module.validateStep(nodes, exp);
+        if (errorExp !== null) {
+            // TODO: highlight error
+            return;
+        }
+
         module
             .animateStep(stage, nodes, exp)
             .then(() => module.smallStep(nodes, exp))

@@ -288,7 +288,7 @@ export class Stage {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
         this.semantics.reduce(this, nodes, node, (topNodeId, newNodeIds, addedNodes) => {
-            const topView = this.views[selectedNode];
+            const topView = this.views[topNodeId];
             const origPos = gfxCore.centerPos(topView);
 
             if (newNodeIds.length !== 1) {
@@ -312,7 +312,7 @@ export class Stage {
             this.views[newNodeIds[0]].pos.x = origPos.x;
             this.views[newNodeIds[0]].pos.y = origPos.y;
 
-            this.store.dispatch(action.smallStep(selectedNode, newNodeIds, addedNodes));
+            this.store.dispatch(action.smallStep(topNodeId, newNodeIds, addedNodes));
             return this.getState();
         });
     }
