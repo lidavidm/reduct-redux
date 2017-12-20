@@ -245,11 +245,15 @@ export default function transform(definition) {
      */
     module.reduce = function reduce(stage, nodes, exp, callback) {
         // Single-step mode
+
+        const kind = module.kind(exp);
+        if (kind !== "expression") return;
+
         for (const field of module.subexpressions(exp)) {
             const subexprId = exp.get(field);
             const subexpr = nodes.get(subexprId);
-            const kind = module.kind(subexpr);
-            if (kind !== "value" && kind !== "syntax") {
+            const subexprKind = module.kind(subexpr);
+            if (subexprKind !== "value" && subexprKind !== "syntax") {
                 module.reduce(stage, nodes, subexpr, callback);
                 return;
             }
