@@ -55,17 +55,22 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
     });
 }
 
-export function blink(projection, opts) {
+export function blink(stage, projection, opts) {
     const options = Object.assign({
         times: 1,
         color: "#F00",
+        speed: 600,
     }, opts);
 
+    const origStroke = projection.stroke;
     projection.stroke = { color: options.color, lineWidth: 0 };
     return animate.tween(projection.stroke, { lineWidth: 3 }, {
         reverse: true,
         repeat: options.times * 2,
-        duration: 600,
+        duration: options.speed,
+    }).then(() => {
+        projection.stroke = origStroke;
+        stage.drawImpl();
     });
 }
 

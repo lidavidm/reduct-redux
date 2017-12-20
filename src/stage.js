@@ -382,7 +382,7 @@ export class Stage {
         const state = this.getState();
         const tweens = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
-            tweens.push(animate.fx.blink(this.views[nodeId], {
+            tweens.push(animate.fx.blink(this, this.views[nodeId], {
                 times: progression.currentLevelIdx === 0 ? 2 : 1,
                 color: "#0FF",
             }));
