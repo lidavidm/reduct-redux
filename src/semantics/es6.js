@@ -7,6 +7,8 @@ export default transform({
 
     expressions: {
         number: {
+            kind: "value",
+            type: "number",
             fields: ["value"],
             subexpressions: [],
             projection: {
@@ -18,6 +20,8 @@ export default transform({
         },
 
         dynamicVariant: {
+            kind: "value",
+            type: expr => expr.get("variant"),
             fields: ["variant", "value"],
             subexpressions: [],
             projection: {
@@ -29,6 +33,7 @@ export default transform({
         },
 
         op: {
+            kind: "syntax",
             fields: ["name"],
             subexpressions: [],
             projection: {
@@ -38,6 +43,7 @@ export default transform({
         },
 
         binop: {
+            kind: "expression",
             fields: [],
             subexpressions: ["left", "op", "right"],
             projection: {
@@ -60,6 +66,33 @@ export default transform({
                         color: "hotpink",
                     },
                 },
+            },
+            // Invariant: all subexpressions are values or syntax;
+            // none are missing. Return the first subexpression, if
+            // any, that is blocking evaluation.
+            validateStep: (semant, nodes, expr) => {
+                const left = expr.get("left");
+                const right = expr.get("right");
+                const op = nodes.get(expr.get("op")).get("name");
+
+                if (op === "+" || op === "-") {
+                    if (semant.typeCheck(left) !== "number") {
+                        return left;
+                    }
+                    else if (semant.typeCheck("right") !== "number") {
+                        return right;
+                    }
+                }
+                else if (op === "==") {
+                    if (semant.typeCheck(left) !== "boolean") {
+                        return left;
+                    }
+                    else if (semant.typeCheck("right") !== "boolean") {
+                        return right;
+                    }
+                }
+
+                return null;
             },
             // TODO: switch to Immutable.Record to clean this up
             smallStep: (semant, nodes, expr) => {
@@ -98,6 +131,8 @@ export default transform({
         },
 
         bool: {
+            kind: "value",
+            type: "boolean",
             fields: ["value"],
             subexpressions: [],
             projection: {
@@ -109,6 +144,7 @@ export default transform({
         },
 
         lambda: {
+            kind: "value",
             fields: [],
             subexpressions: ["arg", "body"],
             projection: {
