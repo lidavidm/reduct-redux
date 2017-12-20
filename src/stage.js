@@ -21,6 +21,8 @@ export class Stage {
 
         this.effects = {};
 
+        this.alreadyWon = false;
+
         this.width = width;
         this.height = height;
 
@@ -77,6 +79,7 @@ export class Stage {
         delete this.goal;
         this.goal = new Goal(this);
         this.toolbox._firstRender = true;
+        this.alreadyWon = false;
     }
 
     get view() {
@@ -381,6 +384,7 @@ export class Stage {
     }
 
     animateVictory(_matching) {
+        this.alreadyWon = true;
         const state = this.getState();
         const tweens = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
