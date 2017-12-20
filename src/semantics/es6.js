@@ -69,7 +69,7 @@ export default transform({
                                          nodes.get(expr.get("right")).get("value"));
                 }
                 else if (op === "-") {
-                    return semant.number(nodes.get(expr.get("left")).get("value") +
+                    return semant.number(nodes.get(expr.get("left")).get("value") -
                                          nodes.get(expr.get("right")).get("value"));
                 }
                 else if (op === "==") {
