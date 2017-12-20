@@ -267,6 +267,31 @@ export default function transform(definition) {
         return !expr.get("locked") || (defn && defn.targetable);
     };
 
+    module.kind = function(expr) {
+        switch (expr.get("type")) {
+        case "missing":
+            return "placeholder";
+        case "vtuple":
+            // This isn't quite right - depends on the children
+            return "expression";
+        default:
+            return definition.expressions[expr.get("type")].kind;
+        }
+    };
+
+    module.typeCheck = function(nodes, expr) {
+        const type = expr.get("type");
+        const typeDefn = definition.expressions[type].type;
+        if (typeof typeDefn === "function") {
+            return typeDefn(nodes, expr);
+        }
+        return typeDefn;
+    };
+
+    module.validateStep = function(nodes, expr) {
+        return null;
+    };
+
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
     module.map = core.genericMap(module.subexpressions);
