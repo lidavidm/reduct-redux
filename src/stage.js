@@ -287,39 +287,35 @@ export class Stage {
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
-        this.semantics.reduce(nodes, node).then((res) => {
+        this.semantics.reduce(this, nodes, node).then((res) => {
             // TODO: have semantics tell us which root node changed
             if (!res) return;
 
             const topView = this.views[selectedNode];
-            topView.opacity = 1.0;
             const origPos = gfxCore.absolutePos(topView);
-            // Right now the animation is hard-coded, but it should be
-            // moved into semantics#animateStep.
-            animate.tween(topView, { opacity: 0 }).then(() => {
-                const [ _, newNodeIds, addedNodes ] = res;
 
-                if (newNodeIds.length !== 1) {
-                    throw "Stepping to produce multiple expressions is currently unsupported.";
-                }
+            const [ _, newNodeIds, addedNodes ] = res;
 
-                const state = this.getState();
-                const tempNodes = state.get("nodes").withMutations(nodes => {
-                    for (const node of addedNodes) {
-                        nodes.set(node.get("id"), node);
-                    }
-                });
+            if (newNodeIds.length !== 1) {
+                throw "Stepping to produce multiple expressions is currently unsupported.";
+            }
+
+            const state = this.getState();
+            const tempNodes = state.get("nodes").withMutations(nodes => {
                 for (const node of addedNodes) {
-                    console.log("projecting", node.get("id"));
-                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                    nodes.set(node.get("id"), node);
                 }
-
-                // Preserve position (TODO: better way)
-                this.views[newNodeIds[0]].pos.x = origPos.x;
-                this.views[newNodeIds[0]].pos.y = origPos.y;
-
-                this.store.dispatch(action.smallStep(selectedNode, newNodeIds, addedNodes));
             });
+            for (const node of addedNodes) {
+                console.log("projecting", node.get("id"));
+                this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+            }
+
+            // Preserve position (TODO: better way)
+            this.views[newNodeIds[0]].pos.x = origPos.x;
+            this.views[newNodeIds[0]].pos.y = origPos.y;
+
+            this.store.dispatch(action.smallStep(selectedNode, newNodeIds, addedNodes));
         });
     }
 

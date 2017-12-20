@@ -1,5 +1,6 @@
 import * as immutable from "immutable";
 import * as gfx from "../gfx/core";
+import * as animate from "../gfx/animate";
 import * as core from "./core";
 
 import { nextId } from "../reducer/reducer";
@@ -230,8 +231,10 @@ export default function transform(definition) {
      * Construct the animation for the small-step that the given
      * expression would take.
      */
-    module.animateStep = function animateStep(nodes, exp) {
-        return Promise.resolve(module.smallStep(nodes, exp));
+    module.animateStep = function animateStep(stage, nodes, exp) {
+        return animate.tween(stage.views[exp.get("id")], {
+            opacity: 0.0,
+        });
     };
 
     /**
@@ -242,8 +245,10 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.reduce = function reduce(nodes, exp) {
-        return module.animateStep(nodes, exp);
+    module.reduce = function reduce(stage, nodes, exp) {
+        return module
+            .animateStep(stage, nodes, exp)
+            .then(() => module.smallStep(nodes, exp));
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {
