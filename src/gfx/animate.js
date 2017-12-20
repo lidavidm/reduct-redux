@@ -1,21 +1,32 @@
 export const Easing = {
-    Linear: (start, stop, t) => {
-        return start + t * (stop - start);
-    },
+    Linear: (start, stop, t) => start + (t * (stop - start)),
 
     Quadratic: {
-        In: (start, stop, t) => {
-            return start + t*t*(stop-start);
+        In: (start, stop, t) => start + (t * t * (stop - start)),
+        Out: (start, stop, t) => start - (t * (t - 2) * (stop - start)),
+        InOut: (start, stop, t) => {
+            t *= 2;
+            if (t < 1) {
+                return start + (((stop - start) * t * t) / 2);
+            }
+            t -= 1;
+            return start - (((stop - start) * ((t * (t - 2)) - 1)) / 2);
         },
     },
 
     Cubic: {
-        In: (start, stop, t) => {
-            return start + t*t*t*(stop-start);
-        },
+        In: (start, stop, t) => start + (t * t * t * (stop - start)),
         Out: (start, stop, t) => {
             t -= 1;
-            return start + (t*t*t + 1)*(stop-start);
+            return start + (((t * t * t) + 1) * (stop - start));
+        },
+        InOut: (start, stop, t) => {
+            t *= 2;
+            if (t < 1) {
+                return start + (((stop - start) * t * t * t) / 2);
+            }
+            t -= 2;
+            return start + (((stop - start) * ((t * t * t) + 2)) / 2);
         },
     },
 };
