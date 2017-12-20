@@ -241,4 +241,4 @@ import * as layout from "./layout";
 import * as shapes from "./shapes";
 
 export * from "./sprite";
-export { layout, shapes };
+export { layout, primitive, shapes };

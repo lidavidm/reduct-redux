@@ -22,7 +22,7 @@ export const Easing = {
 
 
 export class Tween {
-    constructor(clock, target, properties, duration, reverse=false, repeat=1) {
+    constructor(clock, target, properties, duration, options) {
         this.clock = clock;
         this.target = target;
         this.properties = properties;
@@ -32,9 +32,17 @@ export class Tween {
             this.resolve = resolve;
             this.reject = reject;
         });
-        this.reverse = reverse;
-        this.repeat = repeat;
+        this.reverse = false;
+        this.repeat = 1;
         this.reversing = false;
+        this.options = options;
+
+        if ("reverse" in options) {
+            this.reverse = options.reverse;
+        }
+        if ("repeat" in options) {
+            this.repeat = options.repeat;
+        }
 
         this.status = "running";
     }
@@ -61,6 +69,9 @@ export class Tween {
         this.update(1.0);
         this.status = "completed";
         this.resolve();
+        if (this.options.callback) {
+            this.options.callback();
+        }
     }
 }
 
@@ -140,7 +151,7 @@ export class Clock {
             props[prop] = { start: target[prop], end: final, easing };
         }
 
-        const tween = new Tween(this, target, props, duration, options.reverse, options.repeat || 1);
+        const tween = new Tween(this, target, props, duration, options);
         this.tweens.push(tween);
 
         if (!this.running) {
@@ -165,6 +176,23 @@ export function addUpdateListener(f) {
 
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
+}
+
+export function chain(target, ...properties) {
+    if (properties.length % 2 !== 0) {
+        throw "animate.chain: Must provide an even number of properties.";
+    }
+    let base = null;
+    for (let i = 0; i < properties.length; i += 2) {
+        if (base === null) {
+            base = tween(target, properties[i], properties[i + 1]);
+        }
+        else {
+            base = base.then(() => tween(target, properties[i], properties[i + 1]));
+        }
+    }
+
+    return base;
 }
 
 import * as fx from "./fx/fx";

@@ -1,4 +1,5 @@
-import { tween, Easing } from "../animate";
+import * as gfx from "../core";
+import * as animate from "../animate";
 
 export function splosion(stage, pos, color="gold", numOfParticles=20, explosionRadius=100) {
     const parts = [];
@@ -18,13 +19,13 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
         const theta = Math.random() * Math.PI * 2;
         const rad = explosionRadius * ((Math.random() / 2.0) + 0.5);
 
-        tweens.push(tween(record, {
+        tweens.push(animate.tween(record, {
             x: pos.x + (rad * Math.cos(theta)),
             y: pos.y + (rad * Math.sin(theta)),
             r: 0,
         }, {
             duration: 400,
-            easing: Easing.Cubic.Out,
+            easing: animate.Easing.Cubic.Out,
         }));
     }
 
@@ -61,9 +62,86 @@ export function blink(projection, opts) {
     }, opts);
 
     projection.stroke = { color: options.color, lineWidth: 0 };
-    return tween(projection.stroke, { lineWidth: 3 }, {
+    return animate.tween(projection.stroke, { lineWidth: 3 }, {
         reverse: true,
         repeat: options.times * 2,
         duration: 600,
+    });
+}
+
+export function shatter(stage, projection, onFullComplete=null) {
+    const size = gfx.absoluteSize(projection);
+    const pos = gfx.absolutePos(projection);
+    const status = {
+        x: pos.x,
+        y: pos.y,
+        w: size.w,
+        h: size.h,
+        a: 0,
+    };
+
+    const { ctx } = stage;
+    let primitive = (offset) => {
+        gfx.primitive.roundRect(
+            ctx,
+            status.x, status.y + offset,
+            status.w, status.h,
+            projection.radius,
+            true,
+            true
+        );
+    };
+    if (projection.baseType === "hexaRect") {
+        primitive = (offset) => {
+            gfx.primitive.hexaRect(
+                ctx,
+                status.x, status.y + offset,
+                status.w, status.h,
+                true,
+                true
+            );
+        };
+    }
+
+    const id = stage.addEffect({
+        prepare: () => {},
+        draw: () => {
+            ctx.save();
+            ctx.globalAlpha = status.a;
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 3;
+            ctx.fillStyle = "black";
+            primitive(4);
+            ctx.fillStyle = "white";
+            primitive(0);
+            ctx.restore();
+        },
+    });
+
+    return new Promise((resolve, _reject) => {
+        animate.chain(
+            status,
+            { a: 1 },
+            {
+                duration: 400,
+                easing: animate.Easing.Cubic.In,
+                callback: () => {
+                    resolve();
+                },
+            },
+            {
+                a: 0,
+                w: 1.2 * size.w,
+                h: 1.4 * size.h,
+                x: pos.x - (0.1 * size.w),
+                y: pos.y - (0.2 * size.h),
+            },
+            { duration: 600, easing: animate.Easing.Cubic.Out }
+        ).then(() => {
+            stage.removeEffect(id);
+            if (onFullComplete) {
+                onFullComplete();
+            }
+        });
     });
 }

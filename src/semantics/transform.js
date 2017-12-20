@@ -232,9 +232,7 @@ export default function transform(definition) {
      * expression would take.
      */
     module.animateStep = function animateStep(stage, nodes, exp) {
-        return animate.tween(stage.views[exp.get("id")], {
-            opacity: 0.0,
-        });
+        return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
     /**

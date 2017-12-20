@@ -30,6 +30,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
+    projection.baseType = projection.type;
     projection.type = "hbox";
 
     projection.prepare = function(id, state, stage) {
