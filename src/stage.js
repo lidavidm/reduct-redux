@@ -287,14 +287,9 @@ export class Stage {
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
-        this.semantics.reduce(this, nodes, node).then((res) => {
-            // TODO: have semantics tell us which root node changed
-            if (!res) return;
-
+        this.semantics.reduce(this, nodes, node, (topNodeId, newNodeIds, addedNodes) => {
             const topView = this.views[selectedNode];
             const origPos = gfxCore.absolutePos(topView);
-
-            const [ _, newNodeIds, addedNodes ] = res;
 
             if (newNodeIds.length !== 1) {
                 throw "Stepping to produce multiple expressions is currently unsupported.";
@@ -316,6 +311,7 @@ export class Stage {
             this.views[newNodeIds[0]].pos.y = origPos.y;
 
             this.store.dispatch(action.smallStep(selectedNode, newNodeIds, addedNodes));
+            return this.getState();
         });
     }
 

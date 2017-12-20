@@ -243,10 +243,13 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.reduce = function reduce(stage, nodes, exp) {
-        return module
+    module.reduce = function reduce(stage, nodes, exp, callback) {
+        module
             .animateStep(stage, nodes, exp)
-            .then(() => module.smallStep(nodes, exp));
+            .then(() => module.smallStep(nodes, exp))
+            .then(([ topNodeId, newNodeIds, addedNodes ]) => {
+                callback(topNodeId, newNodeIds, addedNodes);
+            });
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {
