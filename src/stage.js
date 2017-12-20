@@ -289,7 +289,7 @@ export class Stage {
         const node = nodes.get(selectedNode);
         this.semantics.reduce(this, nodes, node, (topNodeId, newNodeIds, addedNodes) => {
             const topView = this.views[selectedNode];
-            const origPos = gfxCore.absolutePos(topView);
+            const origPos = gfxCore.centerPos(topView);
 
             if (newNodeIds.length !== 1) {
                 throw "Stepping to produce multiple expressions is currently unsupported.";
@@ -306,7 +306,9 @@ export class Stage {
                 this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
             }
 
-            // Preserve position (TODO: better way)
+            // Preserve position
+            this.views[newNodeIds[0]].anchor.x = 0.5;
+            this.views[newNodeIds[0]].anchor.y = 0.5;
             this.views[newNodeIds[0]].pos.x = origPos.x;
             this.views[newNodeIds[0]].pos.y = origPos.y;
 
