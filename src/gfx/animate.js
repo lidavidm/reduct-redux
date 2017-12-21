@@ -206,5 +206,13 @@ export function chain(target, ...properties) {
     return base;
 }
 
+export function after(ms) {
+    return new Promise((resolve) => {
+        window.setTimeout(function() {
+            resolve();
+        }, ms);
+    });
+}
+
 import * as fx from "./fx/fx";
 export { fx };

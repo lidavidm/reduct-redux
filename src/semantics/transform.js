@@ -302,7 +302,8 @@ export default function transform(definition) {
                         }
 
                         if (!finished && module.kind(innerExp) === "expression") {
-                            takeStep(newState.get("nodes"), innerExp);
+                            animate.after(350)
+                                .then(() => takeStep(newState.get("nodes"), innerExp));
                         }
 
                         // TODO: this doesn't chain properly
