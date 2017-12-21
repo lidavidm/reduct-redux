@@ -235,15 +235,11 @@ export default function transform(definition) {
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
-    /**
-     * A helper function that should abstract over big-step, small-step,
-     * multi-step, and any necessary animation.
-     *
-     * TODO: it needs to also insert intermediate states into the
-     * undo/redo stack, and mark which undo/redo states are big-steps,
-     * small-steps, etc. to allow fine-grained undo/redo.
-     */
-    module.reduce = function reduce(stage, nodes, exp, callback, errorCallback) {
+    module.reducers = {};
+    module.reducers.single = function singleStepReducer(
+        stage, nodes, exp,
+        callback, errorCallback
+    ) {
         // Single-step mode
 
         const kind = module.kind(exp);
@@ -274,6 +270,62 @@ export default function transform(definition) {
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callback(topNodeId, newNodeIds, addedNodes);
             });
+    };
+
+    module.reducers.multi = function multiStepReducer(
+        stage, nodes, exp,
+        callback, errorCallback
+    ) {
+        let finished = false;
+
+        const wrappedErrorCallback = (errorNodeId) => {
+            finished = true;
+            errorCallback(errorNodeId);
+        };
+
+        const takeStep = (innerNodes, innerExp) => {
+            console.log("Taking step on", innerExp.toJS());
+            module.reducers.single(
+                stage, innerNodes, innerExp,
+                (topNodeId, newNodeIds, addedNodes) => {
+                    return callback(topNodeId, newNodeIds, addedNodes).then((newState) => {
+                        if (topNodeId === innerExp.get("id")) {
+                            if (newNodeIds.length !== 1) {
+                                // TODO: create a vtuple?
+                                throw "Cannot step to multiple new nodes!";
+                            }
+                            innerExp = newState.getIn([ "nodes", newNodeIds[0] ]);
+                            console.log("Top node changed", innerExp.toJS(), module.kind(innerExp));
+                        }
+                        else {
+                            innerExp = newState.getIn([ "nodes", innerExp.get("id") ]);
+                        }
+
+                        if (!finished && module.kind(innerExp) === "expression") {
+                            takeStep(newState.get("nodes"), innerExp);
+                        }
+
+                        // TODO: this doesn't chain properly
+                        return Promise.resolve(newState);
+                    });
+                },
+                wrappedErrorCallback
+            );
+        };
+        takeStep(nodes, exp);
+    };
+
+    /**
+     * A helper function that should abstract over big-step, small-step,
+     * multi-step, and any necessary animation.
+     *
+     * TODO: it needs to also insert intermediate states into the
+     * undo/redo stack, and mark which undo/redo states are big-steps,
+     * small-steps, etc. to allow fine-grained undo/redo.
+     */
+    module.reduce = function reduce(stage, nodes, exp, callback, errorCallback) {
+        // return module.reducers.single(stage, nodes, exp, callback, errorCallback);
+        return module.reducers.multi(stage, nodes, exp, callback, errorCallback);
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {

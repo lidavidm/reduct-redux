@@ -315,7 +315,7 @@ export class Stage {
                 this.views[newNodeIds[0]].pos.y = origPos.y;
 
                 this.store.dispatch(action.smallStep(topNodeId, newNodeIds, addedNodes));
-                return this.getState();
+                return Promise.resolve(this.getState());
             },
             (errorNodeId) => {
                 animate.fx.blink(this, this.views[errorNodeId], {
