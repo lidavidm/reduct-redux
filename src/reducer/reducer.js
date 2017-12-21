@@ -87,7 +87,16 @@ export function reduct(semantics, views) {
             else {
                 const parent = newNodes.get(oldNode.get("parent"))
                       .set(oldNode.get("parentField"), act.newNodeIds[0]);
-                newNodes = newNodes.set(oldNode.get("parent"), parent);
+                // TODO: this could be done more efficiently
+                newNodes = newNodes
+                    .set(oldNode.get("parent"), parent)
+                    .set(
+                        act.newNodeIds[0],
+                        newNodes
+                            .get(act.newNodeIds[0])
+                            .set("parent", parent.get("id"))
+                            .set("parentField", oldNode.get("parentField"))
+                    );
             }
 
             return state
