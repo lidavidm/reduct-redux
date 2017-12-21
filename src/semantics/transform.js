@@ -253,7 +253,8 @@ export default function transform(definition) {
             const subexpr = nodes.get(subexprId);
             const subexprKind = module.kind(subexpr);
             if (subexprKind !== "value" && subexprKind !== "syntax") {
-                module.reduce(stage, nodes, subexpr, callback, errorCallback);
+                // TODO: kind of want to be able to chain well
+                module.reducers.single(stage, nodes, subexpr, callback, errorCallback);
                 return;
             }
         }
