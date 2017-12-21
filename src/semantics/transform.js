@@ -285,7 +285,6 @@ export default function transform(definition) {
         };
 
         const takeStep = (innerNodes, innerExp) => {
-            console.log("Taking step on", innerExp.toJS());
             module.reducers.single(
                 stage, innerNodes, innerExp,
                 (topNodeId, newNodeIds, addedNodes) => {
@@ -317,6 +316,61 @@ export default function transform(definition) {
         takeStep(nodes, exp);
     };
 
+    module.reducers.big = function bigStepReducer(
+        stage, nodes, exp,
+        callback, errorCallback
+    ) {
+        const takeStep = (innerNodes, innerExpr) => {
+            const kind = module.kind(innerExpr);
+            if (kind !== "expression") {
+                errorCallback(innerExpr.get("id"));
+                return Promise.reject();
+            }
+
+            for (const field of module.subexpressions(innerExpr)) {
+                const subexprId = innerExpr.get(field);
+                const subexpr = innerNodes.get(subexprId);
+                const subexprKind = module.kind(subexpr);
+                if (subexprKind !== "value" && subexprKind !== "syntax") {
+                    return takeStep(innerNodes, subexpr);
+                }
+            }
+
+            const errorExpId = module.validateStep(innerNodes, innerExpr);
+            if (errorExpId !== null) {
+                errorCallback(errorExpId);
+                return Promise.reject();
+            }
+
+            const [ topNodeId, newNodeIds, addedNodes ] = module.smallStep(innerNodes, innerExpr);
+            return callback(topNodeId, newNodeIds, addedNodes).then((newState) => {
+                return [ newState, topNodeId, newNodeIds ];
+            });
+        };
+
+        let fuel = 20;
+        const loop = (innerNodes, innerExpr) => {
+            if (fuel <= 0) return;
+            fuel -= 1;
+
+            takeStep(innerNodes, innerExpr).then(([ newState, topNodeId, newNodeIds ]) => {
+                if (innerExpr.get("id") === topNodeId) {
+                    // TODO: handle multiple newNodeIds
+                    innerExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
+                }
+                else {
+                    innerExpr = newState.getIn([ "nodes", innerExpr.get("id") ]);
+                }
+
+                if (module.kind(innerExpr) === "expression") {
+                    loop(newState.get("nodes"), innerExpr);
+                }
+            });
+        };
+
+        loop(nodes, exp);
+    };
+
     /**
      * A helper function that should abstract over big-step, small-step,
      * multi-step, and any necessary animation.
@@ -327,7 +381,8 @@ export default function transform(definition) {
      */
     module.reduce = function reduce(stage, nodes, exp, callback, errorCallback) {
         // return module.reducers.single(stage, nodes, exp, callback, errorCallback);
-        return module.reducers.multi(stage, nodes, exp, callback, errorCallback);
+        // return module.reducers.multi(stage, nodes, exp, callback, errorCallback);
+        return module.reducers.big(stage, nodes, exp, callback, errorCallback);
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {
@@ -355,6 +410,14 @@ export default function transform(definition) {
         default:
             return definition.expressions[expr.get("type")].kind;
         }
+    };
+
+    module.hydrate = function(nodes, expr) {
+        return expr.withMutations((e) => {
+            for (const field of module.subexpressions(e)) {
+                e.set(field, module.hydrate(nodes, nodes.get(e.get(field))));
+            }
+        });
     };
 
     module.typeCheck = function(nodes, expr) {
