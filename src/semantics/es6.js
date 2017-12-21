@@ -116,6 +116,7 @@ export default transform({
         },
 
         apply: {
+            kind: "expression",
             fields: [],
             subexpressions: ["callee", "argument"],
             projection: {
@@ -123,11 +124,13 @@ export default transform({
                 shape: "()",
                 fields: ["callee", "'('", "argument", "')'"],
             },
-            smallStep: (semant, nodes, expr) =>
-                semant.betaReduce(
+            smallStep: (semant, nodes, expr) => {
+                const [ topNodeId, newNodeIds, addedNodes ] = semant.betaReduce(
                     nodes, expr.get("callee"),
                     [ expr.get("argument") ]
-                ),
+                );
+                return [ expr.get("id"), newNodeIds, addedNodes ];
+            },
         },
 
         bool: {
@@ -191,6 +194,8 @@ export default transform({
         },
 
         symbol: {
+            kind: "value",
+            type: "symbol",
             fields: ["name"],
             subexpressions: [],
             projection: {
