@@ -340,7 +340,9 @@ export default function transform(definition) {
         stage, nodes, exp,
         callback, errorCallback
     ) {
-        module.reducers.multi(stage, nodes, exp, callback, errorCallback, false);
+        module
+            .animateStep(stage, nodes, exp)
+            .then(() => module.reducers.multi(stage, nodes, exp, callback, errorCallback, false));
     };
 
     /**
