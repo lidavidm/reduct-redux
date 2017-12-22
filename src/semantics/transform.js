@@ -235,36 +235,45 @@ export default function transform(definition) {
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
+    module.singleStep = function singleStep(nodes, expr) {
+        const kind = module.kind(expr);
+        if (kind !== "expression") {
+            return [ "error", expr.get("id") ];
+        }
+
+        for (const field of module.subexpressions(expr)) {
+            const subexprId = expr.get(field);
+            const subexpr = nodes.get(subexprId);
+            const subexprKind = module.kind(subexpr);
+            if (subexprKind !== "value" && subexprKind !== "syntax") {
+                return module.singleStep(nodes, subexpr);
+            }
+        }
+
+        const errorExpId = module.validateStep(nodes, expr);
+        if (errorExpId !== null) {
+            return [ "error", errorExpId ];
+        }
+
+        return [ "success", expr.get("id") ];
+    };
+
     module.reducers = {};
+    // TODO: need a "hybrid multi-step" that big-steps expressions we
+    // don't care about
     module.reducers.single = function singleStepReducer(
         stage, nodes, exp,
         callback, errorCallback
     ) {
         // Single-step mode
 
-        const kind = module.kind(exp);
-        if (kind !== "expression") {
-            errorCallback(exp.get("id"));
+        const [ result, exprId ] = module.singleStep(nodes, exp);
+        if (result === "error") {
+            errorCallback(exprId);
             return;
         }
 
-        for (const field of module.subexpressions(exp)) {
-            const subexprId = exp.get(field);
-            const subexpr = nodes.get(subexprId);
-            const subexprKind = module.kind(subexpr);
-            if (subexprKind !== "value" && subexprKind !== "syntax") {
-                // TODO: kind of want to be able to chain well
-                module.reducers.single(stage, nodes, subexpr, callback, errorCallback);
-                return;
-            }
-        }
-
-        const errorExpId = module.validateStep(nodes, exp);
-        if (errorExpId !== null) {
-            errorCallback(errorExpId);
-            return;
-        }
-
+        exp = nodes.get(exprId);
         module
             .animateStep(stage, nodes, exp)
             .then(() => module.smallStep(nodes, exp))
@@ -321,31 +330,16 @@ export default function transform(definition) {
         callback, errorCallback
     ) {
         const takeStep = (innerNodes, innerExpr) => {
-            const kind = module.kind(innerExpr);
-            if (kind !== "expression") {
-                errorCallback(innerExpr.get("id"));
+            const [ result, exprId ] = module.singleStep(innerNodes, innerExpr);
+            if (result === "error") {
+                errorCallback(exprId);
                 return Promise.reject();
             }
 
-            for (const field of module.subexpressions(innerExpr)) {
-                const subexprId = innerExpr.get(field);
-                const subexpr = innerNodes.get(subexprId);
-                const subexprKind = module.kind(subexpr);
-                if (subexprKind !== "value" && subexprKind !== "syntax") {
-                    return takeStep(innerNodes, subexpr);
-                }
-            }
-
-            const errorExpId = module.validateStep(innerNodes, innerExpr);
-            if (errorExpId !== null) {
-                errorCallback(errorExpId);
-                return Promise.reject();
-            }
-
-            const [ topNodeId, newNodeIds, addedNodes ] = module.smallStep(innerNodes, innerExpr);
-            return callback(topNodeId, newNodeIds, addedNodes).then((newState) => {
-                return [ newState, topNodeId, newNodeIds ];
-            });
+            const [ topNodeId, newNodeIds, addedNodes ] =
+                  module.smallStep(innerNodes, innerNodes.get(exprId));
+            return callback(topNodeId, newNodeIds, addedNodes)
+                .then(newState => [ newState, topNodeId, newNodeIds ]);
         };
 
         let fuel = 20;
