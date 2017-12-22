@@ -37,19 +37,23 @@ export default class Toolbox {
 
     drawBase(state) {
         this.stage.internalViews[this.bg].prepare(null, state, this.stage);
-        this.stage.internalViews[this.bg].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+        this.stage.internalViews[this.bg].draw(null, state, this.stage, {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+        });
     }
 
     drawImpl(state) {
         let x = 20;
-        let y = this.stage.internalViews[this.bg].pos.y;
+        const y = this.stage.internalViews[this.bg].pos.y;
         let i = 0;
 
         for (const nodeId of state.get("toolbox")) {
-            const node = state.get("nodes").get(nodeId);
             const projection = this.stage.views[nodeId];
             projection.scale = { x: 1, y: 1 };
-            const nodeY = y + (90 - projection.size.h) / 2;
+            const nodeY = y + ((90 - projection.size.h) / 2);
             projection.prepare(nodeId, state, this.stage);
             if (nodeId === this.stage._selectedNode) {
                 // Do nothing
@@ -59,21 +63,25 @@ export default class Toolbox {
                 projection.pos.y = nodeY;
                 projection.animating = true;
                 animate
-                    .tween(projection.pos, { x: x }, {
+                    .tween(projection.pos, { x }, {
                         easing: animate.Easing.Cubic.Out,
                         duration: 250,
                     })
                     .delay(350 * Math.log(2 + i))
-                    .then(() => projection.animating = false);
+                    .then(() => {
+                        projection.animating = false;
+                    });
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
                 projection.animating = true;
                 animate
-                    .tween(projection.pos, { x: x, y: nodeY }, {
+                    .tween(projection.pos, { x, y: nodeY }, {
                         duration: 250,
                         easing: animate.Easing.Cubic.Out,
                     })
-                    .then(() => projection.animating = false);
+                    .then(() => {
+                        projection.animating = false;
+                    });
             }
             else if (!projection.animating) {
                 projection.pos.x = x;
@@ -81,7 +89,12 @@ export default class Toolbox {
             }
 
             x += projection.size.w + 20;
-            projection.draw(nodeId, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+            projection.draw(nodeId, state, this.stage, {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+            });
             i++;
         }
 
