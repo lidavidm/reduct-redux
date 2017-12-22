@@ -63,7 +63,7 @@ export default class Toolbox {
                         easing: animate.Easing.Cubic.Out,
                         duration: 250,
                     })
-                    .delay(150 * i)
+                    .delay(350 * Math.log(2 + i))
                     .then(() => projection.animating = false);
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
