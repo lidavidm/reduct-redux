@@ -284,50 +284,7 @@ export default function transform(definition) {
 
     module.reducers.multi = function multiStepReducer(
         stage, nodes, exp,
-        callback, errorCallback
-    ) {
-        let finished = false;
-
-        const wrappedErrorCallback = (errorNodeId) => {
-            finished = true;
-            errorCallback(errorNodeId);
-        };
-
-        const takeStep = (innerNodes, innerExp) => {
-            module.reducers.single(
-                stage, innerNodes, innerExp,
-                (topNodeId, newNodeIds, addedNodes) => {
-                    return callback(topNodeId, newNodeIds, addedNodes).then((newState) => {
-                        if (topNodeId === innerExp.get("id")) {
-                            if (newNodeIds.length !== 1) {
-                                // TODO: create a vtuple?
-                                throw "Cannot step to multiple new nodes!";
-                            }
-                            innerExp = newState.getIn([ "nodes", newNodeIds[0] ]);
-                            console.log("Top node changed", innerExp.toJS(), module.kind(innerExp));
-                        }
-                        else {
-                            innerExp = newState.getIn([ "nodes", innerExp.get("id") ]);
-                        }
-
-                        if (!finished && module.kind(innerExp) === "expression") {
-                            animate.after(350)
-                                .then(() => takeStep(newState.get("nodes"), innerExp));
-                        }
-
-                        // TODO: this doesn't chain properly
-                        return Promise.resolve(newState);
-                    });
-                },
-                wrappedErrorCallback
-            );
-        };
-        takeStep(nodes, exp);
-    };
-
-    module.reducers.big = function bigStepReducer(
-        stage, nodes, exp,
-        callback, errorCallback
+        callback, errorCallback, animated=true
     ) {
         const takeStep = (innerNodes, innerExpr) => {
             const [ result, exprId ] = module.singleStep(innerNodes, innerExpr);
@@ -336,10 +293,18 @@ export default function transform(definition) {
                 return Promise.reject();
             }
 
-            const [ topNodeId, newNodeIds, addedNodes ] =
-                  module.smallStep(innerNodes, innerNodes.get(exprId));
-            return callback(topNodeId, newNodeIds, addedNodes)
-                .then(newState => [ newState, topNodeId, newNodeIds ]);
+            innerExpr = innerNodes.get(exprId);
+            const nextStep = () => {
+                const [ topNodeId, newNodeIds, addedNodes ] =
+                      module.smallStep(innerNodes, innerExpr);
+                return callback(topNodeId, newNodeIds, addedNodes)
+                    .then(newState => [ newState, topNodeId, newNodeIds ]);
+            };
+
+            if (animated) {
+                return module.animateStep(stage, innerNodes, innerExpr).then(() => nextStep());
+            }
+            return nextStep();
         };
 
         let fuel = 20;
@@ -357,12 +322,25 @@ export default function transform(definition) {
                 }
 
                 if (module.kind(innerExpr) === "expression") {
-                    loop(newState.get("nodes"), innerExpr);
+                    if (animated) {
+                        animate.after(350)
+                            .then(() => loop(newState.get("nodes"), innerExpr));
+                    }
+                    else {
+                        loop(newState.get("nodes"), innerExpr);
+                    }
                 }
             });
         };
 
         loop(nodes, exp);
+    };
+
+    module.reducers.big = function bigStepReducer(
+        stage, nodes, exp,
+        callback, errorCallback
+    ) {
+        module.reducers.multi(stage, nodes, exp, callback, errorCallback, false);
     };
 
     /**
