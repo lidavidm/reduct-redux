@@ -173,9 +173,11 @@ export class Clock {
     }
 
     start() {
-        this.running = true;
-        this.lastTimestamp = window.performance.now();
-        window.requestAnimationFrame(this.tick.bind(this));
+        if (!this.running) {
+            this.running = true;
+            this.lastTimestamp = window.performance.now();
+            window.requestAnimationFrame(this.tick.bind(this));
+        }
     }
 }
 
