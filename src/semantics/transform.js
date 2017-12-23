@@ -404,7 +404,13 @@ export default function transform(definition) {
     };
 
     module.validateStep = function(nodes, expr) {
-        return null;
+        const defn = definition.expressions[expr.get("type")];
+        if (!defn) return null;
+
+        const validator = defn.validateStep;
+        if (!validator) return null;
+
+        return validator(module, nodes, expr);
     };
 
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);

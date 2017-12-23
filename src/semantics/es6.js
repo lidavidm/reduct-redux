@@ -72,22 +72,21 @@ export default transform({
             // any, that is blocking evaluation.
             validateStep: (semant, nodes, expr) => {
                 const left = expr.get("left");
+                const leftExpr = nodes.get(left);
                 const right = expr.get("right");
+                const rightExpr = nodes.get(right);
                 const op = nodes.get(expr.get("op")).get("name");
 
                 if (op === "+" || op === "-") {
-                    if (semant.typeCheck(left) !== "number") {
+                    if (semant.typeCheck(nodes, leftExpr) !== "number") {
                         return left;
                     }
-                    else if (semant.typeCheck("right") !== "number") {
+                    else if (semant.typeCheck(nodes, rightExpr) !== "number") {
                         return right;
                     }
                 }
                 else if (op === "==") {
-                    if (semant.typeCheck(left) !== "boolean") {
-                        return left;
-                    }
-                    else if (semant.typeCheck("right") !== "boolean") {
+                    if (semant.typeCheck(nodes, leftExpr) !== semant.typeCheck(nodes, rightExpr)) {
                         return right;
                     }
                 }
