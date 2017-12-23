@@ -400,6 +400,9 @@ export default function transform(definition) {
         if (typeof typeDefn === "function") {
             return typeDefn(module, nodes, expr);
         }
+        else if (typeof typeDefn === "undefined") {
+            return null;
+        }
         return typeDefn;
     };
 
