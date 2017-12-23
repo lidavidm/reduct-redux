@@ -132,16 +132,23 @@ export function baseShape(name, defaults, draw) {
             }
 
             if (projection.color) ctx.fillStyle = projection.color;
-            const shouldStroke = !!(node && node.get("parent") && node.get("locked")) &&
-                  projection.strokeWhenChild;
-            if (shouldStroke) {
+            let shouldStroke = false;
+            if (projection.stroke) {
+                shouldStroke = true;
+                ctx.lineWidth = projection.stroke.lineWidth;
+                ctx.strokeStyle = projection.stroke.color;
+            }
+            else if (!!(node && node.get("parent") && node.get("locked")) &&
+                     projection.strokeWhenChild) {
                 // Stroke if we have a parent to make it clearer.
                 ctx.strokeStyle = "gray";
                 ctx.lineWidth = 1;
+                shouldStroke = true;
             }
-            else if (projection.stroke) {
-                ctx.lineWidth = projection.stroke.lineWidth;
-                ctx.strokeStyle = projection.stroke.color;
+            else if (stage._hoverNode === id) {
+                stage.ctx.strokeStyle = "yellow";
+                stage.ctx.lineWidth = 2;
+                shouldStroke = true;
             }
 
             if (projection.opacity) ctx.globalAlpha = projection.opacity;
@@ -152,7 +159,7 @@ export function baseShape(name, defaults, draw) {
                  offset.sy * projection.scale.y * projection.size.h,
                  sx, sy,
                  projection.stroke || shouldStroke);
-            hoverOutline(id, projection, stage, offset);
+            // hoverOutline(id, projection, stage, offset);
             debugDraw(ctx, projection, offset);
 
             ctx.restore();
