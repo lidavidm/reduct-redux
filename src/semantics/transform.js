@@ -398,7 +398,7 @@ export default function transform(definition) {
         const type = expr.get("type");
         const typeDefn = definition.expressions[type].type;
         if (typeof typeDefn === "function") {
-            return typeDefn(nodes, expr);
+            return typeDefn(module, nodes, expr);
         }
         return typeDefn;
     };

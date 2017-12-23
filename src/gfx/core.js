@@ -132,6 +132,7 @@ export function baseShape(name, defaults, draw) {
             }
 
             if (projection.color) ctx.fillStyle = projection.color;
+
             let shouldStroke = false;
             if (projection.stroke) {
                 shouldStroke = true;
@@ -149,6 +150,14 @@ export function baseShape(name, defaults, draw) {
                 stage.ctx.strokeStyle = "yellow";
                 stage.ctx.lineWidth = 2;
                 shouldStroke = true;
+            }
+            else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
+                const type = stage.semantics.typeCheck(state.get("nodes"), node);
+                if (type !== null && type !== "incomplete") {
+                    stage.ctx.strokeStyle = "DeepPink";
+                    stage.ctx.lineWidth = 4;
+                    shouldStroke = true;
+                }
             }
 
             if (projection.opacity) ctx.globalAlpha = projection.opacity;
@@ -172,7 +181,7 @@ export const roundedRect = baseShape("roundedRect", {
     color: "lightgray",
     radius: 20,
     shadowColor: "#000",
-    shadowOffset: 2,
+    shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
     primitive.roundRect(
@@ -188,7 +197,7 @@ export const hexaRect = baseShape("hexaRect", {
     color: "lightgray",
     radius: 20,
     shadowColor: "#000",
-    shadowOffset: 2,
+    shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
     primitive.hexaRect(

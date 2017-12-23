@@ -21,7 +21,7 @@ export default transform({
 
         dynamicVariant: {
             kind: "value",
-            type: expr => expr.get("variant"),
+            type: (semant, nodes, expr) => expr.get("variant"),
             fields: ["variant", "value"],
             subexpressions: [],
             projection: {
@@ -66,6 +66,31 @@ export default transform({
                         color: "hotpink",
                     },
                 },
+            },
+            type: (semant, nodes, expr) => {
+                const opExpr = nodes.get(expr.get("op"));
+                if (!opExpr) return "incomplete";
+
+                const left = expr.get("left");
+                const leftExpr = nodes.get(left);
+                // TODO: function to check if expr is in missing class
+                // (type box, etc)
+                if (leftExpr.get("type") === "missing") return "incomplete";
+                const leftType = semant.typeCheck(nodes, leftExpr);
+
+                const right = expr.get("right");
+                const rightExpr = nodes.get(right);
+                if (rightExpr.get("type") === "missing") return "incomplete";
+                const rightType = semant.typeCheck(nodes, rightExpr);
+
+                const op = opExpr.get("name");
+                if (op === "==") return "boolean";
+
+                if (leftType === rightType) {
+                    return leftType;
+                }
+                // TODO: throw exception, present to player?
+                return null;
             },
             // Invariant: all subexpressions are values or syntax;
             // none are missing. Return the first subexpression, if
