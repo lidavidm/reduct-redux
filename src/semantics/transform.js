@@ -117,7 +117,15 @@ export default function transform(definition) {
     module.missing = function missing() {
         return { type: "missing", locked: false };
     };
-    module.projections.missing = function projectMissing(_stage, _expr) {
+    module.projections.missing = function projectMissing(stage, nodes, expr) {
+        if (expr.get("parentField") === "condition") {
+            const hex = gfx.hexaRect({
+                color: "#555",
+                shadowOffset: -2,
+            });
+            hex.size.w = 75;
+            return hex;
+        }
         return gfx.roundedRect({
             color: "#555",
             shadowOffset: -2,
