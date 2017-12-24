@@ -118,6 +118,7 @@ export default function transform(definition) {
         return { type: "missing", locked: false };
     };
     module.projections.missing = function projectMissing(stage, nodes, expr) {
+        // TODO: use a system based on type inference?
         if (expr.get("parentField") === "condition") {
             const hex = gfx.hexaRect({
                 color: "#555",
@@ -348,6 +349,7 @@ export default function transform(definition) {
         stage, nodes, exp,
         callback, errorCallback
     ) {
+        // TODO: error callback needs to happen first
         module
             .animateStep(stage, nodes, exp)
             .then(() => module.reducers.multi(stage, nodes, exp, callback, errorCallback, false));

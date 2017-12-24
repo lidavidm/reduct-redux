@@ -146,8 +146,8 @@ export class Stage {
         let root = null;
         let toolbox = false;
 
-        for (const nodeId of state.get("board")) {
-            if (nodeId == this._selectedNode) continue;
+        for (const nodeId of state.get("board").toArray().reverse()) {
+            if (nodeId === this._selectedNode) continue;
 
             let node = state.getIn([ "nodes", nodeId ]);
             const projection = this.views[nodeId];
@@ -157,8 +157,10 @@ export class Stage {
 
                 let subexprFields = this.semantics.subexpressions(node);
 
-                pos.x -= projection.pos.x - projection.anchor.x * projection.size.w * projection.scale.x;
-                pos.y -= projection.pos.y - projection.anchor.y * projection.size.h * projection.scale.y;
+                pos.x -= projection.pos.x -
+                    (projection.anchor.x * projection.size.w * projection.scale.x);
+                pos.y -= projection.pos.y -
+                    (projection.anchor.y * projection.size.h * projection.scale.y);
 
                 outerLoop:
                 while (subexprFields.length > 0) {
@@ -178,6 +180,7 @@ export class Stage {
                     }
                     subexprFields = [];
                 }
+                break;
             }
         }
 
@@ -251,6 +254,7 @@ export class Stage {
         else if (this._dragged && this._hoverNode &&
                  state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
             // Drag something into hole
+            // TODO: use type inference to decide whether hole can be filled
             this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
         }
         else if (this._dragged && this._hoverNode && this._selectedNode) {
