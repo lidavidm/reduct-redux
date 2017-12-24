@@ -139,6 +139,36 @@ export default transform({
             },
         },
 
+        conditional: {
+            kind: "expression",
+            fields: [],
+            // TODO: need some way to specify that "positive" and
+            // "negative" should not be evaluated
+            subexpressions: ["condition", "positive", "negative"],
+            projection: {
+                type: "default",
+                shape: "()",
+                color: "lightblue",
+                fields: ["'if'", "condition", "'then'", "positive", "'else'", "negative"],
+            },
+            // type: (semant, nodes, expr) => {
+            // },
+            // validateStep: (semant, nodes, expr) => {
+            // },
+            smallStep: (semant, nodes, expr) => {
+                const cond = nodes.get(expr.get("condition")).get("value");
+                // TODO: do this cleanup in evaluation?
+                if (cond) {
+                    return nodes.get(expr.get("positive"))
+                        .delete("parent")
+                        .delete("parentField");
+                }
+                return nodes.get(expr.get("negative"))
+                    .delete("parent")
+                    .delete("parentField");
+            },
+        },
+
         apply: {
             kind: "expression",
             fields: [],

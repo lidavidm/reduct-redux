@@ -99,6 +99,14 @@ function parseNode(node, macros) {
                               parseNode(node.arguments[0], macros));
     }
 
+    case "ConditionalExpression": {
+        return jssemant.conditional(
+            parseNode(node.test, macros),
+            parseNode(node.consequent, macros),
+            parseNode(node.alternate, macros)
+        );
+    }
+
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
     }
 }
