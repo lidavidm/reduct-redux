@@ -418,23 +418,28 @@ export default function transform(definition) {
     };
 
     module.collectTypes = function collectTypes(nodes, rootExpr) {
-        const result = {};
+        const result = new Map();
 
         const step = function step(expr) {
             const id = expr.get("id");
-            if (typeof result[id] === "undefined") {
-                result[id] = new Set();
+            if (!result.has(id)) {
+                result.set(id, new Set());
             }
 
-                const type = expr.get("type");
-                const typeDefn = definition.expressions[type].type;
+            const type = expr.get("type");
+            const exprDefn = definition.expressions[type];
+            if (!exprDefn) {
+                console.warn(`No expression definition for ${type}`);
+            }
+            else {
+                const typeDefn = exprDefn.type;
                 if (typeof typeDefn === "function") {
                     const types = typeDefn(module, nodes, result, expr);
-                    for (const [ id, ty ] of Object.entries(types)) {
-                        if (typeof result[id] === "undefined") {
-                            result[id] = new Set();
+                    for (const [ id, ty ] of types.entries()) {
+                        if (!result.has(id)) {
+                            result.set(id, new Set());
                         }
-                        result[id].add(ty);
+                        result.get(id).add(ty);
                     }
                 }
                 else if (typeof typeDefn === "undefined") {
@@ -442,8 +447,9 @@ export default function transform(definition) {
                     // result[id].add("unknown");
                 }
                 else {
-                    result[id].add(typeDefn);
+                    result.get(id).add(typeDefn);
                 }
+            }
 
             for (const field of module.subexpressions(expr)) {
                 step(nodes.get(expr.get(field)));

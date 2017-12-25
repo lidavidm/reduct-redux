@@ -95,19 +95,19 @@ export default transform({
             type: (semant, nodes, types, expr) => {
                 const opExpr = nodes.get(expr.get("op"));
                 const id = expr.get("id");
-                const result = {};
+                const result = new Map();
                 if (!opExpr) {
-                    result[id] = "unknown";
+                    result.set(id, "unknown");
                 }
 
                 const op = opExpr.get("name");
                 if (op === "==") {
-                    result[id] = "boolean";
+                    result.set(id, "boolean");
                 }
                 else {
-                    result[id] = "number";
-                    result[expr.get("left")] = "number";
-                    result[expr.get("right")] = "number";
+                    result.set(id, "number");
+                    result.set(expr.get("left"), "number");
+                    result.set(expr.get("right"), "number");
                 }
 
                 return result;
