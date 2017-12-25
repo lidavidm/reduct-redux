@@ -404,6 +404,7 @@ export default function transform(definition) {
         });
     };
 
+    // TODO: get rid of this?
     module.typeCheck = function(nodes, expr) {
         const type = expr.get("type");
         const typeDefn = definition.expressions[type].type;
@@ -414,6 +415,44 @@ export default function transform(definition) {
             return null;
         }
         return typeDefn;
+    };
+
+    module.collectTypes = function collectTypes(nodes, rootExpr) {
+        const result = {};
+
+        const step = function step(expr) {
+            const id = expr.get("id");
+            if (typeof result[id] === "undefined") {
+                result[id] = new Set();
+            }
+
+                const type = expr.get("type");
+                const typeDefn = definition.expressions[type].type;
+                if (typeof typeDefn === "function") {
+                    const types = typeDefn(module, nodes, result, expr);
+                    for (const [ id, ty ] of Object.entries(types)) {
+                        if (typeof result[id] === "undefined") {
+                            result[id] = new Set();
+                        }
+                        result[id].add(ty);
+                    }
+                }
+                else if (typeof typeDefn === "undefined") {
+                    // TODO: define constants/typing module
+                    // result[id].add("unknown");
+                }
+                else {
+                    result[id].add(typeDefn);
+                }
+
+            for (const field of module.subexpressions(expr)) {
+                step(nodes.get(expr.get(field)));
+            }
+        };
+
+        step(rootExpr);
+
+        return result;
     };
 
     module.validateStep = function(nodes, expr) {

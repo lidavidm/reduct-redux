@@ -152,12 +152,12 @@ export function baseShape(name, defaults, draw) {
                 shouldStroke = true;
             }
             else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
-                const type = stage.semantics.typeCheck(state.get("nodes"), node);
-                if (type !== null && type !== "incomplete") {
-                    stage.ctx.strokeStyle = "DeepPink";
-                    stage.ctx.lineWidth = 4;
-                    shouldStroke = true;
-                }
+                // const type = stage.semantics.typeCheck(state.get("nodes"), node);
+                // if (type !== null && type !== "incomplete") {
+                //     stage.ctx.strokeStyle = "DeepPink";
+                //     stage.ctx.lineWidth = 4;
+                //     shouldStroke = true;
+                // }
             }
 
             if (projection.opacity) ctx.globalAlpha = projection.opacity;

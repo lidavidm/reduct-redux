@@ -1,4 +1,5 @@
 import * as immutable from "immutable";
+import { compose } from "redux";
 import { combineReducers } from "redux-immutable";
 
 import * as action from "./action";
@@ -225,11 +226,19 @@ export function reduct(semantics, views) {
         }
     }
 
+    function annotateTypes(state=initialProgram) {
+        const nodes = state.get("nodes");
+        for (const id of state.get("board")) {
+            console.log(semantics.collectTypes(nodes, nodes.get(id)));
+        }
+        return state;
+    }
+
     return {
         reducer: combineReducers({
             hover,
-            program: undoable(program, {
-                actionFilter: (act) => act.type === action.RAISE,
+            program: undoable(compose(annotateTypes, program), {
+                actionFilter: act => act.type === action.RAISE,
                 extraState: (state, newState) => {
                     const result = {};
                     for (const id of state.get("board")) {

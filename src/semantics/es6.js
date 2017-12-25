@@ -67,57 +67,77 @@ export default transform({
                     },
                 },
             },
-            type: (semant, nodes, expr) => {
+            // type: (semant, nodes, expr) => {
+            //     const opExpr = nodes.get(expr.get("op"));
+            //     if (!opExpr) return "incomplete";
+
+            //     const left = expr.get("left");
+            //     const leftExpr = nodes.get(left);
+            //     // TODO: function to check if expr is in missing class
+            //     // (type box, etc)
+            //     if (leftExpr.get("type") === "missing") return "incomplete";
+            //     const leftType = semant.typeCheck(nodes, leftExpr);
+
+            //     const right = expr.get("right");
+            //     const rightExpr = nodes.get(right);
+            //     if (rightExpr.get("type") === "missing") return "incomplete";
+            //     const rightType = semant.typeCheck(nodes, rightExpr);
+
+            //     const op = opExpr.get("name");
+            //     if (op === "==") return "boolean";
+
+            //     if (leftType === rightType) {
+            //         return leftType;
+            //     }
+            //     // TODO: throw exception, present to player?
+            //     return null;
+            // },
+            type: (semant, nodes, types, expr) => {
                 const opExpr = nodes.get(expr.get("op"));
-                if (!opExpr) return "incomplete";
-
-                const left = expr.get("left");
-                const leftExpr = nodes.get(left);
-                // TODO: function to check if expr is in missing class
-                // (type box, etc)
-                if (leftExpr.get("type") === "missing") return "incomplete";
-                const leftType = semant.typeCheck(nodes, leftExpr);
-
-                const right = expr.get("right");
-                const rightExpr = nodes.get(right);
-                if (rightExpr.get("type") === "missing") return "incomplete";
-                const rightType = semant.typeCheck(nodes, rightExpr);
+                const id = expr.get("id");
+                const result = {};
+                if (!opExpr) {
+                    result[id] = "unknown";
+                }
 
                 const op = opExpr.get("name");
-                if (op === "==") return "boolean";
-
-                if (leftType === rightType) {
-                    return leftType;
+                if (op === "==") {
+                    result[id] = "boolean";
                 }
-                // TODO: throw exception, present to player?
-                return null;
+                else {
+                    result[id] = "number";
+                    result[expr.get("left")] = "number";
+                    result[expr.get("right")] = "number";
+                }
+
+                return result;
             },
             // Invariant: all subexpressions are values or syntax;
             // none are missing. Return the first subexpression, if
             // any, that is blocking evaluation.
-            validateStep: (semant, nodes, expr) => {
-                const left = expr.get("left");
-                const leftExpr = nodes.get(left);
-                const right = expr.get("right");
-                const rightExpr = nodes.get(right);
-                const op = nodes.get(expr.get("op")).get("name");
+            // validateStep: (semant, nodes, expr) => {
+            //     const left = expr.get("left");
+            //     const leftExpr = nodes.get(left);
+            //     const right = expr.get("right");
+            //     const rightExpr = nodes.get(right);
+            //     const op = nodes.get(expr.get("op")).get("name");
 
-                if (op === "+" || op === "-") {
-                    if (semant.typeCheck(nodes, leftExpr) !== "number") {
-                        return left;
-                    }
-                    else if (semant.typeCheck(nodes, rightExpr) !== "number") {
-                        return right;
-                    }
-                }
-                else if (op === "==") {
-                    if (semant.typeCheck(nodes, leftExpr) !== semant.typeCheck(nodes, rightExpr)) {
-                        return right;
-                    }
-                }
+            //     if (op === "+" || op === "-") {
+            //         if (semant.typeCheck(nodes, leftExpr) !== "number") {
+            //             return left;
+            //         }
+            //         else if (semant.typeCheck(nodes, rightExpr) !== "number") {
+            //             return right;
+            //         }
+            //     }
+            //     else if (op === "==") {
+            //         if (semant.typeCheck(nodes, leftExpr) !== semant.typeCheck(nodes, rightExpr)) {
+            //             return right;
+            //         }
+            //     }
 
-                return null;
-            },
+            //     return null;
+            // },
             // TODO: switch to Immutable.Record to clean this up
             smallStep: (semant, nodes, expr) => {
                 const op = nodes.get(expr.get("op")).get("name");
