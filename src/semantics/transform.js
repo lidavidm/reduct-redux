@@ -426,6 +426,10 @@ export default function transform(definition) {
                 result.set(id, new Set());
             }
 
+            for (const field of module.subexpressions(expr)) {
+                step(nodes.get(expr.get(field)));
+            }
+
             const type = expr.get("type");
             const exprDefn = definition.expressions[type];
             if (!exprDefn) {
@@ -449,10 +453,6 @@ export default function transform(definition) {
                 else {
                     result.get(id).add(typeDefn);
                 }
-            }
-
-            for (const field of module.subexpressions(expr)) {
-                step(nodes.get(expr.get(field)));
             }
         };
 
