@@ -228,7 +228,7 @@ export function reduct(semantics, views) {
 
     function annotateTypes(state=initialProgram) {
         const annotatedNodes = state.get("nodes").withMutations((n) => {
-            for (const id of state.get("board")) {
+            for (const id of state.get("board").concat(state.get("toolbox"))) {
                 const types = semantics.collectTypes(n, n.get(id));
                 for (const [ exprId, exprType ] of types.entries()) {
                     if (exprType.size === 1) {
