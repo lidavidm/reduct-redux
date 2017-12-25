@@ -438,12 +438,14 @@ export default function transform(definition) {
             else {
                 const typeDefn = exprDefn.type;
                 if (typeof typeDefn === "function") {
-                    const types = typeDefn(module, nodes, result, expr);
-                    for (const [ id, ty ] of types.entries()) {
-                        if (!result.has(id)) {
-                            result.set(id, new Set());
+                    const { types, complete } = typeDefn(module, nodes, result, expr);
+                    if (complete) {
+                        for (const [ id, ty ] of types.entries()) {
+                            if (!result.has(id)) {
+                                result.set(id, new Set());
+                            }
+                            result.get(id).add(ty);
                         }
-                        result.get(id).add(ty);
                     }
                 }
                 else if (typeof typeDefn === "undefined") {

@@ -110,7 +110,16 @@ export default transform({
                     result.set(expr.get("right"), "number");
                 }
 
-                return result;
+                return {
+                    types: result,
+                    // TODO: helper function, account for boolean
+                    complete: types.has(expr.get("left")) &&
+                        types.get(expr.get("left")).size === 1 &&
+                        types.get(expr.get("left")).has("number") &&
+                        types.has(expr.get("right")) &&
+                        types.get(expr.get("right")).size === 1 &&
+                        types.get(expr.get("right")).has("number"),
+                };
             },
             // Invariant: all subexpressions are values or syntax;
             // none are missing. Return the first subexpression, if
