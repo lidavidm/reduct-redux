@@ -150,8 +150,24 @@ export default transform({
                 color: "lightblue",
                 fields: ["'if'", "condition", "'then'", "positive", "'else'", "negative"],
             },
-            // type: (semant, nodes, expr) => {
-            // },
+            type: (semant, nodes, types, expr) => {
+                const result = new Map();
+                const positiveTy = types.get(expr.get("positive"));
+                const branchesMatch =
+                      positiveTy === types.get(expr.get("negative")) &&
+                      positiveTy !== null &&
+                      typeof positiveTy !== "undefined";
+                if (branchesMatch) {
+                    result.set(expr.get("id"), types.get(expr.get("positive")));
+                }
+                result.set(expr.get("condition"), "boolean");
+
+                return {
+                    types: result,
+                    // TODO:
+                    complete: branchesMatch,
+                };
+            },
             // validateStep: (semant, nodes, expr) => {
             // },
             smallStep: (semant, nodes, expr) => {
