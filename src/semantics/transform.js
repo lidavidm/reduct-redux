@@ -419,12 +419,26 @@ export default function transform(definition) {
 
     module.collectTypes = function collectTypes(nodes, rootExpr) {
         const result = new Map();
+        // TODO: explicitly mark completeness
+
+        // Update the type map with the type for the expression.
+        const update = function update(id, ty) {
+            if (!result.has(id)) {
+                result.set(id, ty);
+            }
+            else {
+                const prevTy = result.get(id);
+                if (prevTy === "unknown") {
+                    result.set(id, ty);
+                }
+                else if (prevTy !== ty) {
+                    result.set(id, "error");
+                }
+            }
+        };
 
         const step = function step(expr) {
             const id = expr.get("id");
-            if (!result.has(id)) {
-                result.set(id, new Set());
-            }
 
             for (const field of module.subexpressions(expr)) {
                 step(nodes.get(expr.get(field)));
@@ -439,13 +453,8 @@ export default function transform(definition) {
                 const typeDefn = exprDefn.type;
                 if (typeof typeDefn === "function") {
                     const { types, complete } = typeDefn(module, nodes, result, expr);
-                    if (complete) {
-                        for (const [ id, ty ] of types.entries()) {
-                            if (!result.has(id)) {
-                                result.set(id, new Set());
-                            }
-                            result.get(id).add(ty);
-                        }
+                    for (const entry of types.entries()) {
+                        update(...entry);
                     }
                 }
                 else if (typeof typeDefn === "undefined") {
@@ -453,7 +462,7 @@ export default function transform(definition) {
                     // result[id].add("unknown");
                 }
                 else {
-                    result.get(id).add(typeDefn);
+                    update(id, typeDefn);
                 }
             }
         };

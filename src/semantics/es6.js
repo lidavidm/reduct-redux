@@ -67,31 +67,6 @@ export default transform({
                     },
                 },
             },
-            // type: (semant, nodes, expr) => {
-            //     const opExpr = nodes.get(expr.get("op"));
-            //     if (!opExpr) return "incomplete";
-
-            //     const left = expr.get("left");
-            //     const leftExpr = nodes.get(left);
-            //     // TODO: function to check if expr is in missing class
-            //     // (type box, etc)
-            //     if (leftExpr.get("type") === "missing") return "incomplete";
-            //     const leftType = semant.typeCheck(nodes, leftExpr);
-
-            //     const right = expr.get("right");
-            //     const rightExpr = nodes.get(right);
-            //     if (rightExpr.get("type") === "missing") return "incomplete";
-            //     const rightType = semant.typeCheck(nodes, rightExpr);
-
-            //     const op = opExpr.get("name");
-            //     if (op === "==") return "boolean";
-
-            //     if (leftType === rightType) {
-            //         return leftType;
-            //     }
-            //     // TODO: throw exception, present to player?
-            //     return null;
-            // },
             type: (semant, nodes, types, expr) => {
                 const opExpr = nodes.get(expr.get("op"));
                 const id = expr.get("id");
@@ -112,13 +87,8 @@ export default transform({
 
                 return {
                     types: result,
-                    // TODO: helper function, account for boolean
-                    complete: types.has(expr.get("left")) &&
-                        types.get(expr.get("left")).size === 1 &&
-                        types.get(expr.get("left")).has("number") &&
-                        types.has(expr.get("right")) &&
-                        types.get(expr.get("right")).size === 1 &&
-                        types.get(expr.get("right")).has("number"),
+                    complete: types.get(expr.get("left")) === "number" &&
+                        types.get(expr.get("right")) === "number",
                 };
             },
             // Invariant: all subexpressions are values or syntax;
