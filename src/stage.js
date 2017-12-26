@@ -255,7 +255,12 @@ export class Stage {
                  state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
             // Drag something into hole
             // TODO: use type inference to decide whether hole can be filled
-            this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+            const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
+            const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
+            console.log(holeType, exprType);
+            if (!holeType || !exprType || holeType === exprType) {
+                this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
+            }
         }
         else if (this._dragged && this._hoverNode && this._selectedNode) {
             // Apply to lambda
