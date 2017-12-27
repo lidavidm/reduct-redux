@@ -233,6 +233,18 @@ export class Stage {
         }
 
         this.findHoverNode(this.getMousePos(e));
+        if (this._selectedNode && this._hoverNode) {
+            const state = this.getState();
+            const holeExprType = state.getIn([ "nodes", this._hoverNode, "type" ]);
+            const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
+            const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
+            // TODO: don't hardcode these checks
+            if ((holeExprType !== "missing" &&
+                 holeExprType !== "lambdaArg") ||
+                (holeType && exprType && holeType !== exprType)) {
+                this._hoverNode = null;
+            }
+        }
     }
 
     _mouseup(e) {
@@ -254,7 +266,7 @@ export class Stage {
         else if (this._dragged && this._hoverNode &&
                  state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
             // Drag something into hole
-            // TODO: use type inference to decide whether hole can be filled
+            // Use type inference to decide whether hole can be filled
             const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
             const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
             console.log(holeType, exprType);
