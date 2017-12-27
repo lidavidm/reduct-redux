@@ -167,8 +167,19 @@ export default transform({
                     complete: branchesMatch && types.get(expr.get("condition")) === "boolean",
                 };
             },
-            // validateStep: (semant, nodes, expr) => {
-            // },
+            validateStep: (semant, nodes, expr) => {
+                const condition = expr.get("condition");
+                if (nodes.get(condition).get("ty") !== "boolean") {
+                    return condition;
+                }
+
+                const positive = expr.get("positive");
+                const negative = expr.get("negative");
+                if (nodes.get(positive).get("ty") !== nodes.get(negative).get("ty")) {
+                    return negative;
+                }
+                return null;
+            },
             smallStep: (semant, nodes, expr) => {
                 const cond = nodes.get(expr.get("condition")).get("value");
                 // TODO: do this cleanup in evaluation?
