@@ -21,7 +21,7 @@ export default transform({
 
         dynamicVariant: {
             kind: "value",
-            type: (semant, nodes, expr) => expr.get("variant"),
+            type: (semant, nodes, types, expr) => expr.get("variant"),
             fields: ["variant", "value"],
             subexpressions: [],
             projection: {
@@ -164,8 +164,7 @@ export default transform({
 
                 return {
                     types: result,
-                    // TODO:
-                    complete: branchesMatch,
+                    complete: branchesMatch && types.get(expr.get("condition")) === "boolean",
                 };
             },
             // validateStep: (semant, nodes, expr) => {
@@ -217,6 +216,7 @@ export default transform({
 
         lambda: {
             kind: "value",
+            type: "lambda",
             fields: [],
             subexpressions: ["arg", "body"],
             projection: {

@@ -230,14 +230,20 @@ export function reduct(semantics, views) {
         const annotatedNodes = state.get("nodes").withMutations((n) => {
             for (const [ exprId, expr ] of n.entries()) {
                 n.set(exprId, expr.set("ty", null));
+                n.set(exprId, expr.set("complete", false));
             }
 
             for (const id of state.get("board").concat(state.get("toolbox"))) {
-                const types = semantics.collectTypes(n, n.get(id));
+                const { types, completeness } = semantics.collectTypes(n, n.get(id));
                 for (const [ exprId, expr ] of n.entries()) {
+                    let newExpr = expr;
                     if (types.has(exprId)) {
-                        n.set(exprId, expr.set("ty", types.get(exprId)));
+                        newExpr = newExpr.set("ty", types.get(exprId));
                     }
+                    if (completeness.has(exprId)) {
+                        newExpr = newExpr.set("complete", completeness.get(exprId));
+                    }
+                    n.set(exprId, newExpr);
                 }
             }
         });

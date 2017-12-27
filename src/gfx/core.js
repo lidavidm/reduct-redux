@@ -152,8 +152,7 @@ export function baseShape(name, defaults, draw) {
                 shouldStroke = true;
             }
             else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
-                const type = node.get("ty");
-                if (type !== null && type !== "incomplete") {
+                if (node.get("complete")) {
                     stage.ctx.strokeStyle = "DeepPink";
                     stage.ctx.lineWidth = 4;
                     shouldStroke = true;

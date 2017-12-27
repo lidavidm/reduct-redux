@@ -419,7 +419,7 @@ export default function transform(definition) {
 
     module.collectTypes = function collectTypes(nodes, rootExpr) {
         const result = new Map();
-        // TODO: explicitly mark completeness
+        const completeness = new Map();
 
         // Update the type map with the type for the expression.
         const update = function update(id, ty) {
@@ -453,6 +453,13 @@ export default function transform(definition) {
                 const typeDefn = exprDefn.type;
                 if (typeof typeDefn === "function") {
                     const { types, complete } = typeDefn(module, nodes, result, expr);
+                    completeness.set(
+                        id,
+                        complete && module.subexpressions(expr)
+                            .map(field => completeness.get(expr.get(field)) ||
+                                 module.kind(nodes.get(expr.get(field))) !== "expression")
+                            .every(x => x)
+                    );
                     for (const entry of types.entries()) {
                         update(...entry);
                     }
@@ -462,6 +469,7 @@ export default function transform(definition) {
                     // result[id].add("unknown");
                 }
                 else {
+                    completeness.set(id, true);
                     update(id, typeDefn);
                 }
             }
@@ -469,7 +477,7 @@ export default function transform(definition) {
 
         step(rootExpr);
 
-        return result;
+        return { types: result, completeness };
     };
 
     module.validateStep = function(nodes, expr) {
