@@ -26,9 +26,9 @@ export function baseProjection(options) {
     projection.draw = projection.prepare = function() {};
 
     projection.containsPoint = function(pos) {
-        const { x, y } = util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
-        return pos.x >= x && pos.x <= x + projection.size.w &&
-            pos.y >= y && pos.y <= y + projection.size.h;
+        const { x, y } = util.topLeftPos(this, { x: 0, y: 0, sx: 1, sy: 1 });
+        return pos.x >= x && pos.x <= x + this.size.w &&
+            pos.y >= y && pos.y <= y + this.size.h;
     };
 
     return projection;
@@ -116,31 +116,31 @@ export function baseShape(name, defaults, draw) {
             const ctx = stage.ctx;
             ctx.save();
 
-            const [ sx, sy ] = util.absoluteScale(projection, offset);
+            const [ sx, sy ] = util.absoluteScale(this, offset);
 
-            const { x, y } = util.topLeftPos(projection, offset);
+            const { x, y } = util.topLeftPos(this, offset);
 
             const node = state.getIn([ "nodes", id ]);
-            if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
-                ctx.fillStyle = projection.shadowColor;
-                draw(ctx, projection,
-                     x, y + projection.shadowOffset * offset.sy,
-                     offset.sx * projection.scale.x * projection.size.w,
-                     offset.sy * projection.scale.y * projection.size.h,
+            if (this.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
+                ctx.fillStyle = this.shadowColor;
+                draw(ctx, this,
+                     x, y + this.shadowOffset * offset.sy,
+                     offset.sx * this.scale.x * this.size.w,
+                     offset.sy * this.scale.y * this.size.h,
                      sx, sy,
-                     projection.stroke);
+                     this.stroke);
             }
 
-            if (projection.color) ctx.fillStyle = projection.color;
+            if (this.color) ctx.fillStyle = this.color;
 
             let shouldStroke = false;
-            if (projection.stroke) {
+            if (this.stroke) {
                 shouldStroke = true;
-                ctx.lineWidth = projection.stroke.lineWidth;
-                ctx.strokeStyle = projection.stroke.color;
+                ctx.lineWidth = this.stroke.lineWidth;
+                ctx.strokeStyle = this.stroke.color;
             }
             else if (!!(node && node.get("parent") && node.get("locked")) &&
-                     projection.strokeWhenChild) {
+                     this.strokeWhenChild) {
                 // Stroke if we have a parent to make it clearer.
                 ctx.strokeStyle = "gray";
                 ctx.lineWidth = 1;
@@ -159,16 +159,15 @@ export function baseShape(name, defaults, draw) {
                 }
             }
 
-            if (projection.opacity) ctx.globalAlpha = projection.opacity;
+            if (this.opacity) ctx.globalAlpha = this.opacity;
 
-            draw(ctx, projection,
+            draw(ctx, this,
                  x, y,
-                 offset.sx * projection.scale.x * projection.size.w,
-                 offset.sy * projection.scale.y * projection.size.h,
+                 offset.sx * this.scale.x * this.size.w,
+                 offset.sy * this.scale.y * this.size.h,
                  sx, sy,
-                 projection.stroke || shouldStroke);
-            // hoverOutline(id, projection, stage, offset);
-            debugDraw(ctx, projection, offset);
+                 this.stroke || shouldStroke);
+            debugDraw(ctx, this, offset);
 
             ctx.restore();
         };
@@ -219,34 +218,34 @@ export function text(text, options) {
     projection.type = "text";
 
     projection.prepare = function(id, state, stage) {
-        const cacheKey = `${projection.fontSize};${projection.font};${projection.text}`;
+        const cacheKey = `${this.fontSize};${this.font};${this.text}`;
         if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
-            stage.ctx.font = `${projection.fontSize}px ${projection.font}`;
-            TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(projection.text).width;
+            stage.ctx.font = `${this.fontSize}px ${this.font}`;
+            TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(this.text).width;
         }
-        projection.size.h = 50;
-        projection.size.w = TEXT_SIZE_CACHE[cacheKey];
+        this.size.h = 50;
+        this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
 
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
+        const [ sx, sy ] = util.absoluteScale(this, offset);
 
         ctx.save();
 
-        debugDraw(ctx, projection, offset);
+        debugDraw(ctx, this, offset);
 
         ctx.scale(sx, sy);
-        ctx.fillStyle = projection.color;
+        ctx.fillStyle = this.color;
         ctx.textBaseline = "alphabetic";
-        ctx.font = `${projection.fontSize}px ${projection.font}`;
-        ctx.fillText(projection.text,
-                     (offset.x + projection.pos.x * offset.sx) / sx,
-                     (offset.y + projection.pos.y * offset.sy) / sy + 1.1 * projection.fontSize);
+        ctx.font = `${this.fontSize}px ${this.font}`;
+        ctx.fillText(this.text,
+                     (offset.x + this.pos.x * offset.sx) / sx,
+                     (offset.y + this.pos.y * offset.sy) / sy + 1.1 * this.fontSize);
         ctx.restore();
 
         ctx.save();
-        hoverOutline(id, projection, stage, offset);
+        hoverOutline(id, this, stage, offset);
         ctx.restore();
     };
     return projection;

@@ -82,11 +82,11 @@ export function triangle(options={}) {
 
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
-        drawPrimitive(id, projection, state, stage, offset, (dy) => {
-            let w = offset.sx * projection.scale.x * projection.size.w;
-            let h = offset.sy * projection.scale.y * projection.size.h;
-            let { x, y } = util.topLeftPos(projection, offset);
+        const [ sx, sy ] = util.absoluteScale(this, offset);
+        drawPrimitive(id, this, state, stage, offset, (dy) => {
+            let w = offset.sx * this.scale.x * this.size.w;
+            let h = offset.sy * this.scale.y * this.size.h;
+            let { x, y } = util.topLeftPos(this, offset);
             x += 0.15 * w;
             y += 0.15 * h;
             w *= 0.7;
@@ -109,11 +109,11 @@ export function circle(options={}) {
 
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
-        drawPrimitive(id, projection, state, stage, offset, (dy) => {
-            let w = offset.sx * projection.scale.x * projection.size.w;
-            let h = offset.sy * projection.scale.y * projection.size.h;
-            let { x, y } = util.topLeftPos(projection, offset);
+        const [ sx, sy ] = util.absoluteScale(this, offset);
+        drawPrimitive(id, this, state, stage, offset, (dy) => {
+            let w = offset.sx * this.scale.x * this.size.w;
+            let h = offset.sy * this.scale.y * this.size.h;
+            let { x, y } = util.topLeftPos(this, offset);
             x += 0.15 * w;
             y += 0.15 * h;
             w *= 0.7;
@@ -134,16 +134,16 @@ export function rectangle(options={}) {
 
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
-        let w = offset.sx * projection.scale.x * projection.size.w;
-        let h = offset.sy * projection.scale.y * projection.size.h;
-        let { x, y } = util.topLeftPos(projection, offset);
+        const [ sx, sy ] = util.absoluteScale(this, offset);
+        let w = offset.sx * this.scale.x * this.size.w;
+        let h = offset.sy * this.scale.y * this.size.h;
+        let { x, y } = util.topLeftPos(this, offset);
         x += 0.15 * w;
         y += 0.15 * h;
         w *= 0.7;
         h *= 0.7;
 
-        drawPrimitive(id, projection, state, stage, offset, (dy) => {
+        drawPrimitive(id, this, state, stage, offset, (dy) => {
             ctx.fillRect(x, y + dy, w, h);
         }, (dy) => {
             ctx.strokeRect(x, y, w, h);
@@ -158,16 +158,16 @@ export function star(options={}) {
 
     projection.draw = function(id, state, stage, offset) {
         const ctx = stage.ctx;
-        const [ sx, sy ] = util.absoluteScale(projection, offset);
-        let w = offset.sx * projection.scale.x * projection.size.w;
-        let h = offset.sy * projection.scale.y * projection.size.h;
-        let { x, y } = util.topLeftPos(projection, offset);
+        const [ sx, sy ] = util.absoluteScale(this, offset);
+        let w = offset.sx * this.scale.x * this.size.w;
+        let h = offset.sy * this.scale.y * this.size.h;
+        let { x, y } = util.topLeftPos(this, offset);
         x += 0.15 * w;
         y += 0.15 * h;
         w *= 0.7;
         h *= 0.7;
 
-        drawPrimitive(id, projection, state, stage, offset, (dy) => {
+        drawPrimitive(id, this, state, stage, offset, (dy) => {
             primitive.drawStar(ctx, x + w/2, y + h/2 + dy, 5, w/2, 0.5*w/2, true, false);
         });
     };
