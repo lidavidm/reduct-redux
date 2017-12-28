@@ -6,6 +6,8 @@ export default transform({
     parser: null,
 
     expressions: {
+        missing: core.missing,
+
         number: {
             kind: "value",
             type: "number",

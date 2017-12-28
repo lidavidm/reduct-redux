@@ -13,7 +13,7 @@ function defaultProjector(definition) {
         options.padding = { left: 18, right: 18, inner: 10 };
     }
 
-    const optionFields = ["color", "strokeWhenChild"];
+    const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding"];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
@@ -113,27 +113,7 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
-    // Add default definitions for missing, vtuple
-    module.missing = function missing() {
-        return { type: "missing", locked: false };
-    };
-    module.projections.missing = function projectMissing(stage, nodes, expr) {
-        // TODO: use a system based on type inference?
-        if (expr.get("parentField") === "condition") {
-            const hex = gfx.hexaRect({
-                color: "#555",
-                shadowOffset: -2,
-            });
-            hex.size.w = 75;
-            return hex;
-        }
-        return gfx.roundedRect({
-            color: "#555",
-            shadowOffset: -2,
-            radius: 22,
-        });
-    };
-
+    // Add default definitions for vtuple
     /**
      * A "virtual tuple" which kind of bleeds presentation into the
      * semantics. Represents a set of values that go together, but spill
@@ -172,6 +152,9 @@ export default function transform(definition) {
     for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
         module[exprName] = function(...params) {
             const result = { type: exprName, locked: true };
+            if (typeof exprDefinition.locked !== "undefined") {
+                result.locked = exprDefinition.locked;
+            }
             let argPointer = 0;
             for (const fieldName of exprDefinition.fields) {
                 result[fieldName] = params[argPointer++];
@@ -188,7 +171,6 @@ export default function transform(definition) {
 
     module.subexpressions = function subexpressions(expr) {
         const type = expr.type || expr.get("type");
-        if (type === "missing") return [];
         if (type === "vtuple") {
             const result = [];
             const nc = expr.get ? expr.get("numChildren") : expr.numChildren;
@@ -386,8 +368,6 @@ export default function transform(definition) {
 
     module.kind = function(expr) {
         switch (expr.get("type")) {
-        case "missing":
-            return "placeholder";
         case "vtuple":
             // This isn't quite right - depends on the children
             return "expression";

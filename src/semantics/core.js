@@ -151,3 +151,25 @@ export function genericBetaReduce(semant, nodes, config) {
         ];
     }
 }
+
+/**
+ * Standard definition for missing expression.
+ */
+export const missing = {
+    kind: "placeholder",
+    fields: [],
+    subexpressions: [],
+    locked: false,
+    projection: {
+        type: "default",
+        shape: "()",
+        color: "#555",
+        shadowOffset: -2,
+        radius: 22,
+        padding: {
+            left: 25,
+            right: 25,
+            inner: 0,
+        },
+    },
+};
