@@ -254,7 +254,7 @@ export function reduct(semantics, views) {
         reducer: combineReducers({
             hover,
             program: undoable(compose(annotateTypes, program), {
-                actionFilter: act => act.type === action.RAISE,
+                actionFilter: act => act.type === action.RAISE || act.type === action.HOVER,
                 extraState: (state, newState) => {
                     const result = {};
                     for (const id of state.get("board")) {

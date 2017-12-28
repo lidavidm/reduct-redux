@@ -43,7 +43,6 @@ function initialize() {
         stg.draw();
 
         if (!stg.alreadyWon) {
-            // Right now it just goes on, but we would want the animation here.
             const matching = level.checkVictory(stg.getState(), defaultSemantics);
             if (Object.keys(matching).length > 0) {
                 stg.animateVictory(matching).then(() => {
