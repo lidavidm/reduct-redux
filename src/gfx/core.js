@@ -251,6 +251,42 @@ export function text(text, options) {
     return projection;
 }
 
+/**
+ * Create a projection that renders based on expression type.
+ *
+ * Note that all projections must have compatible fields.
+ */
+export function dynamicType(mapping) {
+    let projection = {};
+    for (const childProjection of Object.values(mapping)) {
+        projection = Object.assign(projection, childProjection);
+    }
+
+    projection.prepare = function(id, state, stage) {
+        const expr = state.getIn([ "nodes", id ]);
+        const ty = expr.get("ty");
+        if (typeof mapping[ty] !== "undefined") {
+            mapping[ty].prepare.call(this, id, state, stage);
+        }
+        else {
+            mapping["__default__"].prepare.call(this, id, state, stage);
+        }
+    };
+
+    projection.draw = function(id, state, stage, offset) {
+        const expr = state.getIn([ "nodes", id ]);
+        const ty = expr.get("ty");
+        if (typeof mapping[ty] !== "undefined") {
+            mapping[ty].draw.call(this, id, state, stage, offset);
+        }
+        else {
+            mapping["__default__"].draw.call(this, id, state, stage, offset);
+        }
+    };
+
+    return projection;
+}
+
 import * as layout from "./layout";
 import * as shapes from "./shapes";
 

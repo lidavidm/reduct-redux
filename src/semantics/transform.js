@@ -92,6 +92,25 @@ function symbolProjector(definition) {
     }
 }
 
+function dynamicProjector(definition) {
+    const cases = {};
+    cases["__default__"] = projector(Object.assign({}, definition, {
+        projection: definition.projection.default,
+    }));
+    for (const [ caseName, defn ] of Object.entries(definition.projection.cases)) {
+        cases[caseName] = projector(Object.assign({}, definition, {
+            projection: defn,
+        }));
+    }
+    return function dynamicProjectorFactory(stage, nodes, expr) {
+        const projections = {};
+        for (const [ key, subprojector ] of Object.entries(cases)) {
+            projections[key] = subprojector(stage, nodes, expr);
+        }
+        return gfx.dynamicType(projections);
+    };
+}
+
 function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -103,6 +122,8 @@ function projector(definition) {
         return textProjector(definition);
     case "symbol":
         return symbolProjector(definition);
+    case "dynamic":
+        return dynamicProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }

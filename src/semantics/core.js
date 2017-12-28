@@ -161,15 +161,31 @@ export const missing = {
     subexpressions: [],
     locked: false,
     projection: {
-        type: "default",
-        shape: "()",
-        color: "#555",
-        shadowOffset: -2,
-        radius: 22,
-        padding: {
-            left: 25,
-            right: 25,
-            inner: 0,
+        type: "dynamic",
+        default: {
+            type: "default",
+            shape: "()",
+            color: "#555",
+            shadowOffset: -2,
+            radius: 22,
+            padding: {
+                left: 25,
+                right: 25,
+                inner: 0,
+            },
+        },
+        cases: {
+            boolean: {
+                type: "default",
+                shape: "<>",
+                color: "#555",
+                shadowOffset: -2,
+                padding: {
+                    left: 37.5,
+                    right: 37.5,
+                    inner: 0,
+                },
+            },
         },
     },
 };
