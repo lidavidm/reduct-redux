@@ -146,40 +146,48 @@ export class Stage {
         let root = null;
         let toolbox = false;
 
-        for (const nodeId of state.get("board").toArray().reverse()) {
-            if (nodeId === this._selectedNode) continue;
-
-            let node = state.getIn([ "nodes", nodeId ]);
+        const check = (pos, node, root=null, sx=1, sy=1) => {
+            const nodeId = node.get("id");
             const projection = this.views[nodeId];
-
-            if (projection.containsPoint(pos)) {
-                root = result = nodeId;
-
-                let subexprFields = this.semantics.subexpressions(node);
-
-                pos.x -= projection.pos.x -
-                    (projection.anchor.x * projection.size.w * projection.scale.x);
-                pos.y -= projection.pos.y -
-                    (projection.anchor.y * projection.size.h * projection.scale.y);
-
-                outerLoop:
-                while (subexprFields.length > 0) {
-                    for (const subexprField of subexprFields) {
-                        const subexprId = node.get(subexprField);
-                        if (this.views[subexprId].containsPoint(pos)) {
-                            node = state.getIn([ "nodes", subexprId ]);
-                            if (this.semantics.targetable(node)) {
-                                result = subexprId;
-                            }
-
-                            subexprFields = this.semantics.subexpressions(node);
-                            pos.x -= this.views[subexprId].pos.x;
-                            pos.y -= this.views[subexprId].pos.y;
-                            continue outerLoop;
-                        }
-                    }
-                    subexprFields = [];
+            let result = null;
+            if (projection.containsPoint(pos, { x: 0, y: 0, sx, sy })) {
+                if (root === null) {
+                    root = nodeId;
+                    result = nodeId;
                 }
+                else if (this.semantics.targetable(node)) {
+                    result = nodeId;
+                }
+
+                const relW = projection.anchor.x * projection.size.w * sx * projection.scale.x;
+                const relH = projection.anchor.y * projection.size.h * sy * projection.scale.y;
+                const subpos = {
+                    x: pos.x - ((projection.pos.x - relW) * sx),
+                    y: pos.y - ((projection.pos.y - relH) * sy),
+                };
+                for (const field of this.semantics.subexpressions(node)) {
+                    const subresult = check(
+                        subpos,
+                        state.getIn([ "nodes", node.get(field) ]),
+                        root,
+                        sx * projection.scale.x,
+                        sy * projection.scale.y
+                    );
+                    if (subresult) {
+                        return subresult;
+                    }
+                }
+                if (result) {
+                    return [ root, result ];
+                }
+            }
+            return null;
+        };
+
+        for (const nodeId of state.get("board").toArray().reverse()) {
+            const res = check(pos, state.getIn([ "nodes", nodeId ]));
+            if (res) {
+                [ root, result ] = res;
                 break;
             }
         }

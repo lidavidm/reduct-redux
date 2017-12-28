@@ -27,7 +27,7 @@ export default class Toolbox {
         for (const nodeId of state.get("toolbox")) {
             const projection = this.stage.views[nodeId];
 
-            if (projection.containsPoint(pos)) {
+            if (projection.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
                 return [ nodeId, nodeId ];
             }
         }

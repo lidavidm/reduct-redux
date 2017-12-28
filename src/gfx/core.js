@@ -25,10 +25,12 @@ export function baseProjection(options) {
 
     projection.draw = projection.prepare = function() {};
 
-    projection.containsPoint = function(pos) {
-        const { x, y } = util.topLeftPos(this, { x: 0, y: 0, sx: 1, sy: 1 });
-        return pos.x >= x && pos.x <= x + this.size.w &&
-            pos.y >= y && pos.y <= y + this.size.h;
+    projection.containsPoint = function(pos, offset) {
+        const { x, y } = util.topLeftPos(this, offset);
+        return pos.x >= x &&
+            pos.y >= y &&
+            pos.x <= x + (this.size.w * offset.sx * this.scale.x) &&
+            pos.y <= y + (this.size.h * offset.sy * this.scale.y);
     };
 
     return projection;
