@@ -162,6 +162,7 @@ export const missing = {
     locked: false,
     projection: {
         type: "dynamic",
+        resetFields: ["padding"],
         default: {
             type: "default",
             shape: "()",

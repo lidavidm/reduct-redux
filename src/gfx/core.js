@@ -256,21 +256,26 @@ export function text(text, options) {
  *
  * Note that all projections must have compatible fields.
  */
-export function dynamicType(mapping) {
+export function dynamicType(mapping, resetFieldsList) {
     let projection = {};
     for (const childProjection of Object.values(mapping)) {
         projection = Object.assign(projection, childProjection);
     }
+    projection.type = "dynamicType";
 
     projection.prepare = function(id, state, stage) {
         const expr = state.getIn([ "nodes", id ]);
         const ty = expr.get("ty");
+
+        let proj = mapping["__default__"];
         if (typeof mapping[ty] !== "undefined") {
-            mapping[ty].prepare.call(this, id, state, stage);
+            proj = mapping[ty];
         }
-        else {
-            mapping["__default__"].prepare.call(this, id, state, stage);
+
+        for (const fieldName of resetFieldsList) {
+            this[fieldName] = proj[fieldName];
         }
+        proj.prepare.call(this, id, state, stage);
     };
 
     projection.draw = function(id, state, stage, offset) {
