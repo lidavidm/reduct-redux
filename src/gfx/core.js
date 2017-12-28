@@ -2,7 +2,7 @@ import * as image from "./image";
 import * as primitive from "./primitive";
 import * as util from "./util";
 
-export { image };
+export { image, util };
 
 let DEBUG = false;
 const DEBUG_COLORS = {
