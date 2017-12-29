@@ -123,7 +123,11 @@ function parseNode(node, macros) {
             return jssemant.define(name, parseNode(node.body, macros));
         }
 
-        return fail("TODO");
+        let result = parseNode(node.body, macros);
+        for (const arg of node.params.reverse()) {
+            result = jssemant.lambda(jssemant.lambdaArg(arg.name), result);
+        }
+        return jssemant.define(name, result);
     }
 
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
