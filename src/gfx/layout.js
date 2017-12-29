@@ -49,7 +49,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.scale.x = this.subexpScale;
             childProjection.scale.y = this.subexpScale;
 
-            childProjection.prepare(childId, exprId, state, stage);
+            childProjection.prepare(childId, childId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
             maxY = Math.max(maxY, childProjection.size.h);
         }
@@ -97,7 +97,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             // Allow childrenFunc to return [ subprojectionId,
             // subexprId ] - this allows "transparent" layouts where
             // children can project a parent expression
-            let subexprId = exprId;
+            let subexprId = childId;
             if (Array.isArray(childId)) {
                 [ childId, subexprId ] = childId;
             }
