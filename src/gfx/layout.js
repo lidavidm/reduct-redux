@@ -94,6 +94,14 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         let y = this.padding.top;
 
         for (let childId of children) {
+            // Allow childrenFunc to return [ subprojectionId,
+            // subexprId ] - this allows "transparent" layouts where
+            // children can project a parent expression
+            let subexprId = exprId;
+            if (Array.isArray(childId)) {
+                [ childId, subexprId ] = childId;
+            }
+
             const childProjection = stage.views[childId];
 
             childProjection.parent = this;
@@ -102,13 +110,17 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.scale.x = this.subexpScale;
             childProjection.scale.y = this.subexpScale;
 
-            childProjection.prepare(childId, exprId, state, stage);
+            childProjection.prepare(childId, subexprId, state, stage);
             y += childProjection.size.h * childProjection.scale.y + this.padding.inner;
             maxX = Math.max(maxX, childProjection.size.w);
         }
         this.size.w = maxX + this.padding.left + this.padding.right;
         this.size.h = y - this.padding.inner + this.padding.bottom;
         for (let childId of children) {
+            if (Array.isArray(childId)) {
+                [ childId ] = childId;
+            }
+
             const childProjection = stage.views[childId];
             childProjection.pos.x =
                 (this.size.w * this.scale.x -
@@ -127,8 +139,12 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
-        for (let childId of childrenFunc(id, state)) {
-            stage.views[childId].draw(childId, childId, state, stage, subOffset);
+        for (let childId of childrenFunc(exprId, state)) {
+            let subexprId = exprId;
+            if (Array.isArray(childId)) {
+                [ childId, subexprId ] = childId;
+            }
+            stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
         }
     };
     return projection;
