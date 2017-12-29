@@ -185,6 +185,8 @@ export class Stage {
         };
 
         for (const nodeId of state.get("board").toArray().reverse()) {
+            if (nodeId === this._selectedNode) continue;
+
             const res = check(pos, state.getIn([ "nodes", nodeId ]));
             if (res) {
                 [ root, result ] = res;
