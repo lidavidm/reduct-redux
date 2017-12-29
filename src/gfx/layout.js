@@ -3,8 +3,8 @@ import * as util from "./util";
 
 export function hexpand(projection) {
     const origPrepare = projection.prepare;
-    projection.prepare = function(id, state, stage) {
-        origPrepare.call(this, id, state, stage);
+    projection.prepare = function(id, exprId, state, stage) {
+        origPrepare.call(this, id, exprId, state, stage);
         this.size.w = stage.width;
     };
     return projection;
@@ -12,8 +12,8 @@ export function hexpand(projection) {
 
 export function sticky(projection, direction) {
     const origPrepare = projection.prepare;
-    projection.prepare = function(id, state, stage) {
-        origPrepare.call(this, id, state, stage);
+    projection.prepare = function(id, exprId, state, stage) {
+        origPrepare.call(this, id, exprId, state, stage);
         if (direction === "bottom") {
             this.pos.y = stage.height - this.size.h;
         }
@@ -33,8 +33,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.baseType = projection.type;
     projection.type = "hbox";
 
-    projection.prepare = function(id, state, stage) {
-        const children = childrenFunc(id, state);
+    projection.prepare = function(id, exprId, state, stage) {
+        const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
         let maxY = 50;
@@ -49,7 +49,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.scale.x = this.subexpScale;
             childProjection.scale.y = this.subexpScale;
 
-            childProjection.prepare(childId, state, stage);
+            childProjection.prepare(childId, exprId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
             maxY = Math.max(maxY, childProjection.size.h);
         }
@@ -60,8 +60,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.pos.y = (this.size.h * this.scale.y - childProjection.size.h * childProjection.scale.y * this.scale.y) / 2;
         }
     };
-    projection.draw = function(id, state, stage, offset) {
-        baseDraw.call(this, id, state, stage, offset);
+    projection.draw = function(id, exprId, state, stage, offset) {
+        baseDraw.call(this, id, exprId, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
         const { x, y } = util.topLeftPos(this, offset);
@@ -72,8 +72,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
-        for (let childId of childrenFunc(id, state)) {
-            stage.views[childId].draw(childId, state, stage, subOffset);
+        for (let childId of childrenFunc(exprId, state)) {
+            stage.views[childId].draw(childId, childId, state, stage, subOffset);
         }
     };
     return projection;
@@ -88,8 +88,8 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
     Object.assign(projection, options);
 
-    projection.prepare = function(id, state, stage) {
-        const children = childrenFunc(id, state);
+    projection.prepare = function(id, exprId, state, stage) {
+        const children = childrenFunc(exprId, state);
         let maxX = 50;
         let y = this.padding.top;
 
@@ -102,7 +102,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.scale.x = this.subexpScale;
             childProjection.scale.y = this.subexpScale;
 
-            childProjection.prepare(childId, state, stage);
+            childProjection.prepare(childId, exprId, state, stage);
             y += childProjection.size.h * childProjection.scale.y + this.padding.inner;
             maxX = Math.max(maxX, childProjection.size.w);
         }
@@ -115,8 +115,8 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
                  childProjection.size.w * childProjection.scale.x * this.scale.x) / 2;
         }
     };
-    projection.draw = function(id, state, stage, offset) {
-        baseDraw.call(this, id, state, stage, offset);
+    projection.draw = function(id, exprId, state, stage, offset) {
+        baseDraw.call(this, id, exprId, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
         const { x, y } = util.topLeftPos(this, offset);
@@ -128,7 +128,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sy: offset.sy * this.scale.y,
         });
         for (let childId of childrenFunc(id, state)) {
-            stage.views[childId].draw(childId, state, stage, subOffset);
+            stage.views[childId].draw(childId, childId, state, stage, subOffset);
         }
     };
     return projection;

@@ -3,20 +3,20 @@ import * as primitive from "./primitive";
 import * as util from "./util";
 
 // TODO: use these helpers everywhere
-function shadow(ctx, id, projection, state, f) {
-    const node = state.getIn([ "nodes", id ]);
+function shadow(ctx, exprId, projection, state, f) {
+    const node = state.getIn([ "nodes", exprId ]);
     if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
         ctx.fillStyle = projection.shadowColor;
         f(projection.shadowOffset);
     }
 }
 
-function drawPrimitive(id, projection, state, stage, offset,
+function drawPrimitive(exprId, projection, state, stage, offset,
                        drawFunction, strokeFunction=null) {
     const ctx = stage.ctx;
     ctx.save();
 
-    const node = state.getIn([ "nodes", id ]);
+    const node = state.getIn([ "nodes", exprId ]);
     const hasParent = node && Number.isInteger(node.get("parent"));
     const locked = !node || node.get("locked");
     let stroke = false;
@@ -32,7 +32,7 @@ function drawPrimitive(id, projection, state, stage, offset,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * 22,
-            true, stage._hoverNode === id, null);
+            true, stage._hoverNode === exprId, null);
         ctx.fillStyle = "#555";
         primitive.roundRect(
             ctx,
@@ -41,9 +41,9 @@ function drawPrimitive(id, projection, state, stage, offset,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * 22,
-            true, stage._hoverNode === id, null);
+            true, stage._hoverNode === exprId, null);
     }
-    else if ((!hasParent || !locked) && stage._hoverNode === id) {
+    else if ((!hasParent || !locked) && stage._hoverNode === exprId) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         stroke = true;
@@ -54,7 +54,7 @@ function drawPrimitive(id, projection, state, stage, offset,
         stroke = true;
     }
 
-    shadow(ctx, id, projection, state, drawFunction);
+    shadow(ctx, exprId, projection, state, drawFunction);
     if (projection.opacity) ctx.globalAlpha = projection.opacity;
     if (projection.color) ctx.fillStyle = projection.color;
     drawFunction(0);
@@ -80,10 +80,10 @@ export function triangle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "triangle";
 
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         const [ sx, sy ] = util.absoluteScale(this, offset);
-        drawPrimitive(id, this, state, stage, offset, (dy) => {
+        drawPrimitive(exprId, this, state, stage, offset, (dy) => {
             let w = offset.sx * this.scale.x * this.size.w;
             let h = offset.sy * this.scale.y * this.size.h;
             let { x, y } = util.topLeftPos(this, offset);
@@ -107,7 +107,7 @@ export function circle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "circle";
 
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         const [ sx, sy ] = util.absoluteScale(this, offset);
         drawPrimitive(id, this, state, stage, offset, (dy) => {
@@ -132,7 +132,7 @@ export function rectangle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "rectangle";
 
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         const [ sx, sy ] = util.absoluteScale(this, offset);
         let w = offset.sx * this.scale.x * this.size.w;
@@ -156,7 +156,7 @@ export function star(options={}) {
     const projection = shapeProjection(options);
     projection.type = "star";
 
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         const [ sx, sy ] = util.absoluteScale(this, offset);
         let w = offset.sx * this.scale.x * this.size.w;

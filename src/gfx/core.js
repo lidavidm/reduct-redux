@@ -113,8 +113,8 @@ export function baseShape(name, defaults, draw) {
         projection.size.w = projection.size.h = 50;
         projection.type = name;
 
-        projection.prepare = function(id, state, stage) {};
-        projection.draw = function(id, state, stage, offset) {
+        projection.prepare = function(id, exprId, state, stage) {};
+        projection.draw = function(id, exprId, state, stage, offset) {
             const ctx = stage.ctx;
             ctx.save();
 
@@ -122,7 +122,7 @@ export function baseShape(name, defaults, draw) {
 
             const { x, y } = util.topLeftPos(this, offset);
 
-            const node = state.getIn([ "nodes", id ]);
+            const node = state.getIn([ "nodes", exprId ]);
             if (this.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
                 ctx.fillStyle = this.shadowColor;
                 draw(ctx, this,
@@ -219,7 +219,7 @@ export function text(text, options) {
     projection.color = "#000";
     projection.type = "text";
 
-    projection.prepare = function(id, state, stage) {
+    projection.prepare = function(id, exprId, state, stage) {
         const cacheKey = `${this.fontSize};${this.font};${this.text}`;
         if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
@@ -228,7 +228,7 @@ export function text(text, options) {
         this.size.h = 50;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
@@ -265,8 +265,8 @@ export function dynamicType(mapping, resetFieldsList) {
     }
     projection.type = "dynamicType";
 
-    projection.prepare = function(id, state, stage) {
-        const expr = state.getIn([ "nodes", id ]);
+    projection.prepare = function(id, exprId, state, stage) {
+        const expr = state.getIn([ "nodes", exprId ]);
         const ty = expr.get("ty");
 
         let proj = mapping["__default__"];
@@ -277,17 +277,17 @@ export function dynamicType(mapping, resetFieldsList) {
         for (const fieldName of resetFieldsList) {
             this[fieldName] = proj[fieldName];
         }
-        proj.prepare.call(this, id, state, stage);
+        proj.prepare.call(this, id, exprId, state, stage);
     };
 
-    projection.draw = function(id, state, stage, offset) {
-        const expr = state.getIn([ "nodes", id ]);
+    projection.draw = function(id, exprId, state, stage, offset) {
+        const expr = state.getIn([ "nodes", exprId ]);
         const ty = expr.get("ty");
         if (typeof mapping[ty] !== "undefined") {
-            mapping[ty].draw.call(this, id, state, stage, offset);
+            mapping[ty].draw.call(this, id, exprId, state, stage, offset);
         }
         else {
-            mapping["__default__"].draw.call(this, id, state, stage, offset);
+            mapping["__default__"].draw.call(this, id, exprId, state, stage, offset);
         }
     };
 

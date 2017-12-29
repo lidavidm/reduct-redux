@@ -17,7 +17,7 @@ export default class Goal {
     }
 
     drawImpl(state) {
-        this.stage.views[this.container].prepare(null, state, this.stage);
-        this.stage.views[this.container].draw(null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
+        this.stage.views[this.container].prepare(null, null, state, this.stage);
+        this.stage.views[this.container].draw(null, null, state, this.stage, { x: 0, y: 0, sx: 1, sy: 1 });
     }
 }

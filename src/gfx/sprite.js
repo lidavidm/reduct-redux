@@ -7,8 +7,8 @@ export function sprite(options={}) {
     projection.size.w = (options.size && options.size.w) ? options.size.w : 50;
     projection.size.h = (options.size && options.size.h) ? options.size.h : 50;
 
-    projection.prepare = function(id, state, stage) {};
-    projection.draw = function(id, state, stage, offset) {
+    projection.prepare = function(id, exprId, state, stage) {};
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         ctx.save();
 
@@ -32,17 +32,17 @@ export function patch3(childFunc, options={}) {
     const projection = baseProjection();
     projection.type = "3patch";
 
-    projection.prepare = function(id, state, stage) {
+    projection.prepare = function(id, exprId, state, stage) {
         const childId = childFunc(id, state);
         const childProjection = stage.views[childId];
-        childProjection.prepare(childId, state, stage);
+        childProjection.prepare(childId, exprId, state, stage);
         this.middleSegments = Math.ceil(childProjection.size.w / options.middle.naturalWidth);
         this.imageScale = 1.4 * childProjection.size.h / options.middle.naturalHeight;
         const middleWidth = this.middleSegments * this.imageScale * options.middle.naturalWidth;
         childProjection.pos.x = options.left.naturalWidth * this.imageScale + (middleWidth - childProjection.size.w) / 2;
         childProjection.pos.y = (options.middle.naturalHeight * this.imageScale - childProjection.size.h) / 2;
     };
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
         ctx.save();
 
@@ -80,7 +80,7 @@ export function patch3(childFunc, options={}) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
-        stage.views[childId].draw(childId, state, stage, subOffset);
+        stage.views[childId].draw(childId, exprId, state, stage, subOffset);
 
         debugDraw(ctx, this, offset);
 
