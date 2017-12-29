@@ -130,6 +130,20 @@ function parseNode(node, macros) {
         return jssemant.define(name, result);
     }
 
+    case "VariableDeclaration": {
+        if (node.kind !== "let") {
+            return fail(`parsers.es6: Unrecognized '${node.kind}' declaration`, node);
+        }
+        else if (node.declarations.length !== 1) {
+            return fail("parsers.es6: Only declaring 1 item at a time is supported", node);
+        }
+
+        const name = node.declarations[0].id.name;
+        const body = parseNode(node.declarations[0].init, macros);
+
+        return jssemant.define(name, body);
+    }
+
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
     }
 }
