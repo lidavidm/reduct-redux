@@ -309,9 +309,19 @@ export default transform({
             fields: ["name"],
             subexpressions: ["body"],
             projection: {
-                type: "default",
-                shape: "()",
-                fields: ["'def'", "name", "'='", "body"],
+                type: "vbox",
+                rows: [
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'def'", "name"],
+                    },
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'   '", "body"],
+                    },
+                ],
             },
         },
     },

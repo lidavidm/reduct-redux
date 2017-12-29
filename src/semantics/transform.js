@@ -12,6 +12,9 @@ function defaultProjector(definition) {
         baseProjection = gfx.hexaRect;
         options.padding = { left: 18, right: 18, inner: 10 };
     }
+    else if (definition.projection.shape === "none") {
+        baseProjection = gfx.baseProjection;
+    }
 
     const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding"];
     for (const field of optionFields) {
@@ -111,6 +114,25 @@ function dynamicProjector(definition) {
     };
 }
 
+function vboxProjector(definition) {
+    const options = {};
+    const subprojectors = [];
+    for (const subprojection of definition.projection.rows) {
+        subprojectors.push(projector(Object.assign({}, definition, {
+            projection: subprojection,
+        })));
+    }
+
+    return function vboxProjectorFactory(stage, nodes, expr) {
+        const subprojections = [];
+        for (const subproj of subprojectors) {
+            subprojections.push(stage.allocate(subproj(stage, nodes, expr)));
+        }
+        const childrenFunc = (id, _state) => subprojections.map(projId => [ projId, id ]);
+        return gfx.layout.vbox(childrenFunc, options);
+    };
+}
+
 function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -124,6 +146,8 @@ function projector(definition) {
         return symbolProjector(definition);
     case "dynamic":
         return dynamicProjector(definition);
+    case "vbox":
+        return vboxProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }
