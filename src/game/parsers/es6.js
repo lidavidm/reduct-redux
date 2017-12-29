@@ -26,6 +26,16 @@ function parseNode(node, macros) {
     case "ExpressionStatement":
         return parseNode(node.expression, macros);
 
+    case "ReturnStatement":
+        return parseNode(node.argument, macros);
+
+    case "BlockStatement": {
+        if (node.body.length !== 1) {
+            return fail("Cannot parse multi-statement programs.", node);
+        }
+        return parseNode(node.body[0], macros);
+    }
+
     case "Identifier": {
         if (node.name === "_") return jssemant.missing();
 
@@ -105,6 +115,15 @@ function parseNode(node, macros) {
             parseNode(node.consequent, macros),
             parseNode(node.alternate, macros)
         );
+    }
+
+    case "FunctionDeclaration": {
+        const name = node.id.name;
+        if (node.params.length === 0) {
+            return jssemant.define(name, parseNode(node.body, macros));
+        }
+
+        return fail("TODO");
     }
 
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);

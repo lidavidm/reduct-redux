@@ -303,5 +303,16 @@ export default transform({
                 },
             },
         },
+
+        define: {
+            kind: "statement",
+            fields: ["name"],
+            subexpressions: ["body"],
+            projection: {
+                type: "default",
+                shape: "()",
+                fields: ["'def'", "name", "'='", "body"],
+            },
+        },
     },
 });
