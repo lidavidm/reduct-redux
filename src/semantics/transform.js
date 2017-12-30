@@ -123,6 +123,13 @@ function vboxProjector(definition) {
         })));
     }
 
+    const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding", "notches"];
+    for (const field of optionFields) {
+        if (typeof definition.projection[field] !== "undefined") {
+            options[field] = definition.projection[field];
+        }
+    }
+
     return function vboxProjectorFactory(stage, nodes, expr) {
         const subprojections = [];
         for (const subproj of subprojectors) {

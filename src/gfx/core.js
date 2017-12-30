@@ -1,4 +1,5 @@
 import * as image from "./image";
+import * as notch from "./notch";
 import * as primitive from "./primitive";
 import * as util from "./util";
 
@@ -109,6 +110,10 @@ export function centerPos(projection) {
 
 export function baseShape(name, defaults, draw) {
     return function(options) {
+        if (options.notches) {
+            options.notches = notch.parseDescriptions(options.notches);
+        }
+
         const projection = Object.assign(baseProjection(), defaults, options);
         projection.size.w = projection.size.h = 50;
         projection.type = name;
@@ -119,7 +124,6 @@ export function baseShape(name, defaults, draw) {
             ctx.save();
 
             const [ sx, sy ] = util.absoluteScale(this, offset);
-
             const { x, y } = util.topLeftPos(this, offset);
 
             const node = state.getIn([ "nodes", exprId ]);
@@ -130,7 +134,8 @@ export function baseShape(name, defaults, draw) {
                      offset.sx * this.scale.x * this.size.w,
                      offset.sy * this.scale.y * this.size.h,
                      sx, sy,
-                     this.stroke);
+                     this.stroke,
+                     this.notches);
             }
 
             if (this.color) ctx.fillStyle = this.color;
@@ -168,7 +173,8 @@ export function baseShape(name, defaults, draw) {
                  offset.sx * this.scale.x * this.size.w,
                  offset.sy * this.scale.y * this.size.h,
                  sx, sy,
-                 this.stroke || shouldStroke);
+                 this.stroke || shouldStroke,
+                 this.notches);
             debugDraw(ctx, this, offset);
 
             ctx.restore();
@@ -183,7 +189,8 @@ export const roundedRect = baseShape("roundedRect", {
     shadowColor: "#000",
     shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
-}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
+}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
+    if (notches) console.log(notches);
     primitive.roundRect(
         ctx,
         x, y, w, h,

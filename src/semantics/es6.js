@@ -310,6 +310,13 @@ export default transform({
             subexpressions: ["body"],
             projection: {
                 type: "vbox",
+                notches: [
+                    {
+                        side: "left",
+                        type: "inset",
+                        shape: "wedge",
+                    },
+                ],
                 rows: [
                     {
                         type: "default",
