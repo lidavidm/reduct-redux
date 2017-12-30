@@ -86,8 +86,6 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.subexpScale = 0.85;
     projection.type = "vbox";
 
-    Object.assign(projection, options);
-
     projection.prepare = function(id, exprId, state, stage) {
         const children = childrenFunc(exprId, state);
         let maxX = 50;

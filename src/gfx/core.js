@@ -110,13 +110,13 @@ export function centerPos(projection) {
 
 export function baseShape(name, defaults, draw) {
     return function(options) {
-        if (options.notches) {
-            options.notches = notch.parseDescriptions(options.notches);
-        }
-
         const projection = Object.assign(baseProjection(), defaults, options);
         projection.size.w = projection.size.h = 50;
         projection.type = name;
+
+        if (options.notches) {
+            projection.notches = notch.parseDescriptions(options.notches);
+        }
 
         projection.prepare = function(id, exprId, state, stage) {};
         projection.draw = function(id, exprId, state, stage, offset) {
