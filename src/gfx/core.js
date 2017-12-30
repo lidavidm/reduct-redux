@@ -190,14 +190,15 @@ export const roundedRect = baseShape("roundedRect", {
     shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
-    if (notches) console.log(notches);
     primitive.roundRect(
         ctx,
         x, y, w, h,
         sx * projection.radius,
         projection.color ? true : false,
         shouldStroke,
-        projection.stroke ? projection.stroke.opacity : null);
+        projection.stroke ? projection.stroke.opacity : null,
+        notches
+    );
 });
 
 export const hexaRect = baseShape("hexaRect", {

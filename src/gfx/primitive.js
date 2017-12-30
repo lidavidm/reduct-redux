@@ -49,7 +49,23 @@ export function roundRect(ctx, x, y, width, height, radius, fill, stroke, stroke
         ctx.quadraticCurveTo(x, y, x + radius.tl, y);
     }
     else {
-
+        ctx.moveTo(x + radius.tl, y);
+        // Top
+        notches.drawSequence(ctx, "top", x + radius.tl, y, width - radius.tr);
+        ctx.lineTo(x + width - radius.tr, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+        // Right
+        notches.drawSequence(ctx, "right", x + width, y + radius.tr, (height - radius.br - radius.tr));
+        ctx.lineTo(x + width, y + height - radius.br);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+        // Bottom
+        notches.drawSequence(ctx, "bottom", x + width, y, (width - radius.bl));
+        ctx.lineTo(x + radius.bl, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+        // Left
+        notches.drawSequence(ctx, "left", x, y + height, (height - radius.tl));
+        ctx.lineTo(x, y + radius.tl);
+        ctx.quadraticCurveTo(x, y, x + radius.tl, y);
     }
     ctx.closePath();
     if (fill) ctx.fill();

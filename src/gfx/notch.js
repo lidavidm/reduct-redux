@@ -53,7 +53,7 @@ export class Notch {
 }
 
 export function parseDescription(description) {
-    return new Notch(description.side, description.shape, 16, 8, 0, description.type === "inset");
+    return new Notch(description.side, description.shape, 10, 10, 0.8, description.type === "inset");
 }
 
 export function parseDescriptions(descriptions) {
