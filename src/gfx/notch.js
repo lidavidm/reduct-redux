@@ -33,7 +33,7 @@ export class Notch {
         return 1;
     }
 
-    drawVertical(ctx, x, y, w, dir=null) {
+    drawVertical(ctx, x, y, h, dir=null) {
         if (!dir) dir = this.direction;
         const relpos = this.relpos;
         const facing = this.inner ? 1 : -1;
@@ -53,10 +53,9 @@ export class Notch {
 }
 
 export function parseDescription(description) {
-
+    return new Notch(description.side, description.shape, 16, 8, 0, description.type === "inset");
 }
 
 export function parseDescriptions(descriptions) {
-    // TODO:
-    return new NotchSet([]);
+    return new NotchSet(descriptions.map(parseDescription));
 }
