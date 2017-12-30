@@ -16,7 +16,10 @@ function defaultProjector(definition) {
         baseProjection = gfx.baseProjection;
     }
 
-    const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding"];
+    const optionFields = [
+        "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
+        "subexpScale",
+    ];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
@@ -123,7 +126,10 @@ function vboxProjector(definition) {
         })));
     }
 
-    const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding", "notches"];
+    const optionFields = [
+        "color", "strokeWhenChild", "shadowOffset",
+        "radius", "padding", "notches", "subexpScale",
+    ];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];

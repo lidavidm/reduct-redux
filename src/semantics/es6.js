@@ -317,16 +317,20 @@ export default transform({
                         shape: "wedge",
                     },
                 ],
+                // padding: { top: 0, bottom: 0, left: 0, right: 0, inner: 0 },
+                subexpScale: 1.0,
                 rows: [
                     {
                         type: "default",
                         shape: "none",
                         fields: ["'def'", "name"],
+                        subexpScale: 1.0,
                     },
                     {
                         type: "default",
                         shape: "none",
                         fields: ["'   '", "body"],
+                        subexpScale: 1.0,
                     },
                 ],
             },
