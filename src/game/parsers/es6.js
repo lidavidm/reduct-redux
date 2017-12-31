@@ -9,6 +9,9 @@ export function parse(program, macros) {
         if (result === null) {
             return fail(`Cannot parse program.`, program);
         }
+        if (result.type === "define") {
+            return [ result, jssemant.defineAttach() ];
+        }
         return result;
     }
     else {
@@ -25,6 +28,16 @@ function parseNode(node, macros) {
     switch (node.type) {
     case "ExpressionStatement":
         return parseNode(node.expression, macros);
+
+    case "ReturnStatement":
+        return parseNode(node.argument, macros);
+
+    case "BlockStatement": {
+        if (node.body.length !== 1) {
+            return fail("Cannot parse multi-statement programs.", node);
+        }
+        return parseNode(node.body[0], macros);
+    }
 
     case "Identifier": {
         if (node.name === "_") return jssemant.missing();
@@ -105,6 +118,33 @@ function parseNode(node, macros) {
             parseNode(node.consequent, macros),
             parseNode(node.alternate, macros)
         );
+    }
+
+    case "FunctionDeclaration": {
+        const name = node.id.name;
+        if (node.params.length === 0) {
+            return jssemant.define(name, parseNode(node.body, macros));
+        }
+
+        let result = parseNode(node.body, macros);
+        for (const arg of node.params.reverse()) {
+            result = jssemant.lambda(jssemant.lambdaArg(arg.name), result);
+        }
+        return jssemant.define(name, result);
+    }
+
+    case "VariableDeclaration": {
+        if (node.kind !== "let") {
+            return fail(`parsers.es6: Unrecognized '${node.kind}' declaration`, node);
+        }
+        else if (node.declarations.length !== 1) {
+            return fail("parsers.es6: Only declaring 1 item at a time is supported", node);
+        }
+
+        const name = node.declarations[0].id.name;
+        const body = parseNode(node.declarations[0].init, macros);
+
+        return jssemant.define(name, body);
     }
 
     default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);

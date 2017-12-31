@@ -36,8 +36,8 @@ export default class Toolbox {
     }
 
     drawBase(state) {
-        this.stage.internalViews[this.bg].prepare(null, state, this.stage);
-        this.stage.internalViews[this.bg].draw(null, state, this.stage, {
+        this.stage.internalViews[this.bg].prepare(null, null, state, this.stage);
+        this.stage.internalViews[this.bg].draw(null, null, state, this.stage, {
             x: 0,
             y: 0,
             sx: 1,
@@ -54,7 +54,7 @@ export default class Toolbox {
             const projection = this.stage.views[nodeId];
             projection.scale = { x: 1, y: 1 };
             const nodeY = y + ((90 - projection.size.h) / 2);
-            projection.prepare(nodeId, state, this.stage);
+            projection.prepare(nodeId, nodeId, state, this.stage);
             if (nodeId === this.stage._selectedNode) {
                 // Do nothing
             }
@@ -89,7 +89,7 @@ export default class Toolbox {
             }
 
             x += projection.size.w + 20;
-            projection.draw(nodeId, state, this.stage, {
+            projection.draw(nodeId, nodeId, state, this.stage, {
                 x: 0,
                 y: 0,
                 sx: 1,

@@ -5,6 +5,12 @@ import * as core from "./core";
 
 import { nextId } from "../reducer/reducer";
 
+
+const optionFields = [
+    "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
+    "notches", "subexpScale", "shadow", "shadowColor",
+];
+
 function defaultProjector(definition) {
     const options = {};
     let baseProjection = gfx.roundedRect;
@@ -12,8 +18,10 @@ function defaultProjector(definition) {
         baseProjection = gfx.hexaRect;
         options.padding = { left: 18, right: 18, inner: 10 };
     }
+    else if (definition.projection.shape === "none") {
+        baseProjection = gfx.baseProjection;
+    }
 
-    const optionFields = ["color", "strokeWhenChild", "shadowOffset", "radius", "padding"];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
@@ -111,6 +119,47 @@ function dynamicProjector(definition) {
     };
 }
 
+function vboxProjector(definition) {
+    const options = {};
+    const subprojectors = [];
+    for (const subprojection of definition.projection.rows) {
+        subprojectors.push(projector(Object.assign({}, definition, {
+            projection: subprojection,
+        })));
+    }
+
+    for (const field of optionFields) {
+        if (typeof definition.projection[field] !== "undefined") {
+            options[field] = definition.projection[field];
+        }
+    }
+
+    return function vboxProjectorFactory(stage, nodes, expr) {
+        const subprojections = [];
+        for (const subproj of subprojectors) {
+            subprojections.push(stage.allocate(subproj(stage, nodes, expr)));
+        }
+        const childrenFunc = (id, _state) => subprojections.map(projId => [ projId, id ]);
+        return gfx.layout.vbox(childrenFunc, options);
+    };
+}
+
+function stickyProjector(definition) {
+    for (const field in definition.projection) {
+        if (field !== "type" && field !== "content" && field !== "side") {
+            definition.projection.content[field] = definition.projection[field];
+        }
+    }
+    const subprojector = projector(Object.assign({}, definition, {
+        projection: definition.projection.content,
+    }));
+
+    return function stickyProjectorFactory(stage, nodes, expr) {
+        const inner = subprojector(stage, nodes, expr);
+        return gfx.layout.sticky(inner, definition.projection.side);
+    };
+}
+
 function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -124,10 +173,20 @@ function projector(definition) {
         return symbolProjector(definition);
     case "dynamic":
         return dynamicProjector(definition);
+    case "vbox":
+        return vboxProjector(definition);
+    case "sticky":
+        return stickyProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }
 }
+
+const NotchRecord = immutable.Record({
+    side: "left",
+    shape: "wedge",
+    type: "inset",
+});
 
 export default function transform(definition) {
     const module = {};
@@ -176,6 +235,10 @@ export default function transform(definition) {
             if (typeof exprDefinition.locked !== "undefined") {
                 result.locked = exprDefinition.locked;
             }
+            if (typeof exprDefinition.notches !== "undefined") {
+                result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
+            }
+
             let argPointer = 0;
             for (const fieldName of exprDefinition.fields) {
                 result[fieldName] = params[argPointer++];
@@ -187,6 +250,10 @@ export default function transform(definition) {
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
 
+
+        if (typeof exprDefinition.notches !== "undefined") {
+            exprDefinition.projection.notches = exprDefinition.notches;
+        }
         module.projections[exprName] = projector(exprDefinition);
     }
 

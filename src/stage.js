@@ -104,8 +104,8 @@ export class Stage {
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
-        projection.prepare(nodeId, state, this);
-        projection.draw(nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+        projection.prepare(nodeId, nodeId, state, this);
+        projection.draw(nodeId, nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
     }
 
     drawImpl() {
@@ -185,6 +185,8 @@ export class Stage {
         };
 
         for (const nodeId of state.get("board").toArray().reverse()) {
+            if (nodeId === this._selectedNode) continue;
+
             const res = check(pos, state.getIn([ "nodes", nodeId ]));
             if (res) {
                 [ root, result ] = res;

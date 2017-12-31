@@ -1,4 +1,5 @@
 import * as image from "./image";
+import * as notch from "./notch";
 import * as primitive from "./primitive";
 import * as util from "./util";
 
@@ -23,7 +24,40 @@ export function baseProjection(options) {
         opacity: 1.0,
     }, options);
 
-    projection.draw = projection.prepare = function() {};
+    if (options && options.notches) {
+        projection.notches = notch.parseDescriptions(options.notches);
+    }
+
+    projection.prepare = function() {};
+    projection.draw = function(id, exprId, state, stage, offset) {
+        // TODO: move this into its own "notch" projection
+        if (this.notches) {
+            const { x, y } = util.topLeftPos(this, offset);
+            const { ctx } = stage;
+            const draw = (yOffset) => {
+                ctx.beginPath();
+                ctx.moveTo(x, y + yOffset);
+                this.notches.drawSequence(ctx, "right", x, y + yOffset, this.size.h);
+                ctx.lineTo(x, y + this.size.h + yOffset);
+                ctx.closePath();
+                ctx.fill();
+                if (this.highlighted) ctx.stroke();
+            };
+            ctx.save();
+            if (this.highlighted) {
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "yellow";
+            }
+            else {
+                ctx.lineWidth = 0;
+            }
+            if (this.shadow) ctx.fillStyle = this.shadowColor;
+            draw(this.shadowOffset);
+            if (this.color) ctx.fillStyle = this.color;
+            draw(0);
+            ctx.restore();
+        }
+    };
 
     projection.containsPoint = function(pos, offset) {
         const { x, y } = util.topLeftPos(this, offset);
@@ -113,16 +147,19 @@ export function baseShape(name, defaults, draw) {
         projection.size.w = projection.size.h = 50;
         projection.type = name;
 
-        projection.prepare = function(id, state, stage) {};
-        projection.draw = function(id, state, stage, offset) {
+        if (options.notches) {
+            projection.notches = notch.parseDescriptions(options.notches);
+        }
+
+        projection.prepare = function(id, exprId, state, stage) {};
+        projection.draw = function(id, exprId, state, stage, offset) {
             const ctx = stage.ctx;
             ctx.save();
 
             const [ sx, sy ] = util.absoluteScale(this, offset);
-
             const { x, y } = util.topLeftPos(this, offset);
 
-            const node = state.getIn([ "nodes", id ]);
+            const node = state.getIn([ "nodes", exprId ]);
             if (this.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
                 ctx.fillStyle = this.shadowColor;
                 draw(ctx, this,
@@ -130,7 +167,8 @@ export function baseShape(name, defaults, draw) {
                      offset.sx * this.scale.x * this.size.w,
                      offset.sy * this.scale.y * this.size.h,
                      sx, sy,
-                     this.stroke);
+                     this.stroke,
+                     this.notches);
             }
 
             if (this.color) ctx.fillStyle = this.color;
@@ -168,7 +206,8 @@ export function baseShape(name, defaults, draw) {
                  offset.sx * this.scale.x * this.size.w,
                  offset.sy * this.scale.y * this.size.h,
                  sx, sy,
-                 this.stroke || shouldStroke);
+                 this.stroke || shouldStroke,
+                 this.notches);
             debugDraw(ctx, this, offset);
 
             ctx.restore();
@@ -183,14 +222,16 @@ export const roundedRect = baseShape("roundedRect", {
     shadowColor: "#000",
     shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
-}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
+}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
     primitive.roundRect(
         ctx,
         x, y, w, h,
         sx * projection.radius,
         projection.color ? true : false,
         shouldStroke,
-        projection.stroke ? projection.stroke.opacity : null);
+        projection.stroke ? projection.stroke.opacity : null,
+        notches
+    );
 });
 
 export const hexaRect = baseShape("hexaRect", {
@@ -219,7 +260,7 @@ export function text(text, options) {
     projection.color = "#000";
     projection.type = "text";
 
-    projection.prepare = function(id, state, stage) {
+    projection.prepare = function(id, exprId, state, stage) {
         const cacheKey = `${this.fontSize};${this.font};${this.text}`;
         if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
@@ -228,7 +269,7 @@ export function text(text, options) {
         this.size.h = 50;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
-    projection.draw = function(id, state, stage, offset) {
+    projection.draw = function(id, exprId, state, stage, offset) {
         const ctx = stage.ctx;
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
@@ -265,8 +306,8 @@ export function dynamicType(mapping, resetFieldsList) {
     }
     projection.type = "dynamicType";
 
-    projection.prepare = function(id, state, stage) {
-        const expr = state.getIn([ "nodes", id ]);
+    projection.prepare = function(id, exprId, state, stage) {
+        const expr = state.getIn([ "nodes", exprId ]);
         const ty = expr.get("ty");
 
         let proj = mapping["__default__"];
@@ -277,17 +318,17 @@ export function dynamicType(mapping, resetFieldsList) {
         for (const fieldName of resetFieldsList) {
             this[fieldName] = proj[fieldName];
         }
-        proj.prepare.call(this, id, state, stage);
+        proj.prepare.call(this, id, exprId, state, stage);
     };
 
-    projection.draw = function(id, state, stage, offset) {
-        const expr = state.getIn([ "nodes", id ]);
+    projection.draw = function(id, exprId, state, stage, offset) {
+        const expr = state.getIn([ "nodes", exprId ]);
         const ty = expr.get("ty");
         if (typeof mapping[ty] !== "undefined") {
-            mapping[ty].draw.call(this, id, state, stage, offset);
+            mapping[ty].draw.call(this, id, exprId, state, stage, offset);
         }
         else {
-            mapping["__default__"].draw.call(this, id, state, stage, offset);
+            mapping["__default__"].draw.call(this, id, exprId, state, stage, offset);
         }
     };
 

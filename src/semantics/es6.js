@@ -303,5 +303,63 @@ export default transform({
                 },
             },
         },
+
+        define: {
+            kind: "statement",
+            fields: ["name"],
+            subexpressions: ["body"],
+            notches: [
+                {
+                    side: "left",
+                    type: "inset",
+                    shape: "wedge",
+                    relpos: 0.8,
+                },
+            ],
+            projection: {
+                type: "vbox",
+                subexpScale: 1.0,
+                rows: [
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'def'", "name"],
+                        subexpScale: 1.0,
+                    },
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'   '", "body"],
+                        subexpScale: 1.0,
+                    },
+                ],
+            },
+        },
+
+        defineAttach: {
+            kind: "syntax",
+            fields: [],
+            subexpressions: [],
+            notches: [
+                {
+                    side: "right",
+                    type: "outset",
+                    shape: "wedge",
+                    relpos: 0.5,
+                },
+            ],
+            projection: {
+                type: "sticky",
+                side: "left",
+                content: {
+                    type: "default",
+                    shape: "none",
+                    color: "lightgray",
+                    shadow: true,
+                    shadowColor: "#000",
+                    shadowOffset: 2,
+                },
+            },
+        },
     },
 });
