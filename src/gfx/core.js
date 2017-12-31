@@ -30,6 +30,7 @@ export function baseProjection(options) {
 
     projection.prepare = function() {};
     projection.draw = function(id, exprId, state, stage, offset) {
+        // TODO: move this into its own "notch" projection
         if (this.notches) {
             const { x, y } = util.topLeftPos(this, offset);
             const { ctx } = stage;
@@ -40,8 +41,16 @@ export function baseProjection(options) {
                 ctx.lineTo(x, y + this.size.h + yOffset);
                 ctx.closePath();
                 ctx.fill();
+                if (this.highlighted) ctx.stroke();
             };
             ctx.save();
+            if (this.highlighted) {
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "yellow";
+            }
+            else {
+                ctx.lineWidth = 0;
+            }
             if (this.shadow) ctx.fillStyle = this.shadowColor;
             draw(this.shadowOffset);
             if (this.color) ctx.fillStyle = this.color;
