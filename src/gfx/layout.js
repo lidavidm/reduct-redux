@@ -14,11 +14,16 @@ export function sticky(projection, direction) {
     const origPrepare = projection.prepare;
     projection.prepare = function(id, exprId, state, stage) {
         origPrepare.call(this, id, exprId, state, stage);
+        this.anchor.x = 0;
+        this.anchor.y = 0;
         if (direction === "bottom") {
             this.pos.y = stage.height - this.size.h;
         }
         else if (direction === "top") {
             this.pos.y = 0;
+        }
+        else if (direction === "left") {
+            this.pos.x = 0;
         }
     };
     return projection;

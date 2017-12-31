@@ -144,6 +144,22 @@ function vboxProjector(definition) {
     };
 }
 
+function stickyProjector(definition) {
+    for (const field in definition.projection) {
+        if (field !== "type" && field !== "content" && field !== "side") {
+            definition.projection.content[field] = definition.projection[field];
+        }
+    }
+    const subprojector = projector(Object.assign({}, definition, {
+        projection: definition.projection.content,
+    }));
+
+    return function stickyProjectorFactory(stage, nodes, expr) {
+        const inner = subprojector(stage, nodes, expr);
+        return gfx.layout.sticky(inner, definition.projection.side);
+    };
+}
+
 function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -159,6 +175,8 @@ function projector(definition) {
         return dynamicProjector(definition);
     case "vbox":
         return vboxProjector(definition);
+    case "sticky":
+        return stickyProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }
