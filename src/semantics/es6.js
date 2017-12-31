@@ -313,6 +313,7 @@ export default transform({
                     side: "left",
                     type: "inset",
                     shape: "wedge",
+                    relpos: 0.8,
                 },
             ],
             projection: {
@@ -344,6 +345,7 @@ export default transform({
                     side: "right",
                     type: "outset",
                     shape: "wedge",
+                    relpos: 0.5,
                 },
             ],
             projection: {

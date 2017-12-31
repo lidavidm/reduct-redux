@@ -182,6 +182,12 @@ function projector(definition) {
     }
 }
 
+const NotchRecord = immutable.Record({
+    side: "left",
+    shape: "wedge",
+    type: "inset",
+});
+
 export default function transform(definition) {
     const module = {};
     module.definition = definition;
@@ -230,7 +236,7 @@ export default function transform(definition) {
                 result.locked = exprDefinition.locked;
             }
             if (typeof exprDefinition.notches !== "undefined") {
-                result.notches = exprDefinition.notches;
+                result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
             }
 
             let argPointer = 0;
