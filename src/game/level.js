@@ -10,9 +10,11 @@ export function startLevel(description, parse, store, stage) {
 
     store.dispatch(action.startLevel(
         stage,
-        description.goal.map((str) => parse(str, macros)),
-        description.board.map((str) => parse(str, macros)),
-        description.toolbox.map((str) => parse(str, macros))
+        description.goal.map(str => parse(str, macros)),
+        description.board
+            .map(str => parse(str, macros))
+            .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), []),
+        description.toolbox.map(str => parse(str, macros))
     ));
 }
 
