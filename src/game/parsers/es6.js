@@ -9,6 +9,9 @@ export function parse(program, macros) {
         if (result === null) {
             return fail(`Cannot parse program.`, program);
         }
+        if (result.type === "define") {
+            return [ result, jssemant.defineAttach() ];
+        }
         return result;
     }
     else {

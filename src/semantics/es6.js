@@ -334,5 +334,26 @@ export default transform({
                 ],
             },
         },
+
+        defineAttach: {
+            kind: "syntax",
+            fields: [],
+            subexpressions: [],
+            notches: [
+                {
+                    side: "right",
+                    type: "outset",
+                    shape: "wedge",
+                },
+            ],
+            projection: {
+                type: "default",
+                shape: "none",
+                color: "lightgray",
+                shadow: true,
+                shadowColor: "#000",
+                shadowOffset: 2,
+            },
+        },
     },
 });

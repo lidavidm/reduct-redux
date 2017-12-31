@@ -24,7 +24,31 @@ export function baseProjection(options) {
         opacity: 1.0,
     }, options);
 
-    projection.draw = projection.prepare = function() {};
+    if (options && options.notches) {
+        projection.notches = notch.parseDescriptions(options.notches);
+    }
+
+    projection.prepare = function() {};
+    projection.draw = function(id, exprId, state, stage, offset) {
+        if (this.notches) {
+            const { x, y } = util.topLeftPos(this, offset);
+            const { ctx } = stage;
+            const draw = (yOffset) => {
+                ctx.beginPath();
+                ctx.moveTo(x, y + yOffset);
+                this.notches.drawSequence(ctx, "right", x, y + yOffset, this.size.h);
+                ctx.lineTo(x, y + this.size.h + yOffset);
+                ctx.closePath();
+                ctx.fill();
+            };
+            ctx.save();
+            if (this.shadow) ctx.fillStyle = this.shadowColor;
+            draw(this.shadowOffset);
+            if (this.color) ctx.fillStyle = this.color;
+            draw(0);
+            ctx.restore();
+        }
+    };
 
     projection.containsPoint = function(pos, offset) {
         const { x, y } = util.topLeftPos(this, offset);

@@ -5,6 +5,12 @@ import * as core from "./core";
 
 import { nextId } from "../reducer/reducer";
 
+
+const optionFields = [
+    "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
+    "notches", "subexpScale", "shadow", "shadowColor",
+];
+
 function defaultProjector(definition) {
     const options = {};
     let baseProjection = gfx.roundedRect;
@@ -16,10 +22,6 @@ function defaultProjector(definition) {
         baseProjection = gfx.baseProjection;
     }
 
-    const optionFields = [
-        "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
-        "notches", "subexpScale",
-    ];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
@@ -126,10 +128,6 @@ function vboxProjector(definition) {
         })));
     }
 
-    const optionFields = [
-        "color", "strokeWhenChild", "shadowOffset",
-        "radius", "padding", "notches", "subexpScale",
-    ];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
             options[field] = definition.projection[field];
