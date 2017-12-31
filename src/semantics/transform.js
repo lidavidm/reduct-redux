@@ -558,6 +558,28 @@ export default function transform(definition) {
         return validator(module, nodes, expr);
     };
 
+    module.hasNotches = function(node) {
+        return node.get("notches");
+    };
+
+    module.notchesCompatible = function(node1, node2) {
+        const notches1 = node1.get("notches");
+        const notches2 = node2.get("notches");
+        const result = [];
+        if (notches1 && notches2) {
+            for (const notch1 of notches1) {
+                for (const notch2 of notches2) {
+                    if ((notch1.side === "left" && notch2.side === "right") ||
+                        (notch1.side === "right" && notch2.side === "left")) {
+                        // TODO: full check
+                        result.push([ notch1, notch2 ]);
+                    }
+                }
+            }
+        }
+        return result;
+    };
+
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
     module.map = core.genericMap(module.subexpressions);

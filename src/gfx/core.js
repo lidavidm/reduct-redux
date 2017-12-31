@@ -105,6 +105,10 @@ export function constant(...projections) {
     return () => projections;
 }
 
+export function distance(proj1, proj2) {
+    return Math.sqrt((proj1.pos.x - proj2.pos.x)**2 + (proj1.pos.y - proj2.pos.y)**2);
+}
+
 export function absolutePos(projection) {
     let { x, y } = projection.pos;
     x -= projection.anchor.x * projection.size.w * projection.scale.x;

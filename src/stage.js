@@ -255,6 +255,32 @@ export class Stage {
                 this._hoverNode = null;
             }
         }
+
+        if (this._selectedNode) {
+            // Highlight nearby compatible notches, if applicable
+            const state = this.getState();
+            const nodes = state.get("nodes");
+            const selected = nodes.get(this._selectedNode);
+            if (this.semantics.hasNotches(selected)) {
+                for (const nodeId of state.get("board")) {
+                    const node = nodes.get(nodeId);
+                    const compatible = this.semantics.notchesCompatible(selected, node);
+                    // TODO: actually check distance to notch
+                    if (compatible) {
+                        const distance = gfxCore.distance(
+                            this.views[nodeId],
+                            this.views[this._selectedNode]
+                        );
+                        if (distance < 150) {
+                            this.views[nodeId].highlighted = true;
+                        }
+                        else {
+                            this.views[nodeId].highlighted = false;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     _mouseup(e) {
@@ -303,6 +329,13 @@ export class Stage {
                     duration: 250,
                     easing: animate.Easing.Cubic.Out,
                 });
+            }
+        }
+
+        const board = this.getState().get("board");
+        for (const nodeId of board) {
+            if (this.views[nodeId].highlighted) {
+                this.views[nodeId].highlighted = false;
             }
         }
 
