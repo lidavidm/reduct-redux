@@ -308,16 +308,15 @@ export default transform({
             kind: "statement",
             fields: ["name"],
             subexpressions: ["body"],
+            notches: [
+                {
+                    side: "left",
+                    type: "inset",
+                    shape: "wedge",
+                },
+            ],
             projection: {
                 type: "vbox",
-                notches: [
-                    {
-                        side: "left",
-                        type: "inset",
-                        shape: "wedge",
-                    },
-                ],
-                // padding: { top: 0, bottom: 0, left: 0, right: 0, inner: 0 },
                 subexpScale: 1.0,
                 rows: [
                     {

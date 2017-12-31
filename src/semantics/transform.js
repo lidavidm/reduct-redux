@@ -18,7 +18,7 @@ function defaultProjector(definition) {
 
     const optionFields = [
         "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
-        "subexpScale",
+        "notches", "subexpScale",
     ];
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
@@ -213,6 +213,10 @@ export default function transform(definition) {
             if (typeof exprDefinition.locked !== "undefined") {
                 result.locked = exprDefinition.locked;
             }
+            if (typeof exprDefinition.notches !== "undefined") {
+                result.notches = exprDefinition.notches;
+            }
+
             let argPointer = 0;
             for (const fieldName of exprDefinition.fields) {
                 result[fieldName] = params[argPointer++];
@@ -224,6 +228,10 @@ export default function transform(definition) {
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
 
+
+        if (typeof exprDefinition.notches !== "undefined") {
+            exprDefinition.projection.notches = exprDefinition.notches;
+        }
         module.projections[exprName] = projector(exprDefinition);
     }
 
