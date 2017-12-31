@@ -181,6 +181,23 @@ export function reduct(semantics, views) {
                 }));
             });
         }
+        case action.ATTACH_NOTCH: {
+            const child = state.getIn([ "nodes", act.childId ]);
+            if (child.get("parent")) throw `Dragging objects from one hole to another is unsupported.`;
+
+            return state.withMutations((s) => {
+                s.set("board", s.get("board").filter(n => n !== act.childId));
+                s.set("toolbox", s.get("toolbox").filter(n => n !== act.childId));
+                s.set("nodes", s.get("nodes").withMutations((nodes) => {
+                    nodes.set(act.parentId, nodes.get(act.parentId).set(`notch${act.notchIdx}`, act.childId));
+                    nodes.set(act.childId, child.withMutations((c) => {
+                        c.set("parentField", `notch${act.notchIdx}`);
+                        c.set("parent", act.parentId);
+                        c.set("locked", false);
+                    }));
+                }));
+            });
+        }
         case action.USE_TOOLBOX: {
             if (state.get("toolbox").contains(act.nodeId)) {
                 return state.withMutations(state => {

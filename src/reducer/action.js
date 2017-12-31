@@ -6,6 +6,7 @@ export const USE_TOOLBOX = "use-toolbox";
 export const RAISE = "raise";
 export const DETACH = "detach";
 export const FILL_HOLE = "fill-hole";
+export const ATTACH_NOTCH = "attach-notch";
 export const SMALL_STEP = "small-step";
 export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
@@ -159,6 +160,19 @@ export function fillHole(holeId, childId) {
         type: FILL_HOLE,
         holeId: holeId,
         childId: childId,
+    };
+}
+
+/**
+ * Attach the child to the given parent through the given notches
+ */
+export function attachNotch(parentId, notchIdx, childId, childNotchIdx) {
+    return {
+        type: ATTACH_NOTCH,
+        parentId,
+        childId,
+        notchIdx,
+        childNotchIdx,
     };
 }
 

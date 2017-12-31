@@ -305,7 +305,6 @@ export class Stage {
             // Use type inference to decide whether hole can be filled
             const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
             const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
-            console.log(holeType, exprType);
             if (!holeType || !exprType || holeType === exprType) {
                 this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
             }
@@ -336,6 +335,36 @@ export class Stage {
         for (const nodeId of board) {
             if (this.views[nodeId].highlighted) {
                 this.views[nodeId].highlighted = false;
+            }
+        }
+        const nodes = this.getState().get("nodes");
+        const selected = nodes.get(this._selectedNode);
+        if (this.semantics.hasNotches(selected)) {
+            let leastDistance = 9999;
+            let closestNotch = null;
+
+            for (const nodeId of state.get("board")) {
+                if (nodeId === this._selectedNode) continue;
+
+                const node = nodes.get(nodeId);
+                const compatible = this.semantics.notchesCompatible(selected, node);
+                // TODO: actually check distance to notch
+                if (compatible) {
+                    const distance = gfxCore.distance(
+                        this.views[nodeId],
+                        this.views[this._selectedNode]
+                    );
+                    if (distance < leastDistance) {
+                        leastDistance = distance;
+                        closestNotch = [ nodeId, compatible ];
+                    }
+                }
+            }
+
+            if (leastDistance <= 150 && closestNotch !== null) {
+                const [ parent, notchPair ] = closestNotch;
+                // TODO: actually check the matched notches
+                this.store.dispatch(action.attachNotch(parent, 0, this._selectedNode, 0));
             }
         }
 

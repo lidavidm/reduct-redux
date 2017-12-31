@@ -28,7 +28,19 @@ export function baseProjection(options) {
         projection.notches = notch.parseDescriptions(options.notches);
     }
 
-    projection.prepare = function() {};
+    projection.prepare = function(id, exprId, state, stage) {
+        if (this.notches) {
+            console.log("prepare");
+            const node = state.getIn([ "nodes", exprId ]);
+            if (node.has("notch0")) {
+                const childId = node.get("notch0");
+                stage.views[childId].anchor.x = 0.0;
+                stage.views[childId].anchor.y = 0.0;
+                stage.views[childId].pos.x = this.pos.x;
+                stage.views[childId].pos.y = this.pos.y;
+            }
+        }
+    };
     projection.draw = function(id, exprId, state, stage, offset) {
         // TODO: move this into its own "notch" projection
         if (this.notches) {
@@ -56,6 +68,17 @@ export function baseProjection(options) {
             if (this.color) ctx.fillStyle = this.color;
             draw(0);
             ctx.restore();
+
+            const node = state.getIn([ "nodes", exprId ]);
+            if (node.has("notch0")) {
+                const childId = node.get("notch0");
+                stage.views[childId].anchor.x = 0.0;
+                stage.views[childId].anchor.y = 0.0;
+                stage.views[childId].pos.x = this.pos.x;
+                stage.views[childId].pos.y = this.pos.y;
+
+                stage.views[childId].draw(childId, childId, state, stage, offset);
+            }
         }
     };
 
