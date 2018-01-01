@@ -196,7 +196,7 @@ export class Stage {
 
         if (!result && !root) {
             [ result, root ] = this.toolbox.getNodeAtPos(state, pos);
-            toolbox = true;
+            if (result) toolbox = true;
         }
 
         return [ root, result, toolbox ];
@@ -212,7 +212,6 @@ export class Stage {
     }
 
     _mousedown(e) {
-        const state = this.getState();
         const pos = this.getMousePos(e);
         [ this._selectedNode, this._targetNode, this._fromToolbox ] = this.getNodeAtPos(pos);
         if (this._selectedNode !== null) {
@@ -229,7 +228,7 @@ export class Stage {
             this._dragged = true;
         }
 
-        if (e.buttons > 0 && this._targetNode && this._targetNode !== this._selectedNode) {
+        if (e.buttons > 0 && this._targetNode) {
             const target = this.getState().getIn([ "nodes", this._targetNode ]);
             if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
                 // Detach

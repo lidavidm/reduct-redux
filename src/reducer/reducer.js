@@ -186,7 +186,7 @@ export function reduct(semantics, views) {
             if (child.get("parent")) throw `Dragging objects from one hole to another is unsupported.`;
 
             return state.withMutations((s) => {
-                s.set("board", s.get("board").filter(n => n !== act.childId));
+                // s.set("board", s.get("board").filter(n => n !== act.childId));
                 s.set("toolbox", s.get("toolbox").filter(n => n !== act.childId));
                 s.set("nodes", s.get("nodes").withMutations((nodes) => {
                     nodes.set(act.parentId, nodes.get(act.parentId).set(`notch${act.notchIdx}`, act.childId));
@@ -221,6 +221,9 @@ export function reduct(semantics, views) {
                         if (oldHole) {
                             parent.set(node.get("parentField"), oldHole);
                             parent.delete(node.get("parentField") + "__hole");
+                        }
+                        else if (node.get("parentField").slice(0, 5) === "notch") {
+                            parent.delete(node.get("parentField"));
                         }
                         else {
                             throw `Unimplemented: creating new hole`;

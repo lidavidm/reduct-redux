@@ -271,6 +271,10 @@ export default function transform(definition) {
             return result;
         }
         if (!definition.expressions[type]) throw `Unrecognized expression type ${type}`;
+        // TODO: more principled way of doing this
+        if (expr.get && expr.get("notch0")) {
+            return definition.expressions[type].subexpressions.concat(["notch0"]);
+        }
         return definition.expressions[type].subexpressions;
     };
 
