@@ -353,7 +353,7 @@ export default transform({
                 side: "left",
                 content: {
                     type: "default",
-                    shape: "none",
+                    shape: "notch",
                     color: "lightgray",
                     shadow: true,
                     shadowColor: "#000",

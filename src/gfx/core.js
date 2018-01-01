@@ -28,21 +28,26 @@ export function baseProjection(options) {
         projection.notches = notch.parseDescriptions(options.notches);
     }
 
-    projection.prepare = function(id, exprId, state, stage) {
-        if (this.notches) {
-            console.log("prepare");
-            const node = state.getIn([ "nodes", exprId ]);
-            if (node.has("notch0")) {
-                const childId = node.get("notch0");
-                stage.views[childId].anchor.x = 0.0;
-                stage.views[childId].anchor.y = 0.0;
-                stage.views[childId].pos.x = this.pos.x;
-                stage.views[childId].pos.y = this.pos.y;
-            }
-        }
+    projection.prepare = function(id, exprId, state, stage) {};
+    projection.draw = function(id, exprId, state, stage, offset) {};
+
+    projection.containsPoint = function(pos, offset) {
+        const { x, y } = util.topLeftPos(this, offset);
+        return pos.x >= x &&
+            pos.y >= y &&
+            pos.x <= x + (this.size.w * offset.sx * this.scale.x) &&
+            pos.y <= y + (this.size.h * offset.sy * this.scale.y);
     };
+
+    return projection;
+}
+
+export function notchProjection(options) {
+    const projection = baseProjection(options);
+    projection.type = "notch";
+
+    projection.prepare = function(id, exprId, state, stage) {};
     projection.draw = function(id, exprId, state, stage, offset) {
-        // TODO: move this into its own "notch" projection
         if (this.notches) {
             const { x, y } = util.topLeftPos(this, offset);
             const { ctx } = stage;
@@ -81,15 +86,6 @@ export function baseProjection(options) {
             }
         }
     };
-
-    projection.containsPoint = function(pos, offset) {
-        const { x, y } = util.topLeftPos(this, offset);
-        return pos.x >= x &&
-            pos.y >= y &&
-            pos.x <= x + (this.size.w * offset.sx * this.scale.x) &&
-            pos.y <= y + (this.size.h * offset.sy * this.scale.y);
-    };
-
     return projection;
 }
 

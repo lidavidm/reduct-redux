@@ -21,6 +21,9 @@ function defaultProjector(definition) {
     else if (definition.projection.shape === "none") {
         baseProjection = gfx.baseProjection;
     }
+    else if (definition.projection.shape === "notch") {
+        baseProjection = gfx.notchProjection;
+    }
 
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {

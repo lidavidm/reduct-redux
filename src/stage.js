@@ -339,7 +339,7 @@ export class Stage {
         }
         const nodes = this.getState().get("nodes");
         const selected = nodes.get(this._selectedNode);
-        if (this.semantics.hasNotches(selected)) {
+        if (selected && this.semantics.hasNotches(selected)) {
             let leastDistance = 9999;
             let closestNotch = null;
 
