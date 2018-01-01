@@ -196,6 +196,15 @@ export function reduct(semantics, views) {
                         c.set("locked", false);
                     }));
                 }));
+
+                // TODO: refactor
+                const defn = semantics.definition.expressions[s.getIn([ "nodes", act.parentId, "type" ])];
+                if (defn && defn.notches[act.notchIdx]) {
+                    const notch = defn.notches[act.notchIdx];
+                    if (notch.onAttach) {
+                        notch.onAttach(semantics, s, act.parentId, act.childId);
+                    }
+                }
             });
         }
         case action.USE_TOOLBOX: {

@@ -346,6 +346,10 @@ export default transform({
                     type: "outset",
                     shape: "wedge",
                     relpos: 0.5,
+                    onAttach: (semant, state, selfId, otherId) => {
+                        const name = state.getIn([ "nodes", otherId, "name" ]);
+                        state.set("globals", state.get("globals").set(name, otherId));
+                    },
                 },
             ],
             projection: {
