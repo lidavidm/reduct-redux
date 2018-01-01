@@ -8,14 +8,22 @@ export function startLevel(description, parse, store, stage) {
         macros[macroName] = () => parse(macro, {});
     }
 
-    store.dispatch(action.startLevel(
-        stage,
-        description.goal.map(str => parse(str, macros)),
-        description.board
-            .map(str => parse(str, macros))
-            .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), []),
-        description.toolbox.map(str => parse(str, macros))
-    ));
+    const goal = description.goal.map(str => parse(str, macros));
+    const board = description.board
+          .map(str => parse(str, macros))
+          .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), []);
+    const definedNames = board.filter(n => n.type === "define").map(n => n.name);
+    // TODO: this should be a deep replace across board and toolbox
+    // TODO: this should be semantics-independent
+    const toolbox = description.toolbox
+          .map(str => parse(str, macros))
+          .map((n) => {
+              if (n.type === "lambdaVar" && definedNames.indexOf(n.name) > -1) {
+                  n.type = "reference";
+              }
+              return n;
+          });
+    store.dispatch(action.startLevel(stage, goal, board, toolbox));
 }
 
 export function checkVictory(state, semantics) {

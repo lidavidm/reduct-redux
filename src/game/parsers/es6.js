@@ -44,12 +44,12 @@ function parseNode(node, macros) {
 
         // Each macro is a thunk
         if (macros && macros[node.name]) return macros[node.name]();
-        if (node.name === "star" ||
-            node.name === "circle" ||
-            node.name === "triangle" ||
-            node.name === "rect") {
-            return jssemant.symbol(node.name);
-        }
+        // if (node.name === "star" ||
+        //     node.name === "circle" ||
+        //     node.name === "triangle" ||
+        //     node.name === "rect") {
+        //     return jssemant.symbol(node.name);
+        // }
 
         if (node.name === "xx") {
             return jssemant.vtuple([ jssemant.lambdaVar("x"), jssemant.lambdaVar("x") ]);
