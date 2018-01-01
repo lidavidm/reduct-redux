@@ -278,6 +278,27 @@ export default transform({
             },
         },
 
+        reference: {
+            kind: "expression",
+            fields: ["name"],
+            subexpressions: [],
+            smallStep: (semant, state, expr) => {
+                let res = state.get("globals").get(expr.get("name"));
+                const resNode = state.get("nodes").get(res);
+                if (resNode.get("type") === "define") {
+                    res = resNode.get("body");
+                }
+                const result = semant.clone(res, state.get("nodes"));
+                return semant.hydrate(result[2], result[0]);
+            },
+            projection: {
+                type: "default",
+                shape: "()",
+                strokeWhenChild: false,
+                fields: ["name"],
+            },
+        },
+
         symbol: {
             kind: "value",
             type: "symbol",

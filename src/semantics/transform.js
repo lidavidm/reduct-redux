@@ -270,7 +270,7 @@ export default function transform(definition) {
             }
             return result;
         }
-        if (!definition.expressions[type]) throw `Unrecognized expression type ${type}`;
+        if (!definition.expressions[type]) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
         // TODO: more principled way of doing this
         if (expr.get && expr.get("notch0")) {
             return definition.expressions[type].subexpressions.concat(["notch0"]);
@@ -284,7 +284,7 @@ export default function transform(definition) {
      */
     module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");
-        if (!module.projections[type]) throw `Unrecognized expression type ${type}`;
+        if (!module.projections[type]) throw `semantics.project: Unrecognized expression type ${type}`;
         return module.projections[type](stage, nodes, expr);
     };
 
