@@ -85,6 +85,7 @@ export function startLevel(stage, goal, board, toolbox) {
         goal: _goal,
         board: _board,
         toolbox: _toolbox,
+        globals: {},
     };
 }
 

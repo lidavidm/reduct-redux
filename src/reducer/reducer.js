@@ -12,6 +12,7 @@ const initialProgram = immutable.Map({
     goal: immutable.List(),
     board: immutable.List(),
     toolbox: immutable.List(),
+    globals: immutable.Map(),
 });
 const initialState = immutable.Map({
     program: initialProgram,
@@ -41,13 +42,12 @@ export function reduct(semantics, views) {
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
-            // const nodes = immutable.Map(act.nodes.map((n) => [ n.get("id"), n ]));
             return state.merge({
                 nodes: act.nodes,
                 goal: act.goal,
                 board: act.board,
                 toolbox: act.toolbox,
-                hover: null,
+                globals: act.globals,
             });
         }
         case action.RAISE: {
