@@ -380,7 +380,7 @@ export class Stage {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
         this.semantics.reduce(
-            this, nodes, node,
+            this, state, node,
             (topNodeId, newNodeIds, addedNodes) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);

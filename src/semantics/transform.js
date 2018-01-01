@@ -288,13 +288,13 @@ export default function transform(definition) {
         return module.projections[type](stage, nodes, expr);
     };
 
-    module.smallStep = function smallStep(nodes, expr) {
+    module.smallStep = function smallStep(state, expr) {
         const type = expr.type || expr.get("type");
         const stepper = definition.expressions[type].smallStep;
         if (stepper) {
             // TODO: figure out where is best to do mutable->Immutable
             // conversion
-            const result = stepper(module, nodes, expr);
+            const result = stepper(module, state, expr);
             if (Array.isArray(result)) return result;
 
             // Return [topLevelNodeId, newNodeIds[], addedNodes[]]
@@ -317,11 +317,12 @@ export default function transform(definition) {
      * Construct the animation for the small-step that the given
      * expression would take.
      */
-    module.animateStep = function animateStep(stage, nodes, exp) {
+    module.animateStep = function animateStep(stage, state, exp) {
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
-    module.singleStep = function singleStep(nodes, expr) {
+    module.singleStep = function singleStep(state, expr) {
+        const nodes = state.get("nodes");
         const kind = module.kind(expr);
         if (kind !== "expression") {
             return [ "error", expr.get("id") ];
@@ -332,10 +333,11 @@ export default function transform(definition) {
             const subexpr = nodes.get(subexprId);
             const subexprKind = module.kind(subexpr);
             if (subexprKind !== "value" && subexprKind !== "syntax") {
-                return module.singleStep(nodes, subexpr);
+                return module.singleStep(state, subexpr);
             }
         }
 
+        // TODO: pass full state
         const errorExpId = module.validateStep(nodes, expr);
         if (errorExpId !== null) {
             return [ "error", errorExpId ];
@@ -348,17 +350,18 @@ export default function transform(definition) {
     // TODO: need a "hybrid multi-step" that big-steps expressions we
     // don't care about
     module.reducers.single = function singleStepReducer(
-        stage, nodes, exp,
+        stage, state, exp,
         callback, errorCallback
     ) {
         // Single-step mode
 
-        const [ result, exprId ] = module.singleStep(nodes, exp);
+        const [ result, exprId ] = module.singleStep(state, exp);
         if (result === "error") {
             errorCallback(exprId);
             return;
         }
 
+        const nodes = state.get("nodes");
         exp = nodes.get(exprId);
         module
             .animateStep(stage, nodes, exp)
@@ -369,36 +372,36 @@ export default function transform(definition) {
     };
 
     module.reducers.multi = function multiStepReducer(
-        stage, nodes, exp,
+        stage, state, exp,
         callback, errorCallback, animated=true
     ) {
-        const takeStep = (innerNodes, innerExpr) => {
-            const [ result, exprId ] = module.singleStep(innerNodes, innerExpr);
+        const takeStep = (innerState, innerExpr) => {
+            const [ result, exprId ] = module.singleStep(innerState, innerExpr);
             if (result === "error") {
                 errorCallback(exprId);
                 return Promise.reject();
             }
 
-            innerExpr = innerNodes.get(exprId);
+            innerExpr = innerState.get("nodes").get(exprId);
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
-                      module.smallStep(innerNodes, innerExpr);
+                      module.smallStep(innerState, innerExpr);
                 return callback(topNodeId, newNodeIds, addedNodes)
                     .then(newState => [ newState, topNodeId, newNodeIds ]);
             };
 
             if (animated) {
-                return module.animateStep(stage, innerNodes, innerExpr).then(() => nextStep());
+                return module.animateStep(stage, innerState, innerExpr).then(() => nextStep());
             }
             return nextStep();
         };
 
         let fuel = 20;
-        const loop = (innerNodes, innerExpr) => {
+        const loop = (innerState, innerExpr) => {
             if (fuel <= 0) return;
             fuel -= 1;
 
-            takeStep(innerNodes, innerExpr).then(([ newState, topNodeId, newNodeIds ]) => {
+            takeStep(innerState, innerExpr).then(([ newState, topNodeId, newNodeIds ]) => {
                 if (innerExpr.get("id") === topNodeId) {
                     // TODO: handle multiple newNodeIds
                     innerExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
@@ -410,26 +413,26 @@ export default function transform(definition) {
                 if (module.kind(innerExpr) === "expression") {
                     if (animated) {
                         animate.after(350)
-                            .then(() => loop(newState.get("nodes"), innerExpr));
+                            .then(() => loop(newState, innerExpr));
                     }
                     else {
-                        loop(newState.get("nodes"), innerExpr);
+                        loop(newState, innerExpr);
                     }
                 }
             });
         };
 
-        loop(nodes, exp);
+        loop(state, exp);
     };
 
     module.reducers.big = function bigStepReducer(
-        stage, nodes, exp,
+        stage, state, exp,
         callback, errorCallback
     ) {
         // TODO: error callback needs to happen first
         module
-            .animateStep(stage, nodes, exp)
-            .then(() => module.reducers.multi(stage, nodes, exp, callback, errorCallback, false));
+            .animateStep(stage, state, exp)
+            .then(() => module.reducers.multi(stage, state, exp, callback, errorCallback, false));
     };
 
     /**
@@ -440,10 +443,10 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.reduce = function reduce(stage, nodes, exp, callback, errorCallback) {
-        // return module.reducers.single(stage, nodes, exp, callback, errorCallback);
-        // return module.reducers.multi(stage, nodes, exp, callback, errorCallback);
-        return module.reducers.big(stage, nodes, exp, callback, errorCallback);
+    module.reduce = function reduce(stage, state, exp, callback, errorCallback) {
+        // return module.reducers.single(stage, state, exp, callback, errorCallback);
+        // return module.reducers.multi(stage, state, exp, callback, errorCallback);
+        return module.reducers.big(stage, state, exp, callback, errorCallback);
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {

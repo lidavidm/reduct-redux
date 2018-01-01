@@ -120,7 +120,8 @@ export default transform({
                 return null;
             },
             // TODO: switch to Immutable.Record to clean this up
-            smallStep: (semant, nodes, expr) => {
+            smallStep: (semant, state, expr) => {
+                const nodes = state.get("nodes");
                 const op = nodes.get(expr.get("op")).get("name");
                 if (op === "+") {
                     return semant.number(nodes.get(expr.get("left")).get("value") +
@@ -182,7 +183,8 @@ export default transform({
                 }
                 return null;
             },
-            smallStep: (semant, nodes, expr) => {
+            smallStep: (semant, state, expr) => {
+                const nodes = state.get("nodes");
                 const cond = nodes.get(expr.get("condition")).get("value");
                 // TODO: do this cleanup in evaluation?
                 if (cond) {
@@ -205,7 +207,8 @@ export default transform({
                 shape: "()",
                 fields: ["callee", "'('", "argument", "')'"],
             },
-            smallStep: (semant, nodes, expr) => {
+            smallStep: (semant, state, expr) => {
+                const nodes = state.get("nodes");
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.betaReduce(
                     nodes, expr.get("callee"),
                     [ expr.get("argument") ]
@@ -346,6 +349,7 @@ export default transform({
                     type: "outset",
                     shape: "wedge",
                     relpos: 0.5,
+                    // TODO: detach
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
                         state.set("globals", state.get("globals").set(name, otherId));
