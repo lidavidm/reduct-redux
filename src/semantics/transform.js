@@ -298,9 +298,12 @@ export default function transform(definition) {
             if (Array.isArray(result)) return result;
 
             // Return [topLevelNodeId, newNodeIds[], addedNodes[]]
-            const imm = immutable.Map(result).set("id", nextId());
-            const addedNodes = module.flatten(imm);
-            return [ expr.get("id"), [ imm.get("id") ], addedNodes ];
+            // const imm = immutable.Map(result).set("id", nextId());
+            result.id = nextId();
+            const addedNodes = module.flatten(result).map(immutable.Map);
+            return [ expr.get("id"), [ addedNodes[0].get("id") ], addedNodes ];
+            // const addedNodes = module.flatten(imm);
+            // return [ expr.get("id"), [ imm.get("id") ], addedNodes ];
         }
         return null;
     };
@@ -479,7 +482,7 @@ export default function transform(definition) {
             for (const field of module.subexpressions(e)) {
                 e.set(field, module.hydrate(nodes, nodes.get(e.get(field))));
             }
-        });
+        }).toJS();
     };
 
     // TODO: get rid of this?

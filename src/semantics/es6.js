@@ -289,7 +289,8 @@ export default transform({
                     res = resNode.get("body");
                 }
                 const result = semant.clone(res, state.get("nodes"));
-                return semant.hydrate(result[2], result[0]);
+                return [ expr.get("id"), [ result[0].get("id") ], [ result[0].delete("parent").delete("parentField") ].concat(result[1]) ];
+                // return semant.hydrate(result[2], result[0]);
             },
             projection: {
                 type: "default",
