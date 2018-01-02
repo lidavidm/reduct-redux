@@ -265,7 +265,7 @@ export class Stage {
                     const node = nodes.get(nodeId);
                     const compatible = this.semantics.notchesCompatible(selected, node);
                     // TODO: actually check distance to notch
-                    if (compatible) {
+                    if (compatible && compatible.length > 0) {
                         const distance = gfxCore.distance(
                             this.views[nodeId],
                             this.views[this._selectedNode]
@@ -348,7 +348,7 @@ export class Stage {
                 const node = nodes.get(nodeId);
                 const compatible = this.semantics.notchesCompatible(selected, node);
                 // TODO: actually check distance to notch
-                if (compatible) {
+                if (compatible && compatible.length > 0) {
                     const distance = gfxCore.distance(
                         this.views[nodeId],
                         this.views[this._selectedNode]
