@@ -31,6 +31,10 @@ export function baseProjection(options) {
     projection.prepare = function(id, exprId, state, stage) {};
     projection.draw = function(id, exprId, state, stage, offset) {};
 
+    projection.children = function(exprId, state) {
+        return [];
+    };
+
     projection.containsPoint = function(pos, offset) {
         const { x, y } = util.topLeftPos(this, offset);
         return pos.x >= x &&

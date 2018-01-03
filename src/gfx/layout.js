@@ -81,6 +81,11 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             stage.views[childId].draw(childId, childId, state, stage, subOffset);
         }
     };
+
+    projection.children = function(exprId, state) {
+        return childrenFunc(exprId, state);
+    };
+
     return projection;
 }
 
@@ -150,5 +155,10 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
         }
     };
+
+    projection.children = function(exprId, state) {
+        return childrenFunc(exprId, state);
+    };
+
     return projection;
 }
