@@ -142,52 +142,66 @@ export class Stage {
      */
     getNodeAtPos(pos) {
         const state = this.getState();
-        let result = null;
-        let root = null;
-        let toolbox = false;
+        const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
+            const curNode = state.getIn([ "nodes", curExprId ]);
+            const projection = this.views[curProjId];
+            let res = null;
 
-        const check = (pos, node, root=null, sx=1, sy=1) => {
-            const nodeId = node.get("id");
-            const projection = this.views[nodeId];
-            let result = null;
-            if (projection.containsPoint(pos, { x: 0, y: 0, sx, sy })) {
-                if (root === null) {
-                    root = nodeId;
-                    result = nodeId;
+            const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
+            if (projection.containsPoint(curPos, curOffset)) {
+                if (curRoot === null) {
+                    curRoot = curExprId;
+                    res = curExprId;
                 }
-                else if (this.semantics.targetable(node)) {
-                    result = nodeId;
+                else if (curNode && this.semantics.targetable(curNode)) {
+                    res = curExprId;
                 }
 
-                const relW = projection.anchor.x * projection.size.w * sx * projection.scale.x;
-                const relH = projection.anchor.y * projection.size.h * sy * projection.scale.y;
                 const subpos = {
-                    x: pos.x - ((projection.pos.x - relW) * sx),
-                    y: pos.y - ((projection.pos.y - relH) * sy),
+                    x: curPos.x - topLeft.x,
+                    y: curPos.y - topLeft.y,
                 };
-                for (const field of this.semantics.subexpressions(node)) {
+                for (let childId of projection.children(curExprId, state)) {
+                    let subexprId = childId;
+                    if (Array.isArray(childId)) {
+                        [ childId, subexprId ] = childId;
+                    }
                     const subresult = check(
                         subpos,
-                        state.getIn([ "nodes", node.get(field) ]),
-                        root,
-                        sx * projection.scale.x,
-                        sy * projection.scale.y
+                        childId,
+                        subexprId,
+                        curRoot,
+                        {
+                            x: 0,
+                            y: 0,
+                            sx: curOffset.sx * projection.scale.x,
+                            sy: curOffset.sy * projection.scale.y,
+                        }
                     );
                     if (subresult) {
                         return subresult;
                     }
                 }
-                if (result) {
-                    return [ root, result ];
+                if (res) {
+                    return [ curRoot, res ];
                 }
             }
             return null;
         };
 
+        let result = null;
+        let root = null;
+        let toolbox = false;
+
         for (const nodeId of state.get("board").toArray().reverse()) {
             if (nodeId === this._selectedNode) continue;
 
-            const res = check(pos, state.getIn([ "nodes", nodeId ]));
+            const res = check(pos, nodeId, nodeId, null, {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+            });
             if (res) {
                 [ root, result ] = res;
                 break;
