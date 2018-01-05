@@ -331,6 +331,7 @@ export default transform({
 
         define: {
             kind: "statement",
+            ignoreForVictory: true,
             fields: ["name"],
             subexpressions: ["body"],
             notches: [

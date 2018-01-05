@@ -27,7 +27,7 @@ export function startLevel(description, parse, store, stage) {
 }
 
 export function checkVictory(state, semantics) {
-    const board = state.get("board");
+    const board = state.get("board").filter(n => !semantics.ignoreForVictory(state.getIn([ "nodes", n ])));
     const goal = state.get("goal");
 
     if (board.size !== goal.size) {

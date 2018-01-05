@@ -498,6 +498,10 @@ export class Stage {
         const state = this.getState();
         const tweens = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
+            if (this.semantics.ignoreForVictory(state.getIn([ "nodes", nodeId ]))) {
+                continue;
+            }
+
             tweens.push(animate.fx.blink(this, this.views[nodeId], {
                 times: progression.currentLevelIdx === 0 ? 2 : 1,
                 color: "#0FF",

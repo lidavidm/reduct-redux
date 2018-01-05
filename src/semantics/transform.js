@@ -593,6 +593,15 @@ export default function transform(definition) {
         return result;
     };
 
+    /**
+     * Check whether we should ignore the given node when matching
+     * nodes to determine victory.
+     */
+    module.ignoreForVictory = function(node) {
+        const defn = definition.expressions[node.get("type")];
+        return module.kind(node) === "syntax" || (defn && defn.ignoreForVictory);
+    };
+
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
     module.map = core.genericMap(module.subexpressions);
