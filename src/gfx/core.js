@@ -322,20 +322,27 @@ export function text(text, options) {
 }
 
 /**
- * Create a projection that renders based on an expression field.
+ * Create a projection that renders based on an expression field or function.
  *
  * Note that all projections must have compatible fields.
  */
-export function dynamic(mapping, field, resetFieldsList) {
+export function dynamic(mapping, keyFunc, resetFieldsList) {
     let projection = {};
     for (const childProjection of Object.values(mapping)) {
         projection = Object.assign(projection, childProjection);
     }
     projection.type = "dynamic";
 
+    if (typeof keyFunc === "string") {
+        const field = keyFunc;
+        keyFunc = function(state, exprId) {
+            const expr = state.getIn([ "nodes", exprId ]);
+            return expr.get(field);
+        };
+    }
+
     projection.prepare = function(id, exprId, state, stage) {
-        const expr = state.getIn([ "nodes", exprId ]);
-        const fieldVal = expr.get(field);
+        const fieldVal = keyFunc(state, exprId);
 
         let proj = mapping["__default__"];
         if (typeof mapping[fieldVal] !== "undefined") {
@@ -349,8 +356,8 @@ export function dynamic(mapping, field, resetFieldsList) {
     };
 
     projection.draw = function(id, exprId, state, stage, offset) {
-        const expr = state.getIn([ "nodes", exprId ]);
-        const fieldVal = expr.get(field);
+        const fieldVal = keyFunc(state, exprId);
+
         if (typeof mapping[fieldVal] !== "undefined") {
             mapping[fieldVal].draw.call(this, id, exprId, state, stage, offset);
         }
