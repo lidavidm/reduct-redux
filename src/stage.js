@@ -161,11 +161,7 @@ export class Stage {
                     x: curPos.x - topLeft.x,
                     y: curPos.y - topLeft.y,
                 };
-                for (let childId of projection.children(curExprId, state)) {
-                    let subexprId = childId;
-                    if (Array.isArray(childId)) {
-                        [ childId, subexprId ] = childId;
-                    }
+                for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
                     const subresult = check(
                         subpos,
                         childId,

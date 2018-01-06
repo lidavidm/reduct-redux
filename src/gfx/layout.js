@@ -43,7 +43,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         let x = this.padding.left;
 
         let maxY = 50;
-        for (const childId of children) {
+        for (const [ childId, subexprId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
 
             childProjection.parent = this;
@@ -54,7 +54,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             childProjection.scale.x = this.subexpScale;
             childProjection.scale.y = this.subexpScale;
 
-            childProjection.prepare(childId, childId, state, stage);
+            childProjection.prepare(childId, subexprId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
             maxY = Math.max(maxY, childProjection.size.h);
         }
@@ -77,14 +77,12 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
-        for (let childId of childrenFunc(exprId, state)) {
-            stage.views[childId].draw(childId, childId, state, stage, subOffset);
+        for (const [ childId, subexprId ] of this.children(exprId, state)) {
+            stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
         }
     };
 
-    projection.children = function(exprId, state) {
-        return childrenFunc(exprId, state);
-    };
+    projection.children = util.genericChildrenFunc(childrenFunc);
 
     return projection;
 }
@@ -101,15 +99,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         let maxX = 50;
         let y = this.padding.top;
 
-        for (let childId of children) {
-            // Allow childrenFunc to return [ subprojectionId,
-            // subexprId ] - this allows "transparent" layouts where
-            // children can project a parent expression
-            let subexprId = childId;
-            if (Array.isArray(childId)) {
-                [ childId, subexprId ] = childId;
-            }
-
+        for (const [ childId, subexprId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
 
             childProjection.parent = this;
@@ -147,18 +137,12 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
-        for (let childId of childrenFunc(exprId, state)) {
-            let subexprId = exprId;
-            if (Array.isArray(childId)) {
-                [ childId, subexprId ] = childId;
-            }
+        for (const [ childId, subexprId ] of this.children(exprId, state)) {
             stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
         }
     };
 
-    projection.children = function(exprId, state) {
-        return childrenFunc(exprId, state);
-    };
+    projection.children = util.genericChildrenFunc(childrenFunc);
 
     return projection;
 }
