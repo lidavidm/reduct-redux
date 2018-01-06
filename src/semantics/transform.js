@@ -38,15 +38,32 @@ function defaultProjector(definition) {
         if (definition.projection.fields) {
             const fields = [];
             for (const field of definition.projection.fields) {
-                const match = field.match(/'(.+)'/);
-                if (match) {
-                    fields.push(stage.allocate(gfx.text(match[1])));
-                }
-                else if (definition.fields.indexOf(field) > -1) {
-                    fields.push(stage.allocate(gfx.text(expr.get(field))));
+                if (typeof field === "object") {
+                    // TODO: more extensible
+                    const textOptions = {};
+                    if (field.color) textOptions.color = field.color;
+
+                    if (field.field) {
+                        fields.push(stage.allocate(gfx.text(expr.get(field.field), textOptions)));
+                    }
+                    else if (field.text) {
+                        fields.push(stage.allocate(gfx.text(field.text, textOptions)));
+                    }
+                    else {
+                        throw `Cannot parse field specification: ${JSON.stringify(field)}`;
+                    }
                 }
                 else {
-                    fields.push(field);
+                    const match = field.match(/'(.+)'/);
+                    if (match) {
+                        fields.push(stage.allocate(gfx.text(match[1])));
+                    }
+                    else if (definition.fields.indexOf(field) > -1) {
+                        fields.push(stage.allocate(gfx.text(expr.get(field))));
+                    }
+                    else {
+                        fields.push(field);
+                    }
                 }
             }
             childrenFunc = (id, state) => fields.map((field) => {

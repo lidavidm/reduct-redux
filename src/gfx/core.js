@@ -280,12 +280,13 @@ export const hexaRect = baseShape("hexaRect", {
 const TEXT_SIZE_CACHE = {};
 
 export function text(text, options) {
-    const projection = baseProjection();
-    projection.text = text;
-    projection.fontSize = 36;
-    projection.font = "Consolas, Monaco, monospace";
-    projection.color = "#000";
-    projection.type = "text";
+    const projection = baseProjection(Object.assign({
+        text,
+        fontSize: 36,
+        font: "Consolas, Monaco, monospace",
+        color: "#000",
+        type: "text",
+    }, options));
 
     projection.prepare = function(id, exprId, state, stage) {
         const cacheKey = `${this.fontSize};${this.font};${this.text}`;
@@ -326,7 +327,7 @@ export function text(text, options) {
  *
  * Note that all projections must have compatible fields.
  */
-export function dynamic(mapping, keyFunc, resetFieldsList) {
+export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
     let projection = {};
     for (const childProjection of Object.values(mapping)) {
         projection = Object.assign(projection, childProjection);
