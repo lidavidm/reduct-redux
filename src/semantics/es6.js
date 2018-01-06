@@ -293,10 +293,31 @@ export default transform({
                 return [ expr.get("id"), [ result[0].get("id") ], [ result[0].delete("parent").delete("parentField") ].concat(result[1]) ];
             },
             projection: {
-                type: "default",
-                shape: "()",
-                strokeWhenChild: false,
-                fields: ["name"],
+                type: "dynamic",
+                field: (state, exprId) => {
+                    const name = state.getIn([ "nodes", exprId, "name" ]);
+                    if (state.get("globals").has(name)) {
+                        return "enabled";
+                    }
+                    return "default";
+                },
+                default: {
+                    type: "default",
+                    shape: "()",
+                    strokeWhenChild: false,
+                    fields: [{
+                        field: "name",
+                        color: "gray",
+                    }],
+                },
+                cases: {
+                    enabled: {
+                        type: "default",
+                        shape: "()",
+                        strokeWhenChild: false,
+                        fields: ["name"],
+                    },
+                },
             },
         },
 
