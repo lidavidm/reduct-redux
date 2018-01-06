@@ -209,9 +209,9 @@ export function reduct(semantics, views) {
         }
         case action.USE_TOOLBOX: {
             if (state.get("toolbox").contains(act.nodeId)) {
-                return state.withMutations(state => {
-                    state.set("board", state.get("board").push(act.nodeId));
-                    state.set("toolbox", state.get("toolbox").filter((n) => n != act.nodeId));
+                return state.withMutations((mutState) => {
+                    mutState.set("board", mutState.get("board").push(act.nodeId));
+                    mutState.set("toolbox", mutState.get("toolbox").filter(n => n !== act.nodeId));
                 });
             }
             return state;
@@ -222,14 +222,14 @@ export function reduct(semantics, views) {
             const parent = state.getIn([ "nodes", act.nodeId, "parent" ]);
             if (parent === undefined) throw `Can't detach node ${act.nodeId} with no parent!`;
 
-            return state.withMutations(map => {
+            return state.withMutations((map) => {
                 map.set("board", map.get("board").push(act.nodeId));
-                map.set("nodes", map.get("nodes").withMutations(nodes => {
-                    nodes.set(parent, nodes.get(parent).withMutations(parent => {
-                        const oldHole = parent.get(node.get("parentField") + "__hole");
+                map.set("nodes", map.get("nodes").withMutations((nodes) => {
+                    nodes.set(parent, nodes.get(parent).withMutations((parent) => {
+                        const oldHole = parent.get(`${node.get("parentField")}__hole`);
                         if (oldHole) {
                             parent.set(node.get("parentField"), oldHole);
-                            parent.delete(node.get("parentField") + "__hole");
+                            parent.delete(`${node.get("parentField")}__hole`);
                         }
                         else if (node.get("parentField").slice(0, 5) === "notch") {
                             parent.delete(node.get("parentField"));
@@ -238,7 +238,21 @@ export function reduct(semantics, views) {
                             throw `Unimplemented: creating new hole`;
                         }
                     }));
-                    nodes.set(act.nodeId, node.withMutations(node => {
+
+                    // TODO: refactor
+                    if (node.get("parentField").slice(0, 5) === "notch") {
+                        const notchIdx = parseInt(node.get("parentField").slice(5), 10);
+                        const parentNode = map.getIn([ "nodes", parent ]);
+                        const defn = semantics.definition.expressions[parentNode.get("type")];
+                        if (defn && defn.notches[notchIdx]) {
+                            const notch = defn.notches[notchIdx];
+                            if (notch.onDetach) {
+                                notch.onDetach(semantics, map, parentNode.get("id"), node.get("id"));
+                            }
+                        }
+                    }
+
+                    nodes.set(act.nodeId, node.withMutations((node) => {
                         node.delete("parentField");
                         node.delete("parent");
                     }));

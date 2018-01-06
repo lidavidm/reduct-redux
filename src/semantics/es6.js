@@ -284,13 +284,13 @@ export default transform({
             subexpressions: [],
             smallStep: (semant, state, expr) => {
                 let res = state.get("globals").get(expr.get("name"));
+                if (!res) return null;
                 const resNode = state.get("nodes").get(res);
                 if (resNode.get("type") === "define") {
                     res = resNode.get("body");
                 }
                 const result = semant.clone(res, state.get("nodes"));
                 return [ expr.get("id"), [ result[0].get("id") ], [ result[0].delete("parent").delete("parentField") ].concat(result[1]) ];
-                // return semant.hydrate(result[2], result[0]);
             },
             projection: {
                 type: "default",
@@ -372,10 +372,13 @@ export default transform({
                     type: "outset",
                     shape: "wedge",
                     relpos: 0.5,
-                    // TODO: detach
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
                         state.set("globals", state.get("globals").set(name, otherId));
+                    },
+                    onDetach: (semant, state, selfId, otherId) => {
+                        const name = state.getIn([ "nodes", otherId, "name" ]);
+                        state.set("globals", state.get("globals").delete(name));
                     },
                 },
             ],
