@@ -485,19 +485,6 @@ export default function transform(definition) {
         }).toJS();
     };
 
-    // TODO: get rid of this?
-    module.typeCheck = function(nodes, expr) {
-        const type = expr.get("type");
-        const typeDefn = definition.expressions[type].type;
-        if (typeof typeDefn === "function") {
-            return typeDefn(module, nodes, expr);
-        }
-        else if (typeof typeDefn === "undefined") {
-            return null;
-        }
-        return typeDefn;
-    };
-
     module.collectTypes = function collectTypes(nodes, rootExpr) {
         const result = new Map();
         const completeness = new Map();
