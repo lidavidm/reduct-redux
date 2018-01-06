@@ -349,6 +349,7 @@ export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
         if (typeof mapping[fieldVal] !== "undefined") {
             proj = mapping[fieldVal];
         }
+        this.children = proj.children;
 
         for (const fieldName of resetFieldsList) {
             this[fieldName] = proj[fieldName];
@@ -360,9 +361,11 @@ export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
         const fieldVal = keyFunc(state, exprId);
 
         if (typeof mapping[fieldVal] !== "undefined") {
+            this.children = mapping[fieldVal].children;
             mapping[fieldVal].draw.call(this, id, exprId, state, stage, offset);
         }
         else {
+            this.children = mapping["__default__"].children;
             mapping["__default__"].draw.call(this, id, exprId, state, stage, offset);
         }
     };
