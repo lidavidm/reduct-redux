@@ -104,6 +104,7 @@ function symbolProjector(definition) {
 }
 
 function dynamicProjector(definition) {
+    const fieldName = definition.projection.field || "ty";
     const cases = {};
     cases["__default__"] = projector(Object.assign({}, definition, {
         projection: definition.projection.default,
@@ -118,7 +119,7 @@ function dynamicProjector(definition) {
         for (const [ key, subprojector ] of Object.entries(cases)) {
             projections[key] = subprojector(stage, nodes, expr);
         }
-        return gfx.dynamicType(projections, definition.projection.resetFields);
+        return gfx.dynamic(projections, fieldName, definition.projection.resetFields);
     };
 }
 

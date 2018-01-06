@@ -322,24 +322,24 @@ export function text(text, options) {
 }
 
 /**
- * Create a projection that renders based on expression type.
+ * Create a projection that renders based on an expression field.
  *
  * Note that all projections must have compatible fields.
  */
-export function dynamicType(mapping, resetFieldsList) {
+export function dynamic(mapping, field, resetFieldsList) {
     let projection = {};
     for (const childProjection of Object.values(mapping)) {
         projection = Object.assign(projection, childProjection);
     }
-    projection.type = "dynamicType";
+    projection.type = "dynamic";
 
     projection.prepare = function(id, exprId, state, stage) {
         const expr = state.getIn([ "nodes", exprId ]);
-        const ty = expr.get("ty");
+        const fieldVal = expr.get(field);
 
         let proj = mapping["__default__"];
-        if (typeof mapping[ty] !== "undefined") {
-            proj = mapping[ty];
+        if (typeof mapping[fieldVal] !== "undefined") {
+            proj = mapping[fieldVal];
         }
 
         for (const fieldName of resetFieldsList) {
@@ -350,9 +350,9 @@ export function dynamicType(mapping, resetFieldsList) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         const expr = state.getIn([ "nodes", exprId ]);
-        const ty = expr.get("ty");
-        if (typeof mapping[ty] !== "undefined") {
-            mapping[ty].draw.call(this, id, exprId, state, stage, offset);
+        const fieldVal = expr.get(field);
+        if (typeof mapping[fieldVal] !== "undefined") {
+            mapping[fieldVal].draw.call(this, id, exprId, state, stage, offset);
         }
         else {
             mapping["__default__"].draw.call(this, id, exprId, state, stage, offset);
