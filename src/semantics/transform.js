@@ -459,10 +459,20 @@ export default function transform(definition) {
         stage, state, exp,
         callback, errorCallback
     ) {
-        // TODO: error callback needs to happen first
-        module
-            .animateStep(stage, state, exp)
-            .then(() => module.reducers.multi(stage, state, exp, callback, errorCallback, false));
+        // Only play animation if we actually take any sort of
+        // small-step
+        let playedAnim = false;
+        module.reducers.multi(
+            stage, state, exp,
+            (...args) => {
+                if (!playedAnim) {
+                    playedAnim = true;
+                    return module.animateStep(stage, state, exp).then(() => callback(...args));
+                }
+                return callback(...args);
+            },
+            errorCallback, false
+        );
     };
 
     /**
