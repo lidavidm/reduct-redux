@@ -507,7 +507,7 @@ export default function transform(definition) {
     module.kind = function(expr) {
         switch (expr.get("type")) {
         case "vtuple":
-            // This isn't quite right - depends on the children
+            // TODO: This isn't quite right - depends on the children
             return "expression";
         default:
             return definition.expressions[expr.get("type")].kind;

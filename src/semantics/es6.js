@@ -23,7 +23,14 @@ export default transform({
 
         dynamicVariant: {
             kind: "value",
-            type: (semant, nodes, types, expr) => expr.get("variant"),
+            type: (semant, nodes, types, expr) => {
+                return {
+                    types: new Map([ [ expr.get("id"), expr.get("variant") ] ]),
+                    // TODO: this isn't true if it's a variant with
+                    // fields
+                    complete: true,
+                };
+            },
             fields: ["variant", "value"],
             subexpressions: [],
             projection: {
