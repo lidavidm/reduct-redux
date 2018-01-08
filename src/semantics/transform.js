@@ -349,10 +349,20 @@ export default function transform(definition) {
             return [ "error", expr.get("id") ];
         }
 
+        let substepFilter = () => true;
+        const defn = definition.expressions[expr.get("type")];
+        if (defn && defn.substepFilter) {
+            substepFilter = defn.substepFilter;
+        }
         for (const field of module.subexpressions(expr)) {
             const subexprId = expr.get(field);
             const subexpr = nodes.get(subexprId);
             const subexprKind = module.kind(subexpr);
+
+            if (!substepFilter(module, state, expr, field)) {
+                continue;
+            }
+
             if (subexprKind !== "value" && subexprKind !== "syntax") {
                 return module.singleStep(state, subexpr);
             }

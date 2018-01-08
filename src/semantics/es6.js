@@ -198,6 +198,9 @@ export default transform({
                     .delete("parent")
                     .delete("parentField");
             },
+            // Filter to determine which subexpressions to evaluate
+            // before stepping the overall expression.
+            substepFilter: (semant, state, expr, field) => field === "condition",
         },
 
         apply: {
