@@ -2,11 +2,12 @@ import * as action from "../reducer/action";
 
 export function startLevel(description, parse, store, stage) {
     const macros = Object.assign({}, description.macros);
-    for (let macroName of Object.keys(macros)) {
+    for (const macroName of Object.keys(macros)) {
         // Needs to be a thunk in order to allocate new ID each time
-        let macro = macros[macroName];
+        const macro = macros[macroName];
         macros[macroName] = () => parse(macro, {});
     }
+    // TODO: add a macro for each defined name
 
     const goal = description.goal.map(str => parse(str, macros));
     const board = description.board

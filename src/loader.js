@@ -66,12 +66,10 @@ export class Loader {
             // Copy the planet's aliens to the individual level
             // definitions, so that buildLevel has access to
             // them. Provide a default alien when not specified.
-            let aliens = (json.resources && json.resources.aliens) ?
+            const aliens = (json.resources && json.resources.aliens) ?
                 json.resources.aliens : ["alien-function-1"];
-            for (let level of json.levels) {
-                level.resources = level.resources || {
-                    aliens: aliens,
-                };
+            for (const level of json.levels) {
+                level.resources = level.resources || { aliens };
             }
 
             const d = {
@@ -91,6 +89,12 @@ export class Loader {
                 if (!lvl.toolbox) lvl.toolbox = [];
                 if (typeof lvl.board === "string") lvl.board = [lvl.board];
                 if (typeof lvl.toolbox === "string") lvl.toolbox = [lvl.toolbox];
+                if (!lvl.defines) lvl.defines = [];
+                else if (typeof lvl.defines === "string") lvl.defines = [lvl.defines];
+
+                // TODO: this mechanism needs to include any define
+                // expressions
+                lvl.newDefines = lvl.defines;
 
                 d.levels.push(lvl);
             });
@@ -137,6 +141,8 @@ export class Loader {
 
                             remaining--;
                             console.info("Loader#loadChapters: traversed", chapterName);
+
+                            // TODO: patch defines
 
                             continue outerLoop;
                         }
