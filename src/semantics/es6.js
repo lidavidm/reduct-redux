@@ -96,7 +96,8 @@ export default transform({
             // Invariant: all subexpressions are values or syntax;
             // none are missing. Return the first subexpression, if
             // any, that is blocking evaluation.
-            validateStep: (semant, nodes, expr) => {
+            validateStep: (semant, state, expr) => {
+                const nodes = state.get("nodes");
                 const left = expr.get("left");
                 const leftExpr = nodes.get(left);
                 const right = expr.get("right");
@@ -170,7 +171,8 @@ export default transform({
                     complete: branchesMatch && types.get(expr.get("condition")) === "boolean",
                 };
             },
-            validateStep: (semant, nodes, expr) => {
+            validateStep: (semant, state, expr) => {
+                const nodes = state.get("nodes");
                 const condition = expr.get("condition");
                 if (nodes.get(condition).get("ty") !== "boolean") {
                     return condition;
@@ -290,7 +292,17 @@ export default transform({
                     res = resNode.get("body");
                 }
                 const result = semant.clone(res, state.get("nodes"));
-                return [ expr.get("id"), [ result[0].get("id") ], [ result[0].delete("parent").delete("parentField") ].concat(result[1]) ];
+                return [
+                    expr.get("id"),
+                    [ result[0].get("id") ],
+                    [ result[0].delete("parent").delete("parentField") ].concat(result[1]),
+                ];
+            },
+            validateStep: (semant, state, expr) => {
+                if (!state.get("globals").has(expr.get("name"))) {
+                    return expr.get("id");
+                }
+                return null;
             },
             projection: {
                 type: "dynamic",

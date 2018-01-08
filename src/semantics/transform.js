@@ -358,8 +358,7 @@ export default function transform(definition) {
             }
         }
 
-        // TODO: pass full state
-        const errorExpId = module.validateStep(nodes, expr);
+        const errorExpId = module.validateStep(state, expr);
         if (errorExpId !== null) {
             return [ "error", errorExpId ];
         }
@@ -566,14 +565,14 @@ export default function transform(definition) {
         return { types: result, completeness };
     };
 
-    module.validateStep = function(nodes, expr) {
+    module.validateStep = function(state, expr) {
         const defn = definition.expressions[expr.get("type")];
         if (!defn) return null;
 
         const validator = defn.validateStep;
         if (!validator) return null;
 
-        return validator(module, nodes, expr);
+        return validator(module, state, expr);
     };
 
     module.hasNotches = function(node) {
