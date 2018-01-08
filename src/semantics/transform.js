@@ -310,18 +310,18 @@ export default function transform(definition) {
         const type = expr.type || expr.get("type");
         const stepper = definition.expressions[type].smallStep;
         if (stepper) {
-            // TODO: figure out where is best to do mutable->Immutable
-            // conversion
             const result = stepper(module, state, expr);
             if (Array.isArray(result)) return result;
 
+            if (immutable.Map.isMap(result)) {
+                // TODO: is this quite correct?
+                return [ expr.get("id"), [ result.get("id") ], [ result ] ];
+            }
+
             // Return [topLevelNodeId, newNodeIds[], addedNodes[]]
-            // const imm = immutable.Map(result).set("id", nextId());
             result.id = nextId();
             const addedNodes = module.flatten(result).map(immutable.Map);
             return [ expr.get("id"), [ addedNodes[0].get("id") ], addedNodes ];
-            // const addedNodes = module.flatten(imm);
-            // return [ expr.get("id"), [ imm.get("id") ], addedNodes ];
         }
         return null;
     };
