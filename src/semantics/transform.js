@@ -632,5 +632,8 @@ export default function transform(definition) {
     module.search = core.genericSearch(module.subexpressions);
     module.clone = core.genericClone(nextId, module.subexpressions);
 
+    module.parser = {};
+    module.parser.postParse = definition.postParse;
+
     return module;
 }

@@ -5,6 +5,38 @@ export default transform({
     name: "ECMAScript 6",
     parser: null,
 
+    postParse: (nodes, goal, board, toolbox, globals) => {
+        // Replace lambdaVars with references where appropriate
+        // TODO: this should properly account for capture
+        const transformedNodes = {};
+        const names = new Set();
+
+        for (const id of board) {
+            if (nodes[id].type === "define") {
+                names.add(nodes[id].name);
+            }
+        }
+
+        for (const name of Object.keys(globals)) {
+            names.add(name);
+        }
+
+        for (const [ id, node ] of Object.entries(nodes)) {
+            if (node.type === "lambdaVar" && names.has(node.name)) {
+                node.type = "reference";
+            }
+            transformedNodes[id] = node;
+        }
+
+        return {
+            nodes: transformedNodes,
+            goal,
+            board,
+            toolbox,
+            globals,
+        };
+    },
+
     expressions: {
         missing: core.missing,
 

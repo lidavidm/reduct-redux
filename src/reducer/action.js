@@ -26,10 +26,12 @@ export function startLevel(stage, goal, board, toolbox) {
 
     console.info("action.startLevel: starting with", goal, board, toolbox);
 
-    const _nodes = {};
-    const _goal = [];
-    const _board = [];
-    const _toolbox = [];
+    let _nodes = {};
+    let _goal = [];
+    let _board = [];
+    let _toolbox = [];
+    let _globals = {};
+
     for (const expr of goal) {
         for (const newExpr of semantics.flatten(expr)) {
             _nodes[newExpr.id] = newExpr;
@@ -48,6 +50,14 @@ export function startLevel(stage, goal, board, toolbox) {
         }
         _toolbox.push(expr.id);
     }
+
+    ({
+        nodes: _nodes,
+        goal: _goal,
+        board: _board,
+        toolbox: _toolbox,
+        globals: _globals,
+    } = semantics.parser.postParse(_nodes, _goal, _board, _toolbox, _globals));
 
     const finalNodes = immutable.Map().withMutations((fn) => {
         for (const node of Object.values(_nodes)) {
