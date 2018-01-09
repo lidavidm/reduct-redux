@@ -7,7 +7,14 @@ export function startLevel(description, parse, store, stage) {
         const macro = macros[macroName];
         macros[macroName] = () => parse(macro, {});
     }
-    // TODO: add a macro for each defined name
+    const definedNames = description.extraDefines
+          .map(str => parse(str, macros))
+          .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
+          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+          .filter(name => name !== null);
+    for (const [ name, expr ] of definedNames) {
+        macros[name] = expr;
+    }
 
     const goal = description.goal.map(str => parse(str, macros));
     const board = description.board
@@ -15,7 +22,19 @@ export function startLevel(description, parse, store, stage) {
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), []);
     const toolbox = description.toolbox
           .map(str => parse(str, macros));
-    store.dispatch(action.startLevel(stage, goal, board, toolbox));
+
+    const globals = {};
+    description.extraDefines
+        .map(str => parse(str, macros))
+        .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
+        .map(expr => stage.semantics.parser.extractGlobals(stage.semantics, expr))
+        .filter(name => name !== null)
+        .forEach(([ name, val ]) => {
+            globals[name] = val;
+        });
+    // TODO: parse globals field of level description
+
+    store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
 }
 
 export function checkVictory(state, semantics) {

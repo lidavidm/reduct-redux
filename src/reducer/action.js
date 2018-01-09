@@ -21,7 +21,7 @@ export const VICTORY = "victory";
  * Flattened trees are doubly-linked: children know their parent, and
  * which parent field they are stored in.
  */
-export function startLevel(stage, goal, board, toolbox) {
+export function startLevel(stage, goal, board, toolbox, globals) {
     const semantics = stage.semantics;
 
     console.info("action.startLevel: starting with", goal, board, toolbox);
@@ -49,6 +49,12 @@ export function startLevel(stage, goal, board, toolbox) {
             _nodes[newExpr.id] = newExpr;
         }
         _toolbox.push(expr.id);
+    }
+    for (const [ name, expr ] of Object.entries(globals)) {
+        for (const newExpr of semantics.flatten(expr)) {
+            _nodes[newExpr.id] = newExpr;
+        }
+        _globals[name] = expr.id;
     }
 
     ({
@@ -95,7 +101,7 @@ export function startLevel(stage, goal, board, toolbox) {
         goal: _goal,
         board: _board,
         toolbox: _toolbox,
-        globals: {},
+        globals: _globals,
     };
 }
 
