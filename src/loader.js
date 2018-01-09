@@ -91,10 +91,7 @@ export class Loader {
                 if (typeof lvl.toolbox === "string") lvl.toolbox = [lvl.toolbox];
                 if (!lvl.defines) lvl.defines = [];
                 else if (typeof lvl.defines === "string") lvl.defines = [lvl.defines];
-
-                // TODO: this mechanism needs to include any define
-                // expressions
-                lvl.newDefines = lvl.defines;
+                if (!lvl.globals) lvl.globals = {};
 
                 d.levels.push(lvl);
             });
@@ -112,6 +109,8 @@ export class Loader {
             levels: [],
         };
         const filenames = Object.keys(definition.digraph);
+
+        let extraDefines = [];
 
         Promise.all(filenames.map(
             (filename) => this.loadChapter(
@@ -143,6 +142,10 @@ export class Loader {
                             console.info("Loader#loadChapters: traversed", chapterName);
 
                             // TODO: patch defines
+                            for (const level of chapter.levels) {
+                                level.extraDefines = extraDefines;
+                                extraDefines = extraDefines.concat(level.defines);
+                            }
 
                             continue outerLoop;
                         }
