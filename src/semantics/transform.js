@@ -633,7 +633,9 @@ export default function transform(definition) {
     module.clone = core.genericClone(nextId, module.subexpressions);
 
     module.parser = {};
-    module.parser.postParse = definition.postParse;
+    module.parser.postParse = definition.parser.postParse;
+    module.parser.extractDefines = definition.parser.extractDefines;
+    module.parser.extractGlobals = definition.parser.extractGlobals;
 
     return module;
 }

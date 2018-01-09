@@ -3,38 +3,53 @@ import transform from "./transform";
 
 export default transform({
     name: "ECMAScript 6",
-    parser: null,
-
-    postParse: (nodes, goal, board, toolbox, globals) => {
-        // Replace lambdaVars with references where appropriate
-        // TODO: this should properly account for capture
-        const transformedNodes = {};
-        const names = new Set();
-
-        for (const id of board) {
-            if (nodes[id].type === "define") {
-                names.add(nodes[id].name);
+    parser: {
+        extractDefines: (semant, expr) => {
+            if (expr.type !== "define") {
+                return null;
             }
-        }
+            // needs to be a thunk
+            return [ expr.name, () => semant.reference(expr.name) ];
+        },
 
-        for (const name of Object.keys(globals)) {
-            names.add(name);
-        }
-
-        for (const [ id, node ] of Object.entries(nodes)) {
-            if (node.type === "lambdaVar" && names.has(node.name)) {
-                node.type = "reference";
+        extractGlobals: (semant, expr) => {
+            if (expr.type !== "define") {
+                return null;
             }
-            transformedNodes[id] = node;
-        }
+            return [ expr.name, expr.body ];
+        },
 
-        return {
-            nodes: transformedNodes,
-            goal,
-            board,
-            toolbox,
-            globals,
-        };
+        postParse: (nodes, goal, board, toolbox, globals) => {
+            // Replace lambdaVars with references where appropriate
+            // TODO: this should properly account for capture
+            const transformedNodes = {};
+            const names = new Set();
+
+            for (const id of board) {
+                if (nodes[id].type === "define") {
+                    names.add(nodes[id].name);
+                }
+            }
+
+            for (const name of Object.keys(globals)) {
+                names.add(name);
+            }
+
+            for (const [ id, node ] of Object.entries(nodes)) {
+                if (node.type === "lambdaVar" && names.has(node.name)) {
+                    node.type = "reference";
+                }
+                transformedNodes[id] = node;
+            }
+
+            return {
+                nodes: transformedNodes,
+                goal,
+                board,
+                toolbox,
+                globals,
+            };
+        },
     },
 
     expressions: {
