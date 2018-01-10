@@ -25,6 +25,9 @@ export default class Toolbox {
         if (!this.containsPoint(pos)) return [ null, null ];
 
         for (const nodeId of state.get("toolbox")) {
+            if (!this.stage.semantics.targetable(state, state.get("nodes").get(nodeId))) {
+                continue;
+            }
             const projection = this.stage.views[nodeId];
 
             if (projection.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
