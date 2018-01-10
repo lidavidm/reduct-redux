@@ -389,7 +389,7 @@ export class Stage {
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
-        this.semantics.reduce(
+        this.semantics.interpreter.reduce(
             this, state, node,
             (topNodeId, newNodeIds, addedNodes) => {
                 const topView = this.views[topNodeId];
@@ -433,7 +433,7 @@ export class Stage {
      * Helper that handles animation and updating the store for a beta reduction.
      */
     betaReduce(state, target, arg) {
-        const result = this.semantics.betaReduce(state.get("nodes"), target, [ arg ]);
+        const result = this.semantics.interpreter.betaReduce(state, target, [ arg ]);
         if (result) {
             const [ topNode, resultNodeIds, newNodes ] = result;
             const tempNodes = state.get("nodes").withMutations(nodes => {

@@ -267,9 +267,8 @@ export default transform({
                 fields: ["callee", "'('", "argument", "')'"],
             },
             smallStep: (semant, state, expr) => {
-                const nodes = state.get("nodes");
-                const [ topNodeId, newNodeIds, addedNodes ] = semant.betaReduce(
-                    nodes, expr.get("callee"),
+                const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
+                    state, expr.get("callee"),
                     [ expr.get("argument") ]
                 );
                 return [ expr.get("id"), newNodeIds, addedNodes ];
@@ -299,10 +298,10 @@ export default transform({
                 shape: "()",
                 fields: ["arg", "'=>'", "body"],
             },
-            betaReduce: (semant, nodes, expr, argIds) =>
-                core.genericBetaReduce(semant, nodes, {
+            betaReduce: (semant, state, expr, argIds) =>
+                core.genericBetaReduce(semant, state, {
                     topNode: expr,
-                    targetNode: nodes.get(expr.get("arg")),
+                    targetNode: state.get("nodes").get(expr.get("arg")),
                     argIds,
                     targetName: node => node.get("name"),
                     isVar: node => node.get("type") === "lambdaVar",
@@ -318,9 +317,9 @@ export default transform({
                 type: "text",
                 text: "({name})",
             },
-            betaReduce: (semant, nodes, expr, argIds) => {
+            betaReduce: (semant, state, expr, argIds) => {
                 if (expr.get("parent")) {
-                    return semant.betaReduce(nodes, expr.get("parent"), argIds);
+                    return semant.interpreter.betaReduce(state, expr.get("parent"), argIds);
                 }
                 return null;
             },

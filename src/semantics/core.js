@@ -96,8 +96,9 @@ export function genericClone(nextId, subexpressions) {
     };
 }
 
-export function genericBetaReduce(semant, nodes, config) {
+export function genericBetaReduce(semant, state, config) {
     const { topNode, targetNode, argIds } = config;
+    const nodes = state.get("nodes");
     // Prevent application when there are missing nodes
     // TODO: move this check into the core?
     if (semant.search(nodes, topNode.get("id"),

@@ -119,7 +119,22 @@ export default function transform(definition) {
         return module.projections[type](stage, nodes, expr);
     };
 
-    module.smallStep = function smallStep(state, expr) {
+    /**
+     * Submodule for evaluating expressions.
+     */
+    module.interpreter = {};
+
+    /**
+     * Take a small step on this expression.
+     *
+     * Requires that pertinent subexpressions (as defined by
+     * substepFilter) have been reduced first.
+     *
+     * @returns {Array} The ID of the original expression, a list of
+     * IDs of resulting nodes, and a list of added nodes (which have
+     * IDs assigned and are immutable already).
+     */
+    module.interpreter.smallStep = function smallStep(state, expr) {
         const type = expr.type || expr.get("type");
         const stepper = definition.expressions[type].smallStep;
         if (stepper) {
@@ -139,23 +154,30 @@ export default function transform(definition) {
         return null;
     };
 
-    module.betaReduce = function(nodes, exprId, argIds) {
-        const target = nodes.get(exprId);
+    /**
+     * Apply a list of expressions to another expression.
+     */
+    module.interpreter.betaReduce = function(state, exprId, argIds) {
+        const target = state.get("nodes").get(exprId);
         const reducer = definition.expressions[target.get("type")].betaReduce;
         if (!reducer) return null;
 
-        return reducer(module, nodes, target, argIds);
+        return reducer(module, state, target, argIds);
     };
 
     /**
      * Construct the animation for the small-step that the given
      * expression would take.
      */
-    module.animateStep = function animateStep(stage, state, exp) {
+    module.interpreter.animateStep = function animateStep(stage, state, exp) {
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
-    module.singleStep = function singleStep(state, expr) {
+    /**
+     * Given an expression, find the first child that needs to have a
+     * step taken, or the first child that is blocking evaluation.
+     */
+    module.interpreter.singleStep = function singleStep(state, expr) {
         const nodes = state.get("nodes");
         const kind = module.kind(expr);
         if (kind !== "expression") {
@@ -177,11 +199,11 @@ export default function transform(definition) {
             }
 
             if (subexprKind !== "value" && subexprKind !== "syntax") {
-                return module.singleStep(state, subexpr);
+                return module.interpreter.singleStep(state, subexpr);
             }
         }
 
-        const errorExpId = module.validateStep(state, expr);
+        const errorExpId = module.interpreter.validateStep(state, expr);
         if (errorExpId !== null) {
             return [ "error", errorExpId ];
         }
@@ -189,16 +211,19 @@ export default function transform(definition) {
         return [ "success", expr.get("id") ];
     };
 
-    module.reducers = {};
+    /**
+     * A submodule containing evaluation strategies.
+     */
+    module.interpreter.reducers = {};
     // TODO: need a "hybrid multi-step" that big-steps expressions we
-    // don't care about
-    module.reducers.single = function singleStepReducer(
+    // don't care about and that can delay evaluating references
+    module.interpreter.reducers.single = function singleStepReducer(
         stage, state, exp,
         callback, errorCallback
     ) {
         // Single-step mode
 
-        const [ result, exprId ] = module.singleStep(state, exp);
+        const [ result, exprId ] = module.interpreter.singleStep(state, exp);
         if (result === "error") {
             errorCallback(exprId);
             return;
@@ -207,19 +232,19 @@ export default function transform(definition) {
         const nodes = state.get("nodes");
         exp = nodes.get(exprId);
         module
-            .animateStep(stage, nodes, exp)
-            .then(() => module.smallStep(nodes, exp))
+            .interpreter.animateStep(stage, nodes, exp)
+            .then(() => module.interpreter.smallStep(nodes, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callback(topNodeId, newNodeIds, addedNodes);
             });
     };
 
-    module.reducers.multi = function multiStepReducer(
+    module.interpreter.reducers.multi = function multiStepReducer(
         stage, state, exp,
         callback, errorCallback, animated=true
     ) {
         const takeStep = (innerState, innerExpr) => {
-            const [ result, exprId ] = module.singleStep(innerState, innerExpr);
+            const [ result, exprId ] = module.interpreter.singleStep(innerState, innerExpr);
             if (result === "error") {
                 errorCallback(exprId);
                 return Promise.reject();
@@ -228,13 +253,13 @@ export default function transform(definition) {
             innerExpr = innerState.get("nodes").get(exprId);
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
-                      module.smallStep(innerState, innerExpr);
+                      module.interpreter.smallStep(innerState, innerExpr);
                 return callback(topNodeId, newNodeIds, addedNodes)
                     .then(newState => [ newState, topNodeId, newNodeIds ]);
             };
 
             if (animated) {
-                return module.animateStep(stage, innerState, innerExpr).then(() => nextStep());
+                return module.interpreter.animateStep(stage, innerState, innerExpr).then(() => nextStep());
             }
             return nextStep();
         };
@@ -268,19 +293,19 @@ export default function transform(definition) {
         loop(state, exp);
     };
 
-    module.reducers.big = function bigStepReducer(
+    module.interpreter.reducers.big = function bigStepReducer(
         stage, state, exp,
         callback, errorCallback
     ) {
         // Only play animation if we actually take any sort of
         // small-step
         let playedAnim = false;
-        module.reducers.multi(
+        module.interpreter.reducers.multi(
             stage, state, exp,
             (...args) => {
                 if (!playedAnim) {
                     playedAnim = true;
-                    return module.animateStep(stage, state, exp).then(() => callback(...args));
+                    return module.interpreter.animateStep(stage, state, exp).then(() => callback(...args));
                 }
                 return callback(...args);
             },
@@ -296,10 +321,23 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.reduce = function reduce(stage, state, exp, callback, errorCallback) {
-        // return module.reducers.single(stage, state, exp, callback, errorCallback);
-        // return module.reducers.multi(stage, state, exp, callback, errorCallback);
-        return module.reducers.big(stage, state, exp, callback, errorCallback);
+    module.interpreter.reduce = function reduce(stage, state, exp, callback, errorCallback) {
+        // return module.interpreter.reducers.single(stage, state, exp, callback, errorCallback);
+        return module.interpreter.reducers.multi(stage, state, exp, callback, errorCallback);
+        // return module.interpreter.reducers.big(stage, state, exp, callback, errorCallback);
+    };
+
+    /**
+     * Validate that the given expression can take a single step.
+     */
+    module.interpreter.validateStep = function(state, expr) {
+        const defn = definition.expressions[expr.get("type")];
+        if (!defn) return null;
+
+        const validator = defn.validateStep;
+        if (!validator) return null;
+
+        return validator(module, state, expr);
     };
 
     module.shallowEqual = function shallowEqual(n1, n2) {
@@ -402,16 +440,6 @@ export default function transform(definition) {
         step(rootExpr);
 
         return { types: result, completeness };
-    };
-
-    module.validateStep = function(state, expr) {
-        const defn = definition.expressions[expr.get("type")];
-        if (!defn) return null;
-
-        const validator = defn.validateStep;
-        if (!validator) return null;
-
-        return validator(module, state, expr);
     };
 
     module.hasNotches = function(node) {
