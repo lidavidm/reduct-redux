@@ -153,7 +153,7 @@ export class Stage {
                     curRoot = curExprId;
                     res = curExprId;
                 }
-                else if (curNode && this.semantics.targetable(curNode)) {
+                else if (curNode && this.semantics.targetable(state, curNode)) {
                     res = curExprId;
                 }
 

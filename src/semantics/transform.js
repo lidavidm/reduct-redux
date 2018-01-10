@@ -499,9 +499,15 @@ export default function transform(definition) {
         return true;
     };
 
-    module.targetable = function(expr) {
+    /**
+     * Is an expression selectable/hoverable by the mouse?
+     */
+    module.targetable = function(state, expr) {
         const defn = definition.expressions[expr.get("type")];
-        return !expr.get("locked") || (defn && defn.targetable);
+        if (defn.targetable && typeof defn.targetable === "function") {
+            return defn.targetable(module, state, expr);
+        }
+        return !expr.get("parent") || !expr.get("locked") || (defn && defn.alwaysTargetable);
     };
 
     module.kind = function(expr) {

@@ -313,7 +313,7 @@ export default transform({
         lambdaArg: {
             fields: ["name"],
             subexpressions: [],
-            targetable: true,
+            alwaysTargetable: true,
             projection: {
                 type: "text",
                 text: "({name})",
@@ -341,6 +341,13 @@ export default transform({
             kind: "expression",
             fields: ["name"],
             subexpressions: [],
+            targetable: (semant, state, expr) => {
+                if (state.get("toolbox").includes(expr.get("id"))) {
+                    // If in toolbox, only targetable if defined
+                    return state.get("globals").has(expr.get("name"));
+                }
+                return !expr.get("parent") || !expr.get("locked");
+            },
             smallStep: (semant, state, expr) => {
                 let res = state.get("globals").get(expr.get("name"));
                 if (!res) return null;
