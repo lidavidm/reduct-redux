@@ -1,3 +1,6 @@
+/**
+ * Projectors transform a JSON-ish view specification into a gfx view.
+ */
 import * as gfx from "./core";
 
 const optionFields = [
@@ -5,6 +8,10 @@ const optionFields = [
     "notches", "subexpScale", "shadow", "shadowColor",
 ];
 
+/**
+ * The default projector lays out children in a horizontal box with a
+ * rounded or hexagonal background.
+ */
 function defaultProjector(definition) {
     const options = {};
     let baseProjection = gfx.roundedRect;

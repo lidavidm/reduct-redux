@@ -12,6 +12,11 @@ const NotchRecord = immutable.Record({
     type: "inset",
 });
 
+/**
+ * This module turns a JSON-plus-functions specification of language
+ * semantics and builds a module for the rest of Reduct to interact
+ * with the semantics.
+ */
 export default function transform(definition) {
     const module = {};
     module.definition = definition;
@@ -81,6 +86,9 @@ export default function transform(definition) {
         module.projections[exprName] = projector(exprDefinition);
     }
 
+    /**
+     * Return a list of field names containing subexpressions of an expression.
+     */
     module.subexpressions = function subexpressions(expr) {
         const type = expr.type || expr.get("type");
         if (type === "vtuple") {
@@ -100,6 +108,8 @@ export default function transform(definition) {
     };
 
     /**
+     * Construct the gfx view for a node.
+     *
      * @param nodes - We have to provide the node map since the store
      * won't have been updated yet.
      */
