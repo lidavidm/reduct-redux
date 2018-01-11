@@ -440,7 +440,14 @@ export default transform({
             ],
             projection: {
                 type: "vbox",
-                subexpScale: 1.0,
+                horizontalAlign: 0.0,
+                padding: {
+                    top: 10,
+                    left: 10,
+                    inner: 5,
+                    right: 0,
+                    bottom: 10,
+                },
                 rows: [
                     {
                         type: "default",

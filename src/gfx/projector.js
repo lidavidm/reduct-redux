@@ -5,7 +5,7 @@ import * as gfx from "./core";
 
 const optionFields = [
     "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
-    "notches", "subexpScale", "shadow", "shadowColor",
+    "notches", "subexpScale", "shadow", "shadowColor", "horizontalAlign",
 ];
 
 /**

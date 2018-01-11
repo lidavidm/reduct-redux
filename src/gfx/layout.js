@@ -88,10 +88,12 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 }
 
 export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
-    const projection = baseProjection(options);
+    const projection = baseProjection(Object.assign({
+        horizontalAlign: 0.5,
+        padding: { top: 10, left: 0, inner: 10, right: 0, bottom: 10 },
+        subexpScale: 0.85,
+    }, options));
     const baseDraw = projection.draw;
-    projection.padding = { top: 10, left: 0, inner: 10, right: 0, bottom: 10 };
-    projection.subexpScale = 0.85;
     projection.type = "vbox";
 
     projection.prepare = function(id, exprId, state, stage) {
@@ -121,8 +123,9 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             const childProjection = stage.views[childId];
             childProjection.pos.x =
-                (this.size.w * this.scale.x -
-                 childProjection.size.w * childProjection.scale.x * this.scale.x) / 2;
+                this.scale.x * this.padding.left +
+                this.horizontalAlign * (this.size.w * this.scale.x -
+                 childProjection.size.w * childProjection.scale.x * this.scale.x);
         }
     };
     projection.draw = function(id, exprId, state, stage, offset) {
