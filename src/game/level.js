@@ -7,12 +7,18 @@ export function startLevel(description, parse, store, stage) {
         const macro = macros[macroName];
         macros[macroName] = () => parse(macro, {});
     }
-    const definedNames = description.extraDefines
+    const prevDefinedNames = description.extraDefines
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
-    for (const [ name, expr ] of definedNames) {
+    const newDefinedNames = description.board
+          .map(str => parse(str, macros))
+          .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
+          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+          .filter(name => name !== null);
+
+    for (const [ name, expr ] of prevDefinedNames.concat(newDefinedNames)) {
         macros[name] = expr;
     }
 
