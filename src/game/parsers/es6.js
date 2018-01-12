@@ -89,12 +89,14 @@ function parseNode(node, macros) {
 
     case "ArrowFunctionExpression": {
         if (node.params.length === 1 && node.params[0].type === "Identifier") {
-            let body = parseNode(node.body, macros);
-            return jssemant.lambda(jssemant.lambdaArg(node.params[0].name), body);
+            // Implement capture of bindings
+            const argName = node.params[0].name;
+            const newMacros = {};
+            newMacros[argName] = () => jssemant.lambdaVar(argName);
+            const body = parseNode(node.body, Object.assign(macros, newMacros));
+            return jssemant.lambda(jssemant.lambdaArg(argName), body);
         }
-        else {
-            return fail("Lambda expessions with more than one input are currently undefined.", node);
-        }
+        return fail("Lambda expessions with more than one input are currently undefined.", node);
     }
 
     case "BinaryExpression":
