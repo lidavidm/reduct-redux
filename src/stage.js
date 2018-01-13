@@ -101,9 +101,6 @@ export class Stage {
 
     drawProjection(state, nodeId) {
         const node = state.get("nodes").get(nodeId);
-        if (!this.views[nodeId]) {
-            this.views[nodeId] = this.semantics.project(this, state.get("nodes"), node);
-        }
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
@@ -234,6 +231,16 @@ export class Stage {
 
     _mousemove(e) {
         if (e.buttons > 0 && this._selectedNode !== null) {
+            if (this._fromToolbox) {
+                const state = this.getState();
+                const selected = state.getIn([ "nodes", this._selectedNode ]);
+                // TODO: fix this check/use Record
+                if (selected.has("__meta") && selected.get("__meta").toolbox.unlimited) {
+                    this.store.dispatch(action.useToolbox(this._selectedNode));
+                    this._fromToolbox = false;
+                }
+            }
+
             const view = this.views[this._selectedNode];
             view.pos.x += e.movementX;
             view.pos.y += e.movementY;
@@ -525,5 +532,15 @@ export class Stage {
 
     removeEffect(id) {
         delete this.effects[id];
+    }
+
+    projectViews() {
+        const state = this.getState();
+        const nodes = state.get("nodes");
+        nodes.forEach((node, id) => {
+            if (!this.views[id]) {
+                this.views[id] = this.semantics.project(this, nodes, node);
+            }
+        });
     }
 }

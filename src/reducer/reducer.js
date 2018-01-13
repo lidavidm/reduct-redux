@@ -216,7 +216,6 @@ export function reduct(semantics, views) {
                 const node = state.get("nodes").get(act.nodeId);
                 if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
                     const [ clonedNode, _, newNodes ] = semantics.clone(act.nodeId, state.get("nodes"));
-                    console.info(`Node is unlimited, created clone ${clonedNode.get("id")}`);
                     return state.withMutations((mutState) => {
                         // TODO: don't delete entire metadata section
                         mutState.set("nodes", newNodes.set(act.nodeId, node.delete("__meta")));

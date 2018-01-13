@@ -54,10 +54,6 @@ export default class Toolbox {
         let i = 0;
 
         for (const nodeId of state.get("toolbox")) {
-            if (!this.stage.views[nodeId]) {
-                this.stage.views[nodeId] = this.stage.semantics.project(this.stage, state.get("nodes"), state.get("nodes").get(nodeId));
-            }
-
             const projection = this.stage.views[nodeId];
             projection.scale = { x: 1, y: 1 };
             const nodeY = y + ((90 - projection.size.h) / 2);
