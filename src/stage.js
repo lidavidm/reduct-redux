@@ -101,6 +101,9 @@ export class Stage {
 
     drawProjection(state, nodeId) {
         const node = state.get("nodes").get(nodeId);
+        if (!this.views[nodeId]) {
+            this.views[nodeId] = this.semantics.project(this, state.get("nodes"), node);
+        }
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
