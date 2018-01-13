@@ -209,6 +209,7 @@ export function reduct(semantics, views) {
         }
         case action.USE_TOOLBOX: {
             if (state.get("toolbox").contains(act.nodeId)) {
+                // TODO: if node has __meta indicating infinite uses, clone instead
                 return state.withMutations((mutState) => {
                     mutState.set("board", mutState.get("board").push(act.nodeId));
                     mutState.set("toolbox", mutState.get("toolbox").filter(n => n !== act.nodeId));

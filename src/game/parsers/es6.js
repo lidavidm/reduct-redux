@@ -14,6 +14,22 @@ export function parse(program, macros) {
         }
         return result;
     }
+    else if (ast.body.length === 2 &&
+             ast.body[0].type === "ExpressionStatement" &&
+             ast.body[0].expression.type === "Identifier" &&
+             ast.body[0].expression.name === "__unlimited") {
+        const result = parseNode(ast.body[1], macros);
+        if (result === null) {
+            return fail("Cannot parse node.", program);
+        }
+        if (!result.__meta) result.__meta = {};
+
+        result.__meta.toolbox = {
+            unlimited: true,
+        };
+
+        return result;
+    }
     else {
         return fail(`Cannot parse multi-statement programs at the moment.`, program);
     }
