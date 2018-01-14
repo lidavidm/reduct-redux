@@ -210,17 +210,16 @@ export function reduct(semantics, views) {
         case action.USE_TOOLBOX: {
             if (state.get("toolbox").contains(act.nodeId)) {
                 // If node has __meta indicating infinite uses, clone
-                // instead. Kinda hacky - to avoid mutating which node
-                // the stage is "holding", we clone the node and
-                // replace the existing node in the toolbox.
-                const node = state.get("nodes").get(act.nodeId);
-                if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
-                    const [ clonedNode, _, newNodes ] = semantics.clone(act.nodeId, state.get("nodes"));
+                // instead.
+                if (act.clonedNodeId) {
                     return state.withMutations((mutState) => {
                         // TODO: don't delete entire metadata section
-                        mutState.set("nodes", newNodes.set(act.nodeId, node.delete("__meta")));
-                        mutState.set("board", mutState.get("board").push(act.nodeId));
-                        mutState.set("toolbox", mutState.get("toolbox").map(n => (n === act.nodeId ? clonedNode.get("id") : n)));
+                        mutState.set("nodes", mutState.get("nodes").withMutations((nodes) => {
+                            for (const node of act.addedNodes) {
+                                nodes.set(node.get("id"), node);
+                            }
+                        }));
+                        mutState.set("board", mutState.get("board").push(act.clonedNodeId));
                     });
                 }
 

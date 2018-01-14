@@ -196,10 +196,12 @@ export function attachNotch(parentId, notchIdx, childId, childNotchIdx) {
 /**
  * Take the given node out of the toolbox.
  */
-export function useToolbox(nodeId) {
+export function useToolbox(nodeId, clonedNodeId=null, addedNodes=null) {
     return {
         type: USE_TOOLBOX,
-        nodeId: nodeId,
+        nodeId,
+        clonedNodeId,
+        addedNodes,
     };
 }
 

@@ -236,7 +236,33 @@ export class Stage {
                 const selected = state.getIn([ "nodes", this._selectedNode ]);
                 // TODO: fix this check/use Record
                 if (selected.has("__meta") && selected.get("__meta").toolbox.unlimited) {
-                    this.store.dispatch(action.useToolbox(this._selectedNode));
+                    // If node has __meta indicating infinite uses,
+                    // clone instead.
+                    const [ clonedNode, addedNodes ] = this.semantics.clone(
+                        this._selectedNode,
+                        state.get("nodes")
+                    );
+
+                    // TODO: make clone include result in addedNodes
+                    const tempNodes = state.get("nodes").withMutations((nodes) => {
+                        for (const node of addedNodes) {
+                            nodes.set(node.get("id"), node);
+                        }
+                        nodes.set(clonedNode.get("id"), clonedNode);
+                    });
+                    for (const node of addedNodes.concat([ clonedNode ])) {
+                        this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                    }
+                    this.views[clonedNode.get("id")].pos.x = this.views[this._selectedNode].pos.x;
+                    this.views[clonedNode.get("id")].pos.y = this.views[this._selectedNode].pos.y;
+
+                    this.store.dispatch(action.useToolbox(
+                        this._selectedNode,
+                        clonedNode.get("id"),
+                        addedNodes.concat([ clonedNode ])
+                    ));
+                    this._selectedNode = clonedNode.get("id");
+                    this._targetNode = null;
                     this._fromToolbox = false;
                 }
             }
@@ -532,15 +558,5 @@ export class Stage {
 
     removeEffect(id) {
         delete this.effects[id];
-    }
-
-    projectViews() {
-        const state = this.getState();
-        const nodes = state.get("nodes");
-        nodes.forEach((node, id) => {
-            if (!this.views[id]) {
-                this.views[id] = this.semantics.project(this, nodes, node);
-            }
-        });
     }
 }

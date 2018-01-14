@@ -40,7 +40,6 @@ function initialize() {
 
     // When the state changes, redraw the state.
     store.subscribe(() => {
-        stg.projectViews();
         stg.draw();
 
         if (!stg.alreadyWon) {
