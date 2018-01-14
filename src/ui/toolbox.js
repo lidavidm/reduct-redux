@@ -10,6 +10,10 @@ export default class Toolbox {
             size: { h: 90 },
         })), "bottom"));
 
+        this.infBg = stage.allocateInternal(gfx.shapes.circle({
+            size: { w: 40, h: 40 },
+            color: "#0D0",
+        }));
         this.inf = stage.allocateInternal(gfx.sprite({
             image: Loader.images["infinity-symbol"],
             size: { h: 12, w: 25 },
@@ -106,8 +110,14 @@ export default class Toolbox {
 
             const node = state.get("nodes").get(nodeId);
             if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
+                this.stage.internalViews[this.infBg].draw(-1, nodeId, state, this.stage, {
+                    x: projection.pos.x + projection.size.w - 33,
+                    y: projection.pos.y - 20,
+                    sx: 1,
+                    sy: 1,
+                });
                 this.stage.internalViews[this.inf].draw(null, null, state, this.stage, {
-                    x: projection.pos.x + projection.size.w - 30,
+                    x: projection.pos.x + projection.size.w - 25,
                     y: projection.pos.y - 5,
                     sx: 1,
                     sy: 1,
