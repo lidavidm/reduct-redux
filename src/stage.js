@@ -78,8 +78,21 @@ export class Stage {
         for (const key in this.views) delete this.views[key];
         delete this.goal;
         this.goal = new Goal(this);
-        this.toolbox._firstRender = true;
+        this.toolbox.reset();
         this.alreadyWon = false;
+    }
+
+    startLevel() {
+        for (const nodeId of this.getState().get("board")) {
+            this.views[nodeId].scale = { x: 0.0, y: 0.0 };
+            this.views[nodeId].anchor = { x: 0.5, y: 0.5 };
+            animate.tween(this.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
+                duration: 250,
+                easing: animate.Easing.Cubic.In,
+            });
+        }
+
+        this.toolbox.startLevel(this.getState());
     }
 
     get view() {

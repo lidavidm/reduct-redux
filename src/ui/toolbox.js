@@ -2,12 +2,17 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import Loader from "../loader";
 
+const TOOLBOX_ROW_HEIGHT = 70;
+const TOOLBOX_LEFT_MARGIN = 20;
+const TOOLBOX_RIGHT_MARGIN = 20;
+const TOOLBOX_INNER_MARGIN = 10;
+
 export default class Toolbox {
     constructor(stage) {
         this.stage = stage;
         this.bg = stage.allocateInternal(gfx.layout.sticky(gfx.layout.hexpand(gfx.sprite({
             image: Loader.images["toolbox-bg"],
-            size: { h: 90 },
+            size: { h: TOOLBOX_ROW_HEIGHT },
         })), "bottom"));
 
         this.infBg = stage.allocateInternal(gfx.shapes.circle({
@@ -20,6 +25,7 @@ export default class Toolbox {
         }));
 
         this._firstRender = true;
+        this.rows = 1;
     }
 
     containsPoint(pos) {
@@ -47,6 +53,31 @@ export default class Toolbox {
         return [ null, null ];
     }
 
+    reset() {
+    }
+
+    startLevel(state) {
+        this._firstRender = true;
+
+        // Figure out how many rows to use
+        let x = TOOLBOX_LEFT_MARGIN;
+        let rows = 1;
+        for (const nodeId of state.get("toolbox")) {
+            const projection = this.stage.views[nodeId];
+            projection.scale = { x: 1, y: 1 };
+            projection.prepare(nodeId, nodeId, state, this.stage);
+
+            if (x + projection.size.w >= this.stage.width - TOOLBOX_RIGHT_MARGIN) {
+                rows += 1;
+                x = TOOLBOX_LEFT_MARGIN;
+            }
+            x += projection.size.w + TOOLBOX_INNER_MARGIN;
+        }
+
+        this.rows = rows;
+        this.stage.internalViews[this.bg].size.h = TOOLBOX_ROW_HEIGHT * this.rows;
+    }
+
     drawBase(state) {
         this.stage.internalViews[this.bg].prepare(null, null, state, this.stage);
         this.stage.internalViews[this.bg].draw(null, null, state, this.stage, {
@@ -58,19 +89,23 @@ export default class Toolbox {
     }
 
     drawImpl(state) {
-        let x = 20;
+        let x = TOOLBOX_LEFT_MARGIN;
         const y = this.stage.internalViews[this.bg].pos.y;
-        let i = 0;
 
+        let curRow = 0;
+        x = TOOLBOX_LEFT_MARGIN;
+        let i = 0;
         for (const nodeId of state.get("toolbox")) {
             const projection = this.stage.views[nodeId];
-            projection.scale = { x: 1, y: 1 };
-            const nodeY = y + ((90 - projection.size.h) / 2);
-            projection.prepare(nodeId, nodeId, state, this.stage);
-            if (nodeId === this.stage._selectedNode) {
-                // Do nothing
+            if (x + projection.size.w >= this.stage.width - TOOLBOX_RIGHT_MARGIN) {
+                curRow += 1;
+                x = TOOLBOX_LEFT_MARGIN;
+                i = 0;
             }
-            else if (this._firstRender) {
+
+            const nodeY = y + (curRow * TOOLBOX_ROW_HEIGHT) + ((TOOLBOX_ROW_HEIGHT - projection.size.h) / 2);
+
+            if (this._firstRender) {
                 projection.pos.x = x + 800;
                 projection.pos.y = nodeY;
                 projection.animating = true;
@@ -100,7 +135,7 @@ export default class Toolbox {
                 projection.pos.y = nodeY;
             }
 
-            x += projection.size.w + 20;
+            x += projection.size.w + TOOLBOX_INNER_MARGIN;
             projection.draw(nodeId, nodeId, state, this.stage, {
                 x: 0,
                 y: 0,

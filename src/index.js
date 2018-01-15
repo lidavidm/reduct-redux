@@ -78,6 +78,9 @@ const start = function start() {
 
     level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
                      es6.parse, store, stg);
+
+    stg.startLevel();
+
     document.querySelector("#level").innerText = progression.currentLevelIdx.toString();
 };
 

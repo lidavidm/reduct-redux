@@ -86,15 +86,6 @@ export function startLevel(stage, goal, board, toolbox, globals) {
         }
     });
 
-    for (const nodeId of _board) {
-        stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
-        stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
-        animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
-            duration: 250,
-            easing: animate.Easing.Cubic.In,
-        });
-    }
-
     return {
         type: START_LEVEL,
         nodes: finalNodes,
