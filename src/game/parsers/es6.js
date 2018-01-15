@@ -122,6 +122,12 @@ function parseNode(node, macros) {
                               parseNode(node.right, macros));
 
     case "CallExpression": {
+        if (node.callee.type === "Identifier" && node.callee.name === "__tests") {
+            const testCases = node.arguments.map(arg => parseNode(arg, macros));
+            const name = node.arguments[0].callee.name;
+            return jssemant.lambda(jssemant.lambdaArg(name), jssemant.vtuple(testCases));
+        }
+
         if (node.arguments.length !== 1) {
             return fail("Call expressions with zero or more than one argument are currently unsupported", node);
         }

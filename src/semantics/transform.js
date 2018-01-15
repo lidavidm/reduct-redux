@@ -355,7 +355,7 @@ export default function transform(definition) {
      */
     module.targetable = function(state, expr) {
         const defn = definition.expressions[expr.get("type")];
-        if (defn.targetable && typeof defn.targetable === "function") {
+        if (defn && defn.targetable && typeof defn.targetable === "function") {
             return defn.targetable(module, state, expr);
         }
         return !expr.get("parent") || !expr.get("locked") || (defn && defn.alwaysTargetable);
