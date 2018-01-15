@@ -1,4 +1,4 @@
-import { roundedRect } from "./core";
+import { debugDraw, roundedRect } from "./core";
 import * as util from "./util";
 
 export function hexpand(projection) {
@@ -56,7 +56,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.prepare(childId, subexprId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
-            maxY = Math.max(maxY, childProjection.size.h);
+            maxY = Math.max(maxY, childProjection.size.h * childProjection.scale.y);
         }
         this.size.w = x - this.padding.inner + this.padding.right;
         this.size.h = maxY;
@@ -77,9 +77,12 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
         });
+
         for (const [ childId, subexprId ] of this.children(exprId, state)) {
             stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
         }
+
+        debugDraw(stage.ctx, this, offset);
     };
 
     projection.children = util.genericChildrenFunc(childrenFunc);
@@ -112,7 +115,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.prepare(childId, subexprId, state, stage);
             y += childProjection.size.h * childProjection.scale.y + this.padding.inner;
-            maxX = Math.max(maxX, childProjection.size.w);
+            maxX = Math.max(maxX, childProjection.size.w * childProjection.scale.x);
         }
         this.size.w = maxX + this.padding.left + this.padding.right;
         this.size.h = y - this.padding.inner + this.padding.bottom;

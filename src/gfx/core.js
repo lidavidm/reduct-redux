@@ -8,6 +8,7 @@ export { image, util };
 let DEBUG = false;
 const DEBUG_COLORS = {
     "hbox": "blue",
+    "vbox": "blue",
     "text": "green",
 };
 
