@@ -128,12 +128,20 @@ function parseNode(node, macros) {
             return jssemant.lambda(jssemant.lambdaArg(name), jssemant.vtuple(testCases));
         }
 
-        if (node.arguments.length !== 1) {
-            return fail("Call expressions with zero or more than one argument are currently unsupported", node);
+        if (node.arguments.length === 0) {
+            return fail("Call expressions with zero arguments are currently unsupported", node);
         }
 
-        return jssemant.apply(parseNode(node.callee, macros),
-                              parseNode(node.arguments[0], macros));
+        let result = jssemant.apply(
+            parseNode(node.callee, macros),
+            parseNode(node.arguments[0], macros)
+        );
+
+        for (const arg of node.arguments.slice(1)) {
+            result = jssemant.apply(result, parseNode(arg, macros));
+        }
+
+        return result;
     }
 
     case "ConditionalExpression": {
