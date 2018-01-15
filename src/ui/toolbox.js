@@ -105,7 +105,10 @@ export default class Toolbox {
 
             const nodeY = y + (curRow * TOOLBOX_ROW_HEIGHT) + ((TOOLBOX_ROW_HEIGHT - projection.size.h) / 2);
 
-            if (this._firstRender) {
+            if (nodeId === this.stage._selectedNode) {
+                // Do nothing - don't override position
+            }
+            else if (this._firstRender) {
                 projection.pos.x = x + 800;
                 projection.pos.y = nodeY;
                 projection.animating = true;
