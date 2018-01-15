@@ -124,7 +124,8 @@ function parseNode(node, macros) {
     case "CallExpression": {
         if (node.callee.type === "Identifier" && node.callee.name === "__tests") {
             const testCases = node.arguments.map(arg => parseNode(arg, macros));
-            const name = node.arguments[0].callee.name;
+            // TODO: better way to figure out name
+            const name = node.arguments[0].type === "CallExpression" ? node.arguments[0].callee.name : "f";
             return jssemant.lambda(jssemant.lambdaArg(name), jssemant.vtuple(testCases));
         }
 
