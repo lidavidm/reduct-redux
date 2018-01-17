@@ -17,12 +17,17 @@ export function genericFlatten(nextId, subexpressions) {
 }
 
 export function genericMap(subexpressions) {
-    const innerMap = function(nodes, nodeId, f) {
+    const innerMap = function(nodes, nodeId, f, filter=null) {
         let currentStore = nodes;
         const currentNode = nodes.get(nodeId);
-        const node = currentNode.withMutations(n => {
+
+        if (filter && !filter(currentStore, currentNode)) {
+            return [ currentNode, currentStore ];
+        }
+
+        const node = currentNode.withMutations((n) => {
             for (const field of subexpressions(n)) {
-                const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f);
+                const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f, filter);
                 console.debug(`genericMap: traversing ${currentNode.get("type")}.${field}, set to new node ${newNode.get("id")}`);
                 currentStore = newStore.set(newNode.get("id"), newNode);
                 n.set(field, newNode.get("id"));
@@ -133,6 +138,11 @@ export function genericBetaReduce(semant, state, config) {
             newNodes = newNodes.concat(resultNewNodes);
             return [ result, nodesStore.set(result.get("id", result)) ];
         }
+    }, (nodes, node) => {
+        if (config.isCapturing(node)) {
+            return config.captureName(nodes, node) !== name;
+        }
+        return true;
     });
     newTop = newTop.delete("parent").delete("parentField");
 

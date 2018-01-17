@@ -281,7 +281,7 @@ export default function transform(definition) {
 
                 if (module.kind(innerExpr) === "expression") {
                     if (animated) {
-                        animate.after(350)
+                        animate.after(500)
                             .then(() => loop(newState, innerExpr));
                     }
                     else {

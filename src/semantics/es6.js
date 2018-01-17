@@ -287,6 +287,8 @@ export default transform({
                     targetName: node => node.get("name"),
                     isVar: node => node.get("type") === "lambdaVar",
                     varName: node => node.get("name"),
+                    isCapturing: node => node.get("type") === "lambda",
+                    captureName: (nodes, node) => nodes.get(node.get("arg")).get("name"),
                 }),
         },
 
