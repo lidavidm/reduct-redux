@@ -1,9 +1,8 @@
 import { createStore } from "redux";
 import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
-import * as es6 from "./game/parsers/es6";
 import * as progression from "./game/progression";
-import defaultSemantics from "./semantics/es6";
+import es6 from "./semantics/es6";
 import * as stage from "./stage";
 import * as undo from "./reducer/undo";
 
@@ -32,10 +31,10 @@ let stg;
 function initialize() {
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
-    const reduct = reducer.reduct(defaultSemantics, views);
+    const reduct = reducer.reduct(es6, views);
     store = createStore(reduct.reducer);
 
-    stg = new stage.Stage(800, 600, store, views, defaultSemantics);
+    stg = new stage.Stage(800, 600, store, views, es6);
     document.body.appendChild(stg.view);
 
     // When the state changes, redraw the state.
@@ -43,7 +42,7 @@ function initialize() {
         stg.draw();
 
         if (!stg.alreadyWon) {
-            const matching = level.checkVictory(stg.getState(), defaultSemantics);
+            const matching = level.checkVictory(stg.getState(), es6);
             if (Object.keys(matching).length > 0) {
                 stg.animateVictory(matching).then(() => {
                     window.next();
@@ -77,7 +76,7 @@ const start = function start() {
     stg.reset();
 
     level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
-                     es6.parse, store, stg);
+                     es6.parser.parse, store, stg);
 
     stg.startLevel();
 
