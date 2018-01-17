@@ -22,11 +22,11 @@ export default function makeParser(jssemant) {
             if (result === null) {
                 return fail("Cannot parse node.", program);
             }
-            if (!result.__meta) result.__meta = {};
-
-            result.__meta.toolbox = {
-                unlimited: true,
-            };
+            result.__meta = new jssemant.meta.Meta({
+                toolbox: jssemant.meta.ToolboxMeta({
+                    unlimited: true,
+                }),
+            });
 
             return result;
         }

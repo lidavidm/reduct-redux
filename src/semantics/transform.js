@@ -3,6 +3,7 @@ import * as gfx from "../gfx/core";
 import projector from "../gfx/projector";
 import * as animate from "../gfx/animate";
 import * as core from "./core";
+import * as meta from "./meta";
 
 import { nextId } from "../reducer/reducer";
 
@@ -484,6 +485,8 @@ export default function transform(definition) {
     module.parser.postParse = definition.parser.postParse;
     module.parser.extractDefines = definition.parser.extractDefines;
     module.parser.extractGlobals = definition.parser.extractGlobals;
+
+    module.meta = meta;
 
     return module;
 }
