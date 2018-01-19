@@ -106,8 +106,11 @@ export function genericBetaReduce(semant, state, config) {
     const { topNode, targetNode, argIds } = config;
     const nodes = state.get("nodes");
     // Prevent application when there are missing nodes
-    if (semant.search(nodes, topNode.get("id"),
-                      (n) => n.get("type") === "missing")) {
+    if (semant.search(
+        nodes,
+        topNode.get("id"),
+        (nodes, id) => nodes.get(id).get("type") === "missing"
+    )) {
         return null;
     }
 
