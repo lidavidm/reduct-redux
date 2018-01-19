@@ -335,6 +335,8 @@ export function reduct(semantics, views) {
                                 Object.assign(views[id].pos, gfx.absolutePos(views[id]));
                                 views[id].anchor.x = 0;
                                 views[id].anchor.y = 0;
+                                views[id].scale.x = 1.0;
+                                views[id].scale.y = 1.0;
                                 animate.tween(views[id].pos, extraState[id], {
                                     duration: 250,
                                     easing: animate.Easing.Cubic.Out,
@@ -345,6 +347,8 @@ export function reduct(semantics, views) {
                     for (const id of state.get("toolbox")) {
                         if (!oldState.get("toolbox").contains(id)) {
                             views[id].pos = gfx.absolutePos(views[id]);
+                            views[id].scale.x = 1.0;
+                            views[id].scale.y = 1.0;
                         }
                     }
                 },
