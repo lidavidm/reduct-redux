@@ -332,6 +332,9 @@ export function reduct(semantics, views) {
                     for (const id of state.get("board")) {
                         if (!oldState.get("board").contains(id)) {
                             if (extraState[id]) {
+                                Object.assign(views[id].pos, gfx.absolutePos(views[id]));
+                                views[id].anchor.x = 0;
+                                views[id].anchor.y = 0;
                                 animate.tween(views[id].pos, extraState[id], {
                                     duration: 250,
                                     easing: animate.Easing.Cubic.Out,
