@@ -71,7 +71,7 @@ export function genericEqual(subexpressions, shallowEqual) {
 }
 
 export function genericClone(nextId, subexpressions) {
-    return function clone(id, nodes) {
+    return function clone(id, nodes, locked=true) {
         const node = nodes.get(id);
         let newNodes = [];
 
@@ -81,11 +81,12 @@ export function genericClone(nextId, subexpressions) {
             n.set("id", newId);
 
             for (const field of subexpressions(node)) {
-                const [ subclone, subclones, nodesStore ] = clone(node.get(field), currentStore);
+                const [ subclone, subclones, nodesStore ] = clone(node.get(field), currentStore, locked);
                 currentStore = nodesStore;
                 const result = subclone.withMutations(sc => {
                     sc.set("parent", newId);
                     sc.set("parentField", field);
+                    sc.set("locked", locked);
                 });
                 newNodes = newNodes.concat(subclones);
                 newNodes.push(result);
@@ -105,7 +106,6 @@ export function genericBetaReduce(semant, state, config) {
     const { topNode, targetNode, argIds } = config;
     const nodes = state.get("nodes");
     // Prevent application when there are missing nodes
-    // TODO: move this check into the core?
     if (semant.search(nodes, topNode.get("id"),
                       (n) => n.get("type") === "missing")) {
         return null;
@@ -117,16 +117,16 @@ export function genericBetaReduce(semant, state, config) {
     }
 
     // TODO: check for unbound names
-    // TODO: need to do a noncapturing substitution
     const name = config.targetName(targetNode);
     let newNodes = [];
-    let [ newTop, _ ] = semant.map(nodes, topNode.get("body"), (nodes, id) => {
+    let [ newTop ] = semant.map(nodes, topNode.get("body"), (nodes, id) => {
         const node = nodes.get(id);
         if (config.isVar(node) && config.varName(node) === name) {
             const [ cloned, resultNewNodes, nodesStore ] = semant.clone(argIds[0], nodes);
             const result = cloned.withMutations(n => {
                 n.set("parent", node.get("parent"));
                 n.set("parentField", node.get("parentField"));
+                n.set("locked", true);
             });
             newNodes.push(result);
             newNodes = newNodes.concat(resultNewNodes);
@@ -148,6 +148,7 @@ export function genericBetaReduce(semant, state, config) {
 
     if (newTop.get("type") === "vtuple") {
         // Spill vtuple onto the board
+        // TODO: should we delete parent/parentField?
         return [
             topNode.get("id"),
             semant.subexpressions(newTop).map(field => newTop.get(field)),
