@@ -100,12 +100,16 @@ export default function transform(definition) {
             }
             return result;
         }
-        if (!definition.expressions[type]) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
+
+        const defn = definition.expressions[type];
+        if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
+
+        const subexprs = defn.reductionOrder || defn.subexpressions;
         // TODO: more principled way of doing this
         if (expr.get && expr.get("notch0")) {
-            return definition.expressions[type].subexpressions.concat(["notch0"]);
+            return subexprs.concat(["notch0"]);
         }
-        return definition.expressions[type].subexpressions;
+        return subexprs;
     };
 
     /**

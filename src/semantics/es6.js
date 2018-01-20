@@ -244,6 +244,7 @@ export default transform({
             kind: "expression",
             fields: [],
             subexpressions: ["callee", "argument"],
+            reductionOrder: ["argument", "callee"],
             projection: {
                 type: "default",
                 shape: "()",
