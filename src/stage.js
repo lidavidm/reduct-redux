@@ -378,21 +378,20 @@ export class Stage {
             // Take item out of toolbox
             this.store.dispatch(action.useToolbox(this._selectedNode));
         }
-        else {
-            // Bump items out of toolbox
-            const projection = this.views[this._selectedNode];
 
-            if (projection) {
-                const topLeft = gfxCore.util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
-                const bottom = { x: 0, y: topLeft.y + projection.size.h };
-                if (this.toolbox.containsPoint(bottom)) {
-                    const targetY = this.toolbox.pos.y -
-                          (projection.size.h * (1 - projection.anchor.y)) - 25;
-                    animate.tween(projection.pos, { y: targetY }, {
-                        duration: 250,
-                        easing: animate.Easing.Cubic.Out,
-                    });
-                }
+        // Bump items out of toolbox
+        const projection = this.views[this._selectedNode];
+
+        if (projection) {
+            const topLeft = gfxCore.util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
+            const bottom = { x: 0, y: topLeft.y + projection.size.h };
+            if (this.toolbox.containsPoint(bottom)) {
+                const targetY = this.toolbox.pos.y -
+                      (projection.size.h * (1 - projection.anchor.y)) - 25;
+                animate.tween(projection.pos, { y: targetY }, {
+                    duration: 250,
+                    easing: animate.Easing.Cubic.Out,
+                });
             }
         }
 
