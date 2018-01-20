@@ -437,7 +437,7 @@ export class Stage {
         const node = nodes.get(selectedNode);
         this.semantics.interpreter.reduce(
             this, state, node,
-            (topNodeId, newNodeIds, addedNodes) => {
+            (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
 
@@ -451,8 +451,8 @@ export class Stage {
                         nodes.set(node.get("id"), node);
                     }
                 });
+
                 for (const node of addedNodes) {
-                    console.log("projecting", node.get("id"));
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
@@ -462,7 +462,11 @@ export class Stage {
                 this.views[newNodeIds[0]].pos.x = origPos.x;
                 this.views[newNodeIds[0]].pos.y = origPos.y;
 
-                this.store.dispatch(action.smallStep(topNodeId, newNodeIds, addedNodes));
+                let act = action.smallStep(topNodeId, newNodeIds, addedNodes);
+                if (!recordUndo) {
+                    act = action.skipUndo(act);
+                }
+                this.store.dispatch(act);
                 return Promise.resolve(this.getState());
             },
             (errorNodeId) => {

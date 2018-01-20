@@ -165,7 +165,10 @@ export default function transform(definition) {
     module.interpreter.betaReduce = function(state, exprId, argIds) {
         const target = state.get("nodes").get(exprId);
         const reducer = definition.expressions[target.get("type")].betaReduce;
-        if (!reducer) return null;
+        if (!reducer) {
+            console.warn(`Expression type ${target.get("type")} was beta-reduced, but has no reducer.`);
+            return null;
+        }
 
         return reducer(module, state, target, argIds);
     };
@@ -224,7 +227,7 @@ export default function transform(definition) {
     // don't care about and that can delay evaluating references
     module.interpreter.reducers.single = function singleStepReducer(
         stage, state, exp,
-        callback, errorCallback
+        callback, errorCallback, recordUndo=true
     ) {
         // Single-step mode
 
@@ -240,13 +243,13 @@ export default function transform(definition) {
             .interpreter.animateStep(stage, nodes, exp)
             .then(() => module.interpreter.smallStep(state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
-                callback(topNodeId, newNodeIds, addedNodes);
+                callback(topNodeId, newNodeIds, addedNodes, recordUndo);
             });
     };
 
     module.interpreter.reducers.multi = function multiStepReducer(
         stage, state, exp,
-        callback, errorCallback, animated=true
+        callback, errorCallback, animated=true, recordUndo=true
     ) {
         const takeStep = (innerState, innerExpr) => {
             const [ result, exprId ] = module.interpreter.singleStep(innerState, innerExpr);
@@ -259,7 +262,7 @@ export default function transform(definition) {
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
                       module.interpreter.smallStep(innerState, innerExpr);
-                return callback(topNodeId, newNodeIds, addedNodes)
+                return callback(topNodeId, newNodeIds, addedNodes, recordUndo)
                     .then(newState => [ newState, topNodeId, newNodeIds ]);
             };
 
@@ -314,7 +317,7 @@ export default function transform(definition) {
                 }
                 return callback(...args);
             },
-            errorCallback, false
+            errorCallback, false, false
         );
     };
 

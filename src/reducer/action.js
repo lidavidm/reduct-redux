@@ -196,3 +196,12 @@ export function victory() {
         type: VICTORY,
     };
 }
+
+/**
+ * Add a flag to the action indicating not to record this on the
+ * undo/redo stack.
+ */
+export function skipUndo(action) {
+    action.skipUndo = true;
+    return action;
+}
