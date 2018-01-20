@@ -52,6 +52,7 @@ export function startLevel(description, parse, store, stage) {
         w: stage.width - (stage.width * scaleFactor),
         h: (stage.height - (90 * (stage.toolbox.rows - 1))) / 1.4,
     }, stage.getState().get("board"));
+
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
             stage.views[id].pos.x = pos.x;

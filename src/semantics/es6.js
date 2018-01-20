@@ -215,7 +215,9 @@ export default transform({
 
                 const positive = expr.get("positive");
                 const negative = expr.get("negative");
-                if (nodes.get(positive).get("ty") !== nodes.get(negative).get("ty")) {
+                const posType = nodes.get(positive).get("ty");
+                const negType = nodes.get(negative).get("ty");
+                if (posType && negType && posType !== negType) {
                     return negative;
                 }
                 return null;
