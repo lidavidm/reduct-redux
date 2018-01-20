@@ -71,19 +71,8 @@ export function startLevel(stage, goal, board, toolbox, globals) {
         }
     });
 
-    let notchY = 160;
     finalNodes.map((node, nodeId) => {
         stage.views[nodeId] = semantics.project(stage, finalNodes, node);
-        // TODO: real layout algorithm
-        if (_board.indexOf(nodeId) >= 0) {
-            stage.views[nodeId].pos.x = 50 + Math.floor(Math.random() * 500);
-            stage.views[nodeId].pos.y = 100 + Math.floor(Math.random() * 300);
-        }
-        // TODO: semantics-specific layout algorithms
-        if (node.get("type") === "defineAttach") {
-            stage.views[nodeId].pos.y = notchY;
-            notchY += 160;
-        }
     });
 
     return {

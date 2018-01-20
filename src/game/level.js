@@ -1,4 +1,5 @@
 import * as action from "../reducer/action";
+import * as layout from "../ui/layout";
 
 export function startLevel(description, parse, store, stage) {
     const macros = Object.assign({}, description.macros);
@@ -41,6 +42,29 @@ export function startLevel(description, parse, store, stage) {
     // TODO: parse globals field of level description
 
     store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
+    // TODO: account for toolbox height
+    const positions = layout.ianPacking(stage, {
+        x: 800 * (1 - 1/1.4) / 2.0,
+        y: 600 * (1 - 1/1.4) / 2.0,
+        w: 800 - (800 * (1 - 1/1.4) / 2.0),
+        h: 600 / 1.4,
+    }, stage.getState().get("board"));
+    if (positions !== null) {
+        for (const [ id, pos ] of positions) {
+            stage.views[id].pos.x = pos.x;
+            stage.views[id].pos.y = pos.y;
+        }
+    }
+
+    // TODO: semantics-specific layout algorithms
+    let notchY = 160;
+    for (const nodeId of stage.getState().get("board")) {
+        const node = stage.getState().get("nodes").get(nodeId);
+        if (node.get("type") === "defineAttach") {
+            stage.views[nodeId].pos.y = notchY;
+            notchY += 160;
+        }
+    }
 }
 
 export function checkVictory(state, semantics) {
