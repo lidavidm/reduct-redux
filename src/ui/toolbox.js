@@ -139,6 +139,7 @@ export default class Toolbox {
             }
 
             x += projection.size.w + TOOLBOX_INNER_MARGIN;
+            projection.prepare(nodeId, nodeId, state, this.stage);
             projection.draw(nodeId, nodeId, state, this.stage, {
                 x: 0,
                 y: 0,
