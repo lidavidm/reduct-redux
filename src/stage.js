@@ -83,15 +83,6 @@ export class Stage {
     }
 
     startLevel() {
-        for (const nodeId of this.getState().get("board")) {
-            this.views[nodeId].scale = { x: 0.0, y: 0.0 };
-            this.views[nodeId].anchor = { x: 0.5, y: 0.5 };
-            animate.tween(this.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
-                duration: 250,
-                easing: animate.Easing.Cubic.In,
-            });
-        }
-
         this.toolbox.startLevel(this.getState());
     }
 

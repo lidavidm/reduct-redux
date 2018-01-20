@@ -1,4 +1,5 @@
 import * as action from "../reducer/action";
+import * as animate from "../gfx/animate";
 import * as layout from "../ui/layout";
 
 export function startLevel(description, parse, store, stage) {
@@ -42,12 +43,14 @@ export function startLevel(description, parse, store, stage) {
     // TODO: parse globals field of level description
 
     store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
-    // TODO: account for toolbox height
+    stage.startLevel();
+
+    const scaleFactor = (1 - (1 / 1.4)) / 2.0;
     const positions = layout.ianPacking(stage, {
-        x: 800 * (1 - 1/1.4) / 2.0,
-        y: 600 * (1 - 1/1.4) / 2.0,
-        w: 800 - (800 * (1 - 1/1.4) / 2.0),
-        h: 600 / 1.4,
+        x: stage.width * scaleFactor,
+        y: stage.height * scaleFactor,
+        w: stage.width - (stage.width * scaleFactor),
+        h: (stage.height - (90 * (stage.toolbox.rows - 1))) / 1.4,
     }, stage.getState().get("board"));
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
@@ -64,6 +67,15 @@ export function startLevel(description, parse, store, stage) {
             stage.views[nodeId].pos.y = notchY;
             notchY += 160;
         }
+    }
+
+    for (const nodeId of stage.getState().get("board")) {
+        stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
+        stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
+        animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
+            duration: 250,
+            easing: animate.Easing.Cubic.In,
+        });
     }
 }
 
