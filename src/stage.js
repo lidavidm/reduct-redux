@@ -344,7 +344,7 @@ export class Stage {
     _mouseup(e) {
         const state = this.getState();
 
-        if (!this._dragged && this._selectedNode !== null) {
+        if (!this._dragged && this._selectedNode !== null && !this._fromToolbox) {
             // Click on object to reduce
             let selectedNode = this._selectedNode;
 
