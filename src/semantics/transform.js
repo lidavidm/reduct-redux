@@ -189,6 +189,7 @@ export default function transform(definition) {
         const nodes = state.get("nodes");
         const kind = module.kind(expr);
         if (kind !== "expression") {
+            console.debug(`semant.interpreter.singleStep: could not step since ${expr.get("id")} is '${kind}', not 'expression'`);
             return [ "error", expr.get("id") ];
         }
 
@@ -213,6 +214,7 @@ export default function transform(definition) {
 
         const errorExpId = module.interpreter.validateStep(state, expr);
         if (errorExpId !== null) {
+            console.debug(`semant.interpreter.singleStep: could not step due to ${errorExpId}`);
             return [ "error", errorExpId ];
         }
 
@@ -251,51 +253,56 @@ export default function transform(definition) {
         stage, state, exp,
         callback, errorCallback, animated=true, recordUndo=true
     ) {
-        const takeStep = (innerState, innerExpr) => {
-            const [ result, exprId ] = module.interpreter.singleStep(innerState, innerExpr);
+        const takeStep = (innerState, topExpr) => {
+            const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
                 errorCallback(exprId);
                 return Promise.reject();
             }
 
-            innerExpr = innerState.get("nodes").get(exprId);
+            const innerExpr = innerState.get("nodes").get(exprId);
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
                       module.interpreter.smallStep(innerState, innerExpr);
                 return callback(topNodeId, newNodeIds, addedNodes, recordUndo)
-                    .then(newState => [ newState, topNodeId, newNodeIds ]);
+                    .then((newState) => {
+                        if (topExpr.get("id") === topNodeId) {
+                            // TODO: handle multiple newNodeIds
+                            topExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
+                        }
+                        else {
+                            topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
+                        }
+
+                        if (module.kind(topExpr) === "expression") {
+                            return [ newState, topExpr ];
+                        }
+                        return Promise.reject();
+                    });
             };
 
             if (animated) {
-                return module.interpreter.animateStep(stage, innerState, innerExpr).then(() => nextStep());
+                return module.interpreter
+                    .animateStep(stage, innerState, innerExpr)
+                    .then(() => nextStep());
             }
             return nextStep();
         };
 
         let fuel = 20;
-        const loop = (innerState, innerExpr) => {
+        const loop = (innerState, topExpr) => {
             if (fuel <= 0) return;
             fuel -= 1;
 
-            takeStep(innerState, innerExpr).then(([ newState, topNodeId, newNodeIds ]) => {
-                if (innerExpr.get("id") === topNodeId) {
-                    // TODO: handle multiple newNodeIds
-                    innerExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
+            takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
+                if (animated) {
+                    animate.after(200)
+                        .then(() => loop(newState, innerExpr));
                 }
                 else {
-                    innerExpr = newState.getIn([ "nodes", innerExpr.get("id") ]);
+                    loop(newState, innerExpr);
                 }
-
-                if (module.kind(innerExpr) === "expression") {
-                    if (animated) {
-                        animate.after(500)
-                            .then(() => loop(newState, innerExpr));
-                    }
-                    else {
-                        loop(newState, innerExpr);
-                    }
-                }
-            });
+            }, () => {});
         };
 
         loop(state, exp);
