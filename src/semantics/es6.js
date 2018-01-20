@@ -257,6 +257,12 @@ export default transform({
                 );
                 return [ expr.get("id"), newNodeIds, addedNodes ];
             },
+            substepFilter: (semant, state, expr, field) => {
+                if (field === "argument" && state.getIn([ "nodes", expr.get(field), "type" ]) === "reference") {
+                    return false;
+                }
+                return true;
+            },
         },
 
         bool: {
