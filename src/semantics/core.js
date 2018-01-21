@@ -123,7 +123,13 @@ export function genericBetaReduce(semant, state, config) {
         return null;
     }
 
-    // TODO: check for unbound names
+    // Check that arguments are complete
+    for (const argId of argIds) {
+        if (!state.getIn([ "nodes", argId, "complete" ])) {
+            return null;
+        }
+    }
+
     const name = config.targetName(targetNode);
     let newNodes = [];
     let [ newTop ] = semant.map(nodes, topNode.get("body"), (nodes, id) => {
