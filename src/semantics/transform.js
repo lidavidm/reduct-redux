@@ -420,6 +420,8 @@ export default function transform(definition) {
             }
         };
 
+        const completeKind = (kind) => kind !== "expression" && kind !== "placeholder";
+
         const step = function step(expr) {
             const id = expr.get("id");
 
@@ -450,6 +452,13 @@ export default function transform(definition) {
                 else if (typeof typeDefn === "undefined") {
                     // TODO: define constants/typing module
                     // result[id].add("unknown");
+                    completeness.set(
+                        id,
+                        module.subexpressions(expr)
+                            .map(field => completeness.get(expr.get(field)) ||
+                                 completeKind(module.kind(nodes.get(expr.get(field)))))
+                            .every(x => x)
+                    );
                 }
                 else {
                     completeness.set(id, true);
