@@ -124,8 +124,11 @@ export default transform({
 
                 return {
                     types: result,
-                    complete: types.get(expr.get("left")) === "number" &&
-                        types.get(expr.get("right")) === "number",
+                    // TODO: less ad-hoc
+                    complete: (types.get(expr.get("left")) === "number" ||
+                               nodes.get(expr.get("left")).get("type") === "lambdaVar") &&
+                        (types.get(expr.get("right")) === "number" ||
+                         nodes.get(expr.get("right")).get("type") === "lambdaVar"),
                 };
             },
             // Invariant: all subexpressions are values or syntax;
@@ -280,7 +283,10 @@ export default transform({
 
         lambda: {
             kind: "value",
-            type: "lambda",
+            type: (semant, nodes, types, expr) => ({
+                types: new Map([ [ expr.get("id"), "lambda" ] ]),
+                complete: typeof types.get(expr.get("body")) !== "undefined",
+            }),
             fields: [],
             subexpressions: ["arg", "body"],
             projection: {
