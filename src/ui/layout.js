@@ -58,7 +58,7 @@ export function ianPacking(stage, bounds, nodeIds) {
 
     let iterations = 0;
 
-    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 10000) {
+    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 50000) {
         iterations += 1;
 
         const candidate = new Map();
@@ -81,14 +81,19 @@ export function ianPacking(stage, bounds, nodeIds) {
         // 2. Check if they overlap.
         let overlap = false;
 
+        let numOverlaps = 0;
         outerLoop:
         for (const id1 of nodeIds) {
             for (const id2 of nodeIds) {
                 if (id1 === id2) continue;
 
                 if (intersects(candidate, id1, id2)) {
-                    overlap = true;
-                    break outerLoop;
+                    numOverlaps += 1;
+
+                    if (iterations < 10000 || numOverlaps > 4) {
+                        overlap = true;
+                        break outerLoop;
+                    }
                 }
             }
         }
