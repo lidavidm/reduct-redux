@@ -42,11 +42,6 @@ export function ianPacking(stage, bounds, nodeIds) {
         const sz1 = getSize(id1);
         const pos2 = positions.get(id2);
         const sz2 = getSize(id2);
-
-        // return (pos1.x + sz1.w >= pos2.x && pos1.x <= pos2.x + sz2.w) ||
-        //     (pos1.y + sz1.h >= pos2.y && pos1.y <= pos2.y + sz2.h) ||
-        //     (pos1.x <= pos2.x + sz2.w && pos1.x >= pos2.x) ||
-        //     (pos1.y <= pos2.y + sz2.h && pos1.y >= pos2.y);
         return !(pos2.x > pos1.x + sz1.w ||
                  pos2.x + sz2.w < pos1.x ||
                  pos2.y > pos1.y + sz1.h ||
@@ -58,7 +53,7 @@ export function ianPacking(stage, bounds, nodeIds) {
 
     let iterations = 0;
 
-    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 50000) {
+    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 15000) {
         iterations += 1;
 
         const candidate = new Map();
@@ -85,7 +80,7 @@ export function ianPacking(stage, bounds, nodeIds) {
         outerLoop:
         for (const id1 of nodeIds) {
             for (const id2 of nodeIds) {
-                if (id1 === id2) continue;
+                if (id1 <= id2) continue;
 
                 if (intersects(candidate, id1, id2)) {
                     numOverlaps += 1;
@@ -113,7 +108,7 @@ export function ianPacking(stage, bounds, nodeIds) {
             for (const id2 of b.keys()) {
                 const pos1 = a.get(id1);
                 const pos2 = b.get(id2);
-                sum += Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+                sum += Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2);
             }
         }
         return sum;

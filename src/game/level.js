@@ -64,7 +64,7 @@ export function startLevel(description, parse, store, stage) {
         y: stage.height * scaleFactor,
         w: stage.width - (stage.width * scaleFactor),
         h: (stage.height - (90 * (stage.toolbox.rows - 1))) / 1.4,
-    }, stage.getState().get("board"));
+    }, stage.getState().get("board").toArray());
 
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
