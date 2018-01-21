@@ -437,49 +437,44 @@ export class Stage {
         const node = nodes.get(selectedNode);
         this.semantics.interpreter.reduce(
             this, state, node,
-            {
-                updateState: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
-                    if (newNodeIds.length !== 1) {
-                        throw "Stepping to produce multiple expressions is currently unsupported.";
-                    }
+            (topNodeId, newNodeIds, addedNodes, recordUndo) => {
+                const topView = this.views[topNodeId];
+                const origPos = gfxCore.centerPos(topView);
 
-                    let act = action.smallStep(topNodeId, newNodeIds, addedNodes);
-                    if (!recordUndo) {
-                        act = action.skipUndo(act);
-                    }
-                    this.store.dispatch(act);
-                    return Promise.resolve(this.getState());
-                },
-                updateView: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
-                    if (newNodeIds.length !== 1) {
-                        throw "Stepping to produce multiple expressions is currently unsupported.";
-                    }
+                if (newNodeIds.length !== 1) {
+                    throw "Stepping to produce multiple expressions is currently unsupported.";
+                }
 
-                    const state = this.getState();
-                    const tempNodes = state.get("nodes");
-
+                const state = this.getState();
+                const tempNodes = state.get("nodes").withMutations(nodes => {
                     for (const node of addedNodes) {
-                        this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                        nodes.set(node.get("id"), node);
                     }
+                });
 
-                    const topView = this.views[topNodeId];
-                    const origPos = gfxCore.centerPos(topView);
+                for (const node of addedNodes) {
+                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                }
 
-                    // Preserve position
-                    this.views[newNodeIds[0]].anchor.x = 0.5;
-                    this.views[newNodeIds[0]].anchor.y = 0.5;
-                    this.views[newNodeIds[0]].pos.x = origPos.x;
-                    this.views[newNodeIds[0]].pos.y = origPos.y;
+                // Preserve position
+                this.views[newNodeIds[0]].anchor.x = 0.5;
+                this.views[newNodeIds[0]].anchor.y = 0.5;
+                this.views[newNodeIds[0]].pos.x = origPos.x;
+                this.views[newNodeIds[0]].pos.y = origPos.y;
 
-                    return Promise.resolve();
-                },
-                error: (errorNodeId) => {
-                    animate.fx.blink(this, this.views[errorNodeId], {
-                        times: 3,
-                        color: "#F00",
-                        speed: 150,
-                    });
-                },
+                let act = action.smallStep(topNodeId, newNodeIds, addedNodes);
+                if (!recordUndo) {
+                    act = action.skipUndo(act);
+                }
+                this.store.dispatch(act);
+                return Promise.resolve(this.getState());
+            },
+            (errorNodeId) => {
+                animate.fx.blink(this, this.views[errorNodeId], {
+                    times: 3,
+                    color: "#F00",
+                    speed: 150,
+                });
             }
         );
     }

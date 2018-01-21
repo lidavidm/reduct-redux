@@ -228,13 +228,14 @@ export default function transform(definition) {
     // TODO: need a "hybrid multi-step" that big-steps expressions we
     // don't care about and that can delay evaluating references
     module.interpreter.reducers.single = function singleStepReducer(
-        stage, state, exp, callbacks, recordUndo=true
+        stage, state, exp,
+        callback, errorCallback, recordUndo=true
     ) {
         // Single-step mode
 
         const [ result, exprId ] = module.interpreter.singleStep(state, exp);
         if (result === "error") {
-            callbacks.error(exprId);
+            errorCallback(exprId);
             return;
         }
 
@@ -244,22 +245,18 @@ export default function transform(definition) {
             .interpreter.animateStep(stage, nodes, exp)
             .then(() => module.interpreter.smallStep(state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
-                callbacks
-                    .updateState(topNodeId, newNodeIds, addedNodes, recordUndo)
-                    .then(() => {
-                        callbacks.updateView(topNodeId, newNodeIds, addedNodes, recordUndo);
-                    });
+                callback(topNodeId, newNodeIds, addedNodes, recordUndo);
             });
     };
 
     module.interpreter.reducers.multi = function multiStepReducer(
-        stage, state, exp, callbacks,
-        animated=true, recordUndo=true
+        stage, state, exp,
+        callback, errorCallback, animated=true, recordUndo=true
     ) {
         const takeStep = (innerState, topExpr) => {
             const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
-                callbacks.error(exprId);
+                errorCallback(exprId);
                 return Promise.reject();
             }
 
@@ -267,7 +264,7 @@ export default function transform(definition) {
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
                       module.interpreter.smallStep(innerState, innerExpr);
-                return callbacks.updateState(topNodeId, newNodeIds, addedNodes, recordUndo)
+                return callback(topNodeId, newNodeIds, addedNodes, recordUndo)
                     .then((newState) => {
                         if (topExpr.get("id") === topNodeId) {
                             // TODO: handle multiple newNodeIds
@@ -277,12 +274,10 @@ export default function transform(definition) {
                             topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
                         }
 
-                        return callbacks.updateView(topNodeId, newNodeIds, addedNodes, recordUndo).then(() => {
-                            if (module.kind(topExpr) === "expression") {
-                                return [ newState, topExpr ];
-                            }
-                            return Promise.reject();
-                        });
+                        if (module.kind(topExpr) === "expression") {
+                            return [ newState, topExpr ];
+                        }
+                        return Promise.reject();
                     });
             };
 
@@ -313,26 +308,23 @@ export default function transform(definition) {
         loop(state, exp);
     };
 
-    module.interpreter.reducers.big = function bigStepReducer(stage, state, exp, callbacks) {
+    module.interpreter.reducers.big = function bigStepReducer(
+        stage, state, exp,
+        callback, errorCallback
+    ) {
         // Only play animation if we actually take any sort of
         // small-step
         let playedAnim = false;
         module.interpreter.reducers.multi(
             stage, state, exp,
-            {
-                updateState: (...args) => {
-                     if (!playedAnim) {
-                        playedAnim = true;
-                        return module.interpreter
-                            .animateStep(stage, state, exp)
-                            .then(() => callbacks.updateState(...args));
-                    }
-                    return callbacks.updateState(...args);
-                },
-                updateView: callbacks.updateView,
-                error: callbacks.error,
+            (...args) => {
+                if (!playedAnim) {
+                    playedAnim = true;
+                    return module.interpreter.animateStep(stage, state, exp).then(() => callback(...args));
+                }
+                return callback(...args);
             },
-            false, false
+            errorCallback, false, false
         );
     };
 
@@ -344,10 +336,10 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.interpreter.reduce = function reduce(stage, state, exp, callbacks) {
-        // return module.interpreter.reducers.single(stage, state, exp, callbacks);
-        // return module.interpreter.reducers.multi(stage, state, exp, callbacks);
-        return module.interpreter.reducers.big(stage, state, exp, callbacks);
+    module.interpreter.reduce = function reduce(stage, state, exp, callback, errorCallback) {
+        // return module.interpreter.reducers.single(stage, state, exp, callback, errorCallback);
+        return module.interpreter.reducers.multi(stage, state, exp, callback, errorCallback);
+        // return module.interpreter.reducers.big(stage, state, exp, callback, errorCallback);
     };
 
     /**
