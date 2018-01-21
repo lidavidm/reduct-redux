@@ -90,7 +90,6 @@ export function startLevel(stage, goal, board, toolbox, globals) {
  * `newNodes` as nested nodes.
  */
 export function smallStep(nodeId, newNodeIds, newNodes) {
-    console.debug(`smallStep: ${nodeId} became ${newNodeIds}`);
     return {
         type: SMALL_STEP,
         topNodeId: nodeId,
@@ -106,13 +105,12 @@ export function smallStep(nodeId, newNodeIds, newNodes) {
  * A beta-reduction can produce multiple result nodes due to replicators.
  */
 export function betaReduce(topNodeId, argNodeId, newNodeIds, addedNodes) {
-    console.debug(`betaReduce: apply ${topNodeId} to ${argNodeId}, resulting in ${newNodeIds}`);
     return {
         type: BETA_REDUCE,
-        topNodeId: topNodeId,
-        argNodeId: argNodeId,
-        newNodeIds: newNodeIds,
-        addedNodes: addedNodes,
+        topNodeId,
+        argNodeId,
+        newNodeIds,
+        addedNodes,
     };
 }
 

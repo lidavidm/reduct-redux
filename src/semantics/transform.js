@@ -306,7 +306,9 @@ export default function transform(definition) {
                 else {
                     loop(newState, innerExpr);
                 }
-            }, () => {});
+            }, () => {
+                console.debug(`semant.interpreter.reducers.multi: ${fuel} fuel remaining`);
+            });
         };
 
         loop(state, exp);

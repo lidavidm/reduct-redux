@@ -29,7 +29,6 @@ export function genericMap(subexpressions) {
         const node = currentNode.withMutations((n) => {
             for (const field of subexpressions(n)) {
                 const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f, filter, false);
-                console.debug(`genericMap: traversing ${currentNode.get("type")}.${field}, set to new node ${newNode.get("id")}`);
                 currentStore = newStore.set(newNode.get("id"), newNode);
                 n.set(field, newNode.get("id"));
             }
