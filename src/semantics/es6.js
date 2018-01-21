@@ -22,6 +22,10 @@ export default transform({
             return [ expr.name, expr.body ];
         },
 
+        extractGlobalNames: (semant, name) => {
+            return [ name, () => semant.reference(name) ];
+        },
+
         postParse: (nodes, goal, board, toolbox, globals) => {
             return {
                 nodes,

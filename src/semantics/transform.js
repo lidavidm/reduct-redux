@@ -514,6 +514,7 @@ export default function transform(definition) {
     module.parser.postParse = definition.parser.postParse;
     module.parser.extractDefines = definition.parser.extractDefines;
     module.parser.extractGlobals = definition.parser.extractGlobals;
+    module.parser.extractGlobalNames = definition.parser.extractGlobalNames;
 
     module.meta = meta;
 

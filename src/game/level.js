@@ -14,13 +14,16 @@ export function startLevel(description, parse, store, stage) {
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
+    const globalDefinedNames = Object.keys(description.globals)
+          .map(name => stage.semantics.parser.extractGlobalNames(stage.semantics, name));
     const newDefinedNames = description.board
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
 
-    for (const [ name, expr ] of prevDefinedNames.concat(newDefinedNames)) {
+    for (const [ name, expr ] of
+         prevDefinedNames.concat(newDefinedNames).concat(globalDefinedNames)) {
         macros[name] = expr;
     }
 
@@ -40,7 +43,17 @@ export function startLevel(description, parse, store, stage) {
         .forEach(([ name, val ]) => {
             globals[name] = val;
         });
-    // TODO: parse globals field of level description
+    for (const [ name, definition ] of Object.entries(description.globals)) {
+        const parsed = parse(definition, macros)
+            .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
+            .map(expr => stage.semantics.parser.extractGlobals(stage.semantics, expr))
+            .filter(name => name !== null);
+        if (parsed.length !== 1) {
+            console.error(`level.startLevel: defining global ${name} as ${definition} led to multiple parsed expressions.`);
+            continue;
+        }
+        globals[name] = parsed[0][1];
+    }
 
     store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
     stage.startLevel();
