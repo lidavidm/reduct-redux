@@ -185,6 +185,10 @@ export const missing = {
     fields: [],
     subexpressions: [],
     locked: false,
+    type: () => ({
+        types: new Map(),
+        complete: false,
+    }),
     projection: {
         type: "dynamic",
         resetFields: ["padding"],
