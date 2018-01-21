@@ -21,13 +21,24 @@ export function nextId() {
     return idCounter++;
 }
 
+// To speed up type checking, we only type check nodes that have
+// changed.
+let dirty = new Set();
+function markDirty(nodes, id) {
+    let expr = nodes.get(id);
+    while (expr.get("parent")) {
+        expr = nodes.get(expr.get("parent"));
+    }
+    dirty.add(expr.get("id"));
+}
+
 export function reduct(semantics, views) {
     // Could remove this. Originally ID of currently hovered node was
     // in store, but it's better to just keep it as a property of the
     // stage. But right now updating the store triggers a redraw, so
     // just removing this will cause visual issues.
     function hover(state=null, act) {
-        switch(act.type) {
+        switch (act.type) {
         case action.HOVER: {
             return act.nodeId;
         }
@@ -38,6 +49,8 @@ export function reduct(semantics, views) {
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
+            act.nodes.forEach(n => markDirty(act.nodes, n.get("id")));
+            act.toolbox.forEach(n => markDirty(act.nodes, n));
             return state.merge({
                 nodes: act.nodes,
                 goal: act.goal,
@@ -49,7 +62,7 @@ export function reduct(semantics, views) {
         case action.RAISE: {
             const board = state.get("board");
             if (board.contains(act.nodeId)) {
-                const newBoard = board.filter((n) => n !== act.nodeId).push(act.nodeId);
+                const newBoard = board.filter(n => n !== act.nodeId).push(act.nodeId);
                 return state.set("board", newBoard);
             }
             return state;
@@ -88,6 +101,8 @@ export function reduct(semantics, views) {
                     );
                 });
             }
+
+            act.newNodeIds.forEach(id => markDirty(newNodes, id));
 
             return state
                 .set("nodes", newNodes)
@@ -136,6 +151,8 @@ export function reduct(semantics, views) {
                 newNodes = newNodes.set(oldNode.get("parent"), parent);
             }
 
+            act.newNodeIds.forEach(id => markDirty(newNodes, id));
+
             return state.withMutations(s => {
                 s.set("nodes", newNodes);
                 s.set("board", newBoard);
@@ -168,6 +185,8 @@ export function reduct(semantics, views) {
                         child.set("locked", false);
                     }));
                 }));
+
+                markDirty(map.get("nodes"), act.childId);
             });
         }
         case action.ATTACH_NOTCH: {
@@ -259,6 +278,8 @@ export function reduct(semantics, views) {
                         node.delete("parentField");
                         node.delete("parent");
                     }));
+
+                    markDirty(nodes, parent);
                 }));
             });
         }
@@ -274,12 +295,13 @@ export function reduct(semantics, views) {
 
     function annotateTypes(state=initialProgram) {
         const annotatedNodes = state.get("nodes").withMutations((n) => {
-            for (const [ exprId, expr ] of n.entries()) {
-                n.set(exprId, expr.set("ty", null));
-                n.set(exprId, expr.set("complete", false));
-            }
+            // for (const [ exprId, expr ] of n.entries()) {
+            //     n.set(exprId, expr.set("ty", null));
+            //     n.set(exprId, expr.set("complete", false));
+            // }
 
-            for (const id of state.get("board").concat(state.get("toolbox"))) {
+            // for (const id of state.get("board").concat(state.get("toolbox"))) {
+            for (const id of dirty.values()) {
                 const { types, completeness } = semantics.collectTypes(n, n.get(id));
                 for (const [ exprId, expr ] of n.entries()) {
                     let newExpr = expr;
@@ -292,6 +314,7 @@ export function reduct(semantics, views) {
                     n.set(exprId, newExpr);
                 }
             }
+            dirty = new Set();
         });
         return state.set("nodes", annotatedNodes);
     }
