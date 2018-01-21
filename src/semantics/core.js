@@ -17,8 +17,9 @@ export function genericFlatten(nextId, subexpressions) {
 }
 
 export function genericMap(subexpressions) {
-    const innerMap = function(nodes, nodeId, f, filter=null) {
+    const innerMap = function(nodes, nodeId, f, filter=null, top=true) {
         let currentStore = nodes;
+        if (top) currentStore = currentStore.asMutable();
         const currentNode = nodes.get(nodeId);
 
         if (filter && !filter(currentStore, currentNode)) {
@@ -27,14 +28,16 @@ export function genericMap(subexpressions) {
 
         const node = currentNode.withMutations((n) => {
             for (const field of subexpressions(n)) {
-                const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f, filter);
+                const [ newNode, newStore ] = innerMap(currentStore, n.get(field), f, filter, false);
                 console.debug(`genericMap: traversing ${currentNode.get("type")}.${field}, set to new node ${newNode.get("id")}`);
                 currentStore = newStore.set(newNode.get("id"), newNode);
                 n.set(field, newNode.get("id"));
             }
         });
         // Function returns new node and new store
-        return f(currentStore.set(node.get("id"), node), node.get("id"));
+        const result = f(currentStore.set(node.get("id"), node), node.get("id"));
+        if (top) return [ result[0], result[1].asImmutable() ];
+        return result;
     };
     return innerMap;
 }
@@ -111,10 +114,12 @@ export function genericBetaReduce(semant, state, config) {
         topNode.get("id"),
         (nodes, id) => nodes.get(id).get("type") === "missing"
     )) {
+        console.warn("Can't reduce missing");
         return null;
     }
 
     if (argIds.length !== 1) {
+        console.warn("Can't reduce multiple args");
         // TODO: will we ever have multi-argument application?
         return null;
     }
