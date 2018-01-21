@@ -293,7 +293,7 @@ export default function transform(definition) {
             return nextStep();
         };
 
-        let fuel = 20;
+        let fuel = 200;
         const loop = (innerState, topExpr) => {
             if (fuel <= 0) return;
             fuel -= 1;
