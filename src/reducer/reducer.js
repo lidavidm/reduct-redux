@@ -14,10 +14,6 @@ const initialProgram = immutable.Map({
     toolbox: immutable.List(),
     globals: immutable.Map(),
 });
-const initialState = immutable.Map({
-    program: initialProgram,
-    hover: null,
-});
 
 let idCounter = 0;
 
@@ -59,31 +55,16 @@ export function reduct(semantics, views) {
             return state;
         }
         case action.SMALL_STEP: {
-            const queue = [ act.topNodeId ];
-            const removedNodes = new Set();
-
-            while (queue.length > 0) {
-                const current = queue.pop();
-                const currentNode = state.getIn([ "nodes", current ]);
-                removedNodes.add(current);
-                for (const subexpField of semantics.subexpressions(currentNode)) {
-                    queue.push(currentNode.get(subexpField));
-                }
-            }
-
             const oldNode = state.getIn([ "nodes", act.topNodeId ]);
 
             let newNodes = state.get("nodes")
                 .withMutations((n) => {
-                    for (const id of removedNodes.keys()) {
-                        // n.delete(id);
-                    }
                     for (const node of act.addedNodes) {
                         n.set(node.get("id"), node);
                     }
                 });
 
-            let newBoard = state.get("board").filter(id => !removedNodes.has(id));
+            let newBoard = state.get("board").filter(id => id !== act.topNodeId);
             if (!oldNode.get("parent")) {
                 newBoard = newBoard.concat(act.newNodeIds);
             }
@@ -95,15 +76,17 @@ export function reduct(semantics, views) {
                 const parent = newNodes.get(oldNode.get("parent"))
                       .set(oldNode.get("parentField"), act.newNodeIds[0]);
                 // TODO: this could be done more efficiently
-                newNodes = newNodes
-                    .set(oldNode.get("parent"), parent)
-                    .set(
+                newNodes = newNodes.withMutations((n) => {
+                    n.set(oldNode.get("parent"), parent);
+                    n.set(
                         act.newNodeIds[0],
-                        newNodes
-                            .get(act.newNodeIds[0])
-                            .set("parent", parent.get("id"))
-                            .set("parentField", oldNode.get("parentField"))
+                        newNodes.get(act.newNodeIds[0])
+                            .withMutations((nn) => {
+                                nn.set("parent", parent.get("id"));
+                                nn.set("parentField", oldNode.get("parentField"));
+                            })
                     );
+                });
             }
 
             return state
