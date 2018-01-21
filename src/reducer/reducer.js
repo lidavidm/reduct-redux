@@ -60,12 +60,12 @@ export function reduct(semantics, views) {
         }
         case action.SMALL_STEP: {
             const queue = [ act.topNodeId ];
-            const removedNodes = {};
+            const removedNodes = new Set();
 
             while (queue.length > 0) {
                 const current = queue.pop();
                 const currentNode = state.getIn([ "nodes", current ]);
-                removedNodes[current] = true;
+                removedNodes.add(current);
                 for (const subexpField of semantics.subexpressions(currentNode)) {
                     queue.push(currentNode.get(subexpField));
                 }
@@ -73,11 +73,17 @@ export function reduct(semantics, views) {
 
             const oldNode = state.getIn([ "nodes", act.topNodeId ]);
 
-            let newNodes = state.get("nodes").filter(function (key, value) {
-                return !removedNodes[key];
-            }).merge(immutable.Map(act.addedNodes.map((n) => [ n.get("id"), immutable.Map(n) ])));
+            let newNodes = state.get("nodes")
+                .withMutations((n) => {
+                    for (const id of removedNodes.keys()) {
+                        // n.delete(id);
+                    }
+                    for (const node of act.addedNodes) {
+                        n.set(node.get("id"), node);
+                    }
+                });
 
-            let newBoard = state.get("board").filter((id) => !removedNodes[id]);
+            let newBoard = state.get("board").filter(id => !removedNodes.has(id));
             if (!oldNode.get("parent")) {
                 newBoard = newBoard.concat(act.newNodeIds);
             }
