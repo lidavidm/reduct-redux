@@ -253,6 +253,8 @@ export default function transform(definition) {
         stage, state, exp,
         callback, errorCallback, animated=true, recordUndo=true
     ) {
+        let firstStep = true;
+
         const takeStep = (innerState, topExpr) => {
             const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
@@ -264,8 +266,10 @@ export default function transform(definition) {
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
                       module.interpreter.smallStep(innerState, innerExpr);
-                return callback(topNodeId, newNodeIds, addedNodes, recordUndo)
+
+                return callback(topNodeId, newNodeIds, addedNodes, recordUndo || firstStep)
                     .then((newState) => {
+                        firstStep = false;
                         if (topExpr.get("id") === topNodeId) {
                             // TODO: handle multiple newNodeIds
                             topExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
