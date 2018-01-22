@@ -343,6 +343,10 @@ export default transform({
             kind: "expression",
             fields: ["name"],
             subexpressions: [],
+            type: (semant, state, types, expr) => ({
+                types: new Map(),
+                complete: state.get("globals").has(expr.get("name")),
+            }),
             targetable: (semant, state, expr) => {
                 if (state.get("toolbox").includes(expr.get("id"))) {
                     // If in toolbox, only targetable if defined
