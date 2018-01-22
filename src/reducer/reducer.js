@@ -213,6 +213,11 @@ export function reduct(semantics, views) {
                         notch.onAttach(semantics, s, act.parentId, act.childId);
                     }
                 }
+
+                const nodes = state.get("nodes");
+                for (const id of state.get("board").concat(state.get("toolbox"))) {
+                    markDirty(nodes, id);
+                }
             });
         }
         case action.USE_TOOLBOX: {
@@ -271,6 +276,11 @@ export function reduct(semantics, views) {
                             if (notch.onDetach) {
                                 notch.onDetach(semantics, map, parentNode.get("id"), node.get("id"));
                             }
+                        }
+
+                        const nodes = state.get("nodes");
+                        for (const id of state.get("board").concat(state.get("toolbox"))) {
+                            markDirty(nodes, id);
                         }
                     }
 
