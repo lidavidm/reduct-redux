@@ -1,8 +1,17 @@
 import * as esprima from "esprima";
 
+function modifier(ast) {
+    if (ast.body.length !== 2) return null;
+    if (ast.body[0].type !== "ExpressionStatement") return null;
+    if (ast.body[0].expression.type !== "Identifier") return null;
+    return [ ast.body[0].expression.name, ast.body[1] ];
+}
+
 export default function makeParser(jssemant) {
     return function parseES6(program, macros) {
         const ast = esprima.parse(program);
+
+        const mod = modifier(ast);
 
         if (ast.body.length === 1) {
             const result = parseNode(ast.body[0], macros);
@@ -14,19 +23,30 @@ export default function makeParser(jssemant) {
             }
             return result;
         }
-        else if (ast.body.length === 2 &&
-                 ast.body[0].type === "ExpressionStatement" &&
-                 ast.body[0].expression.type === "Identifier" &&
-                 ast.body[0].expression.name === "__unlimited") {
-            const result = parseNode(ast.body[1], macros);
+        else if (mod !== null) {
+            const [ modName, node ] = mod;
+            const result = parseNode(node, macros);
             if (result === null) {
                 return fail("Cannot parse node.", program);
             }
-            result.__meta = new jssemant.meta.Meta({
-                toolbox: jssemant.meta.ToolboxMeta({
-                    unlimited: true,
-                }),
-            });
+
+            if (modName === "__unlimited") {
+                result.__meta = new jssemant.meta.Meta({
+                    toolbox: jssemant.meta.ToolboxMeta({
+                        unlimited: true,
+                    }),
+                });
+            }
+            else if (modName === "__targetable") {
+                result.__meta = new jssemant.meta.Meta({
+                    toolbox: jssemant.meta.ToolboxMeta({
+                        targetable: true,
+                    }),
+                });
+            }
+            else {
+                return fail(`Unrecognized expression modifier ${modName}`, program);
+            }
 
             return result;
         }
@@ -55,12 +75,6 @@ export default function makeParser(jssemant) {
 
             // Each macro is a thunk
             if (macros && macros[node.name]) return macros[node.name]();
-            // if (node.name === "star" ||
-            //     node.name === "circle" ||
-            //     node.name === "triangle" ||
-            //     node.name === "rect") {
-            //     return jssemant.symbol(node.name);
-            // }
 
             if (node.name === "xx") {
                 return jssemant.vtuple([ jssemant.lambdaVar("x"), jssemant.lambdaVar("x") ]);

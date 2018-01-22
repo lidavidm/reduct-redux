@@ -348,6 +348,9 @@ export default transform({
                 complete: state.get("globals").has(expr.get("name")),
             }),
             targetable: (semant, state, expr) => {
+                if (expr.has("__meta") && expr.get("__meta").toolbox.targetable) {
+                    return true;
+                }
                 if (state.get("toolbox").includes(expr.get("id"))) {
                     // If in toolbox, only targetable if defined
                     return state.get("globals").has(expr.get("name"));
