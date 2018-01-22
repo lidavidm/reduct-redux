@@ -312,7 +312,7 @@ export function reduct(semantics, views) {
 
             // for (const id of state.get("board").concat(state.get("toolbox"))) {
             for (const id of dirty.values()) {
-                const { types, completeness } = semantics.collectTypes(n, n.get(id));
+                const { types, completeness } = semantics.collectTypes(state.set("nodes", n), n.get(id));
                 for (const [ exprId, expr ] of n.entries()) {
                     let newExpr = expr;
                     if (types.has(exprId)) {

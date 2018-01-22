@@ -55,7 +55,7 @@ export default transform({
 
         dynamicVariant: {
             kind: "value",
-            type: (semant, nodes, types, expr) => {
+            type: (semant, state, types, expr) => {
                 return {
                     types: new Map([ [ expr.get("id"), expr.get("variant") ] ]),
                     // TODO: this isn't true if it's a variant with
@@ -108,7 +108,8 @@ export default transform({
                     },
                 },
             },
-            type: (semant, nodes, types, expr) => {
+            type: (semant, state, types, expr) => {
+                const nodes = state.get("nodes");
                 const opExpr = nodes.get(expr.get("op"));
                 const id = expr.get("id");
                 const result = new Map();
@@ -196,7 +197,7 @@ export default transform({
                 color: "lightblue",
                 fields: ["'if'", "condition", "'then'", "positive", "'else'", "negative"],
             },
-            type: (semant, nodes, types, expr) => {
+            type: (semant, state, types, expr) => {
                 const result = new Map();
                 const positiveTy = types.get(expr.get("positive"));
                 const branchesMatch =
@@ -287,7 +288,7 @@ export default transform({
 
         lambda: {
             kind: "value",
-            type: (semant, nodes, types, expr) => ({
+            type: (semant, state, types, expr) => ({
                 types: new Map([ [ expr.get("id"), "lambda" ] ]),
                 complete: typeof types.get(expr.get("body")) !== "undefined",
             }),

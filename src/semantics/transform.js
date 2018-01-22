@@ -400,9 +400,10 @@ export default function transform(definition) {
         }).toJS();
     };
 
-    module.collectTypes = function collectTypes(nodes, rootExpr) {
+    module.collectTypes = function collectTypes(state, rootExpr) {
         const result = new Map();
         const completeness = new Map();
+        const nodes = state.get("nodes");
 
         // Update the type map with the type for the expression.
         const update = function update(id, ty) {
@@ -437,7 +438,7 @@ export default function transform(definition) {
             else {
                 const typeDefn = exprDefn.type;
                 if (typeof typeDefn === "function") {
-                    const { types, complete } = typeDefn(module, nodes, result, expr);
+                    const { types, complete } = typeDefn(module, state, result, expr);
                     completeness.set(
                         id,
                         complete && module.subexpressions(expr)
