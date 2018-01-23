@@ -95,12 +95,14 @@ export function notchProjection(options) {
             ctx.restore();
 
             const node = state.getIn([ "nodes", exprId ]);
+            // TODO: don't hardcode this
             if (node.has("notch0")) {
                 const childId = node.get("notch0");
+                const delta = stage.views[childId].notchOffset(childId, childId, 0);
                 stage.views[childId].anchor.x = 0.0;
                 stage.views[childId].anchor.y = 0.0;
-                stage.views[childId].pos.x = this.pos.x;
-                stage.views[childId].pos.y = this.pos.y;
+                stage.views[childId].pos.x = this.pos.x - (delta.x / 2);
+                stage.views[childId].pos.y = this.pos.y - (delta.y / 2);
 
                 stage.views[childId].draw(childId, childId, state, stage, offset);
             }
