@@ -3,6 +3,10 @@ export class NotchSet {
         this.notches = notches;
     }
 
+    get(idx) {
+        return this.notches[idx];
+    }
+
     drawSequence(ctx, side, x, y, len) {
         const notches = this.notches
               .filter(n => n.side === side)
