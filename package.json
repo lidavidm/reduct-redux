@@ -19,6 +19,6 @@
     },
     "scripts": {
         "serve": "parcel --no-hmr --public-url / index.html",
-        "dist": "parcel build index.html --public-url /"
+        "dist": "parcel build index.html --public-url ./"
     }
 }
