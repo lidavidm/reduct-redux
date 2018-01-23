@@ -489,8 +489,10 @@ export default function transform(definition) {
         const notches2 = node2.get("notches");
         const result = [];
         if (notches1 && notches2) {
-            for (const notch1 of notches1) {
-                for (const notch2 of notches2) {
+            for (let i = 0; i < notches1.size; i++) {
+                for (let j = 0; j < notches2.size; j++) {
+                    const notch1 = notches1.get(i);
+                    const notch2 = notches2.get(j);
                     if (notch1.shape !== notch2.shape) continue;
                     if (notch1.type === "inset" && notch2.type !== "outset") continue;
                     if (notch1.type === "outset" && notch2.type !== "inset") continue;
@@ -499,7 +501,7 @@ export default function transform(definition) {
                         (notch1.side === "right" && notch2.side === "left") ||
                         (notch1.side === "top" && notch2.side === "bottom") ||
                         (notch1.side === "bottom" && notch2.side === "top")) {
-                        result.push([ notch1, notch2 ]);
+                        result.push([ i, j ]);
                     }
                 }
             }
