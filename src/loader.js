@@ -1,6 +1,6 @@
 import * as gfx from "./gfx/core";
 
-const BASE_PATH = "dist/resources/";
+const BASE_PATH = "resources/";
 
 function getJSON(path) {
     return new Promise((resolve, reject) => {

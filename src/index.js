@@ -15,11 +15,11 @@ import menuUrl from "../resources/graphics/menu-assets.png";
 Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/assets.json"),
                       // TODO: in ParcelJS master, we shouldn't need this concat
-                      "dist/" + spritesheetUrl);
+                      spritesheetUrl);
 Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/menu-assets.json"),
                       // TODO: in ParcelJS master, we shouldn't need this concat
-                      "dist/" + menuUrl);
+                      menuUrl);
 Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Loader.finished.then(initialize);
@@ -51,7 +51,7 @@ function initialize() {
         }
     });
 
-    start();
+    window.reset();
 
     window.stage = stg;
 
@@ -72,7 +72,7 @@ function initialize() {
     });
 }
 
-const start = function start() {
+window.reset = function start() {
     stg.reset();
 
     level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
@@ -81,13 +81,11 @@ const start = function start() {
     document.querySelector("#level").innerText = progression.currentLevelIdx.toString();
 };
 
-window.reset = start;
-
 window.next = function next() {
     progression.currentLevelIdx++;
-    start();
+    window.reset();
 };
 window.prev = function prev() {
     progression.currentLevelIdx--;
-    start();
+    window.reset();
 };

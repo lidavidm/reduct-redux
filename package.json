@@ -15,9 +15,10 @@
         "eslint": "^4.13.1",
         "eslint-config-airbnb-base": "^12.1.0",
         "eslint-plugin-import": "^2.8.0",
-        "parcel-bundler": "^1.1.0"
+        "parcel-bundler": "^1.4.0"
     },
     "scripts": {
-        "serve": "parcel --no-hmr index.html"
+        "serve": "parcel --no-hmr --public-url / index.html",
+        "dist": "parcel build index.html --public-url /"
     }
 }
