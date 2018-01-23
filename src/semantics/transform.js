@@ -105,9 +105,16 @@ export default function transform(definition) {
         if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
 
         const subexprs = defn.reductionOrder || defn.subexpressions;
-        // TODO: more principled way of doing this
-        if (expr.get && expr.get("notch0")) {
-            return subexprs.concat(["notch0"]);
+        // Handle notches
+        if (defn.notches && defn.notches.length > 0) {
+            const result = subexprs.slice();
+            for (let i = 0; i < defn.notches.length; i++) {
+                const field = `notch${i}`;
+                if (expr[field] || (expr.get && expr.get(field))) {
+                    result.push(field);
+                }
+            }
+            return result;
         }
         return subexprs;
     };
