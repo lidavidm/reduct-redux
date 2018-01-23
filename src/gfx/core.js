@@ -44,7 +44,20 @@ export function baseProjection(options) {
             pos.y <= y + (this.size.h * offset.sy * this.scale.y);
     };
 
-    projection.notchPos = function(id, exprId, notch) {};
+    projection.notchOffset = function(id, exprId, notchId) {};
+    projection.notchPos = function(id, exprId, notchId) {
+        const pos = util.topLeftPos(this, {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+        }); // Assume we are a top level expression
+        const offset = this.notchOffset(id, exprId, notchId);
+        return {
+            x: pos.x + offset.x,
+            y: pos.y + offset.y,
+        };
+    };
 
     return projection;
 }
@@ -93,8 +106,8 @@ export function notchProjection(options) {
             }
         }
     };
-    projection.notchPos = function(id, exprId, notch) {
-        return this.pos;
+    projection.notchOffset = function(id, exprId, notch) {
+        return { x: 0, y: 0 };
     };
     return projection;
 }
@@ -176,7 +189,7 @@ export function centerPos(projection) {
     };
 }
 
-export function baseShape(name, defaults, draw, notchPos=null) {
+export function baseShape(name, defaults, draw, notchOffset=null) {
     return function(options) {
         const projection = Object.assign(baseProjection(), defaults, options);
         projection.size.w = projection.size.h = 50;
@@ -248,7 +261,7 @@ export function baseShape(name, defaults, draw, notchPos=null) {
             ctx.restore();
         };
 
-        if (notchPos) projection.notchPos = notchPos;
+        if (notchOffset) projection.notchOffset = notchOffset;
 
         return projection;
     };
@@ -271,37 +284,30 @@ export const roundedRect = baseShape("roundedRect", {
         notches
     );
 }, function(id, exprId, notchIdx) {
-    const pos = util.topLeftPos(this, {
-        x: 0,
-        y: 0,
-        sx: 1,
-        sy: 1,
-    }); // Assume we are a top level expression
     const notch = this.notches.get(notchIdx);
     switch (notch.side) {
     case "left":
         return {
-            x: pos.x,
-            y: pos.y + this.radius +
-                ((this.size.h - this.radius) * (1 - notch.relpos) * this.scale.y),
+            x: 0,
+            y: this.radius + ((this.size.h - this.radius) * (1 - notch.relpos) * this.scale.y),
         };
     case "right":
         return {
-            x: pos.x + (this.size.w * this.scale.x),
-            y: pos.y + ((this.radius + ((this.size.h - (this.radius * 2)) * notch.relpos)) * this.scale.y),
+            x: (this.size.w * this.scale.x),
+            y: ((this.radius + ((this.size.h - (this.radius * 2)) * notch.relpos)) * this.scale.y),
         };
     case "top":
         return {
-            x: pos.x + this.radius + ((this.size.w - (this.radius * 2)) * notch.relpos),
-            y: pos.y,
+            x: this.radius + ((this.size.w - (this.radius * 2)) * notch.relpos),
+            y: 0,
         };
     case "bottom":
         return {
-            x: pos.x + this.radius + ((this.size.w - (this.radius * 2)) * (1 - notch.relpos)),
-            y: pos.y + this.size.h,
+            x: this.radius + ((this.size.w - (this.radius * 2)) * (1 - notch.relpos)),
+            y: this.size.h,
         };
     default:
-        throw `roundedRect#notchPos: unrecognized side ${notch.side}`;
+        throw `roundedRect#notchOffset: unrecognized side ${notch.side}`;
     }
 });
 
