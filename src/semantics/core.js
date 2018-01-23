@@ -125,9 +125,20 @@ export function genericBetaReduce(semant, state, config) {
 
     // Check that arguments are complete
     for (const argId of argIds) {
-        if (!state.getIn([ "nodes", argId, "complete" ])) {
+        if (semant.search(
+            nodes,
+            argId,
+            (nodes, id) => nodes.get(id).get("type") === "missing"
+        )) {
+            console.warn("Can't reduce missing");
             return null;
         }
+
+        // TODO: iron out kinks in type inference so we can use this
+        // system instead
+        // if (!state.getIn([ "nodes", argId, "complete" ])) {
+        //     return null;
+        // }
     }
 
     const name = config.targetName(targetNode);
