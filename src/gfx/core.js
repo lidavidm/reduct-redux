@@ -135,7 +135,9 @@ export function constant(...projections) {
 }
 
 export function distance(proj1, proj2) {
-    return Math.sqrt((proj1.pos.x - proj2.pos.x)**2 + (proj1.pos.y - proj2.pos.y)**2);
+    const p1 = proj1.pos || proj1;
+    const p2 = proj2.pos || proj2;
+    return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 }
 
 export function absolutePos(projection) {
