@@ -491,9 +491,14 @@ export default function transform(definition) {
         if (notches1 && notches2) {
             for (const notch1 of notches1) {
                 for (const notch2 of notches2) {
+                    if (notch1.shape !== notch2.shape) continue;
+                    if (notch1.type === "inset" && notch2.type !== "outset") continue;
+                    if (notch1.type === "outset" && notch2.type !== "inset") continue;
+
                     if ((notch1.side === "left" && notch2.side === "right") ||
-                        (notch1.side === "right" && notch2.side === "left")) {
-                        // TODO: full check
+                        (notch1.side === "right" && notch2.side === "left") ||
+                        (notch1.side === "top" && notch2.side === "bottom") ||
+                        (notch1.side === "bottom" && notch2.side === "top")) {
                         result.push([ notch1, notch2 ]);
                     }
                 }
