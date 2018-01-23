@@ -314,17 +314,26 @@ export class Stage {
                 for (const nodeId of state.get("board")) {
                     const node = nodes.get(nodeId);
                     const compatible = this.semantics.notchesCompatible(selected, node);
-                    // TODO: actually check distance to notch
                     if (compatible && compatible.length > 0) {
-                        const distance = gfxCore.distance(
-                            this.views[nodeId],
-                            this.views[this._selectedNode]
-                        );
-                        if (distance < 150) {
-                            this.views[nodeId].highlighted = true;
-                        }
-                        else {
-                            this.views[nodeId].highlighted = false;
+                        for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
+                            const distance = gfxCore.distance(
+                                this.views[nodeId].notchPos(
+                                    nodeId,
+                                    nodeId,
+                                    nodeNotchIdx
+                                ),
+                                this.views[this._selectedNode].notchPos(
+                                    this._selectedNode,
+                                    this._selectedNode,
+                                    selNotchIdx
+                                )
+                            );
+                            if (distance < 50) {
+                                this.views[nodeId].highlighted = true;
+                            }
+                            else {
+                                this.views[nodeId].highlighted = false;
+                            }
                         }
                     }
                 }
