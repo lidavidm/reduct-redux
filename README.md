@@ -28,7 +28,7 @@ mkdir dist
 # Symlink resources into the folder that our bundler serves
 ln -s resources/ dist/resources
 yarn serve
-open http://localhost:1234
+open http://localhost:1234/index.html
 ```
 
 NPM:
@@ -39,5 +39,5 @@ mkdir dist
 # Symlink resources into the folder that our bundler serves
 ln -s resources/ dist/resources
 npm run serve
-open http://localhost:1234
+open http://localhost:1234/index.html
 ```
