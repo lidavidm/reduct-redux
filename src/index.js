@@ -14,12 +14,7 @@ import spritesheetUrl from "../resources/graphics/assets.png";
 import menuUrl from "../resources/graphics/menu-assets.png";
 Loader.loadImageAtlas("spritesheet",
                       import("../resources/graphics/assets.json"),
-                      // TODO: in ParcelJS master, we shouldn't need this concat
                       spritesheetUrl);
-Loader.loadImageAtlas("spritesheet",
-                      import("../resources/graphics/menu-assets.json"),
-                      // TODO: in ParcelJS master, we shouldn't need this concat
-                      menuUrl);
 Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Loader.finished.then(initialize);
