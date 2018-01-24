@@ -476,6 +476,22 @@ export class Stage {
                     act = action.skipUndo(act);
                 }
                 this.store.dispatch(act);
+
+                for (const topViewId of this.getState().get("board")) {
+                    const currentView = this.views[topViewId];
+                    // Make sure result stays on screen horizontally
+                    // TODO: don't hardcode margin?
+                    const sz = gfxCore.absoluteSize(currentView);
+                    currentView.pos.x = Math.min(
+                        currentView.pos.x,
+                        this.width - 20 - (sz.w * (1 - currentView.anchor.x))
+                    );
+                    currentView.pos.x = Math.max(
+                        currentView.pos.x,
+                        20 + (sz.w * currentView.anchor.x)
+                    );
+                }
+
                 return Promise.resolve(this.getState());
             },
             (errorNodeId) => {
