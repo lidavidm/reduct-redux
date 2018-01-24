@@ -6,15 +6,10 @@ import es6 from "./semantics/es6";
 import * as stage from "./stage";
 import * as undo from "./reducer/undo";
 
-import Loader from "./loader";
+import { Loader } from "./loader";
 
-// Load assets. Kinda wonky due to the build system, need to look at
-// this later.
-import spritesheetUrl from "../resources/graphics/assets.png";
-import menuUrl from "../resources/graphics/menu-assets.png";
-Loader.loadImageAtlas("spritesheet",
-                      import("../resources/graphics/assets.json"),
-                      spritesheetUrl);
+// Load assets.
+Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
 Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Loader.finished.then(initialize);

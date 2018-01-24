@@ -1,25 +1,17 @@
 export class ImageAtlas {
-    constructor(alias, jsonPromise, imageSrc) {
-        this.finished = new Promise((resolve, reject) => {
-            jsonPromise.then((atlas) => {
-                this.img = new Image();
-                this.img.src = imageSrc;
-                this.img.alt = alias;
-                this.img.onload = () => {
-                    // Parse the atlas and add all the images
-                    const result = [];
-                    for (let frameName of Object.keys(atlas.frames)) {
-                        let frame = atlas.frames[frameName];
-                        // Convert resource-name.png to resource-name
-                        let resourceName = frameName.split(".")[0];
-                        let resource = new ImageAtlasProxy(resourceName, this, frame.frame);
-                        result.push({ name: resourceName, image: resource });
-                    }
-
-                    resolve(result);
-                };
-            });
-        });
+    constructor(alias, atlas, image) {
+        this.alias = alias;
+        this.img = image;
+        // Parse the atlas and add all the images
+        const result = [];
+        for (const frameName of Object.keys(atlas.frames)) {
+            const frame = atlas.frames[frameName];
+            // Convert resource-name.png to resource-name
+            const resourceName = frameName.split(".")[0];
+            const resource = new ImageAtlasProxy(resourceName, this, frame.frame);
+            result.push({ name: resourceName, image: resource });
+        }
+        this.sprites = result;
     }
 }
 

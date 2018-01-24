@@ -3,8 +3,8 @@ import * as gfx from "./gfx/core";
 const BASE_PATH = "resources/";
 
 function getJSON(path) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
+    return new Promise((resolve) => {
+        const xhr = new window.XMLHttpRequest();
         xhr.onload = function() {
             resolve(JSON.parse(xhr.response));
         };
@@ -12,6 +12,16 @@ function getJSON(path) {
         xhr.open("GET", path);
         xhr.responseType = "text";
         xhr.send();
+    });
+}
+
+function getImage(path) {
+    return new Promise((resolve) => {
+        const image = document.createElement("img");
+        image.onload = function() {
+            resolve(image);
+        };
+        image.setAttribute("src", path);
     });
 }
 
@@ -47,11 +57,17 @@ export class Loader {
     loadImageAtlas(alias, jsonSrc, imageSrc) {
         this.startLoad();
 
-        const atlas = new gfx.image.ImageAtlas(alias, jsonSrc, imageSrc);
-        atlas.finished.then((sprites) => {
-            for (const sprite of sprites) {
+        Promise.all([
+            getJSON(jsonSrc),
+            getImage(imageSrc),
+        ]).then(([ json, img ]) => {
+            const atlas = new gfx.image.ImageAtlas(alias, json, img);
+            for (const sprite of atlas.sprites) {
                 if (!this.images[sprite.name]) {
                     this.images[sprite.name] = sprite.image;
+                }
+                else {
+
                 }
             }
 
