@@ -285,10 +285,11 @@ export default function transform(definition) {
                             topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
                         }
 
-                        if (module.kind(topExpr) === "expression") {
-                            return [ newState, topExpr ];
+                        if ((callbacks.stop && callbacks.stop(newState, topExpr)) ||
+                            module.kind(topExpr) !== "expression") {
+                            return Promise.reject();
                         }
-                        return Promise.reject();
+                        return [ newState, topExpr ];
                     });
             };
 
