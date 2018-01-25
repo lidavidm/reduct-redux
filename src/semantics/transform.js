@@ -347,8 +347,8 @@ export default function transform(definition) {
                         const callee = nodes.get(curExpr.get("callee"));
                         if (callee.get("type") === "reference") {
                             rhs.push(callee.get("name"));
-                            if (callee.get("name") === "repeat") break;
                             curExpr = nodes.get(curExpr.get("argument"));
+                            if (callee.get("name") === "repeat") break;
                         }
                         else if (callee.get("type") === "apply") {
                             curExpr = callee;
@@ -363,6 +363,7 @@ export default function transform(definition) {
                     }
 
                     if (!repeated) return false;
+                    if (curExpr.get("type") !== "number") return false;
                     if (rhs[rhs.length - 1].get("name") !== "repeat") return false;
 
                     for (const name of rhs.slice(0, -1)) {
