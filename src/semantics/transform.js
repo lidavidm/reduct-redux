@@ -364,6 +364,7 @@ export default function transform(definition) {
 
                     if (curExpr.get("type") === "number") return true;
                     if (!repeated) return false;
+                    if (curExpr.get("type") !== "number") return false;
                     if (rhs[rhs.length - 1].get("name") !== "repeat") return false;
 
                     for (const name of rhs.slice(0, -1)) {
