@@ -123,6 +123,7 @@ export class Loader {
         const progression = this.progressions[name] = {
             chapters: {},
             levels: [],
+            linearChapters: [],
         };
         const filenames = Object.keys(definition.digraph);
 
@@ -149,6 +150,7 @@ export class Loader {
                     for (const [chapterName, chapter] of Object.entries(progression.chapters)) {
                         if (chapter.dependencies.every(dep => marked[dep]) && !marked[chapterName]) {
                             marked[chapterName] = true;
+                            progression.linearChapters.push(chapterName);
 
                             chapter.startIdx = progression.levels.length;
                             progression.levels = progression.levels.concat(chapter.levels);

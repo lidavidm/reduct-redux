@@ -60,6 +60,18 @@ function initialize() {
     document.querySelector("#next").addEventListener("click", () => {
         window.next();
     });
+
+    for (const chapterName of Loader.progressions["progression"].linearChapters) {
+        const option = document.createElement("option");
+        option.setAttribute("value", Loader.progressions["progression"].chapters[chapterName].startIdx);
+        option.innerText = `Chapter: ${chapterName}`;
+        document.querySelector("#chapter").appendChild(option);
+    }
+    document.querySelector("#chapter").addEventListener("change", () => {
+        const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
+        progression.currentLevelIdx = lvl;
+        window.reset();
+    });
 }
 
 window.reset = function start() {
