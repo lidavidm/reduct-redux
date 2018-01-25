@@ -338,6 +338,39 @@ export default function transform(definition) {
                     }
                     return callbacks.update(...args);
                 },
+                stop: (state, topExpr) => {
+                    let curExpr = topExpr;
+                    const rhs = [];
+                    const nodes = state.get("nodes");
+                    let repeated = null;
+                    while (curExpr.get("type") === "apply") {
+                        const callee = nodes.get(curExpr.get("callee"));
+                        if (callee.get("type") === "reference") {
+                            rhs.push(callee.get("name"));
+                            if (callee.get("name") === "repeat") break;
+                            curExpr = nodes.get(curExpr.get("argument"));
+                        }
+                        else if (callee.get("type") === "apply") {
+                            curExpr = callee;
+                            if (!repeated) {
+                                repeated = nodes.get(callee.get("argument"));
+                                if (repeated.get("type") !== "reference") return false;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+
+                    if (!repeated) return false;
+                    if (rhs[rhs.length - 1].get("name") !== "repeat") return false;
+
+                    for (const name of rhs.slice(0, -1)) {
+                        if (name !== repeated.get("name")) return false;
+                    }
+
+                    return true;
+                },
             }), false, false
         );
     };
@@ -352,8 +385,8 @@ export default function transform(definition) {
      */
     module.interpreter.reduce = function reduce(stage, state, exp, callbacks) {
         // return module.interpreter.reducers.single(stage, state, exp, callbacks);
-        return module.interpreter.reducers.multi(stage, state, exp, callbacks);
-        // return module.interpreter.reducers.big(stage, state, exp, callbacks);
+        // return module.interpreter.reducers.multi(stage, state, exp, callbacks);
+        return module.interpreter.reducers.big(stage, state, exp, callbacks);
     };
 
     /**
