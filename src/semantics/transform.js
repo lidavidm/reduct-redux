@@ -235,14 +235,14 @@ export default function transform(definition) {
     // TODO: need a "hybrid multi-step" that big-steps expressions we
     // don't care about and that can delay evaluating references
     module.interpreter.reducers.single = function singleStepReducer(
-        stage, state, exp,
-        callback, errorCallback, recordUndo=true
+        stage, state, exp, callbacks,
+        recordUndo=true
     ) {
         // Single-step mode
 
         const [ result, exprId ] = module.interpreter.singleStep(state, exp);
         if (result === "error") {
-            errorCallback(exprId);
+            callbacks.error(exprId);
             return;
         }
 
@@ -252,20 +252,20 @@ export default function transform(definition) {
             .interpreter.animateStep(stage, nodes, exp)
             .then(() => module.interpreter.smallStep(state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
-                callback(topNodeId, newNodeIds, addedNodes, recordUndo);
+                callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
             });
     };
 
     module.interpreter.reducers.multi = function multiStepReducer(
-        stage, state, exp,
-        callback, errorCallback, animated=true, recordUndo=true
+        stage, state, exp, callbacks,
+        animated=true, recordUndo=true
     ) {
         let firstStep = true;
 
         const takeStep = (innerState, topExpr) => {
             const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
-                errorCallback(exprId);
+                callbacks.error(exprId);
                 return Promise.reject();
             }
 
@@ -274,7 +274,7 @@ export default function transform(definition) {
                 const [ topNodeId, newNodeIds, addedNodes ] =
                       module.interpreter.smallStep(innerState, innerExpr);
 
-                return callback(topNodeId, newNodeIds, addedNodes, recordUndo || firstStep)
+                return callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo || firstStep)
                     .then((newState) => {
                         firstStep = false;
                         if (topExpr.get("id") === topNodeId) {
@@ -321,23 +321,23 @@ export default function transform(definition) {
         loop(state, exp);
     };
 
-    module.interpreter.reducers.big = function bigStepReducer(
-        stage, state, exp,
-        callback, errorCallback
-    ) {
+    module.interpreter.reducers.big = function bigStepReducer(stage, state, exp, callbacks) {
         // Only play animation if we actually take any sort of
         // small-step
         let playedAnim = false;
         module.interpreter.reducers.multi(
             stage, state, exp,
-            (...args) => {
-                if (!playedAnim) {
-                    playedAnim = true;
-                    return module.interpreter.animateStep(stage, state, exp).then(() => callback(...args));
-                }
-                return callback(...args);
-            },
-            errorCallback, false, false
+            Object.assign({}, callbacks, {
+                update: (...args) => {
+                    if (!playedAnim) {
+                        playedAnim = true;
+                        return module.interpreter
+                            .animateStep(stage, state, exp)
+                            .then(() => callbacks.update(...args));
+                    }
+                    return callbacks.update(...args);
+                },
+            }), false, false
         );
     };
 
@@ -349,10 +349,10 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.interpreter.reduce = function reduce(stage, state, exp, callback, errorCallback) {
-        // return module.interpreter.reducers.single(stage, state, exp, callback, errorCallback);
-        return module.interpreter.reducers.multi(stage, state, exp, callback, errorCallback);
-        // return module.interpreter.reducers.big(stage, state, exp, callback, errorCallback);
+    module.interpreter.reduce = function reduce(stage, state, exp, callbacks) {
+        // return module.interpreter.reducers.single(stage, state, exp, callbacks);
+        return module.interpreter.reducers.multi(stage, state, exp, callbacks);
+        // return module.interpreter.reducers.big(stage, state, exp, callbacks);
     };
 
     /**

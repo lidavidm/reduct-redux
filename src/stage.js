@@ -444,9 +444,8 @@ export class Stage {
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
-        this.semantics.interpreter.reduce(
-            this, state, node,
-            (topNodeId, newNodeIds, addedNodes, recordUndo) => {
+        this.semantics.interpreter.reduce(this, state, node, {
+            update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
 
@@ -494,14 +493,14 @@ export class Stage {
 
                 return Promise.resolve(this.getState());
             },
-            (errorNodeId) => {
+            error: (errorNodeId) => {
                 animate.fx.blink(this, this.views[errorNodeId], {
                     times: 3,
                     color: "#F00",
                     speed: 150,
                 });
-            }
-        );
+            },
+        });
     }
 
     /**
