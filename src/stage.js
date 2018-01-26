@@ -414,20 +414,37 @@ export class Stage {
                 const compatible = this.semantics.notchesCompatible(selected, node);
                 // TODO: actually check distance to notch
                 if (compatible && compatible.length > 0) {
-                    const distance = gfxCore.distance(
-                        this.views[nodeId],
-                        this.views[this._selectedNode]
-                    );
-                    if (distance < leastDistance) {
-                        leastDistance = distance;
-                        closestNotch = [ nodeId, compatible ];
+                    for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
+                        const distance = gfxCore.distance(
+                            this.views[nodeId].notchPos(
+                                nodeId,
+                                nodeId,
+                                nodeNotchIdx
+                            ),
+                            this.views[this._selectedNode].notchPos(
+                                this._selectedNode,
+                                this._selectedNode,
+                                selNotchIdx
+                            )
+                        );
+                        if (distance < 50) {
+                            this.views[nodeId].highlighted = true;
+                        }
+                        else {
+                            this.views[nodeId].highlighted = false;
+                        }
+
+                        if (distance < leastDistance) {
+                            leastDistance = distance;
+                            closestNotch = [ nodeId, compatible ];
+                        }
                     }
                 }
             }
 
             if (leastDistance <= 150 && closestNotch !== null) {
-                const [ parent, notchPair ] = closestNotch;
                 // TODO: actually check the matched notches
+                const [ parent, notchPair ] = closestNotch;
                 this.store.dispatch(action.attachNotch(parent, 0, this._selectedNode, 0));
             }
         }
