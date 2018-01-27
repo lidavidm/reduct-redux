@@ -243,16 +243,18 @@ export default function transform(definition) {
         const [ result, exprId ] = module.interpreter.singleStep(state, exp);
         if (result === "error") {
             callbacks.error(exprId);
-            return;
+            return Promise.reject(exprId);
         }
 
         const nodes = state.get("nodes");
         exp = nodes.get(exprId);
-        module
+        return module
             .interpreter.animateStep(stage, nodes, exp)
             .then(() => module.interpreter.smallStep(state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
+                // TODO: handle multiple new nodes
+                return newNodeIds[0];
             });
     };
 
@@ -287,7 +289,7 @@ export default function transform(definition) {
 
                         if ((callbacks.stop && callbacks.stop(newState, topExpr)) ||
                             module.kind(topExpr) !== "expression") {
-                            return Promise.reject();
+                            return Promise.reject(topExpr.get("id"));
                         }
                         return [ newState, topExpr ];
                     });
@@ -303,30 +305,29 @@ export default function transform(definition) {
 
         let fuel = 200;
         const loop = (innerState, topExpr) => {
-            if (fuel <= 0) return;
+            if (fuel <= 0) return Promise.resolve(topExpr.get("id"));
             fuel -= 1;
 
-            takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
+            return takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
                 if (animated) {
-                    animate.after(200)
+                    return animate.after(200)
                         .then(() => loop(newState, innerExpr));
                 }
-                else {
-                    loop(newState, innerExpr);
-                }
-            }, () => {
+                return loop(newState, innerExpr);
+            }, (finalId) => {
                 console.debug(`semant.interpreter.reducers.multi: ${fuel} fuel remaining`);
+                return Promise.resolve(finalId);
             });
         };
 
-        loop(state, exp);
+        return loop(state, exp);
     };
 
     module.interpreter.reducers.big = function bigStepReducer(stage, state, exp, callbacks) {
         // Only play animation if we actually take any sort of
         // small-step
         let playedAnim = false;
-        module.interpreter.reducers.multi(
+        return module.interpreter.reducers.multi(
             stage, state, exp,
             Object.assign({}, callbacks, {
                 update: (...args) => {
@@ -377,6 +378,67 @@ export default function transform(definition) {
         );
     };
 
+    module.interpreter.reducers.hybrid = function multiStepReducer(stage, state, exp, callbacks) {
+        const takeStep = (innerState, topExpr) => {
+            const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
+            if (result === "error") {
+                callbacks.error(exprId);
+                return Promise.reject();
+            }
+
+            const innerExpr = innerState.get("nodes").get(exprId);
+
+            if (innerExpr.get("type") === "reference" && innerExpr.get("name") === "repeat") {
+                return module.interpreter.reducers
+                    .big(stage, innerState, topExpr, callbacks)
+                    .then((topId) => {
+                        const newState = stage.getState();
+                        return [ newState, newState.getIn([ "nodes", topId ]) ];
+                    });
+            }
+
+            const nextStep = () => {
+                const [ topNodeId, newNodeIds, addedNodes ] =
+                      module.interpreter.smallStep(innerState, innerExpr);
+
+                return callbacks.update(topNodeId, newNodeIds, addedNodes, true)
+                    .then((newState) => {
+                        if (topExpr.get("id") === topNodeId) {
+                            // TODO: handle multiple newNodeIds
+                            topExpr = newState.getIn([ "nodes", newNodeIds[0] ]);
+                        }
+                        else {
+                            topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
+                        }
+
+                        if (module.kind(topExpr) !== "expression") {
+                            return Promise.reject();
+                        }
+                        return [ newState, topExpr ];
+                    });
+            };
+
+            return module.interpreter
+                .animateStep(stage, innerState, innerExpr)
+                .then(() => nextStep());
+        };
+
+        let fuel = 50;
+        const loop = (innerState, topExpr) => {
+            if (fuel <= 0) return;
+            fuel -= 1;
+
+            takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
+                animate.after(500)
+                    .then(() => loop(newState, innerExpr));
+            }, () => {
+                console.debug(`semant.interpreter.reducers.hybrid: ${fuel} fuel remaining`);
+            });
+        };
+
+        loop(state, exp);
+    };
+
     /**
      * A helper function that should abstract over big-step, small-step,
      * multi-step, and any necessary animation.
@@ -388,7 +450,8 @@ export default function transform(definition) {
     module.interpreter.reduce = function reduce(stage, state, exp, callbacks) {
         // return module.interpreter.reducers.single(stage, state, exp, callbacks);
         // return module.interpreter.reducers.multi(stage, state, exp, callbacks);
-        return module.interpreter.reducers.big(stage, state, exp, callbacks);
+        // return module.interpreter.reducers.big(stage, state, exp, callbacks);
+        return module.interpreter.reducers.hybrid(stage, state, exp, callbacks);
     };
 
     /**
