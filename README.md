@@ -20,6 +20,8 @@ arithmetic.json   booleans-intro.json  define-challenges.json  definition.json
 
 Then install the necessary packages and run the bundler.
 
+*Choose one of the two below:*
+
 Yarn:
 
 ```
