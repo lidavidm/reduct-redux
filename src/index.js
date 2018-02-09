@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import { createStore } from "redux";
 import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";

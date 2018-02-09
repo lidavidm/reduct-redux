@@ -6,6 +6,7 @@
     "author": "David Li <li.davidm96@gmail.com>",
     "license": "MPL-2.0",
     "dependencies": {
+        "babel-polyfill": "^6.26.0",
         "esprima": "^4.0.0",
         "immutable": "^3.8.2",
         "redux": "^3.7.2",
