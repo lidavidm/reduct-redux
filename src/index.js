@@ -42,6 +42,7 @@ function initialize() {
         }
     });
 
+    progression.restore();
     window.reset();
 
     window.stage = stg;
@@ -78,8 +79,12 @@ function initialize() {
 window.reset = function start() {
     stg.reset();
 
-    level.startLevel(Loader.progressions["progression"].levels[progression.currentLevel()],
-                     es6.parser.parse, store, stg);
+    level.startLevel(
+        Loader.progressions["progression"].levels[progression.currentLevel()],
+        es6.parser.parse,
+        store,
+        stg
+    );
 
     document.querySelector("#level").innerText = progression.currentLevel().toString();
 };
