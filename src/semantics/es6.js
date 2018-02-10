@@ -96,12 +96,12 @@ export default transform({
                     "+": {
                         type: "default",
                         shape: "()",
-                        color: "orange",
+                        color: "#ffcc00",
                     },
                     "-": {
                         type: "default",
                         shape: "()",
-                        color: "orange",
+                        color: "#ffcc00",
                     },
                     "==": {
                         type: "default",
