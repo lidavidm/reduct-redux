@@ -493,6 +493,15 @@ export default transform({
                     type: "outset",
                     shape: "wedge",
                     relpos: 0.5,
+                    canAttach: (semant, state, selfId, otherId, notchPair) => {
+                        const missingNodes = semant.search(
+                            state.get("nodes"),
+                            otherId,
+                            (nodes, id) => nodes.get(id).get("type") === "missing"
+                        );
+
+                        return missingNodes.length === 0;
+                    },
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
                         state.set("globals", state.get("globals").set(name, otherId));

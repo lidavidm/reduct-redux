@@ -608,6 +608,18 @@ export default function transform(definition) {
         return result;
     };
 
+    module.notchesAttachable = function(state, parentId, childId, notchPair) {
+        const nodes = state.get("nodes");
+        const defn = definition.expressions[nodes.get(parentId).get("type")];
+        if (defn && defn.notches && defn.notches[notchPair[0]]) {
+            const notchDefn = defn.notches[notchPair[0]];
+            if (notchDefn.canAttach) {
+                return notchDefn.canAttach(module, state, parentId, childId, notchPair);
+            }
+        }
+        return true;
+    };
+
     /**
      * Check whether we should ignore the given node when matching
      * nodes to determine victory.
