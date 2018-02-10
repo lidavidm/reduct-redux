@@ -44,16 +44,19 @@ export function genericMap(subexpressions) {
 export function genericSearch(subexpressions) {
     return function(nodes, nodeId, f) {
         const queue = [ nodeId ];
+        const result = [];
         while (queue.length > 0) {
             const id = queue.pop();
-            if (f(nodes, id)) return true;
+            if (f(nodes, id)) {
+                result.push(id);
+            }
 
             const n = nodes.get(id);
             for (const field of subexpressions(n)) {
                 queue.push(n.get(field));
             }
         }
-        return false;
+        return result;
     };
 }
 
@@ -108,11 +111,12 @@ export function genericBetaReduce(semant, state, config) {
     const { topNode, targetNode, argIds } = config;
     const nodes = state.get("nodes");
     // Prevent application when there are missing nodes
-    if (semant.search(
+    const missingNodes = semant.search(
         nodes,
         topNode.get("id"),
         (nodes, id) => nodes.get(id).get("type") === "missing"
-    )) {
+    );
+    if (missingNodes.length > 0) {
         console.warn("Can't reduce missing");
         return null;
     }
@@ -128,11 +132,12 @@ export function genericBetaReduce(semant, state, config) {
         if (nodes.get(argId).get("type") === "lambdaVar") {
             return null;
         }
-        if (semant.search(
+        const missingArgNodes = semant.search(
             nodes,
             argId,
             (nodes, id) => nodes.get(id).get("type") === "missing"
-        )) {
+        );
+        if (missingArgNodes.length > 0) {
             console.warn("Can't reduce missing");
             return null;
         }
