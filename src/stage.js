@@ -45,6 +45,7 @@ export class Stage {
         this._hoverNode = null;
         this._targetNode = null;
         this._fromToolbox = false;
+        this._dragOffset = { dx: 0, dy: 0 };
         this._dragged = false;
 
         this.toolbox = new Toolbox(this);
@@ -228,8 +229,13 @@ export class Stage {
     _mousedown(e) {
         const pos = this.getMousePos(e);
         [ this._selectedNode, this._targetNode, this._fromToolbox ] = this.getNodeAtPos(pos);
+        this._dragOffset.dx = 0;
+        this._dragOffset.dy = 0;
         if (this._selectedNode !== null) {
             this.store.dispatch(action.raise(this._selectedNode));
+            const absPos = gfxCore.absolutePos(this.views[this._selectedNode]);
+            this._dragOffset.dx = pos.x - absPos.x;
+            this._dragOffset.dy = pos.y - absPos.y;
         }
     }
 
@@ -272,8 +278,10 @@ export class Stage {
             }
 
             const view = this.views[this._selectedNode];
-            view.pos.x += e.movementX;
-            view.pos.y += e.movementY;
+            const mousePos = this.getMousePos(e);
+            const absSize = gfxCore.absoluteSize(view);
+            view.pos.x = (mousePos.x - this._dragOffset.dx) + (view.anchor.x * absSize.w);
+            view.pos.y = (mousePos.y - this._dragOffset.dy) + (view.anchor.y * absSize.h);
             this.draw();
             this._dragged = true;
         }
