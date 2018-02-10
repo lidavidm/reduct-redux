@@ -243,7 +243,12 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
                 shouldStroke = true;
             }
             else if (stage._hoverNode === id) {
-                stage.ctx.strokeStyle = "yellow";
+                if (this.highlightColor) {
+                    stage.ctx.strokeStyle = this.highlightColor;
+                }
+                else {
+                    stage.ctx.strokeStyle = "yellow";
+                }
                 stage.ctx.lineWidth = 2;
                 shouldStroke = true;
             }
