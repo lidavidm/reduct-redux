@@ -612,7 +612,7 @@ export class Stage {
             }
 
             tweens.push(animate.fx.blink(this, this.views[nodeId], {
-                times: progression.currentLevelIdx === 0 ? 2 : 1,
+                times: progression.currentLevel() === 0 ? 2 : 1,
                 color: "#0FF",
             }));
         }

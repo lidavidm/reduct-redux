@@ -70,7 +70,7 @@ function initialize() {
     }
     document.querySelector("#chapter").addEventListener("change", () => {
         const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
-        progression.currentLevelIdx = lvl;
+        progression.jumpToLevel(lvl);
         window.reset();
     });
 }
@@ -78,17 +78,17 @@ function initialize() {
 window.reset = function start() {
     stg.reset();
 
-    level.startLevel(Loader.progressions["progression"].levels[progression.currentLevelIdx],
+    level.startLevel(Loader.progressions["progression"].levels[progression.currentLevel()],
                      es6.parser.parse, store, stg);
 
-    document.querySelector("#level").innerText = progression.currentLevelIdx.toString();
+    document.querySelector("#level").innerText = progression.currentLevel().toString();
 };
 
 window.next = function next() {
-    progression.currentLevelIdx++;
+    progression.nextLevel();
     window.reset();
 };
 window.prev = function prev() {
-    progression.currentLevelIdx--;
+    progression.prevLevel();
     window.reset();
 };

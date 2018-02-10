@@ -23,4 +23,20 @@ export const ACTIVE_PROGRESSION = "Elementary";
 
 export const ACTIVE_PROGRESSION_DEFINITION = PROGRESSIONS[ACTIVE_PROGRESSION];
 
-export let currentLevelIdx = 0;
+let currentLevelIdx = 0;
+
+export function currentLevel() {
+    return currentLevelIdx;
+}
+
+export function jumpToLevel(idx) {
+    currentLevelIdx = idx;
+}
+
+export function nextLevel() {
+    currentLevelIdx++;
+}
+
+export function prevLevel() {
+    currentLevelIdx--;
+}
