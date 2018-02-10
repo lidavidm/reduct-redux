@@ -46,6 +46,7 @@ export class Stage {
         this._targetNode = null;
         this._fromToolbox = false;
         this._dragOffset = { dx: 0, dy: 0 };
+        this._dragStart = { x: 0, y: 0 };
         this._dragged = false;
 
         this.toolbox = new Toolbox(this);
@@ -231,6 +232,7 @@ export class Stage {
         [ this._selectedNode, this._targetNode, this._fromToolbox ] = this.getNodeAtPos(pos);
         this._dragOffset.dx = 0;
         this._dragOffset.dy = 0;
+        this._dragStart = pos;
         if (this._selectedNode !== null) {
             this.store.dispatch(action.raise(this._selectedNode));
             const absPos = gfxCore.absolutePos(this.views[this._selectedNode]);
@@ -240,7 +242,12 @@ export class Stage {
     }
 
     _mousemove(e) {
-        if (e.buttons > 0 && this._selectedNode !== null) {
+        const mousePos = this.getMousePos(e);
+        if (e.buttons > 0 && this._selectedNode !== null &&
+            // 5-pixel tolerance before a click becomes a drag
+            (!this._dragStart || gfxCore.distance(this._dragStart, mousePos) > 5)) {
+            this._dragStart = null;
+
             if (this._fromToolbox) {
                 const state = this.getState();
                 const selected = state.getIn([ "nodes", this._selectedNode ]);
@@ -278,7 +285,6 @@ export class Stage {
             }
 
             const view = this.views[this._selectedNode];
-            const mousePos = this.getMousePos(e);
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this._dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this._dragOffset.dy) + (view.anchor.y * absSize.h);
