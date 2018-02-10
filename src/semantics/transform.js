@@ -1,7 +1,7 @@
 import * as immutable from "immutable";
 import * as gfx from "../gfx/core";
-import projector from "../gfx/projector";
 import * as animate from "../gfx/animate";
+import projector from "../gfx/projector";
 import * as core from "./core";
 import * as meta from "./meta";
 
@@ -608,13 +608,29 @@ export default function transform(definition) {
         return result;
     };
 
-    module.notchesAttachable = function(state, parentId, childId, notchPair) {
+    module.notchesAttachable = function(stage, state, parentId, childId, notchPair) {
         const nodes = state.get("nodes");
         const defn = definition.expressions[nodes.get(parentId).get("type")];
         if (defn && defn.notches && defn.notches[notchPair[0]]) {
             const notchDefn = defn.notches[notchPair[0]];
             if (notchDefn.canAttach) {
-                return notchDefn.canAttach(module, state, parentId, childId, notchPair);
+                const [ canAttach, blockingNodes ] = notchDefn.canAttach(
+                    module,
+                    state,
+                    parentId,
+                    childId,
+                    notchPair
+                );
+                if (!canAttach) {
+                    blockingNodes.forEach((id) => {
+                        animate.fx.blink(stage, stage.views[id], {
+                            times: 3,
+                            speed: 200,
+                            color: "#F00",
+                        });
+                    });
+                    return false;
+                }
             }
         }
         return true;

@@ -460,15 +460,13 @@ export class Stage {
                 // TODO: actually check the matched notches
                 const [ parent, notchPair ] = closestNotch;
                 if (this.semantics.notchesAttachable(
+                    this,
                     this.getState(),
                     parent,
                     this._selectedNode,
                     notchPair[0]
                 )) {
                     this.store.dispatch(action.attachNotch(parent, 0, this._selectedNode, 0));
-                }
-                else {
-
                 }
             }
         }

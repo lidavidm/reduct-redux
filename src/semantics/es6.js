@@ -500,7 +500,7 @@ export default transform({
                             (nodes, id) => nodes.get(id).get("type") === "missing"
                         );
 
-                        return missingNodes.length === 0;
+                        return [ missingNodes.length === 0, missingNodes ];
                     },
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
