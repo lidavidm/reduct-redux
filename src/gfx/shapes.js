@@ -71,7 +71,7 @@ function shapeProjection(options) {
         size: { w: 50, h: 50 },
         color: "gold",
         shadowColor: "#000",
-        shadowOffset: 2,
+        shadowOffset: 4,
         shadow: true,  // Always draw shadow
     }, options);
 }
