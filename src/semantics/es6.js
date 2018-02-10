@@ -311,11 +311,11 @@ export default transform({
                     isCapturing: node => node.get("type") === "lambda",
                     captureName: (nodes, node) => nodes.get(node.get("arg")).get("name"),
                     animateInvalidArg: (id) => {
-                        stage.addEffect(animate.fx.blink(stage, stage.views[id], {
+                        animate.fx.blink(stage, stage.views[id], {
                             times: 3,
                             speed: 200,
                             color: "#F00",
-                        }));
+                        });
                     },
                 }),
         },
