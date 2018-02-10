@@ -243,11 +243,7 @@ export class Stage {
 
     _mousemove(e) {
         const mousePos = this.getMousePos(e);
-        if (e.buttons > 0 && this._selectedNode !== null &&
-            // 5-pixel tolerance before a click becomes a drag
-            (!this._dragStart || gfxCore.distance(this._dragStart, mousePos) > 5)) {
-            this._dragStart = null;
-
+        if (e.buttons > 0 && this._selectedNode !== null) {
             if (this._fromToolbox) {
                 const state = this.getState();
                 const selected = state.getIn([ "nodes", this._selectedNode ]);
@@ -289,7 +285,12 @@ export class Stage {
             view.pos.x = (mousePos.x - this._dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this._dragOffset.dy) + (view.anchor.y * absSize.h);
             this.draw();
-            this._dragged = true;
+
+            // 5-pixel tolerance before a click becomes a drag
+            if (!this._dragStart || gfxCore.distance(this._dragStart, mousePos) > 5) {
+                this._dragStart = null;
+                this._dragged = true;
+            }
         }
 
         if (e.buttons > 0 && this._targetNode) {
