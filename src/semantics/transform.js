@@ -146,11 +146,11 @@ export default function transform(definition) {
      * IDs of resulting nodes, and a list of added nodes (which have
      * IDs assigned and are immutable already).
      */
-    module.interpreter.smallStep = function smallStep(state, expr) {
+    module.interpreter.smallStep = function smallStep(stage, state, expr) {
         const type = expr.type || expr.get("type");
         const stepper = definition.expressions[type].smallStep;
         if (stepper) {
-            const result = stepper(module, state, expr);
+            const result = stepper(module, stage, state, expr);
             if (Array.isArray(result)) return result;
 
             if (immutable.Map.isMap(result)) {
@@ -250,7 +250,7 @@ export default function transform(definition) {
         exp = nodes.get(exprId);
         return module
             .interpreter.animateStep(stage, nodes, exp)
-            .then(() => module.interpreter.smallStep(state, exp))
+            .then(() => module.interpreter.smallStep(stage, state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
                 // TODO: handle multiple new nodes
@@ -274,7 +274,7 @@ export default function transform(definition) {
             const innerExpr = innerState.get("nodes").get(exprId);
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
-                      module.interpreter.smallStep(innerState, innerExpr);
+                      module.interpreter.smallStep(stage, innerState, innerExpr);
 
                 return callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo || firstStep)
                     .then((newState) => {
@@ -399,7 +399,7 @@ export default function transform(definition) {
 
             const nextStep = () => {
                 const [ topNodeId, newNodeIds, addedNodes ] =
-                      module.interpreter.smallStep(innerState, innerExpr);
+                      module.interpreter.smallStep(stage, innerState, innerExpr);
 
                 return callbacks.update(topNodeId, newNodeIds, addedNodes, true)
                     .then((newState) => {

@@ -166,7 +166,7 @@ export default transform({
                 return null;
             },
             // TODO: switch to Immutable.Record to clean this up
-            smallStep: (semant, state, expr) => {
+            smallStep: (semant, stage, state, expr) => {
                 const nodes = state.get("nodes");
                 const op = nodes.get(expr.get("op")).get("name");
                 if (op === "+") {
@@ -232,7 +232,7 @@ export default transform({
                 }
                 return null;
             },
-            smallStep: (semant, state, expr) => {
+            smallStep: (semant, stage, state, expr) => {
                 const nodes = state.get("nodes");
                 const cond = nodes.get(expr.get("condition")).get("value");
                 // TODO: do this cleanup in evaluation?
@@ -260,8 +260,9 @@ export default transform({
                 shape: "()",
                 fields: ["callee", "'('", "argument", "')'"],
             },
-            smallStep: (semant, state, expr) => {
+            smallStep: (semant, stage, state, expr) => {
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
+                    stage,
                     state, expr.get("callee"),
                     [ expr.get("argument") ]
                 );
@@ -366,7 +367,7 @@ export default transform({
                 }
                 return !expr.get("parent") || !expr.get("locked");
             },
-            smallStep: (semant, state, expr) => {
+            smallStep: (semant, stage, state, expr) => {
                 let res = state.get("globals").get(expr.get("name"));
                 if (!res) return null;
                 const resNode = state.get("nodes").get(res);
