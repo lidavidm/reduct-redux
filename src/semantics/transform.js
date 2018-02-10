@@ -412,7 +412,7 @@ export default function transform(definition) {
                         }
 
                         if (module.kind(topExpr) !== "expression") {
-                            return Promise.reject();
+                            return Promise.reject(topExpr.get("id"));
                         }
                         return [ newState, topExpr ];
                     });
@@ -425,18 +425,19 @@ export default function transform(definition) {
 
         let fuel = 50;
         const loop = (innerState, topExpr) => {
-            if (fuel <= 0) return;
+            if (fuel <= 0) return Promise.resolve(topExpr.get("id"));
             fuel -= 1;
 
-            takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
+            return takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
                 animate.after(500)
                     .then(() => loop(newState, innerExpr));
-            }, () => {
+            }, (finalId) => {
                 console.debug(`semant.interpreter.reducers.hybrid: ${fuel} fuel remaining`);
+                return Promise.resolve(finalId);
             });
         };
 
-        loop(state, exp);
+        return loop(state, exp);
     };
 
     /**
