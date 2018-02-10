@@ -125,6 +125,9 @@ export function genericBetaReduce(semant, state, config) {
 
     // Check that arguments are complete
     for (const argId of argIds) {
+        if (nodes.get(argId).get("type") === "lambdaVar") {
+            return null;
+        }
         if (semant.search(
             nodes,
             argId,
