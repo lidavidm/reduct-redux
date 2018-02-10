@@ -60,11 +60,12 @@ export function blink(stage, projection, opts) {
         times: 1,
         color: "#F00",
         speed: 600,
+        lineWidth: 3,
     }, opts);
 
     const origStroke = projection.stroke;
     projection.stroke = { color: options.color, lineWidth: 0 };
-    return animate.tween(projection.stroke, { lineWidth: 3 }, {
+    return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
         reverse: true,
         repeat: options.times * 2,
         duration: options.speed,

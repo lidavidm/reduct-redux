@@ -466,6 +466,19 @@ export class Stage {
                     this._selectedNode,
                     notchPair[0]
                 )) {
+                    this.views[parent].highlighted = false;
+                    animate.fx.blink(this, this.views[parent], {
+                        times: 2,
+                        color: "magenta",
+                        speed: 100,
+                        lineWidth: 5,
+                    });
+                    animate.fx.blink(this, this.views[this._selectedNode], {
+                        times: 2,
+                        color: "magenta",
+                        speed: 100,
+                        lineWidth: 5,
+                    });
                     this.store.dispatch(action.attachNotch(parent, 0, this._selectedNode, 0));
                 }
             }

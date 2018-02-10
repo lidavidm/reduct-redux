@@ -541,7 +541,7 @@ export default transform({
                     color: "#594764",
                     shadow: true,
                     shadowColor: "#000",
-                    shadowOffset: 2,
+                    shadowOffset: 4,
                 },
             },
         },

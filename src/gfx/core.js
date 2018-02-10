@@ -72,18 +72,23 @@ export function notchProjection(options) {
             const { x, y } = util.topLeftPos(this, offset);
             const { ctx } = stage;
             const draw = (yOffset) => {
+                this.size.h = 160;
                 ctx.beginPath();
                 ctx.moveTo(x, y + yOffset);
                 this.notches.drawSequence(ctx, "right", x, y + yOffset, this.size.h);
                 ctx.lineTo(x, y + this.size.h + yOffset);
                 ctx.closePath();
                 ctx.fill();
-                if (this.highlighted) ctx.stroke();
+                if (this.highlighted || this.stroke) ctx.stroke();
             };
             ctx.save();
             if (this.highlighted) {
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "yellow";
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = "magenta";
+            }
+            else if (this.stroke) {
+                ctx.lineWidth = this.stroke.lineWidth;
+                ctx.strokeStyle = this.stroke.color;
             }
             else {
                 ctx.lineWidth = 0;
@@ -102,14 +107,15 @@ export function notchProjection(options) {
                 stage.views[childId].anchor.x = 0.0;
                 stage.views[childId].anchor.y = 0.0;
                 stage.views[childId].pos.x = this.pos.x - (delta.x / 2);
-                stage.views[childId].pos.y = this.pos.y - (delta.y / 2);
+                // TODO: figure out how this is ACTUALLY supposed to work
+                stage.views[childId].pos.y = this.pos.y + 65 - (delta.y / 2);
 
                 stage.views[childId].draw(childId, childId, state, stage, offset);
             }
         }
     };
     projection.notchOffset = function(id, exprId, notch) {
-        return { x: 0, y: 0 };
+        return { x: 0, y: 80 };
     };
     return projection;
 }
