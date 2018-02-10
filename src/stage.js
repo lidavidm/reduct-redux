@@ -538,7 +538,7 @@ export class Stage {
      * Helper that handles animation and updating the store for a beta reduction.
      */
     betaReduce(state, target, arg) {
-        const result = this.semantics.interpreter.betaReduce(state, target, [ arg ]);
+        const result = this.semantics.interpreter.betaReduce(this, state, target, [ arg ]);
         if (result) {
             const [ topNode, resultNodeIds, newNodes ] = result;
             const tempNodes = state.get("nodes").withMutations(nodes => {

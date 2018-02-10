@@ -118,6 +118,9 @@ export function genericBetaReduce(semant, state, config) {
     );
     if (missingNodes.length > 0) {
         console.warn("Can't reduce missing");
+        if (config.animateInvalidArg) {
+            missingNodes.forEach(config.animateInvalidArg);
+        }
         return null;
     }
 
@@ -130,6 +133,9 @@ export function genericBetaReduce(semant, state, config) {
     // Check that arguments are complete
     for (const argId of argIds) {
         if (nodes.get(argId).get("type") === "lambdaVar") {
+            if (config.animateInvalidArg) {
+                config.animateInvalidArg(argId);
+            }
             return null;
         }
         const missingArgNodes = semant.search(
@@ -138,6 +144,9 @@ export function genericBetaReduce(semant, state, config) {
             (nodes, id) => nodes.get(id).get("type") === "missing"
         );
         if (missingArgNodes.length > 0) {
+            if (config.animateInvalidArg) {
+                missingArgNodes.forEach(config.animateInvalidArg);
+            }
             console.warn("Can't reduce missing");
             return null;
         }

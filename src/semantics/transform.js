@@ -169,7 +169,7 @@ export default function transform(definition) {
     /**
      * Apply a list of expressions to another expression.
      */
-    module.interpreter.betaReduce = function(state, exprId, argIds) {
+    module.interpreter.betaReduce = function(stage, state, exprId, argIds) {
         const target = state.get("nodes").get(exprId);
         const reducer = definition.expressions[target.get("type")].betaReduce;
         if (!reducer) {
@@ -177,7 +177,7 @@ export default function transform(definition) {
             return null;
         }
 
-        return reducer(module, state, target, argIds);
+        return reducer(module, stage, state, target, argIds);
     };
 
     /**

@@ -1,4 +1,5 @@
 import * as core from "./core";
+import * as animate from "../gfx/animate";
 import makeParser from "../syntax/es6";
 import transform from "./transform";
 
@@ -299,7 +300,7 @@ export default transform({
                 shape: "()",
                 fields: ["arg", "'=>'", "body"],
             },
-            betaReduce: (semant, state, expr, argIds) =>
+            betaReduce: (semant, stage, state, expr, argIds) =>
                 core.genericBetaReduce(semant, state, {
                     topNode: expr,
                     targetNode: state.get("nodes").get(expr.get("arg")),
@@ -309,6 +310,13 @@ export default transform({
                     varName: node => node.get("name"),
                     isCapturing: node => node.get("type") === "lambda",
                     captureName: (nodes, node) => nodes.get(node.get("arg")).get("name"),
+                    animateInvalidArg: (id) => {
+                        stage.addEffect(animate.fx.blink(stage, stage.views[id], {
+                            times: 3,
+                            speed: 200,
+                            color: "#F00",
+                        }));
+                    },
                 }),
         },
 
@@ -320,9 +328,9 @@ export default transform({
                 type: "text",
                 text: "({name})",
             },
-            betaReduce: (semant, state, expr, argIds) => {
+            betaReduce: (semant, stage, state, expr, argIds) => {
                 if (expr.get("parent")) {
-                    return semant.interpreter.betaReduce(state, expr.get("parent"), argIds);
+                    return semant.interpreter.betaReduce(stage, state, expr.get("parent"), argIds);
                 }
                 return null;
             },
