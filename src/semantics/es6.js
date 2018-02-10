@@ -397,6 +397,7 @@ export default transform({
                 default: {
                     type: "default",
                     shape: "()",
+                    color: "OrangeRed",
                     strokeWhenChild: false,
                     fields: [{
                         field: "name",
@@ -406,6 +407,7 @@ export default transform({
                 cases: {
                     enabled: {
                         type: "default",
+                        color: "OrangeRed",
                         shape: "()",
                         strokeWhenChild: false,
                         fields: ["name"],
@@ -459,17 +461,35 @@ export default transform({
             projection: {
                 type: "vbox",
                 horizontalAlign: 0.0,
+                color: "OrangeRed",
                 padding: {
                     top: 10,
-                    left: 10,
+                    left: 15,
                     inner: 5,
-                    right: 0,
+                    right: 10,
                     bottom: 10,
                 },
                 rows: [
                     {
                         type: "default",
-                        shape: "none",
+                        shape: "()",
+                        radius: 0,
+                        padding: {
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            inner: 5,
+                        },
+                        color: "salmon",
+                        shadow: false,
+                        shadowColor: "rgba(0,0,0,0)",
+                        shadowOffset: 0,
+                        stroke: {
+                            lineWidth: 0,
+                            color: "rgba(0,0,0,0)",
+                        },
+                        strokeWhenChild: false,
                         fields: ["'def'", "name"],
                         subexpScale: 1.0,
                     },
@@ -518,7 +538,7 @@ export default transform({
                 content: {
                     type: "default",
                     shape: "notch",
-                    color: "lightgray",
+                    color: "#594764",
                     shadow: true,
                     shadowColor: "#000",
                     shadowOffset: 2,
