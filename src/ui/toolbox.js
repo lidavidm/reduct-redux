@@ -2,10 +2,10 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import Loader from "../loader";
 
-const TOOLBOX_ROW_HEIGHT = 70;
-const TOOLBOX_LEFT_MARGIN = 20;
-const TOOLBOX_RIGHT_MARGIN = 20;
-const TOOLBOX_INNER_MARGIN = 10;
+const TOOLBOX_ROW_HEIGHT = 90;
+const TOOLBOX_LEFT_MARGIN = 40;
+const TOOLBOX_RIGHT_MARGIN = 40;
+const TOOLBOX_INNER_MARGIN = 20;
 
 export default class Toolbox {
     constructor(stage) {
@@ -75,7 +75,11 @@ export default class Toolbox {
         }
 
         this.rows = rows;
-        this.stage.internalViews[this.bg].size.h = TOOLBOX_ROW_HEIGHT * this.rows;
+        this.stage.internalViews[this.bg].size.h = this.rowHeight * this.rows;
+    }
+
+    get rowHeight() {
+        return this.rows <= 1 ? TOOLBOX_ROW_HEIGHT : 70;
     }
 
     drawBase(state) {
@@ -103,7 +107,7 @@ export default class Toolbox {
                 i = 0;
             }
 
-            const nodeY = y + (curRow * TOOLBOX_ROW_HEIGHT) + ((TOOLBOX_ROW_HEIGHT - projection.size.h) / 2);
+            const nodeY = y + (curRow * this.rowHeight) + ((this.rowHeight - projection.size.h) / 2);
 
             if (nodeId === this.stage._selectedNode) {
                 // Do nothing - don't override position
