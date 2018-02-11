@@ -323,13 +323,35 @@ export default transform({
         },
 
         lambdaArg: {
-            fields: ["name"],
+            fields: ["name", "functionHole"],
             subexpressions: [],
             alwaysTargetable: true,
             projection: {
-                type: "text",
-                text: "({name})",
+                type: "dynamic",
+                resetFields: ["text", "color"],
+                field: (state, exprId) => {
+                    const isFunctionHole = !!state.getIn([ "nodes", exprId, "functionHole" ]);
+                    if (isFunctionHole) return "functionHole";
+                    return "default";
+                },
+                default: {
+                    type: "text",
+                    text: "({name})",
+                },
+                cases: {
+                    functionHole: {
+                        type: "default",
+                        shape: "()",
+                        radius: 0,
+                        fields: ["name"],
+                        color: "orangered",
+                    },
+                },
             },
+            // projection: {
+            //     type: "text",
+            //     text: "({name})",
+            // },
             betaReduce: (semant, stage, state, expr, argIds) => {
                 if (expr.get("parent")) {
                     return semant.interpreter.betaReduce(stage, state, expr.get("parent"), argIds);
@@ -399,6 +421,7 @@ export default transform({
                 default: {
                     type: "default",
                     shape: "()",
+                    radius: 0,
                     color: "OrangeRed",
                     strokeWhenChild: false,
                     fields: [{
@@ -410,6 +433,14 @@ export default transform({
                     enabled: {
                         type: "default",
                         color: "OrangeRed",
+                        radius: 0,
+                        padding: {
+                            top: 10,
+                            bottom: 10,
+                            left: 5,
+                            right: 5,
+                            inner: 5,
+                        },
                         shape: "()",
                         strokeWhenChild: false,
                         fields: ["name"],

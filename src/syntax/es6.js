@@ -135,7 +135,7 @@ export default function makeParser(jssemant) {
                 const testCases = node.arguments.map(arg => parseNode(arg, macros));
                 // TODO: better way to figure out name
                 const name = node.arguments[0].type === "CallExpression" ? node.arguments[0].callee.name : "f";
-                return jssemant.lambda(jssemant.lambdaArg(name), jssemant.vtuple(testCases));
+                return jssemant.lambda(jssemant.lambdaArg(name, true), jssemant.vtuple(testCases));
             }
 
             if (node.arguments.length === 0) {
