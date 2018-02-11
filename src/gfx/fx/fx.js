@@ -63,14 +63,17 @@ export function blink(stage, projection, opts) {
         lineWidth: 3,
     }, opts);
 
-    const origStroke = projection.stroke;
+    if (!projection.__origStroke) {
+        projection.__origStroke = projection.stroke;
+    }
     projection.stroke = { color: options.color, lineWidth: 0 };
     return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
         reverse: true,
         repeat: options.times * 2,
         duration: options.speed,
     }).then(() => {
-        projection.stroke = origStroke;
+        projection.stroke = projection.__origStroke;
+        delete projection.__origStroke;
         stage.drawImpl();
     });
 }
