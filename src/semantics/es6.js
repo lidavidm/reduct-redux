@@ -110,6 +110,7 @@ export default transform({
                     },
                 },
             },
+            stepSound: "heatup",
             type: (semant, state, types, expr) => {
                 const nodes = state.get("nodes");
                 const opExpr = nodes.get(expr.get("op"));
@@ -348,10 +349,6 @@ export default transform({
                     },
                 },
             },
-            // projection: {
-            //     type: "text",
-            //     text: "({name})",
-            // },
             betaReduce: (semant, stage, state, expr, argIds) => {
                 if (expr.get("parent")) {
                     return semant.interpreter.betaReduce(stage, state, expr.get("parent"), argIds);

@@ -1,4 +1,6 @@
 import * as immutable from "immutable";
+
+import Audio from "../resource/audio";
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import projector from "../gfx/projector";
@@ -185,6 +187,10 @@ export default function transform(definition) {
      * expression would take.
      */
     module.interpreter.animateStep = function animateStep(stage, state, exp) {
+        const defn = definition.expressions[exp.get("type")];
+        if (defn && defn.stepSound) {
+            Audio.play(defn.stepSound);
+        }
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 

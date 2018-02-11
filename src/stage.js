@@ -380,6 +380,8 @@ export class Stage {
             const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
             const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
             if (!holeType || !exprType || holeType === exprType) {
+                Audio.play("pop");
+
                 this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
             }
         }
@@ -613,6 +615,9 @@ export class Stage {
                     this.views[newNodeId].pos.y = this.views[topNode].pos.y;
                 }
             }
+
+            Audio.play("pop");
+
             this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
         }
     }
@@ -640,6 +645,7 @@ export class Stage {
                 subtweens.push(animate.fx.splosion(this, gfxCore.centerPos(this.views[nodeId])));
             }
             this.store.dispatch(action.victory());
+            Audio.play("firework1");
             return Promise.all(subtweens);
         });
     }
