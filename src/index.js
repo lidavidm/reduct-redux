@@ -10,6 +10,12 @@ import * as undo from "./reducer/undo";
 import { Loader } from "./loader";
 
 // Load assets.
+Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
+    "resources/audio/output.opus",
+    "resources/audio/output.ogg",
+    "resources/audio/output.mp3",
+    "resources/audio/output.wav",
+]);
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
 Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
 

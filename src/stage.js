@@ -1,5 +1,6 @@
 import * as action from "./reducer/action";
 import * as animate from "./gfx/animate";
+import Audio from "./resource/audio";
 import * as gfxCore from "./gfx/core";
 import * as progression from "./game/progression";
 import { nextId } from "./reducer/reducer";
@@ -630,6 +631,8 @@ export class Stage {
                 color: "#0FF",
             }));
         }
+
+        Audio.play("matching-the-goal2");
 
         return Promise.all(tweens).then(() => {
             const subtweens = [];

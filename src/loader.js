@@ -1,3 +1,5 @@
+import { Howl } from "howler";
+
 import * as gfx from "./gfx/core";
 
 const BASE_PATH = "resources/";
@@ -37,6 +39,8 @@ export class Loader {
 
         this.images = {};
         this.progressions = {};
+        this.sounds = {};
+        this.audioSprites = {};
     }
 
     get finished() {
@@ -72,6 +76,22 @@ export class Loader {
             }
 
             this.finishLoad();
+        });
+    }
+
+    loadAudioSprite(alias, jsonSrc, audioSrcs) {
+        this.startLoad();
+        getJSON(jsonSrc).then((json) => {
+            this.audioSprites[alias] = new Howl({
+                src: audioSrcs,
+                sprite: json.sprite,
+                onload: () => {
+                    for (const key of Object.keys(json.sprite)) {
+                        this.sounds[key] = this.audioSprites[alias];
+                    }
+                    this.finishLoad();
+                },
+            });
         });
     }
 
