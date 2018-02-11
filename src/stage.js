@@ -270,6 +270,8 @@ export class Stage {
                     this.views[clonedNode.get("id")].pos.x = this.views[this._selectedNode].pos.x;
                     this.views[clonedNode.get("id")].pos.y = this.views[this._selectedNode].pos.y;
 
+                    Audio.play("place_from_toolbox");
+
                     this.store.dispatch(action.useToolbox(
                         this._selectedNode,
                         clonedNode.get("id"),

@@ -189,7 +189,13 @@ export default function transform(definition) {
     module.interpreter.animateStep = function animateStep(stage, state, exp) {
         const defn = definition.expressions[exp.get("type")];
         if (defn && defn.stepSound) {
-            Audio.play(defn.stepSound);
+            if (typeof defn.stepSound === "function") {
+                const sequence = defn.stepSound(module, state, exp);
+                Audio.playSeries(sequence);
+            }
+            else {
+                Audio.play(defn.stepSound);
+            }
         }
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };

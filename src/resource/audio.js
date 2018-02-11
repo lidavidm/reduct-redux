@@ -15,7 +15,25 @@ class AudioEngine {
             console.error(`@AudioEngine#play: could not find sound ${sound}`);
             return;
         }
-        Loader.sounds[sound].play(sound);
+        return Loader.sounds[sound].play(sound);
+    }
+
+    playSeries(sounds) {
+        for (const sound of sounds) {
+            if (!Loader.sounds[sound]) {
+                console.error(`@AudioEngine#play: could not find sound ${sound}`);
+                return;
+            }
+        }
+        const queue = sounds.slice().reverse(); // Copy sound list
+        const step = () => {
+            if (queue.length === 0) return;
+
+            const sound = queue.pop();
+            const id = this.play(sound);
+            Loader.sounds[sound].on("end", step, id);
+        };
+        step();
     }
 
     mute() {

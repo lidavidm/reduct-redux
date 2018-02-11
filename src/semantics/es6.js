@@ -110,7 +110,13 @@ export default transform({
                     },
                 },
             },
-            stepSound: "heatup",
+            stepSound: (semant, state, expr) => {
+                const op = state.get("nodes").get(expr.get("op"));
+                if (op.get("name") === "==") {
+                    return ["shatter1", "heatup"];
+                }
+                return ["heatup"];
+            },
             type: (semant, state, types, expr) => {
                 const nodes = state.get("nodes");
                 const opExpr = nodes.get(expr.get("op"));
