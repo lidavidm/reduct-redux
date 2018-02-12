@@ -33,20 +33,55 @@ export const Easing = {
 
 
 export class Tween {
-    constructor(clock, target, properties, duration, options) {
+    constructor(clock, options) {
         this.clock = clock;
-        this.target = target;
-        this.properties = properties;
-        this.duration = duration;
-        this.remaining = duration;
+        this.options = options;
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
+
+        this.status = "running";
+    }
+
+    update(dt) {
+        return false;
+    }
+
+    then(cb1, cb2) {
+        return this.promise.then(cb1, cb2);
+    }
+
+    delay(ms) {
+        this.status = "paused";
+        setTimeout(() => {
+            this.status = "running";
+            this.clock.start();
+        }, ms);
+        return this;
+    }
+
+    completed() {
+        this.status = "completed";
+        this.resolve();
+        if (this.options.callback) {
+            this.options.callback();
+        }
+    }
+}
+
+
+export class InterpolateTween extends Tween {
+    constructor(clock, target, properties, duration, options) {
+        super(clock, options);
+
+        this.target = target;
+        this.properties = properties;
+        this.duration = duration;
+        this.remaining = duration;
         this.reverse = false;
         this.repeat = 1;
         this.reversing = false;
-        this.options = options;
 
         if ("reverse" in options) {
             this.reverse = options.reverse;
@@ -54,8 +89,6 @@ export class Tween {
         if ("repeat" in options) {
             this.repeat = options.repeat;
         }
-
-        this.status = "running";
     }
 
     update(dt) {
@@ -102,24 +135,27 @@ export class Tween {
         }
         return true;
     }
+}
 
-    then(cb1, cb2) { return this.promise.then(cb1, cb2); }
+export class InfiniteTween extends Tween {
+    constructor(clock, updater, options) {
+        super(clock, options);
 
-    delay(ms) {
-        this.status = "paused";
-        setTimeout(() => {
-            this.status = "running";
-            this.clock.start();
-        }, ms);
-        return this;
+        this.updater = updater;
     }
 
-    completed() {
-        this.status = "completed";
-        this.resolve();
-        if (this.options.callback) {
-            this.options.callback();
+    update(dt) {
+        if (this.status !== "running") {
+            return false;
         }
+
+        const finished = this.updater(dt);
+        if (finished) {
+            this.completed();
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -173,9 +209,11 @@ export class Clock {
             props[prop] = { start: target[prop], end: final, easing };
         }
 
-        const tween = new Tween(this, target, props, duration, options);
-        this.tweens.push(tween);
+        return this.addTween(new InterpolateTween(this, target, props, duration, options));
+    }
 
+    addTween(tween) {
+        this.tweens.push(tween);
         if (!this.running) {
             this.start();
         }
@@ -200,6 +238,10 @@ export function addUpdateListener(f) {
 
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
+}
+
+export function infinite(updater, options={}) {
+    return clock.addTween(new InfiniteTween(clock, updater, options));
 }
 
 export function chain(target, ...properties) {
