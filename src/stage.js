@@ -4,9 +4,112 @@ import Audio from "./resource/audio";
 import * as gfxCore from "./gfx/core";
 import * as progression from "./game/progression";
 import { nextId } from "./reducer/reducer";
-import Loader from "./loader";
 import Goal from "./ui/goal";
 import Toolbox from "./ui/toolbox";
+
+class TouchRecord {
+    constructor(stage, topNode, targetNode, fromToolbox, dragOffset, dragStart) {
+        this.stage = stage;
+        this.topNode = topNode;
+        this.targetNode = targetNode;
+        this.fromToolbox = fromToolbox;
+        this.dragOffset = dragOffset;
+        this.dragStart = dragStart;
+        this.dragged = false;
+    }
+
+    onmove(mouseDown, mousePos) {
+        // TODO: if touch event, don't check buttons
+        if (mouseDown && this.topNode !== null) {
+            const view = this.stage.views[this.targetNode];
+            const absSize = gfxCore.absoluteSize(view);
+            view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
+            view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
+
+            // 5-pixel tolerance before a click becomes a drag
+            if (!this.dragStart || gfxCore.distance(this.dragStart, mousePos) > 5) {
+                this.dragStart = null;
+                this.dragged = true;
+
+                if (this._fromToolbox) {
+                    const resultNode = this.stage.cloneToolboxItem(this.topNode);
+                    if (resultNode !== null) {
+                        // Selected node was an __unlimited node
+                        this.topNode = resultNode;
+                        this.targetNode = null;
+                        this.fromToolbox = false;
+                    }
+                }
+            }
+        }
+
+        // TODO: add tolerance here as well
+        if (mouseDown && this._targetNode) {
+            const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
+            if (newSelected !== null) {
+                this.topNode = newSelected;
+            }
+        }
+
+        // TODO: need multiple hover nodes
+        // this.findHoverNode(mousePos);
+        // if (this._selectedNode && this._hoverNode) {
+        //     const state = this.getState();
+        //     const holeExprType = state.getIn([ "nodes", this._hoverNode, "type" ]);
+        //     const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
+        //     const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
+        //     // TODO: don't hardcode these checks
+        //     if ((holeExprType !== "missing" &&
+        //          holeExprType !== "lambdaArg") ||
+        //         (holeType && exprType && holeType !== exprType)) {
+        //         this._hoverNode = null;
+        //     }
+        // }
+
+        // if (this._selectedNode) {
+        //     // Highlight nearby compatible notches, if applicable
+        //     const state = this.getState();
+        //     const nodes = state.get("nodes");
+        //     const selected = nodes.get(this._selectedNode);
+        //     if (this.semantics.hasNotches(selected)) {
+        //         for (const nodeId of state.get("board")) {
+        //             const node = nodes.get(nodeId);
+        //             const compatible = this.semantics.notchesCompatible(selected, node);
+        //             if (compatible && compatible.length > 0) {
+        //                 for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
+        //                     const distance = gfxCore.distance(
+        //                         this.views[nodeId].notchPos(
+        //                             nodeId,
+        //                             nodeId,
+        //                             nodeNotchIdx
+        //                         ),
+        //                         this.views[this._selectedNode].notchPos(
+        //                             this._selectedNode,
+        //                             this._selectedNode,
+        //                             selNotchIdx
+        //                         )
+        //                     );
+        //                     if (distance < 50) {
+        //                         this.views[nodeId].highlighted = true;
+        //                     }
+        //                     else {
+        //                         this.views[nodeId].highlighted = false;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    onend() {
+
+    }
+
+    oncancel() {
+
+    }
+}
 
 /**
  * Handle drawing responsibilites for Reduct.
@@ -42,6 +145,10 @@ export class Stage {
         this.canvas.addEventListener("mousemove", (e) => this._mousemove(e));
         this.canvas.addEventListener("mouseup", (e) => this._mouseup(e));
 
+        this.canvas.addEventListener("touchstart", (e) => this._touchstart(e));
+        this.canvas.addEventListener("touchmove", (e) => this._touchmove(e));
+        this.canvas.addEventListener("touchend", (e) => this._touchend(e));
+
         this._selectedNode = null;
         this._hoverNode = null;
         this._targetNode = null;
@@ -49,6 +156,8 @@ export class Stage {
         this._dragOffset = { dx: 0, dy: 0 };
         this._dragStart = { x: 0, y: 0 };
         this._dragged = false;
+
+        this._touches = new Map();
 
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
@@ -497,6 +606,63 @@ export class Stage {
     }
 
     /**
+     * Helper that clones an item from the toolbox.
+     */
+    cloneToolboxItem(selectedNode) {
+        const state = this.getState();
+        const selected = state.getIn([ "nodes", selectedNode ]);
+        // TODO: fix this check/use Record
+        if (selected.has("__meta") && selected.get("__meta").toolbox.unlimited) {
+            // If node has __meta indicating infinite uses,
+            // clone instead.
+            const [ clonedNode, addedNodes ] = this.semantics.clone(
+                selectedNode,
+                state.get("nodes")
+            );
+
+            // TODO: make clone include result in addedNodes
+            const tempNodes = state.get("nodes").withMutations((nodes) => {
+                for (const node of addedNodes) {
+                    nodes.set(node.get("id"), node);
+                }
+                nodes.set(clonedNode.get("id"), clonedNode);
+            });
+            for (const node of addedNodes.concat([ clonedNode ])) {
+                this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+            }
+            this.views[clonedNode.get("id")].pos.x = this.views[selectedNode].pos.x;
+            this.views[clonedNode.get("id")].pos.y = this.views[selectedNode].pos.y;
+
+            Audio.play("place_from_toolbox");
+
+            this.store.dispatch(action.useToolbox(
+                this._selectedNode,
+                clonedNode.get("id"),
+                addedNodes.concat([ clonedNode ])
+            ));
+            return clonedNode.get("id");
+        }
+        return null;
+    }
+
+    /**
+     * Helper that detaches an item from its parent.
+     */
+    detachFromHole(selectedNode, targetNode) {
+        const target = this.getState().getIn([ "nodes", targetNode ]);
+        if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
+            // Detach
+            const pos = gfxCore.absolutePos(this.views[targetNode]);
+            this.store.dispatch(action.detach(targetNode));
+            this.views[selectedNode].pos = pos;
+            this.views[selectedNode].scale.x = 1;
+            this.views[selectedNode].scale.y = 1;
+            return targetNode;
+        }
+        return null;
+    }
+
+    /**
      * Helper that handles animation and updating the store for a small-step.
      */
     step(state, selectedNode) {
@@ -682,5 +848,51 @@ export class Stage {
 
     removeEffect(id) {
         delete this.effects[id];
+    }
+
+    _touchstart(e) {
+        e.preventDefault();
+
+        for (const touch of e.changedTouches) {
+            const pos = this.getMousePos(touch);
+            const [ topNode, targetNode, fromToolbox ] = this.getNodeAtPos(pos);
+            if (topNode === null) continue;
+
+            this.store.dispatch(action.raise(topNode));
+            const dragOffset = { dx: 0, dy: 0 };
+            if (targetNode !== null) {
+                const absPos = gfxCore.absolutePos(this.views[targetNode]);
+                dragOffset.dx = pos.x - absPos.x;
+                dragOffset.dy = pos.y - absPos.y;
+            }
+
+            this._touches.set(touch.identifier, new TouchRecord(
+                this,
+                topNode,
+                targetNode,
+                fromToolbox,
+                dragOffset,
+                pos
+            ));
+        }
+    }
+
+    _touchmove(e) {
+        e.preventDefault();
+        for (const touch of e.changedTouches) {
+            if (this._touches.has(touch.identifier)) {
+                this._touches.get(touch.identifier).onmove(true, this.getMousePos(touch));
+            }
+        }
+        this.draw();
+    }
+
+    _touchend(e) {
+        e.preventDefault();
+        for (const touch of e.changedTouches) {
+            if (this._touches.has(touch.identifier)) {
+                this._touches.get(touch.identifier).onend();
+            }
+        }
     }
 }
