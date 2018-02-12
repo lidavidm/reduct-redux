@@ -58,11 +58,49 @@ export class Tween {
         this.status = "running";
     }
 
-    update(t) {
-        for (const property in this.properties) {
+    update(dt) {
+        if (this.status !== "running") {
+            return false;
+        }
+
+        if (this.reversing) {
+            this.remaining += dt;
+        }
+        else {
+            this.remaining -= dt;
+        }
+
+        let t = Math.max(0, 1 - (this.remaining / this.duration));
+        let completed = false;
+
+        if ((!this.reversing && this.remaining <= 0) ||
+            (this.reversing && this.remaining >= this.duration)) {
+            this.repeat -= 1;
+            if (this.repeat <= 0) {
+                completed = true;
+                t = 1.0;
+            }
+            else {
+                if (this.reverse) {
+                    this.reversing = !this.reversing;
+                }
+                else {
+                    this.remaining = this.duration;
+                }
+                t = Math.max(0, 1 - (this.remaining / this.duration));
+            }
+        }
+
+        for (const property of Object.keys(this.properties)) {
             const { start, end, easing } = this.properties[property];
             this.target[property] = easing(start, end, t);
         }
+
+        if (completed) {
+            this.completed();
+            return false;
+        }
+        return true;
     }
 
     then(cb1, cb2) { return this.promise.then(cb1, cb2); }
@@ -77,7 +115,6 @@ export class Tween {
     }
 
     completed() {
-        this.update(1.0);
         this.status = "completed";
         this.resolve();
         if (this.options.callback) {
@@ -103,35 +140,9 @@ export class Clock {
         const completed = [];
         let running = false;
         for (const tween of this.tweens) {
-            if (tween.status !== "running") continue;
-
-            running = true;
-            if (tween.reversing) {
-                tween.remaining += dt;
-            }
-            else {
-                tween.remaining -= dt;
-            }
-
-            if ((!tween.reversing && tween.remaining <= 0) ||
-                (tween.reversing && tween.remaining >= tween.duration)) {
-                tween.repeat -= 1;
-                if (tween.repeat <= 0) {
-                    tween.completed();
-                    completed.push(tween);
-                }
-                else {
-                    // TODO: should update the tween on this frame too
-                    if (tween.reverse) {
-                        tween.reversing = !tween.reversing;
-                    }
-                    else {
-                        tween.remaining = tween.duration;
-                    }
-                }
-            }
-            else {
-                tween.update(Math.max(0, 1 - (tween.remaining / tween.duration)));
+            running = tween.update(dt) || running;
+            if (tween.status === "completed") {
+                completed.push(tween);
             }
         }
 
