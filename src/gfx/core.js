@@ -170,10 +170,10 @@ export function absolutePos(projection) {
         projection = projection.parent;
         x *= projection.scale.x;
         y *= projection.scale.y;
-        x += projection.pos.x - projection.anchor.x * projection.size.w * projection.scale.x;
-        y += projection.pos.y - projection.anchor.y * projection.size.h * projection.scale.y;
+        x += projection.pos.x - (projection.anchor.x * projection.size.w * projection.scale.x);
+        y += projection.pos.y - (projection.anchor.y * projection.size.h * projection.scale.y);
     }
-    return { x: x, y: y };
+    return { x, y };
 }
 
 export function absoluteSize(projection) {
@@ -185,7 +185,7 @@ export function absoluteSize(projection) {
         w *= projection.scale.x;
         h *= projection.scale.y;
     }
-    return { w: w, h: h };
+    return { w, h };
 }
 
 export function centerPos(projection) {

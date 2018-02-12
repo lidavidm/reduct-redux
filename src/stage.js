@@ -236,7 +236,7 @@ export class Stage {
         this._dragStart = pos;
         if (this._selectedNode !== null) {
             this.store.dispatch(action.raise(this._selectedNode));
-            const absPos = gfxCore.absolutePos(this.views[this._selectedNode]);
+            const absPos = gfxCore.absolutePos(this.views[this._targetNode]);
             this._dragOffset.dx = pos.x - absPos.x;
             this._dragOffset.dy = pos.y - absPos.y;
         }
@@ -283,7 +283,7 @@ export class Stage {
                 }
             }
 
-            const view = this.views[this._selectedNode];
+            const view = this.views[this._targetNode];
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this._dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this._dragOffset.dy) + (view.anchor.y * absSize.h);
