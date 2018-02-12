@@ -502,6 +502,17 @@ export class Stage {
     step(state, selectedNode) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
+
+        const reducing = [];
+        const reductionAnimation = animate.infinite((dt) => {
+            for (const id of reducing) {
+                this.views[id].stroke = {
+                    color: "blue",
+                    lineWidth: 5,
+                };
+            }
+        });
+
         this.semantics.interpreter.reduce(this, state, node, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
@@ -549,6 +560,15 @@ export class Stage {
                     );
                 }
 
+                const updatedNodes = this.getState().get("nodes");
+                for (const id of newNodeIds) {
+                    let n = updatedNodes.get(id);
+                    while (n.has("parent")) {
+                        n = updatedNodes.get(n.get("parent"));
+                    }
+                    reducing.push(n.get("id"));
+                }
+
                 return Promise.resolve(this.getState());
             },
             error: (errorNodeId) => {
@@ -558,6 +578,8 @@ export class Stage {
                     speed: 150,
                 });
             },
+        }).then(() => {
+            reductionAnimation.stop();
         });
     }
 

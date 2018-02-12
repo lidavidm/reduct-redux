@@ -142,6 +142,7 @@ export class InfiniteTween extends Tween {
         super(clock, options);
 
         this.updater = updater;
+        this.stopped = false;
     }
 
     update(dt) {
@@ -149,13 +150,17 @@ export class InfiniteTween extends Tween {
             return false;
         }
 
-        const finished = this.updater(dt);
+        const finished = this.stopped || this.updater(dt);
         if (finished) {
             this.completed();
             return false;
         }
 
         return true;
+    }
+
+    stop() {
+        this.stopped = true;
     }
 }
 
