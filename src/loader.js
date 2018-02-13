@@ -1,6 +1,7 @@
 import { Howl } from "howler";
 
 import * as gfx from "./gfx/core";
+import * as globalProgressions from "./game/progression";
 
 const BASE_PATH = "resources/";
 
@@ -192,6 +193,8 @@ export class Loader {
                     console.error("Could not finish digraph.");
                     break;
                 }
+
+                globalProgressions.PROGRESSIONS[name].progression = progression;
 
                 this.finishLoad();
             });

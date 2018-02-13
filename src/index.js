@@ -17,7 +17,7 @@ Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
     "resources/audio/output.wav",
 ]);
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
-Loader.loadChapters("progression", progression.ACTIVE_PROGRESSION_DEFINITION);
+Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Loader.finished.then(initialize);
 
@@ -69,9 +69,9 @@ function initialize() {
         window.next();
     });
 
-    for (const chapterName of Loader.progressions["progression"].linearChapters) {
+    for (const chapterName of Loader.progressions["Elementary"].linearChapters) {
         const option = document.createElement("option");
-        option.setAttribute("value", Loader.progressions["progression"].chapters[chapterName].startIdx);
+        option.setAttribute("value", Loader.progressions["Elementary"].chapters[chapterName].startIdx);
         option.innerText = `Chapter: ${chapterName}`;
         document.querySelector("#chapter").appendChild(option);
     }
@@ -86,7 +86,7 @@ window.reset = function start() {
     stg.reset();
 
     level.startLevel(
-        Loader.progressions["progression"].levels[progression.currentLevel()],
+        Loader.progressions["Elementary"].levels[progression.currentLevel()],
         es6.parser.parse,
         store,
         stg

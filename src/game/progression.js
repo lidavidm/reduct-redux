@@ -35,12 +35,15 @@ export function jumpToLevel(idx) {
 }
 
 export function nextLevel() {
-    currentLevelIdx++;
+    currentLevelIdx = Math.min(
+        currentLevelIdx + 1,
+        ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1
+    );
     save();
 }
 
 export function prevLevel() {
-    currentLevelIdx--;
+    currentLevelIdx = Math.max(0, currentLevelIdx - 1);
     save();
 }
 
@@ -52,4 +55,11 @@ export function restore() {
     if (window.localStorage["currentLevelIdx"]) {
         currentLevelIdx = window.parseInt(window.localStorage["currentLevelIdx"], 10);
     }
+
+    // Guard against negatives, NaN
+    if (currentLevelIdx < 0 || !(currentLevelIdx >= 0)) currentLevelIdx = 0;
+    if (currentLevelIdx > ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1) {
+        currentLevelIdx = ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1;
+    }
+    save();
 }
