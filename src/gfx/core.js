@@ -83,15 +83,16 @@ export function notchProjection(options) {
             };
             ctx.save();
             if (this.highlighted) {
-                ctx.lineWidth = 4;
-                ctx.strokeStyle = "magenta";
+                util.setStroke(ctx, {
+                    lineWidth: 4,
+                    color: "magenta",
+                });
             }
             else if (this.stroke) {
-                ctx.lineWidth = this.stroke.lineWidth;
-                ctx.strokeStyle = this.stroke.color;
+                util.setStroke(ctx, this);
             }
             else {
-                ctx.lineWidth = 0;
+                util.setStroke(ctx, null);
             }
             if (this.shadow) ctx.fillStyle = this.shadowColor;
             draw(this.shadowOffset);
@@ -137,8 +138,11 @@ export function debugDraw(ctx, projection, offset) {
 export function hoverOutline(id, projection, stage, offset) {
     if (stage.isHovered(id)) {
         const { x, y } = util.topLeftPos(projection, offset);
-        stage.ctx.strokeStyle = "yellow";
-        stage.ctx.lineWidth = 2;
+        util.setStroke(stage.ctx, {
+            lineWidth: 2,
+            color: projection.highlightColor || "yellow",
+        });
+
         primitive.roundRect(
             stage.ctx,
             x, y,
@@ -232,32 +236,35 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             let shouldStroke = false;
             if (this.stroke) {
                 shouldStroke = true;
-                ctx.lineWidth = this.stroke.lineWidth;
-                ctx.strokeStyle = this.stroke.color;
+                util.setStroke(ctx, this);
             }
             else if (stage.isHovered(id)) {
-                if (this.highlightColor) {
-                    stage.ctx.strokeStyle = this.highlightColor;
-                }
-                else {
-                    stage.ctx.strokeStyle = "yellow";
-                }
-                stage.ctx.lineWidth = 2;
+                util.setStroke(ctx, {
+                    lineWidth: 2,
+                    color: this.highlightColor || "yellow",
+                });
                 shouldStroke = true;
             }
             else if (!!(node && node.get("parent") && node.get("locked")) &&
                      this.strokeWhenChild) {
                 // Stroke if we have a parent to make it clearer.
-                ctx.strokeStyle = "gray";
-                ctx.lineWidth = 1;
+                util.setStroke(ctx, {
+                    lineWidth: 1,
+                    color: "gray",
+                });
                 shouldStroke = true;
             }
             else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
                 if (node.get("complete")) {
-                    stage.ctx.strokeStyle = "DeepPink";
-                    stage.ctx.lineWidth = 4;
+                    util.setStroke(ctx, {
+                        lineWidth: 4,
+                        color: "DeepPink",
+                    });
                     shouldStroke = true;
                 }
+            }
+            else {
+                util.setStroke(ctx, null);
             }
 
             if (this.opacity) ctx.globalAlpha = this.opacity;

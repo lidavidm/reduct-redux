@@ -23,8 +23,10 @@ function drawPrimitive(exprId, projection, state, stage, offset,
     if (hasParent && !locked) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         ctx.fillStyle = "#000";
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 2;
+        util.setStroke(ctx, {
+            lineWidth: 2,
+            color: projection.highlightColor || "yellow",
+        });
         primitive.roundRect(
             ctx,
             offset.x + projection.pos.x * offset.sx,
@@ -44,13 +46,15 @@ function drawPrimitive(exprId, projection, state, stage, offset,
             true, stage.isHovered(exprId), null);
     }
     else if ((!hasParent || !locked) && stage.isHovered(exprId)) {
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 2;
+        util.setStroke(ctx, {
+            lineWidth: 2,
+            color: projection.highlightColor || "yellow",
+        });
+
         stroke = true;
     }
     else if (projection.stroke) {
-        ctx.lineWidth = projection.stroke.lineWidth;
-        ctx.strokeStyle = projection.stroke.color;
+        util.setStroke(ctx, projection);
         stroke = true;
     }
 

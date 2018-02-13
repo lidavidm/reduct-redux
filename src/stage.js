@@ -80,7 +80,6 @@ class TouchRecord {
     }
 
     onend(state, mousePos) {
-        console.log(this.dragged, this.topNode, this.fromToolbox, this.targetNode);
         if (!this.dragged && this.topNode !== null && !this.fromToolbox) {
             // Click on object to reduce
             let selectedNode = this.topNode;
