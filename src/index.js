@@ -49,7 +49,6 @@ function initialize() {
     });
 
     progression.restore();
-    window.reset();
 
     window.stage = stg;
 
@@ -80,6 +79,8 @@ function initialize() {
         progression.jumpToLevel(lvl);
         window.reset();
     });
+
+    window.reset();
 }
 
 window.reset = function start() {
@@ -93,6 +94,17 @@ window.reset = function start() {
     );
 
     document.querySelector("#level").innerText = progression.currentLevel().toString();
+    // Sync chapter dropdown with current level
+    let prevOption = null;
+    for (const option of document.querySelectorAll("#chapter option")) {
+        if (window.parseInt(option.getAttribute("value"), 10) <= progression.currentLevel()) {
+            prevOption = option;
+        }
+        else {
+            break;
+        }
+    }
+    document.querySelector("#chapter").value = prevOption.getAttribute("value");
 };
 
 window.next = function next() {
