@@ -828,7 +828,8 @@ export class Stage {
     }
 
     _mousemove(e) {
-        this._touches.get("mouse").onmove(e.buttons > 0, this.getMousePos(e));
+        const buttons = typeof e.buttons !== "undefined" ? e.buttons : e.which;
+        this._touches.get("mouse").onmove(buttons > 0, this.getMousePos(e));
         this.draw();
     }
 
