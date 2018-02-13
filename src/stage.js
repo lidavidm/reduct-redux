@@ -540,11 +540,15 @@ export class Stage {
         const node = nodes.get(selectedNode);
 
         const reducing = [];
+        let time = 0;
         const reductionAnimation = animate.infinite((dt) => {
+            time += dt;
             for (const id of reducing) {
                 this.views[id].stroke = {
-                    color: "blue",
+                    color: "lightblue",
                     lineWidth: 5,
+                    lineDash: [5, 10],
+                    lineDashOffset: time,
                 };
             }
         });
