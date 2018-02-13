@@ -172,14 +172,6 @@ export class Stage {
         this.canvas.addEventListener("touchmove", (e) => this._touchmove(e));
         this.canvas.addEventListener("touchend", (e) => this._touchend(e));
 
-        this._selectedNode = null;
-        this._hoverNode = null;
-        this._targetNode = null;
-        this._fromToolbox = false;
-        this._dragOffset = { dx: 0, dy: 0 };
-        this._dragStart = { x: 0, y: 0 };
-        this._dragged = false;
-
         this._touches = new Map();
 
         this._touches.set("mouse", new TouchRecord(
@@ -338,7 +330,7 @@ export class Stage {
         let toolbox = false;
 
         for (const nodeId of state.get("board").toArray().reverse()) {
-            if (nodeId === this._selectedNode || nodeId === selectedId) continue;
+            if (nodeId === selectedId) continue;
 
             const res = check(pos, nodeId, nodeId, null, {
                 x: 0,
@@ -358,15 +350,6 @@ export class Stage {
         }
 
         return [ root, result, toolbox ];
-    }
-
-    findHoverNode(pos) {
-        const before = this._hoverNode;
-        const [ root, target ] = this.getNodeAtPos(pos);
-        this._hoverNode = target;
-        if (target !== before) {
-            this.store.dispatch(action.hover(this._hoverNode));
-        }
     }
 
     /**
@@ -739,8 +722,6 @@ export class Stage {
     }
 
     isSelected(id) {
-        if (this._selectedNode === id) return true;
-
         for (const touch of this._touches.values()) {
             if (touch.targetNode === id) {
                 return true;
@@ -750,8 +731,6 @@ export class Stage {
     }
 
     isHovered(id) {
-        if (this._hoverNode === id) return true;
-
         for (const touch of this._touches.values()) {
             if (touch.hoverNode === id) {
                 return true;
