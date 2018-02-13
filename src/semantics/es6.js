@@ -332,7 +332,11 @@ export default transform({
         lambdaArg: {
             fields: ["name", "functionHole"],
             subexpressions: [],
-            alwaysTargetable: true,
+            targetable: (semant, state, expr) => {
+                const nodes = state.get("nodes");
+                const lambdaParent = nodes.get(expr.get("parent"));
+                return !lambdaParent.has("parent");
+            },
             projection: {
                 type: "dynamic",
                 resetFields: ["text", "color"],
