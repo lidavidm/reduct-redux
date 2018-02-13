@@ -16,98 +16,121 @@ class TouchRecord {
         this.dragOffset = dragOffset;
         this.dragStart = dragStart;
         this.dragged = false;
+        this.hoverNode = null;
+    }
+
+    findHoverNode(pos) {
+        const before = this.hoverNode;
+        const [ _, target ] = this.stage.getNodeAtPos(pos, this.topNode);
+        this.hoverNode = target;
+        if (target !== before) {
+            // TODO: get rid of this
+            this.stage.store.dispatch(action.hover(this.hoverNode));
+        }
     }
 
     onmove(mouseDown, mousePos) {
-        // TODO: if touch event, don't check buttons
         if (mouseDown && this.topNode !== null) {
-            const view = this.stage.views[this.targetNode];
-            const absSize = gfxCore.absoluteSize(view);
-            view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
-            view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
-
             // 5-pixel tolerance before a click becomes a drag
             if (!this.dragStart || gfxCore.distance(this.dragStart, mousePos) > 5) {
                 this.dragStart = null;
                 this.dragged = true;
 
-                if (this._fromToolbox) {
+                if (this.fromToolbox) {
                     const resultNode = this.stage.cloneToolboxItem(this.topNode);
                     if (resultNode !== null) {
                         // Selected node was an __unlimited node
                         this.topNode = resultNode;
-                        this.targetNode = null;
+                        this.targetNode = resultNode;
                         this.fromToolbox = false;
                     }
                 }
             }
+
+            const view = this.stage.views[this.targetNode];
+            const absSize = gfxCore.absoluteSize(view);
+            view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
+            view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
         }
 
         // TODO: add tolerance here as well
-        if (mouseDown && this._targetNode) {
+        if (mouseDown && this.targetNode) {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
                 this.topNode = newSelected;
             }
         }
 
-        // TODO: need multiple hover nodes
-        // this.findHoverNode(mousePos);
-        // if (this._selectedNode && this._hoverNode) {
-        //     const state = this.getState();
-        //     const holeExprType = state.getIn([ "nodes", this._hoverNode, "type" ]);
-        //     const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
-        //     const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
-        //     // TODO: don't hardcode these checks
-        //     if ((holeExprType !== "missing" &&
-        //          holeExprType !== "lambdaArg") ||
-        //         (holeType && exprType && holeType !== exprType)) {
-        //         this._hoverNode = null;
-        //     }
-        // }
+        this.findHoverNode(mousePos);
+        if (this.topNode && this.hoverNode) {
+            const state = this.stage.getState();
+            const holeExprType = state.getIn([ "nodes", this.hoverNode, "type" ]);
+            const holeType = state.getIn([ "nodes", this.hoverNode, "ty" ]);
+            const exprType = state.getIn([ "nodes", this.topNode, "ty" ]);
+            // TODO: don't hardcode these checks
+            if ((holeExprType !== "missing" &&
+                 holeExprType !== "lambdaArg") ||
+                (holeType && exprType && holeType !== exprType)) {
+                this.hoverNode = null;
+            }
+        }
 
-        // if (this._selectedNode) {
-        //     // Highlight nearby compatible notches, if applicable
-        //     const state = this.getState();
-        //     const nodes = state.get("nodes");
-        //     const selected = nodes.get(this._selectedNode);
-        //     if (this.semantics.hasNotches(selected)) {
-        //         for (const nodeId of state.get("board")) {
-        //             const node = nodes.get(nodeId);
-        //             const compatible = this.semantics.notchesCompatible(selected, node);
-        //             if (compatible && compatible.length > 0) {
-        //                 for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
-        //                     const distance = gfxCore.distance(
-        //                         this.views[nodeId].notchPos(
-        //                             nodeId,
-        //                             nodeId,
-        //                             nodeNotchIdx
-        //                         ),
-        //                         this.views[this._selectedNode].notchPos(
-        //                             this._selectedNode,
-        //                             this._selectedNode,
-        //                             selNotchIdx
-        //                         )
-        //                     );
-        //                     if (distance < 50) {
-        //                         this.views[nodeId].highlighted = true;
-        //                     }
-        //                     else {
-        //                         this.views[nodeId].highlighted = false;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        // Highlight nearby compatible notches, if applicable
+        this.stage.highlightNotches(this.topNode);
     }
 
-    onend() {
+    onend(state, mousePos) {
+        console.log(this.dragged, this.topNode, this.fromToolbox, this.targetNode);
+        if (!this.dragged && this.topNode !== null && !this.fromToolbox) {
+            // Click on object to reduce
+            let selectedNode = this.topNode;
 
+            if (this.targetNode) {
+                const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
+                if (!targetLocked) {
+                    selectedNode = this.targetNode;
+                }
+            }
+
+            this.stage.step(state, selectedNode);
+        }
+        else if (this.dragged && this.hoverNode &&
+                 state.getIn([ "nodes", this.hoverNode, "type"]) === "missing") {
+            // Drag something into hole
+            // Use type inference to decide whether hole can be filled
+            const holeType = state.getIn([ "nodes", this.hoverNode, "ty" ]);
+            const exprType = state.getIn([ "nodes", this.topNode, "ty" ]);
+            if (!holeType || !exprType || holeType === exprType) {
+                Audio.play("pop");
+
+                this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
+            }
+        }
+        else if (this.dragged && this.hoverNode && this.topNode) {
+            // Apply to lambda
+            const arg = this.topNode;
+            const target = this.hoverNode;
+            this.stage.betaReduce(state, target, arg);
+        }
+        else if (this.dragged && this.fromToolbox) {
+            // Take item out of toolbox
+            this.stage.store.dispatch(action.useToolbox(this.topNode));
+        }
+
+        // Bump items out of toolbox
+        this.stage.bumpAwayFromToolbox(this.topNode);
+
+        this.stage.snapNotches(this.topNode);
+
+        this.findHoverNode(mousePos);
     }
 
-    oncancel() {
-
+    reset() {
+        this.topNode = null;
+        this.hoverNode = null;
+        this.targetNode = null;
+        this.dragged = false;
+        this.fromToolbox = false;
     }
 }
 
@@ -158,6 +181,15 @@ export class Stage {
         this._dragged = false;
 
         this._touches = new Map();
+
+        this._touches.set("mouse", new TouchRecord(
+            this,
+            null,
+            null,
+            false,
+            { dx: 0, dy: 0 },
+            { x: 0, y: 0 }
+        ));
 
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
@@ -256,7 +288,7 @@ export class Stage {
      *
      * TODO: return all possible nodes?
      */
-    getNodeAtPos(pos) {
+    getNodeAtPos(pos, selectedId=null) {
         const state = this.getState();
         const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
             const curNode = state.getIn([ "nodes", curExprId ]);
@@ -306,7 +338,7 @@ export class Stage {
         let toolbox = false;
 
         for (const nodeId of state.get("board").toArray().reverse()) {
-            if (nodeId === this._selectedNode) continue;
+            if (nodeId === this._selectedNode || nodeId === selectedId) continue;
 
             const res = check(pos, nodeId, nodeId, null, {
                 x: 0,
@@ -335,274 +367,6 @@ export class Stage {
         if (target !== before) {
             this.store.dispatch(action.hover(this._hoverNode));
         }
-    }
-
-    _mousedown(e) {
-        const pos = this.getMousePos(e);
-        [ this._selectedNode, this._targetNode, this._fromToolbox ] = this.getNodeAtPos(pos);
-        this._dragOffset.dx = 0;
-        this._dragOffset.dy = 0;
-        this._dragStart = pos;
-        if (this._selectedNode !== null) {
-            this.store.dispatch(action.raise(this._selectedNode));
-            const absPos = gfxCore.absolutePos(this.views[this._targetNode]);
-            this._dragOffset.dx = pos.x - absPos.x;
-            this._dragOffset.dy = pos.y - absPos.y;
-        }
-    }
-
-    _mousemove(e) {
-        const mousePos = this.getMousePos(e);
-        if (e.buttons > 0 && this._selectedNode !== null) {
-            if (this._fromToolbox) {
-                const state = this.getState();
-                const selected = state.getIn([ "nodes", this._selectedNode ]);
-                // TODO: fix this check/use Record
-                if (selected.has("__meta") && selected.get("__meta").toolbox.unlimited) {
-                    // If node has __meta indicating infinite uses,
-                    // clone instead.
-                    const [ clonedNode, addedNodes ] = this.semantics.clone(
-                        this._selectedNode,
-                        state.get("nodes")
-                    );
-
-                    // TODO: make clone include result in addedNodes
-                    const tempNodes = state.get("nodes").withMutations((nodes) => {
-                        for (const node of addedNodes) {
-                            nodes.set(node.get("id"), node);
-                        }
-                        nodes.set(clonedNode.get("id"), clonedNode);
-                    });
-                    for (const node of addedNodes.concat([ clonedNode ])) {
-                        this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
-                    }
-                    this.views[clonedNode.get("id")].pos.x = this.views[this._selectedNode].pos.x;
-                    this.views[clonedNode.get("id")].pos.y = this.views[this._selectedNode].pos.y;
-
-                    Audio.play("place_from_toolbox");
-
-                    this.store.dispatch(action.useToolbox(
-                        this._selectedNode,
-                        clonedNode.get("id"),
-                        addedNodes.concat([ clonedNode ])
-                    ));
-                    this._selectedNode = clonedNode.get("id");
-                    this._targetNode = null;
-                    this._fromToolbox = false;
-                }
-            }
-
-            const view = this.views[this._targetNode];
-            const absSize = gfxCore.absoluteSize(view);
-            view.pos.x = (mousePos.x - this._dragOffset.dx) + (view.anchor.x * absSize.w);
-            view.pos.y = (mousePos.y - this._dragOffset.dy) + (view.anchor.y * absSize.h);
-            this.draw();
-
-            // 5-pixel tolerance before a click becomes a drag
-            if (!this._dragStart || gfxCore.distance(this._dragStart, mousePos) > 5) {
-                this._dragStart = null;
-                this._dragged = true;
-            }
-        }
-
-        if (e.buttons > 0 && this._targetNode) {
-            const target = this.getState().getIn([ "nodes", this._targetNode ]);
-            if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
-                // Detach
-                const pos = gfxCore.absolutePos(this.views[this._targetNode]);
-                this.store.dispatch(action.detach(this._targetNode));
-                this._selectedNode = this._targetNode;
-                this.views[this._selectedNode].pos = pos;
-                this.views[this._selectedNode].scale.x = 1;
-                this.views[this._selectedNode].scale.y = 1;
-            }
-        }
-
-        this.findHoverNode(this.getMousePos(e));
-        if (this._selectedNode && this._hoverNode) {
-            const state = this.getState();
-            const holeExprType = state.getIn([ "nodes", this._hoverNode, "type" ]);
-            const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
-            const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
-            // TODO: don't hardcode these checks
-            if ((holeExprType !== "missing" &&
-                 holeExprType !== "lambdaArg") ||
-                (holeType && exprType && holeType !== exprType)) {
-                this._hoverNode = null;
-            }
-        }
-
-        if (this._selectedNode) {
-            // Highlight nearby compatible notches, if applicable
-            const state = this.getState();
-            const nodes = state.get("nodes");
-            const selected = nodes.get(this._selectedNode);
-            if (this.semantics.hasNotches(selected)) {
-                for (const nodeId of state.get("board")) {
-                    const node = nodes.get(nodeId);
-                    const compatible = this.semantics.notchesCompatible(selected, node);
-                    if (compatible && compatible.length > 0) {
-                        for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
-                            const distance = gfxCore.distance(
-                                this.views[nodeId].notchPos(
-                                    nodeId,
-                                    nodeId,
-                                    nodeNotchIdx
-                                ),
-                                this.views[this._selectedNode].notchPos(
-                                    this._selectedNode,
-                                    this._selectedNode,
-                                    selNotchIdx
-                                )
-                            );
-                            if (distance < 50) {
-                                this.views[nodeId].highlighted = true;
-                            }
-                            else {
-                                this.views[nodeId].highlighted = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    _mouseup(e) {
-        const state = this.getState();
-
-        if (!this._dragged && this._selectedNode !== null && !this._fromToolbox) {
-            // Click on object to reduce
-            let selectedNode = this._selectedNode;
-
-            if (this._targetNode) {
-                const targetLocked = state.getIn([ "nodes", this._targetNode, "locked" ]);
-                if (!targetLocked) {
-                    selectedNode = this._targetNode;
-                }
-            }
-
-            this.step(state, selectedNode);
-        }
-        else if (this._dragged && this._hoverNode &&
-                 state.getIn([ "nodes", this._hoverNode, "type"]) === "missing") {
-            // Drag something into hole
-            // Use type inference to decide whether hole can be filled
-            const holeType = state.getIn([ "nodes", this._hoverNode, "ty" ]);
-            const exprType = state.getIn([ "nodes", this._selectedNode, "ty" ]);
-            if (!holeType || !exprType || holeType === exprType) {
-                Audio.play("pop");
-
-                this.store.dispatch(action.fillHole(this._hoverNode, this._selectedNode));
-            }
-        }
-        else if (this._dragged && this._hoverNode && this._selectedNode) {
-            // Apply to lambda
-            const state = this.getState();
-            const arg = this._selectedNode;
-            const target = this._hoverNode;
-            this.betaReduce(state, target, arg);
-        }
-        else if (this._dragged && this._fromToolbox) {
-            // Take item out of toolbox
-            this.store.dispatch(action.useToolbox(this._selectedNode));
-        }
-
-        // Bump items out of toolbox
-        const projection = this.views[this._selectedNode];
-
-        if (projection) {
-            const topLeft = gfxCore.util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
-            const bottom = { x: 0, y: topLeft.y + projection.size.h };
-            if (this.toolbox.containsPoint(bottom)) {
-                const targetY = this.toolbox.pos.y -
-                      (projection.size.h * (1 - projection.anchor.y)) - 25;
-                animate.tween(projection.pos, { y: targetY }, {
-                    duration: 250,
-                    easing: animate.Easing.Cubic.Out,
-                });
-            }
-        }
-
-        const board = this.getState().get("board");
-        for (const nodeId of board) {
-            if (this.views[nodeId].highlighted) {
-                this.views[nodeId].highlighted = false;
-            }
-        }
-        const nodes = this.getState().get("nodes");
-        const selected = nodes.get(this._selectedNode);
-        if (selected && this.semantics.hasNotches(selected)) {
-            let leastDistance = 9999;
-            let closestNotch = null;
-
-            for (const nodeId of state.get("board")) {
-                if (nodeId === this._selectedNode) continue;
-
-                const node = nodes.get(nodeId);
-                const compatible = this.semantics.notchesCompatible(selected, node);
-                // TODO: actually check distance to notch
-                if (compatible && compatible.length > 0) {
-                    for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
-                        const distance = gfxCore.distance(
-                            this.views[nodeId].notchPos(
-                                nodeId,
-                                nodeId,
-                                nodeNotchIdx
-                            ),
-                            this.views[this._selectedNode].notchPos(
-                                this._selectedNode,
-                                this._selectedNode,
-                                selNotchIdx
-                            )
-                        );
-                        if (distance < 50) {
-                            this.views[nodeId].highlighted = true;
-                        }
-                        else {
-                            this.views[nodeId].highlighted = false;
-                        }
-
-                        if (distance < leastDistance) {
-                            leastDistance = distance;
-                            closestNotch = [ nodeId, compatible ];
-                        }
-                    }
-                }
-            }
-
-            if (leastDistance <= 150 && closestNotch !== null) {
-                // TODO: actually check the matched notches
-                const [ parent, notchPair ] = closestNotch;
-                if (this.semantics.notchesAttachable(
-                    this,
-                    this.getState(),
-                    parent,
-                    this._selectedNode,
-                    notchPair[0]
-                )) {
-                    this.views[parent].highlighted = false;
-                    animate.fx.blink(this, this.views[parent], {
-                        times: 2,
-                        color: "magenta",
-                        speed: 100,
-                        lineWidth: 5,
-                    });
-                    animate.fx.blink(this, this.views[this._selectedNode], {
-                        times: 2,
-                        color: "magenta",
-                        speed: 100,
-                        lineWidth: 5,
-                    });
-                    this.store.dispatch(action.attachNotch(parent, 0, this._selectedNode, 0));
-                }
-            }
-        }
-
-        this._selectedNode = this._targetNode = null;
-        this.findHoverNode(this.getMousePos(e));
-        this._dragged = false;
-        this.draw();
     }
 
     /**
@@ -636,7 +400,7 @@ export class Stage {
             Audio.play("place_from_toolbox");
 
             this.store.dispatch(action.useToolbox(
-                this._selectedNode,
+                selectedNode,
                 clonedNode.get("id"),
                 addedNodes.concat([ clonedNode ])
             ));
@@ -651,15 +415,139 @@ export class Stage {
     detachFromHole(selectedNode, targetNode) {
         const target = this.getState().getIn([ "nodes", targetNode ]);
         if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
-            // Detach
             const pos = gfxCore.absolutePos(this.views[targetNode]);
             this.store.dispatch(action.detach(targetNode));
-            this.views[selectedNode].pos = pos;
-            this.views[selectedNode].scale.x = 1;
-            this.views[selectedNode].scale.y = 1;
+            this.views[targetNode].pos = pos;
+            this.views[targetNode].scale.x = 1;
+            this.views[targetNode].scale.y = 1;
             return targetNode;
         }
         return null;
+    }
+
+    /**
+     * Bump items outside of the toolbox
+     */
+    bumpAwayFromToolbox(id) {
+        const projection = this.views[id];
+
+        if (projection) {
+            const topLeft = gfxCore.util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
+            const bottom = { x: 0, y: topLeft.y + projection.size.h };
+            if (this.toolbox.containsPoint(bottom)) {
+                const targetY = this.toolbox.pos.y -
+                      (projection.size.h * (1 - projection.anchor.y)) - 25;
+                animate.tween(projection.pos, { y: targetY }, {
+                    duration: 250,
+                    easing: animate.Easing.Cubic.Out,
+                });
+            }
+        }
+    }
+
+    /**
+     * Helper to highlight applicable notches near a given expression.
+     */
+    highlightNotches(id) {
+        const state = this.getState();
+        const nodes = state.get("nodes");
+        const selected = nodes.get(id);
+        if (selected && this.semantics.hasNotches(selected)) {
+            for (const nodeId of state.get("board")) {
+                const node = nodes.get(nodeId);
+                const compatible = this.semantics.notchesCompatible(selected, node);
+                if (compatible && compatible.length > 0) {
+                    for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
+                        const distance = gfxCore.distance(
+                            this.views[nodeId].notchPos(nodeId, nodeId, nodeNotchIdx),
+                            this.views[id].notchPos(id, id, selNotchIdx)
+                        );
+                        if (distance < 50) {
+                            this.views[nodeId].highlighted = true;
+                        }
+                        else {
+                            this.views[nodeId].highlighted = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper to combine notches where needed.
+     */
+    snapNotches(selectedNode) {
+        const state = this.getState();
+
+        const board = state.get("board");
+        const nodes = state.get("nodes");
+
+        for (const nodeId of board) {
+            if (this.views[nodeId].highlighted) {
+                this.views[nodeId].highlighted = false;
+            }
+        }
+
+        const selected = nodes.get(selectedNode);
+        if (selected && this.semantics.hasNotches(selected)) {
+            let leastDistance = 9999;
+            let closestNotch = null;
+
+            for (const nodeId of state.get("board")) {
+                if (nodeId === selectedNode) continue;
+
+                const node = nodes.get(nodeId);
+                const compatible = this.semantics.notchesCompatible(selected, node);
+                // TODO: actually check distance to notch
+                if (compatible && compatible.length > 0) {
+                    for (const [ selNotchIdx, nodeNotchIdx ] of compatible) {
+                        const distance = gfxCore.distance(
+                            this.views[nodeId].notchPos(nodeId, nodeId, nodeNotchIdx),
+                            this.views[selectedNode].notchPos(selectedNode, selectedNode, selNotchIdx)
+                        );
+                        if (distance < 50) {
+                            this.views[nodeId].highlighted = true;
+                        }
+                        else {
+                            this.views[nodeId].highlighted = false;
+                        }
+
+                        if (distance < leastDistance) {
+                            leastDistance = distance;
+                            closestNotch = [ nodeId, compatible ];
+                        }
+                    }
+                }
+            }
+
+            if (leastDistance <= 150 && closestNotch !== null) {
+                // TODO: actually check the matched notches
+                const [ parent, notchPair ] = closestNotch;
+                if (this.semantics.notchesAttachable(
+                    this,
+                    this.getState(),
+                    parent,
+                    selectedNode,
+                    notchPair[0]
+                )) {
+                    this.views[parent].highlighted = false;
+                    animate.fx.blink(this, this.views[parent], {
+                        times: 2,
+                        color: "magenta",
+                        speed: 100,
+                        lineWidth: 5,
+                    });
+                    animate.fx.blink(this, this.views[selectedNode], {
+                        times: 2,
+                        color: "magenta",
+                        speed: 100,
+                        lineWidth: 5,
+                    });
+                    this.store.dispatch(action.attachNotch(parent, 0, selectedNode, 0));
+                }
+            }
+        }
     }
 
     /**
@@ -850,6 +738,28 @@ export class Stage {
         delete this.effects[id];
     }
 
+    isSelected(id) {
+        if (this._selectedNode === id) return true;
+
+        for (const touch of this._touches.values()) {
+            if (touch.targetNode === id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    isHovered(id) {
+        if (this._hoverNode === id) return true;
+
+        for (const touch of this._touches.values()) {
+            if (touch.hoverNode === id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     _touchstart(e) {
         e.preventDefault();
 
@@ -889,10 +799,48 @@ export class Stage {
 
     _touchend(e) {
         e.preventDefault();
+        const state = this.getState();
         for (const touch of e.changedTouches) {
             if (this._touches.has(touch.identifier)) {
-                this._touches.get(touch.identifier).onend();
+                this._touches.get(touch.identifier).onend(state, this.getMousePos(touch));
+                this._touches.delete(touch.identifier);
             }
         }
+        this.draw();
+    }
+
+    _mousedown(e) {
+        const pos = this.getMousePos(e);
+        const [ topNode, targetNode, fromToolbox ] = this.getNodeAtPos(pos);
+        if (topNode === null) return;
+
+        this.store.dispatch(action.raise(topNode));
+        const dragOffset = { dx: 0, dy: 0 };
+        if (targetNode !== null) {
+            const absPos = gfxCore.absolutePos(this.views[targetNode]);
+            dragOffset.dx = pos.x - absPos.x;
+            dragOffset.dy = pos.y - absPos.y;
+        }
+
+        const touch = this._touches.get("mouse");
+        touch.topNode = topNode;
+        touch.targetNode = targetNode;
+        touch.fromToolbox = fromToolbox;
+        touch.dragOffset = dragOffset;
+        touch.dragStart = pos;
+
+        this.draw();
+    }
+
+    _mousemove(e) {
+        this._touches.get("mouse").onmove(e.buttons > 0, this.getMousePos(e));
+        this.draw();
+    }
+
+    _mouseup(e) {
+        const mouse = this._touches.get("mouse");
+        mouse.onend(this.getState(), this.getMousePos(e));
+        mouse.reset();
+        this.draw();
     }
 }

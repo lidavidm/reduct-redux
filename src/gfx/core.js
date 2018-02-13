@@ -135,7 +135,7 @@ export function debugDraw(ctx, projection, offset) {
 }
 
 export function hoverOutline(id, projection, stage, offset) {
-    if (stage._hoverNode === id) {
+    if (stage.isHovered(id)) {
         const { x, y } = util.topLeftPos(projection, offset);
         stage.ctx.strokeStyle = "yellow";
         stage.ctx.lineWidth = 2;
@@ -235,7 +235,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
                 ctx.lineWidth = this.stroke.lineWidth;
                 ctx.strokeStyle = this.stroke.color;
             }
-            else if (stage._hoverNode === id) {
+            else if (stage.isHovered(id)) {
                 if (this.highlightColor) {
                     stage.ctx.strokeStyle = this.highlightColor;
                 }

@@ -109,7 +109,7 @@ export default class Toolbox {
 
             const nodeY = y + (curRow * this.rowHeight) + ((this.rowHeight - projection.size.h) / 2);
 
-            if (nodeId === this.stage._selectedNode) {
+            if (this.stage.isSelected(nodeId)) {
                 // Do nothing - don't override position
             }
             else if (this._firstRender) {

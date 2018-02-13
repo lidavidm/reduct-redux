@@ -32,7 +32,7 @@ function drawPrimitive(exprId, projection, state, stage, offset,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * 22,
-            true, stage._hoverNode === exprId, null);
+            true, stage.isHovered(exprId), null);
         ctx.fillStyle = "#555";
         primitive.roundRect(
             ctx,
@@ -41,9 +41,9 @@ function drawPrimitive(exprId, projection, state, stage, offset,
             offset.sx * projection.scale.x * projection.size.w,
             offset.sy * projection.scale.y * projection.size.h,
             sx * 22,
-            true, stage._hoverNode === exprId, null);
+            true, stage.isHovered(exprId), null);
     }
-    else if ((!hasParent || !locked) && stage._hoverNode === exprId) {
+    else if ((!hasParent || !locked) && stage.isHovered(exprId)) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         stroke = true;
