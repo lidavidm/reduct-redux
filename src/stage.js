@@ -673,7 +673,7 @@ export class Stage {
                     this.views[newNodeId].pos.y = y;
                     this.views[newNodeId].anchor.x = 0.5;
                     this.views[newNodeId].anchor.y = 0.5;
-                    animate.tween(this.views[newNodeId].pos, { y: y - 50 }, {
+                    animate.tween(this.views[newNodeId].pos, { y: y - 25 }, {
                         duration: 250,
                         easing: animate.Easing.Cubic.In,
                     });
