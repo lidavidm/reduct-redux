@@ -188,6 +188,8 @@ export class Stage {
         animate.addUpdateListener(() => {
             this.drawImpl();
         });
+
+        this._currentlyReducing = {};
     }
 
     /**
@@ -539,6 +541,12 @@ export class Stage {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
+        if (this._currentlyReducing[selectedNode]) {
+            return;
+        }
+
+        this._currentlyReducing[selectedNode] = true;
+
         const reducing = [];
         let time = 0;
         const reductionAnimation = animate.infinite((dt) => {
@@ -607,6 +615,7 @@ export class Stage {
                         n = updatedNodes.get(n.get("parent"));
                     }
                     reducing.push(n.get("id"));
+                    this._currentlyReducing[n.get("id")] = true;
                 }
 
                 return Promise.resolve(this.getState());
@@ -620,6 +629,10 @@ export class Stage {
             },
         }).then(() => {
             reductionAnimation.stop();
+            delete this._currentlyReducing[selectedNode];
+            for (const id of reducing) {
+                delete this._currentlyReducing[id];
+            }
         });
     }
 
