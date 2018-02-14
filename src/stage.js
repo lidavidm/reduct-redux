@@ -670,25 +670,41 @@ export class Stage {
                 const body = topNodeRecord.get("body");
                 const spacing = 10;
                 let totalHeight = 0;
+                let maxWidth = 50;
                 for (const newNodeId of resultNodeIds) {
-                    totalHeight += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                    this.views[newNodeId].prepare(newNodeId, newNodeId, state.set("nodes", tempNodes), this);
+                    const sz = gfxCore.absoluteSize(this.views[newNodeId]);
+                    totalHeight += sz.h + spacing;
+                    maxWidth = Math.max(sz.w, maxWidth);
                 }
                 totalHeight -= spacing;
 
                 const ap = gfxCore.absolutePos(this.views[body]);
                 const as = gfxCore.absoluteSize(this.views[body]);
-                const x = ap.x;
-                let y = ap.y + as.h - totalHeight / 2;
+                let y = (ap.y + (as.h / 2)) - (totalHeight / 2);
+
+                const { x: safeX, y: safeY } = this.findSafePosition(
+                    (ap.x + (as.w / 2)) - (maxWidth / 2),
+                    y,
+                    maxWidth,
+                    totalHeight
+                );
+
+                y = safeY + 25;
+
                 for (const newNodeId of resultNodeIds) {
-                    this.views[newNodeId].pos.x = x + as.w / 2;
-                    this.views[newNodeId].pos.y = y;
+                    const sz = gfxCore.absoluteSize(this.views[newNodeId]);
+                    this.views[newNodeId].pos.x = safeX + (maxWidth / 2);
+                    this.views[newNodeId].pos.y = y + (sz.h / 2);
                     this.views[newNodeId].anchor.x = 0.5;
                     this.views[newNodeId].anchor.y = 0.5;
-                    animate.tween(this.views[newNodeId].pos, { y: y - 25 }, {
+                    animate.tween(this.views[newNodeId].pos, {
+                        y: this.views[newNodeId].pos.y - 25,
+                    }, {
                         duration: 250,
                         easing: animate.Easing.Cubic.In,
                     });
-                    y += gfxCore.absoluteSize(this.views[newNodeId]).h + spacing;
+                    y += sz.h + spacing;
                     this.views[newNodeId].scale.x = 0.0;
                     this.views[newNodeId].scale.y = 0.0;
                     animate.tween(this.views[newNodeId].scale, { x: 1, y: 1 }, {
