@@ -51,6 +51,8 @@ class TouchRecord {
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
+
+            this.stage.views[this.topNode].opacity = 0.7;
         }
 
         // TODO: add tolerance here as well
@@ -119,6 +121,7 @@ class TouchRecord {
         // Bump items out of toolbox
         if (this.topNode !== null) {
             this.stage.bumpAwayFromEdges(this.topNode);
+            this.stage.views[this.topNode].opacity = 1.0;
         }
 
         this.stage.snapNotches(this.topNode);
