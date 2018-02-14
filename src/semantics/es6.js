@@ -519,7 +519,7 @@ export default transform({
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            inner: 5,
+                            inner: 15,
                         },
                         color: "salmon",
                         shadow: false,
