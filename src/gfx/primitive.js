@@ -124,3 +124,23 @@ export function hexaRect(ctx, x, y, width, height, fill, stroke, strokeOpacity) 
     if (fill) ctx.fill();
     if (stroke) strokeWithOpacity(ctx, strokeOpacity);
 }
+
+export function setStroke(ctx, stroke) {
+    if (!stroke) {
+        ctx.strokeStyle = null;
+        return;
+    }
+
+    stroke = stroke.stroke || stroke;
+
+    ctx.lineWidth = stroke.lineWidth;
+    ctx.strokeStyle = stroke.color;
+    if (stroke.lineDash) {
+        ctx.setLineDash(stroke.lineDash);
+    }
+    else {
+        ctx.setLineDash([]);
+    }
+
+    ctx.lineDashOffset = stroke.lineDashOffset || 0;
+}

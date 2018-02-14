@@ -83,16 +83,16 @@ export function notchProjection(options) {
             };
             ctx.save();
             if (this.highlighted) {
-                util.setStroke(ctx, {
+                primitive.setStroke(ctx, {
                     lineWidth: 4,
                     color: "magenta",
                 });
             }
             else if (this.stroke) {
-                util.setStroke(ctx, this);
+                primitive.setStroke(ctx, this);
             }
             else {
-                util.setStroke(ctx, null);
+                primitive.setStroke(ctx, null);
             }
             if (this.shadow) ctx.fillStyle = this.shadowColor;
             draw(this.shadowOffset);
@@ -138,7 +138,7 @@ export function debugDraw(ctx, projection, offset) {
 export function hoverOutline(id, projection, stage, offset) {
     if (stage.isHovered(id)) {
         const { x, y } = util.topLeftPos(projection, offset);
-        util.setStroke(stage.ctx, {
+        primitive.setStroke(stage.ctx, {
             lineWidth: 2,
             color: projection.highlightColor || "yellow",
         });
@@ -236,10 +236,10 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             let shouldStroke = false;
             if (this.stroke) {
                 shouldStroke = true;
-                util.setStroke(ctx, this);
+                primitive.setStroke(ctx, this);
             }
             else if (stage.isHovered(id)) {
-                util.setStroke(ctx, {
+                primitive.setStroke(ctx, {
                     lineWidth: 2,
                     color: this.highlightColor || "yellow",
                 });
@@ -248,7 +248,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             else if (!!(node && node.get("parent") && node.get("locked")) &&
                      this.strokeWhenChild) {
                 // Stroke if we have a parent to make it clearer.
-                util.setStroke(ctx, {
+                primitive.setStroke(ctx, {
                     lineWidth: 1,
                     color: "gray",
                 });
@@ -256,7 +256,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             }
             else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
                 if (node.get("complete")) {
-                    util.setStroke(ctx, {
+                    primitive.setStroke(ctx, {
                         lineWidth: 4,
                         color: "DeepPink",
                     });
@@ -264,7 +264,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
                 }
             }
             else {
-                util.setStroke(ctx, null);
+                primitive.setStroke(ctx, null);
             }
 
             if (this.opacity) ctx.globalAlpha = this.opacity;
