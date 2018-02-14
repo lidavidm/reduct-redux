@@ -236,12 +236,28 @@ export class Stage {
         };
     }
 
+    /**
+     * Given a rectangular area, move it minimally to fit within the
+     * stage bounds.
+     */
+    findSafePosition(x, y, w, h) {
+        const MARGIN = 20;
+        const minX = MARGIN;
+        const maxX = this.width - MARGIN - w;
+        const minY = MARGIN;
+        const maxY = this.height - this.toolbox.size.h - 20 - h;
+
+        x = Math.max(minX, Math.min(x, maxX));
+        y = Math.max(minY, Math.min(y, maxY));
+
+        return { x, y };
+    }
+
     getState() {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
     drawProjection(state, nodeId) {
-        const node = state.get("nodes").get(nodeId);
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
@@ -596,16 +612,16 @@ export class Stage {
                 for (const topViewId of this.getState().get("board")) {
                     const currentView = this.views[topViewId];
                     // Make sure result stays on screen horizontally
-                    // TODO: don't hardcode margin?
+                    const pos = gfxCore.absolutePos(currentView);
                     const sz = gfxCore.absoluteSize(currentView);
-                    currentView.pos.x = Math.min(
-                        currentView.pos.x,
-                        this.width - 20 - (sz.w * (1 - currentView.anchor.x))
+                    const { x: safeX, y: safeY } = this.findSafePosition(
+                        pos.x,
+                        pos.y,
+                        sz.w,
+                        sz.h
                     );
-                    currentView.pos.x = Math.max(
-                        currentView.pos.x,
-                        20 + (sz.w * currentView.anchor.x)
-                    );
+                    currentView.pos.x = safeX + (currentView.anchor.x * sz.w);
+                    currentView.pos.y = safeY + (currentView.anchor.y * sz.h);
                 }
 
                 const updatedNodes = this.getState().get("nodes");

@@ -32,6 +32,13 @@ export default class Toolbox {
         return pos.y >= this.stage.internalViews[this.bg].pos.y;
     }
 
+    get size() {
+        return {
+            w: this.stage.internalViews[this.bg].size.w,
+            h: this.stage.internalViews[this.bg].size.h,
+        };
+    }
+
     get pos() {
         return this.stage.internalViews[this.bg].pos;
     }
