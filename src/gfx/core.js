@@ -204,7 +204,7 @@ export function centerPos(projection) {
 export function baseShape(name, defaults, draw, notchOffset=null) {
     return function(options) {
         const projection = Object.assign(baseProjection(), defaults, options);
-        projection.size.w = projection.size.h = 50;
+        projection.size.w = projection.size.h = 30;
         projection.type = name;
 
         if (options.notches) {
@@ -352,7 +352,7 @@ const TEXT_SIZE_CACHE = {};
 export function text(text, options) {
     const projection = baseProjection(Object.assign({
         text,
-        fontSize: 36,
+        fontSize: 30,
         font: "Consolas, Monaco, monospace",
         color: "#000",
         type: "text",
@@ -364,7 +364,7 @@ export function text(text, options) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
             TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(this.text).width;
         }
-        this.size.h = 50;
+        this.size.h = 32;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
     projection.draw = function(id, exprId, state, stage, offset) {
