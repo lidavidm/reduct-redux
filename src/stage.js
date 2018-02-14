@@ -117,7 +117,9 @@ class TouchRecord {
         }
 
         // Bump items out of toolbox
-        this.stage.bumpAwayFromToolbox(this.topNode);
+        if (this.topNode !== null) {
+            this.stage.bumpAwayFromEdges(this.topNode);
+        }
 
         this.stage.snapNotches(this.topNode);
 
@@ -426,23 +428,26 @@ export class Stage {
     }
 
     /**
-     * Bump items outside of the toolbox
+     * Bump items away from toolbox/edges
      */
-    bumpAwayFromToolbox(id) {
-        const projection = this.views[id];
-
-        if (projection) {
-            const topLeft = gfxCore.util.topLeftPos(projection, { x: 0, y: 0, sx: 1, sy: 1 });
-            const bottom = { x: 0, y: topLeft.y + projection.size.h };
-            if (this.toolbox.containsPoint(bottom)) {
-                const targetY = this.toolbox.pos.y -
-                      (projection.size.h * (1 - projection.anchor.y)) - 25;
-                animate.tween(projection.pos, { y: targetY }, {
-                    duration: 250,
-                    easing: animate.Easing.Cubic.Out,
-                });
-            }
-        }
+    bumpAwayFromEdges(id) {
+        const currentView = this.views[id];
+        // Make sure result stays on screen
+        const pos = gfxCore.absolutePos(currentView);
+        const sz = gfxCore.absoluteSize(currentView);
+        const { x: safeX, y: safeY } = this.findSafePosition(
+            pos.x,
+            pos.y,
+            sz.w,
+            sz.h
+        );
+        animate.tween(currentView.pos, {
+            x: safeX + (currentView.anchor.x * sz.w),
+            y: safeY + (currentView.anchor.y * sz.h),
+        }, {
+            duration: 250,
+            easing: animate.Easing.Cubic.Out,
+        });
     }
 
     /**
@@ -610,18 +615,8 @@ export class Stage {
                 this.store.dispatch(act);
 
                 for (const topViewId of this.getState().get("board")) {
-                    const currentView = this.views[topViewId];
-                    // Make sure result stays on screen horizontally
-                    const pos = gfxCore.absolutePos(currentView);
-                    const sz = gfxCore.absoluteSize(currentView);
-                    const { x: safeX, y: safeY } = this.findSafePosition(
-                        pos.x,
-                        pos.y,
-                        sz.w,
-                        sz.h
-                    );
-                    currentView.pos.x = safeX + (currentView.anchor.x * sz.w);
-                    currentView.pos.y = safeY + (currentView.anchor.y * sz.h);
+                    // Make sure result stays on screen
+                    this.bumpAwayFromEdges(topViewId);
                 }
 
                 const updatedNodes = this.getState().get("nodes");
