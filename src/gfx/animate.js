@@ -1,3 +1,5 @@
+import chroma from "chroma-js";
+
 export const Easing = {
     Linear: (start, stop, t) => start + (t * (stop - start)),
 
@@ -28,6 +30,11 @@ export const Easing = {
             t -= 2;
             return start + (((stop - start) * ((t * t * t) + 2)) / 2);
         },
+    },
+
+    Color: (easing, src, dst) => {
+        const scale = chroma.scale([ src, dst ]).mode("lch");
+        return (start, stop, t) => scale(easing(0.0, 1.0, t));
     },
 };
 
