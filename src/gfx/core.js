@@ -443,6 +443,43 @@ export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
     return projection;
 }
 
+/**
+ * Create a projection that changes values based on an expression field or function.
+ */
+export function dynamicProperty(projection, keyFunc, mappings) {
+    if (typeof keyFunc === "string") {
+        const field = keyFunc;
+        keyFunc = function(state, exprId) {
+            const expr = state.getIn([ "nodes", exprId ]);
+            return expr.get(field);
+        };
+    }
+
+    const origPrepare = projection.prepare;
+    let lastKey = "default";
+
+    projection.prepare = function(id, exprId, state, stage) {
+        const fieldVal = keyFunc(state, exprId);
+        if (fieldVal !== lastKey) {
+            lastKey = fieldVal;
+
+            const props = mappings[fieldVal];
+            for (const [ prop, val ] of Object.entries(props)) {
+                if (typeof val === "function") {
+
+                }
+                else {
+                    this[prop] = val;
+                }
+            }
+        }
+
+        origPrepare.call(this, id, exprId, state, stage);
+    };
+
+    return projection;
+}
+
 import * as layout from "./layout";
 import * as shapes from "./shapes";
 

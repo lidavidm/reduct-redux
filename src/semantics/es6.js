@@ -502,47 +502,65 @@ export default transform({
                 },
             ],
             projection: {
-                type: "vbox",
-                horizontalAlign: 0.0,
-                color: "OrangeRed",
-                padding: {
-                    top: 10,
-                    left: 15,
-                    inner: 5,
-                    right: 10,
-                    bottom: 10,
+                type: "dynamicProperty",
+                field: (state, exprId) => {
+                    const node = state.getIn([ "nodes", exprId ]);
+                    if (node.has("parent")) {
+                        return "attached";
+                    }
+                    return "default";
                 },
-                rows: [
-                    {
-                        type: "default",
-                        shape: "()",
-                        radius: 0,
-                        padding: {
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            inner: 15,
-                        },
-                        color: "salmon",
-                        shadow: false,
-                        shadowColor: "rgba(0,0,0,0)",
-                        shadowOffset: 0,
-                        stroke: {
-                            lineWidth: 0,
-                            color: "rgba(0,0,0,0)",
-                        },
-                        strokeWhenChild: false,
-                        fields: ["'def'", "name"],
-                        subexpScale: 1.0,
+                fields: {
+                    default: {
+                        color: "OrangeRed",
                     },
-                    {
-                        type: "default",
-                        shape: "none",
-                        fields: ["'   '", "body"],
-                        subexpScale: 1.0,
+                    attached: {
+                        color: "#594764",
                     },
-                ],
+                },
+                projection: {
+                    type: "vbox",
+                    horizontalAlign: 0.0,
+                    color: "OrangeRed",
+                    padding: {
+                        top: 10,
+                        left: 15,
+                        inner: 5,
+                        right: 10,
+                        bottom: 10,
+                    },
+                    rows: [
+                        {
+                            type: "default",
+                            shape: "()",
+                            radius: 0,
+                            padding: {
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                inner: 15,
+                            },
+                            color: "salmon",
+                            shadow: false,
+                            shadowColor: "rgba(0,0,0,0)",
+                            shadowOffset: 0,
+                            stroke: {
+                                lineWidth: 0,
+                                color: "rgba(0,0,0,0)",
+                            },
+                            strokeWhenChild: false,
+                            fields: ["'def'", "name"],
+                            subexpScale: 1.0,
+                        },
+                        {
+                            type: "default",
+                            shape: "none",
+                            fields: ["'   '", "body"],
+                            subexpScale: 1.0,
+                        },
+                    ],
+                },
             },
         },
 

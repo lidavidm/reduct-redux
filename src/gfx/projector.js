@@ -142,6 +142,18 @@ function dynamicProjector(definition) {
     };
 }
 
+function dynamicPropertyProjector(definition) {
+    const fieldName = definition.projection.field || "ty";
+    definition.projection.projection.notches = definition.projection.notches;
+    const subprojector = projector(Object.assign({}, definition, {
+        projection: definition.projection.projection,
+    }));
+    return function dynamicPropertyProjectorFactory(stage, nodes, expr) {
+        const subprojection = subprojector(stage, nodes, expr);
+        return gfx.dynamicProperty(subprojection, fieldName, definition.projection.fields);
+    };
+}
+
 function vboxProjector(definition) {
     const options = {};
     const subprojectors = [];
@@ -196,6 +208,8 @@ export default function projector(definition) {
         return symbolProjector(definition);
     case "dynamic":
         return dynamicProjector(definition);
+    case "dynamicProperty":
+        return dynamicPropertyProjector(definition);
     case "vbox":
         return vboxProjector(definition);
     case "sticky":
