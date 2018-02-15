@@ -512,10 +512,20 @@ export default transform({
                 },
                 fields: {
                     default: {
-                        color: "OrangeRed",
+                        color: projection => animate.tween(projection, {
+                            color: null,
+                        }, {
+                            duration: 500,
+                            easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "OrangeRed"),
+                        }),
                     },
                     attached: {
-                        color: "#594764",
+                        color: projection => animate.tween(projection, {
+                            color: null,
+                        }, {
+                            duration: 500,
+                            easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "#594764"),
+                        }),
                     },
                 },
                 projection: {

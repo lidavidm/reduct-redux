@@ -457,6 +457,7 @@ export function dynamicProperty(projection, keyFunc, mappings) {
 
     const origPrepare = projection.prepare;
     let lastKey = "default";
+    let lastTween = null;
 
     projection.prepare = function(id, exprId, state, stage) {
         const fieldVal = keyFunc(state, exprId);
@@ -466,7 +467,8 @@ export function dynamicProperty(projection, keyFunc, mappings) {
             const props = mappings[fieldVal];
             for (const [ prop, val ] of Object.entries(props)) {
                 if (typeof val === "function") {
-
+                    if (lastTween) lastTween.completed();
+                    lastTween = val(this);
                 }
                 else {
                     this[prop] = val;
