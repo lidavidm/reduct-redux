@@ -114,8 +114,22 @@ class TouchRecord {
             this.stage.betaReduce(state, target, arg);
         }
         else if (this.dragged && this.fromToolbox) {
-            // Take item out of toolbox
-            this.stage.store.dispatch(action.useToolbox(this.topNode));
+            const projection = this.stage.views[this.topNode];
+            let useItem = true;
+            // Allow items to be placed back in toolbox if and only if
+            // they were dragged from and released in the toolbox in
+            // one motion
+            if (projection) {
+                const topLeft = gfxCore.absolutePos(projection);
+                const bottom = { x: 0, y: topLeft.y + projection.size.h };
+                if (this.stage.toolbox.containsPoint(bottom)) {
+                    useItem = false;
+                }
+            }
+            if (useItem) {
+                // Take item out of toolbox
+                this.stage.store.dispatch(action.useToolbox(this.topNode));
+            }
         }
 
         // Bump items out of toolbox
