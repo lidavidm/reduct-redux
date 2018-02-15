@@ -783,7 +783,8 @@ export class Stage {
 
     isHovered(id) {
         for (const touch of this._touches.values()) {
-            if (touch.hoverNode === id) {
+            // Light up topNode if hoverNode present
+            if (touch.hoverNode === id || (touch.hoverNode !== null && touch.topNode === id)) {
                 return true;
             }
         }
