@@ -17,10 +17,12 @@ class TouchRecord {
         this.dragStart = dragStart;
         this.dragged = false;
         this.hoverNode = null;
+        this.prevHoverNode = null;
     }
 
     findHoverNode(pos) {
         const before = this.hoverNode;
+        this.prevHoverNode = before;
         const [ _, target ] = this.stage.getNodeAtPos(pos, this.topNode);
         this.hoverNode = target;
         if (target !== before) {
@@ -76,6 +78,9 @@ class TouchRecord {
                 this.hoverNode = null;
             }
         }
+
+        // Show previews for lambda application, if applicable
+        this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
 
         // Highlight nearby compatible notches, if applicable
         this.stage.highlightNotches(this.topNode);
@@ -146,6 +151,7 @@ class TouchRecord {
     reset() {
         this.topNode = null;
         this.hoverNode = null;
+        this.prevHoverNode = null;
         this.targetNode = null;
         this.dragged = false;
         this.fromToolbox = false;
@@ -499,6 +505,35 @@ export class Stage {
                 }
             }
         }
+    }
+
+    previewApplication(arg, target, prevTarget) {
+        if (target === prevTarget || target === null) return;
+
+        if (prevTarget !== null) {
+            // TODO: clear preview
+        }
+
+        const state = this.getState();
+        const nodes = state.get("nodes");
+        const targetNode = nodes.get(target);
+
+        if (targetNode.get("type") !== "lambdaArg") return;
+
+        const targetName = targetNode.get("name");
+        this.semantics.map(nodes, nodes.get(targetNode.get("parent")).get("body"), (nodes, id) => {
+            const node = nodes.get(id);
+            if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
+                console.log("preview for", id);
+                if (this.views[id]) {
+                    this.views[id].preview = arg;
+                }
+                return [ node, nodes ];
+            }
+            return [ node, nodes ];
+        }, (nodes, node) => (
+            node.get("type") !== "lambda" ||
+                nodes.get(node.get("arg")).get("name") !== targetName));
     }
 
     /**

@@ -39,6 +39,10 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
+        if (this.preview) {
+            stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            return;
+        }
         const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
@@ -66,6 +70,17 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         }
     };
     projection.draw = function(id, exprId, state, stage, offset) {
+        if (this.preview) {
+            const temp = Object.assign({}, stage.views[this.preview], {
+                pos: this.pos,
+                scale: this.scale,
+                anchor: this.anchor,
+                opacity: 1,
+            });
+            temp.draw(this.preview, this.preview, state, stage, offset);
+            return;
+        }
+
         baseDraw.call(this, id, exprId, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
