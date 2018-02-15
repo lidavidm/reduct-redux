@@ -319,6 +319,11 @@ export class Stage {
                     res = curExprId;
                 }
 
+                if (curRoot === curExprId && curNode &&
+                    !this.semantics.targetable(state, curNode)) {
+                    return [ curRoot, res ];
+                }
+
                 const subpos = {
                     x: curPos.x - topLeft.x,
                     y: curPos.y - topLeft.y,

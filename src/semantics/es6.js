@@ -490,6 +490,9 @@ export default transform({
             ignoreForVictory: true,
             fields: ["name"],
             subexpressions: ["body"],
+            targetable: (semant, state, expr) => {
+                return !expr.has("parent");
+            },
             notches: [
                 {
                     side: "left",
