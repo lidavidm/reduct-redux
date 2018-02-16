@@ -79,8 +79,10 @@ class TouchRecord {
             }
         }
 
-        // Show previews for lambda application, if applicable
-        this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
+        if (this.topNode !== null) {
+            // Show previews for lambda application, if applicable
+            this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
+        }
 
         // Highlight nearby compatible notches, if applicable
         this.stage.highlightNotches(this.topNode);
@@ -508,14 +510,31 @@ export class Stage {
     }
 
     previewApplication(arg, target, prevTarget) {
-        if (target === prevTarget || target === null) return;
-
-        if (prevTarget !== null) {
-            // TODO: clear preview
-        }
+        if (target === prevTarget) return;
 
         const state = this.getState();
         const nodes = state.get("nodes");
+
+        if (prevTarget !== null) {
+            const prevTargetNode = nodes.get(prevTarget);
+            if (prevTargetNode.has("parent") && nodes.get(prevTargetNode.get("parent")).has("body")) {
+                // Clear previous preview
+                this.semantics.map(
+                    nodes,
+                    nodes.get(prevTargetNode.get("parent")).get("body"),
+                    (nodes, id) => {
+                        if (this.views[id]) {
+                            delete this.views[id].preview;
+                        }
+                        return [ nodes.get(id), nodes ];
+                    },
+                    () => true
+                );
+            }
+        }
+
+        if (target === null) return;
+
         const targetNode = nodes.get(target);
 
         if (targetNode.get("type") !== "lambdaArg") return;
