@@ -177,18 +177,20 @@ export class Stage {
 
         this.alreadyWon = false;
 
-        this.width = Math.max(0.8 * window.innerWidth, 800);
+        this.width = width;
         this.height = height;
 
         this.canvas = document.createElement("canvas");
-        // TODO: dynamic resizing
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
 
+        this.ctx = this.canvas.getContext("2d");
+
+        this.computeDimensions();
+
         let timer = null;
         window.addEventListener("resize", () => {
-            this.width = Math.max(0.8 * window.innerWidth, 800);
-            this.canvas.setAttribute("width", this.width);
+            this.computeDimensions();
             this.toolbox.resizeRows(this.getState());
             if (timer !== null) {
                 window.clearTimeout(timer);
@@ -201,8 +203,6 @@ export class Stage {
 
             this.draw();
         });
-
-        this.ctx = this.canvas.getContext("2d");
 
         this.color = "#EEEEEE";
 
@@ -236,6 +236,27 @@ export class Stage {
         });
 
         this._currentlyReducing = {};
+    }
+
+    computeDimensions() {
+        this.ctx.scale(1.0, 1.0);
+        if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)")) {
+            this.width = 0.9 * window.innerWidth;
+            this.height = window.innerHeight - 30;
+
+            // if (window.innerHeight > window.innerWidth) {
+            //     this.width *= 0.8;
+            //     this.height *= 0.8;
+            //     this.ctx.scale(1 / 0.8, 1 / 0.8);
+            // }
+
+            this.canvas.setAttribute("width", this.width);
+            this.canvas.setAttribute("height", this.height);
+        }
+        else {
+            this.width = Math.max(0.8 * window.innerWidth, 800);
+            this.canvas.setAttribute("width", this.width);
+        }
     }
 
     /**
