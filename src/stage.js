@@ -240,7 +240,7 @@ export class Stage {
 
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
-        if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)")) {
+        if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
             this.width = 0.9 * window.innerWidth;
             this.height = window.innerHeight - 30;
 
