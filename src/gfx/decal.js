@@ -14,6 +14,8 @@ export default function decal(projection) {
         const firstChild = { x: 0, y: 0 };
         const lastChild = { x: 0, y: 0 };
         let first = true;
+
+        const nodes = state.get("nodes");
         for (const [ childId, subexprId ] of this.children(exprId, state)) {
             const view = stage.views[childId];
             if (first) {
@@ -21,8 +23,12 @@ export default function decal(projection) {
                 firstChild.x = view.pos.x;
                 firstChild.y = view.pos.y;
             }
-            lastChild.x = view.pos.x;
-            lastChild.y = view.pos.y;
+
+            const subexpr = nodes.get(subexprId);
+            if (subexpr && subexpr.get("parentField") === "argument") {
+                lastChild.x = view.pos.x + (view.size.w / 2);
+                lastChild.y = view.pos.y;
+            }
         }
 
         const { ctx } = stage;
@@ -34,11 +40,11 @@ export default function decal(projection) {
         const [ sx, sy ] = util.absoluteScale(this, offset);
 
         const gradient = ctx.createLinearGradient(
-            lastChild.x, lastChild.y,
-            firstChild.x, firstChild.y
+            x + (sx * lastChild.x), y + (sy * lastChild.y),
+            x + (sx * firstChild.x), y + (sy * firstChild.y)
         );
         gradient.addColorStop(0, "#14818b");
-        gradient.addColorStop(0.5, "#c500ff");
+        gradient.addColorStop(0.7, "#c500ff");
         gradient.addColorStop(1, "#ff004b");
         ctx.fillStyle = gradient;
 
