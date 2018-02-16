@@ -1,3 +1,4 @@
+import * as animate from "./animate";
 import { debugDraw, roundedRect } from "./core";
 import * as util from "./util";
 
@@ -39,13 +40,27 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
+        if (this.preview && !this.prevPreview) {
+            this.prevPreview = { x: 0.2, y: 0.2 };
+            animate.tween(this.prevPreview, {
+                x: 0.7,
+                y: 0.7,
+            }, {
+                duration: 250,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
+        else if (!this.preview) {
+            delete this.prevPreview;
+        }
         if (this.preview) {
             stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
-            this.anchor.x = 0.5;
-            this.scale.x = 0.5;
-            this.scale.y = 0.5;
+            // this.anchor.x = 0.5;
+            this.scale.x = this.prevPreview.x;
+            this.scale.y = this.prevPreview.y;
             return;
         }
+
         const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
