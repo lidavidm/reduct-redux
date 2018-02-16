@@ -382,6 +382,7 @@ export default transform({
             kind: "expression",
             fields: ["name"],
             subexpressions: [],
+            stepSound: "heatup",
             type: (semant, state, types, expr) => ({
                 types: new Map(),
                 complete: state.get("globals").has(expr.get("name")),
