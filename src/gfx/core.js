@@ -485,5 +485,6 @@ export function dynamicProperty(projection, keyFunc, mappings) {
 import * as layout from "./layout";
 import * as shapes from "./shapes";
 
+export { decal } from "./decal";
 export * from "./sprite";
 export { layout, primitive, shapes };

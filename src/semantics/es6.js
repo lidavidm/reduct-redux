@@ -263,9 +263,12 @@ export default transform({
             subexpressions: ["callee", "argument"],
             reductionOrder: ["argument", "callee"],
             projection: {
-                type: "default",
-                shape: "()",
-                fields: ["callee", "'('", "argument", "')'"],
+                type: "decal",
+                content: {
+                    type: "default",
+                    shape: "()",
+                    fields: ["callee", "'('", "argument", "')'"],
+                },
             },
             smallStep: (semant, stage, state, expr) => {
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
