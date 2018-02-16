@@ -65,7 +65,10 @@ export default class Toolbox {
 
     startLevel(state) {
         this._firstRender = true;
+        this.resizeRows(state);
+    }
 
+    resizeRows(state) {
         // Figure out how many rows to use
         let x = TOOLBOX_LEFT_MARGIN;
         let rows = 1;

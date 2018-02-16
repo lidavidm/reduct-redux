@@ -184,11 +184,24 @@ export class Stage {
         // TODO: dynamic resizing
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
+
+        let timer = null;
         window.addEventListener("resize", () => {
             this.width = Math.max(0.8 * window.innerWidth, 800);
             this.canvas.setAttribute("width", this.width);
+            this.toolbox.resizeRows(this.getState());
+            if (timer !== null) {
+                window.clearTimeout(timer);
+            }
+            timer = window.setTimeout(() => {
+                for (const id of this.getState().get("board")) {
+                    this.bumpAwayFromEdges(id);
+                }
+            }, 500);
+
             this.draw();
         });
+
         this.ctx = this.canvas.getContext("2d");
 
         this.color = "#EEEEEE";
