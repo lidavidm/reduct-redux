@@ -41,6 +41,9 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview) {
             stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            this.anchor.x = 0.5;
+            this.scale.x = 0.5;
+            this.scale.y = 0.5;
             return;
         }
         const children = childrenFunc(exprId, state);
