@@ -120,15 +120,15 @@ export default class Toolbox {
                 // Do nothing - don't override position
             }
             else if (this._firstRender) {
-                projection.pos.x = x + 800;
+                projection.pos.x = x + this.stage.width;
                 projection.pos.y = nodeY;
                 projection.animating = true;
                 animate
                     .tween(projection.pos, { x }, {
                         easing: animate.Easing.Cubic.Out,
-                        duration: 250,
+                        duration: 400,
                     })
-                    .delay(350 * Math.log(2 + i))
+                    .delay(400 * Math.log(2 + i))
                     .then(() => {
                         projection.animating = false;
                     });

@@ -177,13 +177,18 @@ export class Stage {
 
         this.alreadyWon = false;
 
-        this.width = width;
+        this.width = Math.max(0.8 * window.innerWidth, 800);
         this.height = height;
 
         this.canvas = document.createElement("canvas");
         // TODO: dynamic resizing
-        this.canvas.setAttribute("width", width);
-        this.canvas.setAttribute("height", height);
+        this.canvas.setAttribute("width", this.width);
+        this.canvas.setAttribute("height", this.height);
+        window.addEventListener("resize", () => {
+            this.width = Math.max(0.8 * window.innerWidth, 800);
+            this.canvas.setAttribute("width", this.width);
+            this.draw();
+        });
         this.ctx = this.canvas.getContext("2d");
 
         this.color = "#EEEEEE";
