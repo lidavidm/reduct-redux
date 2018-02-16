@@ -41,6 +41,7 @@ class TouchRecord {
                 if (this.fromToolbox) {
                     const resultNode = this.stage.cloneToolboxItem(this.topNode);
                     if (resultNode !== null) {
+                        this.stage.views[this.topNode].opacity = 1.0;
                         // Selected node was an __unlimited node
                         this.topNode = resultNode;
                         this.targetNode = resultNode;
@@ -543,7 +544,6 @@ export class Stage {
         this.semantics.map(nodes, nodes.get(targetNode.get("parent")).get("body"), (nodes, id) => {
             const node = nodes.get(id);
             if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
-                console.log("preview for", id);
                 if (this.views[id]) {
                     this.views[id].preview = arg;
                 }
