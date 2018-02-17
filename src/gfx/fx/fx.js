@@ -1,3 +1,4 @@
+import Loader from "../../loader";
 import * as gfx from "../core";
 import * as animate from "../animate";
 
@@ -152,5 +153,33 @@ export function shatter(stage, projection, onFullComplete=null) {
                 onFullComplete();
             }
         });
+    });
+}
+
+export function poof(stage, projection) {
+    const pos = gfx.centerPos(projection);
+    const status = { t: 0.0 };
+    const images = [ "poof0", "poof1", "poof2", "poof3", "poof4" ]
+          .map(key => Loader.images[key]);
+
+    const { ctx } = stage;
+    const id = stage.addEffect({
+        prepare: () => {},
+        draw: () => {
+            ctx.save();
+            const idx = Math.min(Math.floor(status.t * images.length), images.length - 1);
+            images[idx].draw(
+                ctx,
+                pos.x - 45, pos.y - 45,
+                90, 90
+            );
+            ctx.restore();
+        },
+    });
+
+    return animate.tween(status, { t: 1.0 }, {
+        duration: 500,
+    }).then(() => {
+        stage.removeEffect(id);
     });
 }
