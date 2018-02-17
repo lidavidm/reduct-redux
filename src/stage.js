@@ -877,6 +877,7 @@ export class Stage {
 
     removeEffect(id) {
         delete this.effects[id];
+        this.draw();
     }
 
     isSelected(id) {
