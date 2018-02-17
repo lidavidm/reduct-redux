@@ -36,6 +36,13 @@ export const Easing = {
         const scale = chroma.scale([ src, dst ]).mode("lch");
         return (start, stop, t) => scale(easing(0.0, 1.0, t));
     },
+
+    Projectile: (easing) => (start, stop, t) => {
+        const dy = stop - start;
+        // console.log(start, stop, t, start + (-4 * dy * t * t) + (4 * dy * t));
+        t = easing(0.0, 1.0, t);
+        return start + (-4 * dy * t * t) + (4 * dy * t);
+    },
 };
 
 
