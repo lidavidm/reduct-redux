@@ -639,11 +639,7 @@ export default function transform(definition) {
                 );
                 if (!canAttach) {
                     blockingNodes.forEach((id) => {
-                        animate.fx.blink(stage, stage.views[id], {
-                            times: 3,
-                            speed: 200,
-                            color: "#F00",
-                        });
+                        animate.fx.error(stage, stage.views[id]);
                     });
                     return false;
                 }

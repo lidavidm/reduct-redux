@@ -183,3 +183,12 @@ export function poof(stage, projection) {
         stage.removeEffect(id);
     });
 }
+
+export function error(stage, projection) {
+    return blink(stage, projection, {
+        times: 3,
+        speed: 200,
+        color: "#F00",
+        lineWidth: 5,
+    });
+}

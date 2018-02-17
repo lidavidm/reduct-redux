@@ -749,11 +749,7 @@ export class Stage {
                 return Promise.resolve(this.getState());
             },
             error: (errorNodeId) => {
-                animate.fx.blink(this, this.views[errorNodeId], {
-                    times: 3,
-                    color: "#F00",
-                    speed: 150,
-                });
+                animate.fx.error(this, this.views[errorNodeId]);
             },
         }).then(() => {
             reductionAnimation.stop();
