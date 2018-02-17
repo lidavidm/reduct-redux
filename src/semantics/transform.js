@@ -197,6 +197,9 @@ export default function transform(definition) {
                 Audio.play(defn.stepSound);
             }
         }
+        if (defn && defn.stepAnimation) {
+            return defn.stepAnimation(module, stage, state, exp);
+        }
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
