@@ -96,7 +96,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             const temp = Object.assign({}, stage.views[this.preview], {
                 pos: this.pos,
                 scale: this.scale,
-                anchor: this.anchor,
+                anchor: { x: 0.5, y: 0 },
                 opacity: 1,
             });
             temp.draw(this.preview, this.preview, state, stage, offset);

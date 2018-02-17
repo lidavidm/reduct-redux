@@ -1,4 +1,5 @@
 import Loader from "../../loader";
+import Audio from "../../resource/audio";
 import * as gfx from "../core";
 import * as animate from "../animate";
 
@@ -185,6 +186,7 @@ export function poof(stage, projection) {
 }
 
 export function error(stage, projection) {
+    Audio.play("negative_2");
     return blink(stage, projection, {
         times: 3,
         speed: 200,
