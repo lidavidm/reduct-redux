@@ -63,11 +63,30 @@ export function blink(stage, projection, opts) {
         color: "#F00",
         speed: 600,
         lineWidth: 3,
+        background: false,
     }, opts);
 
     if (!projection.__origStroke) {
         projection.__origStroke = projection.stroke;
     }
+
+    if (options.background) {
+        if (!projection.__origColor) {
+            projection.__origColor = projection.color;
+        }
+
+        const bgColor = typeof options.background === "string" ? options.background : options.color;
+
+        animate.tween(projection, { color: null }, {
+            reverse: true,
+            repeat: options.times * 2,
+            duration: options.speed,
+            easing: animate.Easing.Color(animate.Easing.Linear, projection.color, bgColor),
+        }).then(() => {
+            projection.color = projection.__origColor;
+        });
+    }
+
     projection.stroke = { color: options.color, lineWidth: 0 };
     return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
         reverse: true,
@@ -192,5 +211,6 @@ export function error(stage, projection) {
         speed: 200,
         color: "#F00",
         lineWidth: 5,
+        background: "orange",
     });
 }
