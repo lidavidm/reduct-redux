@@ -270,6 +270,35 @@ export default transform({
                     fields: ["callee", "'('", "argument", "')'"],
                 },
             },
+            stepAnimation: (semant, stage, state, expr) => {
+                // return animate.fx.shatter(stage, stage.views[expr.get("argument")]);
+                const argView = stage.views[expr.get("argument")];
+                // TODO: animating should be a counter to support simultaneous animations
+                // TODO: animate module should take care of this automatically
+                argView.animating = true;
+                stage.views[expr.get("id")].arrowOpacity = 1.0;
+                animate.tween(stage.views[expr.get("id")], { arrowOpacity: 0 }, {
+                    duration: 200,
+                    easing: animate.Easing.Cubic.InOut,
+                });
+
+                animate.tween(argView.scale, { x: 0.2, y: 0.2 }, {
+                    duration: 500,
+                    easing: animate.Easing.Cubic.Out,
+                });
+
+                animate.tween(argView.pos, { y: argView.pos.y - 75 }, {
+                    duration: 500,
+                    easing: animate.Easing.Projectile(animate.Easing.Linear),
+                });
+
+                return animate.tween(argView.pos, { x: stage.views[expr.get("callee")].pos.x }, {
+                    duration: 500,
+                    easing: animate.Easing.Linear,
+                }).then(() => {
+                    argView.animating = false;
+                });
+            },
             smallStep: (semant, stage, state, expr) => {
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
                     stage,

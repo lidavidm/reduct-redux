@@ -37,6 +37,7 @@ export default function decal(projection) {
         }
 
         const { ctx } = stage;
+        ctx.save();
         ctx.lineWidth = 2;
         ctx.strokeStyle = "#971a1e";
         ctx.beginPath();
@@ -54,6 +55,7 @@ export default function decal(projection) {
         ctx.fillStyle = gradient;
 
         if (this.opacity) ctx.globalAlpha = this.opacity;
+        if (typeof this.arrowOpacity !== "undefined") ctx.globalAlpha = this.arrowOpacity;
 
         const cx = x + (sx * ((lastChild.x - firstChild.x) / 2));
         const arrowBase = 5;
@@ -94,6 +96,7 @@ export default function decal(projection) {
 
         ctx.fill();
         ctx.stroke();
+        ctx.restore();
     };
 
     return projection;
