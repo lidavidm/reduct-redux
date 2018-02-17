@@ -699,6 +699,15 @@ export class Stage {
             }
         });
 
+        const finishReducing = () => {
+            reductionAnimation.stop();
+            delete this._currentlyReducing[selectedNode];
+            for (const id of reducing) {
+                this.views[id].stroke = null;
+                delete this._currentlyReducing[id];
+            }
+        };
+
         this.semantics.interpreter.reduce(this, state, node, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
@@ -751,13 +760,7 @@ export class Stage {
             error: (errorNodeId) => {
                 animate.fx.error(this, this.views[errorNodeId]);
             },
-        }).then(() => {
-            reductionAnimation.stop();
-            delete this._currentlyReducing[selectedNode];
-            for (const id of reducing) {
-                delete this._currentlyReducing[id];
-            }
-        });
+        }).finally(finishReducing);
     }
 
     /**

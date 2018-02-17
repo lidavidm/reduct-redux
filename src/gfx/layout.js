@@ -94,7 +94,10 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.preview) {
             const temp = Object.assign({}, stage.views[this.preview], {
-                pos: this.pos,
+                pos: {
+                    x: this.pos.x + (0.5 * this.size.w),
+                    y: this.pos.y,
+                },
                 scale: this.scale,
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,
