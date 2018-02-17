@@ -282,8 +282,8 @@ export default transform({
                     easing: animate.Easing.Cubic.InOut,
                 });
 
-                animate.tween(argView.scale, { x: 0.2, y: 0.2 }, {
-                    duration: 500,
+                animate.tween(argView.scale, { x: 0.4, y: 0.4 }, {
+                    duration: 300,
                     easing: animate.Easing.Cubic.Out,
                 });
 
