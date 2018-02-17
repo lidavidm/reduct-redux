@@ -297,6 +297,7 @@ export default transform({
                     easing: animate.Easing.Linear,
                 }).then(() => {
                     argView.animating = false;
+                    animate.fx.poof(stage, stage.views[expr.get("id")]);
                 });
             },
             smallStep: (semant, stage, state, expr) => {
