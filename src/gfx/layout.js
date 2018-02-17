@@ -70,11 +70,13 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.parent = this;
 
-            childProjection.pos.x = x;
-            childProjection.anchor.x = 0;
-            childProjection.anchor.y = 0;
-            childProjection.scale.x = this.subexpScale;
-            childProjection.scale.y = this.subexpScale;
+            if (!childProjection.animating) {
+                childProjection.pos.x = x;
+                childProjection.anchor.x = 0;
+                childProjection.anchor.y = 0;
+                childProjection.scale.x = this.subexpScale;
+                childProjection.scale.y = this.subexpScale;
+            }
 
             childProjection.prepare(childId, subexprId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
@@ -84,6 +86,8 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         this.size.h = maxY;
         for (let childId of children) {
             const childProjection = stage.views[childId];
+            if (childProjection.animating) continue;
+
             childProjection.pos.y = (this.size.h * this.scale.y - childProjection.size.h * childProjection.scale.y * this.scale.y) / 2;
         }
     };
