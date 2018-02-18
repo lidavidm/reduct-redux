@@ -227,8 +227,8 @@ export const missing = {
             shadowOffset: -2,
             radius: 22,
             padding: {
-                left: 25,
-                right: 25,
+                left: 20,
+                right: 20,
                 inner: 0,
             },
         },

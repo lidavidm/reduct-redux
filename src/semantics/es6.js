@@ -300,6 +300,7 @@ export default transform({
                     animate.fx.poof(stage, stage.views[expr.get("id")]);
                 });
             },
+            stepSound: "heatup",
             smallStep: (semant, stage, state, expr) => {
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
                     stage,
