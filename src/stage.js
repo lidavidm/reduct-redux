@@ -581,6 +581,13 @@ export class Stage {
 
         if (target === null) return;
 
+        if (this.semantics.search(
+            nodes, target,
+            (_, id) => nodes.get(id).get("type") === "missing"
+        )) {
+            return;
+        }
+
         const targetNode = nodes.get(target);
 
         if (targetNode.get("type") !== "lambdaArg") return;
