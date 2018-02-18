@@ -27,6 +27,17 @@ export default function decal(projection) {
                 firstFilled = subexpr.get("type") !== "missing";
                 firstChild.x = view.pos.x;
                 firstChild.y = view.pos.y;
+                if (subexpr.get("type") === "lambda") {
+                    const [ argChildId ] = stage.views[childId]
+                          .children(subexprId, state)
+                          .next().value;
+                    const argView = stage.views[argChildId];
+                    firstChild.x += argView.pos.x + ((argView.scale.x * argView.size.w) / 2);
+                    firstChild.y += argView.pos.y + (argView.scale.y * argView.size.h * 0.2);
+                }
+                else {
+                    firstChild.x += view.scale.x * view.size.w * 0.2;
+                }
             }
 
             if (subexpr && subexpr.get("parentField") === "argument") {
