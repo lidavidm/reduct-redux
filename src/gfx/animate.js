@@ -247,9 +247,17 @@ export class Clock {
             window.requestAnimationFrame(this.tick.bind(this));
         }
     }
+
+    cancelAll() {
+        this.running = false;
+        this.lastTimestamp = null;
+        while (this.tweens.length > 0) {
+            this.tweens.pop();
+        }
+    }
 }
 
-const clock = new Clock();
+export const clock = new Clock();
 
 export function addUpdateListener(f) {
     clock.addUpdateListener(f);
