@@ -282,6 +282,7 @@ export class Stage {
 
     reset() {
         animate.clock.cancelAll();
+        for (const key in this.effects) delete this.effects[key];
         for (const key in this._currentlyReducing) delete this._currentlyReducing[key];
         for (const key in this.views) delete this.views[key];
         delete this.goal;
