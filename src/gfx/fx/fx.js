@@ -214,3 +214,76 @@ export function error(stage, projection) {
         background: "orange",
     });
 }
+
+export function emerge(stage, state, bodyView, resultIds) {
+    const spacing = 10;
+    const emergeDistance = 50;
+    let totalHeight = 0;
+    let maxWidth = 50;
+
+    for (const resultId of resultIds) {
+        const resultView = stage.views[resultId];
+        resultView.prepare(resultId, resultId, state, stage);
+        const sz = gfx.absoluteSize(resultView);
+        totalHeight += sz.h + spacing;
+        maxWidth = Math.max(sz.w, maxWidth);
+    }
+    totalHeight -= spacing;
+
+    const ap = gfx.absolutePos(bodyView);
+    const as = gfx.absoluteSize(bodyView);
+    let y = (ap.y + (as.h / 2)) - (totalHeight / 2);
+
+    const { x: safeX, y: safeY } = stage.findSafePosition(
+        (ap.x + (as.w / 2)) - (maxWidth / 2),
+        y,
+        maxWidth,
+        totalHeight
+    );
+
+    y = safeY + (emergeDistance / 2);
+
+    const tweens = [];
+    for (const resultId of resultIds) {
+        const resultView = stage.views[resultId];
+        const sz = gfx.absoluteSize(resultView);
+        resultView.pos.x = safeX + (maxWidth / 2);
+        resultView.pos.y = y + (sz.h / 2);
+        resultView.anchor.x = 0.5;
+        resultView.anchor.y = 0.5;
+        animate.tween(resultView.pos, {
+            y: resultView.pos.y - emergeDistance,
+        }, {
+            duration: 250,
+            easing: animate.Easing.Cubic.In,
+        });
+        y += sz.h + spacing;
+        resultView.scale.x = 0.0;
+        resultView.scale.y = 0.0;
+        tweens.push(animate.tween(resultView.scale, { x: 1, y: 1 }, {
+            duration: 250,
+            easing: animate.Easing.Cubic.In,
+        }));
+    }
+
+    const id = stage.addEffect({
+        prepare: () => {
+            for (const resultId of resultIds) {
+                const resultView = stage.views[resultId];
+                resultView.prepare(resultId, resultId, state, stage);
+            }
+        },
+        draw: () => {
+            for (const resultId of resultIds) {
+                const resultView = stage.views[resultId];
+                resultView.draw(resultId, resultId, state, stage, {
+                    x: 0, y: 0, sx: 1, sy: 1,
+                });
+            }
+        },
+    });
+
+    return Promise.all(tweens).then(() => {
+        stage.removeEffect(id);
+    });
+}

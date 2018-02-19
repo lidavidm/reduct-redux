@@ -829,65 +829,36 @@ export class Stage {
                 this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
             }
 
-            // Preserve position (TODO: better way)
             const topNodeRecord = state.getIn([ "nodes", topNode ]);
             if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
+                const tempState = state.set("nodes", tempNodes);
                 const body = topNodeRecord.get("body");
-                const spacing = 10;
-                let totalHeight = 0;
-                let maxWidth = 50;
-                for (const newNodeId of resultNodeIds) {
-                    this.views[newNodeId].prepare(newNodeId, newNodeId, state.set("nodes", tempNodes), this);
-                    const sz = gfxCore.absoluteSize(this.views[newNodeId]);
-                    totalHeight += sz.h + spacing;
-                    maxWidth = Math.max(sz.w, maxWidth);
-                }
-                totalHeight -= spacing;
+                Audio.play("pop");
+                animate.fx.emerge(this, tempState, this.views[body], resultNodeIds).then(() => {
+                    this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
+                });
 
-                const ap = gfxCore.absolutePos(this.views[body]);
-                const as = gfxCore.absoluteSize(this.views[body]);
-                let y = (ap.y + (as.h / 2)) - (totalHeight / 2);
-
-                const { x: safeX, y: safeY } = this.findSafePosition(
-                    (ap.x + (as.w / 2)) - (maxWidth / 2),
-                    y,
-                    maxWidth,
-                    totalHeight
-                );
-
-                y = safeY + 25;
-
-                for (const newNodeId of resultNodeIds) {
-                    const sz = gfxCore.absoluteSize(this.views[newNodeId]);
-                    this.views[newNodeId].pos.x = safeX + (maxWidth / 2);
-                    this.views[newNodeId].pos.y = y + (sz.h / 2);
-                    this.views[newNodeId].anchor.x = 0.5;
-                    this.views[newNodeId].anchor.y = 0.5;
-                    animate.tween(this.views[newNodeId].pos, {
-                        y: this.views[newNodeId].pos.y - 25,
-                    }, {
-                        duration: 250,
-                        easing: animate.Easing.Cubic.In,
-                    });
-                    y += sz.h + spacing;
-                    this.views[newNodeId].scale.x = 0.0;
-                    this.views[newNodeId].scale.y = 0.0;
-                    animate.tween(this.views[newNodeId].scale, { x: 1, y: 1 }, {
-                        duration: 250,
-                        easing: animate.Easing.Cubic.In,
-                    });
-                }
+                animate.tween(this.views[topNode], { opacity: 0 }, {
+                    duration: 250,
+                    easing: animate.Easing.Cubic.Out,
+                }).then(() => {
+                    this.views[topNode].opacity = 1;
+                });
+                animate.tween(this.views[arg], { opacity: 0 }, {
+                    duration: 250,
+                    easing: animate.Easing.Cubic.Out,
+                }).then(() => {
+                    this.views[arg].opacity = 1;
+                });
             }
             else {
                 for (const newNodeId of resultNodeIds) {
                     this.views[newNodeId].pos.x = this.views[topNode].pos.x;
                     this.views[newNodeId].pos.y = this.views[topNode].pos.y;
                 }
+                Audio.play("pop");
+                this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
             }
-
-            Audio.play("pop");
-
-            this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
         }
     }
 
