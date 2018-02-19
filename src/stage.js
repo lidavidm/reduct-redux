@@ -55,7 +55,9 @@ class TouchRecord {
             view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
 
-            this.stage.views[this.topNode].opacity = 0.7;
+            if (this.targetNode !== null) {
+                this.stage.views[this.targetNode].opacity = 0.6;
+            }
         }
 
         // TODO: add tolerance here as well
