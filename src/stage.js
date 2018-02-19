@@ -512,6 +512,7 @@ export class Stage {
             const pos = gfxCore.absolutePos(this.views[targetNode]);
             this.store.dispatch(action.detach(targetNode));
             this.views[targetNode].pos = pos;
+            this.views[targetNode].parent = null;
             this.views[targetNode].scale.x = 1;
             this.views[targetNode].scale.y = 1;
             return targetNode;
