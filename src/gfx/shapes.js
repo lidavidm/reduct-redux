@@ -20,7 +20,17 @@ function drawPrimitive(exprId, projection, state, stage, offset,
     const hasParent = node && Number.isInteger(node.get("parent"));
     const locked = !node || node.get("locked");
     let stroke = false;
+
     if (projection.opacity) ctx.globalAlpha = projection.opacity;
+    if (offset.opacity) {
+        if (offset.opacity != 1) {
+            // To make children more transparent so that the overall effect is the same
+            ctx.globalAlpha = offset.opacity * 0.5; 
+        } else {
+            ctx.globalAlpha = offset.opacity;
+        }
+    }
+
     if (hasParent && !locked) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         ctx.fillStyle = "#000";
