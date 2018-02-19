@@ -912,6 +912,7 @@ export class Stage {
     }
 
     setCursor(cursor) {
+        // Try fallbacks because Chrome (e.g. -webkit-grab is recognized, but not grab)
         this.canvas.style.cursor = `-moz-${cursor}`;
         this.canvas.style.cursor = `-webkit-${cursor}`;
         this.canvas.style.cursor = cursor;
@@ -925,7 +926,12 @@ export class Stage {
             this.setCursor("grabbing");
         }
         else if (touchRecord.hoverNode !== null) {
-            this.setCursor("grab");
+            if (this.getState().getIn([ "nodes", touchRecord.hoverNode, "complete" ])) {
+                this.setCursor("pointer");
+            }
+            else {
+                this.setCursor("grab");
+            }
         }
         else {
             this.setCursor("default");
