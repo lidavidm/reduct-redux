@@ -50,7 +50,7 @@ class TouchRecord {
                 }
             }
 
-            const view = this.stage.views[this.targetNode];
+            const view = this.stage.views[this.topNode];
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
@@ -922,7 +922,7 @@ export class Stage {
             this.store.dispatch(action.raise(topNode));
             const dragOffset = { dx: 0, dy: 0 };
             if (targetNode !== null) {
-                const absPos = gfxCore.absolutePos(this.views[targetNode]);
+                const absPos = gfxCore.absolutePos(this.views[topNode]);
                 dragOffset.dx = pos.x - absPos.x;
                 dragOffset.dy = pos.y - absPos.y;
             }
@@ -968,7 +968,7 @@ export class Stage {
         this.store.dispatch(action.raise(topNode));
         const dragOffset = { dx: 0, dy: 0 };
         if (targetNode !== null) {
-            const absPos = gfxCore.absolutePos(this.views[targetNode]);
+            const absPos = gfxCore.absolutePos(this.views[topNode]);
             dragOffset.dx = pos.x - absPos.x;
             dragOffset.dy = pos.y - absPos.y;
         }
