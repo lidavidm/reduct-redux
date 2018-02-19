@@ -377,6 +377,8 @@ export function text(text, options) {
 
         debugDraw(ctx, this, offset);
 
+        util.setOpacity(ctx, this.opacity, offset);
+
         ctx.scale(sx, sy);
         ctx.fillStyle = this.color;
         ctx.textBaseline = "alphabetic";
