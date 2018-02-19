@@ -219,15 +219,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             const [ sx, sy ] = util.absoluteScale(this, offset);
             const { x, y } = util.topLeftPos(this, offset);
 
-            if (this.opacity) ctx.globalAlpha = this.opacity;
-            if (offset.opacity) {
-                if (offset.opacity != 1) {
-                    // To make children more transparent so that the overall effect is the same
-                    ctx.globalAlpha = offset.opacity * 0.5; 
-                } else {
-                    ctx.globalAlpha = offset.opacity;
-                }
-            }
+            util.setOpacity(ctx, this.opacity, offset);
 
             const node = state.getIn([ "nodes", exprId ]);
 

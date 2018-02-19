@@ -31,3 +31,10 @@ export function genericChildrenFunc(childrenFunc) {
         }
     };
 }
+
+
+export function setOpacity(ctx, opacity, offset) {
+    const selfOpacity = typeof opacity === "undefined" ? 1.0 : opacity
+    const offsetOpacity = typeof offset.opacity === "undefined" ? 1.0 : offset.opacity
+    ctx.globalAlpha = selfOpacity * offsetOpacity;
+}
