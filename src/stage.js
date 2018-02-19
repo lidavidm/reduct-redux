@@ -122,6 +122,9 @@ class TouchRecord {
             }
         }
         else if (this.dragged && this.hoverNode && this.topNode) {
+            // Clear application previews (otherwise they stick around
+            // if beta-reduction is undone)
+            this.stage.previewApplication(this.topNode, null, this.hoverNode);
             // Apply to lambda
             const arg = this.topNode;
             const target = this.hoverNode;
