@@ -65,8 +65,9 @@ export default function decal(projection) {
         gradient.addColorStop(1, firstFilled ? "#ff004b" : "gray");
         ctx.fillStyle = gradient;
 
-        if (this.opacity) ctx.globalAlpha = this.opacity;
+        if (this.opacity) ctx.globalAlpha = this.opacity * 0.7;
         if (typeof this.arrowOpacity !== "undefined") ctx.globalAlpha = this.arrowOpacity;
+        else if (state.get("nodes").get(exprId).has("parent")) ctx.globalAlpha = 0.5;
 
         const cx = x + (sx * ((lastChild.x - firstChild.x) / 2));
         const arrowBase = 5;
