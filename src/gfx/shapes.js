@@ -20,6 +20,7 @@ function drawPrimitive(exprId, projection, state, stage, offset,
     const hasParent = node && Number.isInteger(node.get("parent"));
     const locked = !node || node.get("locked");
     let stroke = false;
+    if (projection.opacity) ctx.globalAlpha = projection.opacity;
     if (hasParent && !locked) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         ctx.fillStyle = "#000";
@@ -59,7 +60,6 @@ function drawPrimitive(exprId, projection, state, stage, offset,
     }
 
     shadow(ctx, exprId, projection, state, drawFunction);
-    if (projection.opacity) ctx.globalAlpha = projection.opacity;
     if (projection.color) ctx.fillStyle = projection.color;
     drawFunction(0);
     if (stroke && strokeFunction) strokeFunction();
