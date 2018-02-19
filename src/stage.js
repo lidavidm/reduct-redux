@@ -603,18 +603,26 @@ export class Stage {
         if (target === null) return;
 
         if (this.semantics.search(
-            nodes, target,
+            nodes, arg,
             (_, id) => nodes.get(id).get("type") === "missing"
         ).length > 0) {
             return;
         }
 
         const targetNode = nodes.get(target);
-
         if (targetNode.get("type") !== "lambdaArg") return;
 
+        const lambdaBody = nodes.get(targetNode.get("parent")).get("body");
+
+        if (this.semantics.search(
+            nodes, lambdaBody,
+            (_, id) => nodes.get(id).get("type") === "missing"
+        ).length > 0) {
+            return;
+        }
+
         const targetName = targetNode.get("name");
-        this.semantics.map(nodes, nodes.get(targetNode.get("parent")).get("body"), (nodes, id) => {
+        this.semantics.map(nodes, lambdaBody, (nodes, id) => {
             const node = nodes.get(id);
             if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
                 if (this.views[id]) {
