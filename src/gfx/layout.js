@@ -55,9 +55,6 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         }
         if (this.preview) {
             stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
-            // this.anchor.x = 0.5;
-            this.scale.x = this.prevPreview.x;
-            this.scale.y = this.prevPreview.y;
             return;
         }
 
@@ -98,7 +95,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
                     x: this.pos.x + (0.5 * this.size.w),
                     y: this.pos.y,
                 },
-                scale: this.scale,
+                scale: this.prevPreview,
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,
             });
