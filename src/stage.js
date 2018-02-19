@@ -491,8 +491,12 @@ export class Stage {
      * Helper that detaches an item from its parent.
      */
     detachFromHole(selectedNode, targetNode) {
-        const target = this.getState().getIn([ "nodes", targetNode ]);
+        const state = this.getState();
+        const target = state.getIn([ "nodes", targetNode ]);
         if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
+            if (!this.semantics.detachable(state, target.get("parent"), targetNode)) {
+                return null;
+            }
             const pos = gfxCore.absolutePos(this.views[targetNode]);
             this.store.dispatch(action.detach(targetNode));
             this.views[targetNode].pos = pos;

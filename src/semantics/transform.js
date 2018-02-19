@@ -648,6 +648,28 @@ export default function transform(definition) {
         return true;
     };
 
+    module.detachable = function(state, parentId, childId) {
+        const nodes = state.get("nodes");
+        const defn = definition.expressions[nodes.get(parentId).get("type")];
+        const parentField = nodes.get(childId).get("parentField");
+        if (parentField.slice(0, 5) !== "notch") {
+            return true;
+        }
+        const notchIdx = window.parseInt(parentField.slice(5), 10);
+        if (defn && defn.notches && defn.notches[notchIdx]) {
+            const notchDefn = defn.notches[notchIdx];
+            if (notchDefn.canDetach) {
+                return notchDefn.canDetach(
+                    module,
+                    state,
+                    parentId,
+                    childId
+                );
+            }
+        }
+        return true;
+    };
+
     /**
      * Check whether we should ignore the given node when matching
      * nodes to determine victory.

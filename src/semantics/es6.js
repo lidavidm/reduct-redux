@@ -624,6 +624,7 @@ export default transform({
 
                         return [ missingNodes.length === 0, missingNodes ];
                     },
+                    canDetach: () => false,
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
                         state.set("globals", state.get("globals").set(name, otherId));
