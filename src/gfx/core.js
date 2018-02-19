@@ -219,9 +219,10 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             const [ sx, sy ] = util.absoluteScale(this, offset);
             const { x, y } = util.topLeftPos(this, offset);
 
-            if (this.opacity) ctx.globalAlpha = this.opacity;
+            util.setOpacity(ctx, this.opacity, offset);
 
             const node = state.getIn([ "nodes", exprId ]);
+
             if (this.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
                 ctx.fillStyle = this.shadowColor;
                 draw(ctx, this,

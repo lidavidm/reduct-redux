@@ -14,7 +14,7 @@ export function sprite(options={}) {
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
 
-        if (this.opacity) ctx.globalAlpha = this.opacity;
+        util.setOpacity(ctx, this.opacity, offset);
         options.image.draw(ctx,
                 offset.x + this.pos.x * offset.sx,
                 offset.y + this.pos.y * offset.sy,
@@ -51,7 +51,7 @@ export function patch3(childFunc, options={}) {
         sx *= this.imageScale;
         sy *= this.imageScale;
 
-        if (this.opacity) ctx.globalAlpha = this.opacity;
+        util.setOpacity(ctx, this.opacity, offset);
 
         const topY = offset.y + this.pos.y * offset.sy;
 
@@ -80,6 +80,7 @@ export function patch3(childFunc, options={}) {
             y: offset.y + this.pos.y * offset.sy,
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
+            opacity: this.opacity,
         });
         stage.views[childId].draw(childId, exprId, state, stage, subOffset);
 
