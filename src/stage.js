@@ -605,7 +605,7 @@ export class Stage {
         if (this.semantics.search(
             nodes, target,
             (_, id) => nodes.get(id).get("type") === "missing"
-        )) {
+        ).length > 0) {
             return;
         }
 
