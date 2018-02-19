@@ -661,6 +661,12 @@ export class Stage {
             if (leastDistance <= 150 && closestNotch !== null) {
                 // TODO: actually check the matched notches
                 const [ parent, notchPair ] = closestNotch;
+                // Don't reattach to the same notch
+                this.views[parent].highlighted = false;
+                if (selected.get("parent") === parent) {
+                    return;
+                }
+
                 if (this.semantics.notchesAttachable(
                     this,
                     this.getState(),
@@ -668,7 +674,6 @@ export class Stage {
                     selectedNode,
                     notchPair[0]
                 )) {
-                    this.views[parent].highlighted = false;
                     animate.fx.blink(this, this.views[parent], {
                         times: 2,
                         color: "magenta",
