@@ -449,6 +449,16 @@ export class Stage {
         return [ root, result, toolbox ];
     }
 
+    computeDragOffset(pos, topNode, targetNode) {
+        const dragOffset = { dx: 0, dy: 0 };
+        if (targetNode !== null) {
+            const absPos = gfxCore.absolutePos(this.views[topNode]);
+            dragOffset.dx = pos.x - absPos.x;
+            dragOffset.dy = pos.y - absPos.y;
+        }
+        return dragOffset;
+    }
+
     /**
      * Helper that clones an item from the toolbox.
      */
@@ -958,12 +968,7 @@ export class Stage {
             if (topNode === null) continue;
 
             this.store.dispatch(action.raise(topNode));
-            const dragOffset = { dx: 0, dy: 0 };
-            if (targetNode !== null) {
-                const absPos = gfxCore.absolutePos(this.views[topNode]);
-                dragOffset.dx = pos.x - absPos.x;
-                dragOffset.dy = pos.y - absPos.y;
-            }
+            const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
 
             this._touches.set(touch.identifier, new TouchRecord(
                 this,
@@ -1004,12 +1009,7 @@ export class Stage {
         if (topNode === null) return;
 
         this.store.dispatch(action.raise(topNode));
-        const dragOffset = { dx: 0, dy: 0 };
-        if (targetNode !== null) {
-            const absPos = gfxCore.absolutePos(this.views[topNode]);
-            dragOffset.dx = pos.x - absPos.x;
-            dragOffset.dy = pos.y - absPos.y;
-        }
+        const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
 
         const touch = this._touches.get("mouse");
         touch.topNode = topNode;
