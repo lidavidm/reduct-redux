@@ -34,8 +34,7 @@ class TouchRecord {
     onmove(mouseDown, mousePos) {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
-            if (!this.dragStart || gfxCore.distance(this.dragStart, mousePos) > 5) {
-                this.dragStart = null;
+            if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
                 this.dragged = true;
 
                 if (this.fromToolbox) {
@@ -65,6 +64,11 @@ class TouchRecord {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
                 this.topNode = newSelected;
+                this.dragOffset = this.stage.computeDragOffset(
+                    this.dragStart,
+                    newSelected,
+                    newSelected
+                );
             }
         }
 
