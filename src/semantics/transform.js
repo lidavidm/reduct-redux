@@ -197,6 +197,9 @@ export default function transform(definition) {
                 Audio.play(defn.stepSound);
             }
         }
+        if (defn && defn.stepAnimation) {
+            return defn.stepAnimation(module, stage, state, exp);
+        }
         return animate.fx.shatter(stage, stage.views[exp.get("id")]);
     };
 
@@ -636,14 +639,32 @@ export default function transform(definition) {
                 );
                 if (!canAttach) {
                     blockingNodes.forEach((id) => {
-                        animate.fx.blink(stage, stage.views[id], {
-                            times: 3,
-                            speed: 200,
-                            color: "#F00",
-                        });
+                        animate.fx.error(stage, stage.views[id]);
                     });
                     return false;
                 }
+            }
+        }
+        return true;
+    };
+
+    module.detachable = function(state, parentId, childId) {
+        const nodes = state.get("nodes");
+        const defn = definition.expressions[nodes.get(parentId).get("type")];
+        const parentField = nodes.get(childId).get("parentField");
+        if (parentField.slice(0, 5) !== "notch") {
+            return true;
+        }
+        const notchIdx = window.parseInt(parentField.slice(5), 10);
+        if (defn && defn.notches && defn.notches[notchIdx]) {
+            const notchDefn = defn.notches[notchIdx];
+            if (notchDefn.canDetach) {
+                return notchDefn.canDetach(
+                    module,
+                    state,
+                    parentId,
+                    childId
+                );
             }
         }
         return true;

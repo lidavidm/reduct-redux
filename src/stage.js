@@ -17,10 +17,12 @@ class TouchRecord {
         this.dragStart = dragStart;
         this.dragged = false;
         this.hoverNode = null;
+        this.prevHoverNode = null;
     }
 
     findHoverNode(pos) {
         const before = this.hoverNode;
+        this.prevHoverNode = before;
         const [ _, target ] = this.stage.getNodeAtPos(pos, this.topNode);
         this.hoverNode = target;
         if (target !== before) {
@@ -32,13 +34,13 @@ class TouchRecord {
     onmove(mouseDown, mousePos) {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
-            if (!this.dragStart || gfxCore.distance(this.dragStart, mousePos) > 5) {
-                this.dragStart = null;
+            if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
                 this.dragged = true;
 
                 if (this.fromToolbox) {
                     const resultNode = this.stage.cloneToolboxItem(this.topNode);
                     if (resultNode !== null) {
+                        this.stage.views[this.topNode].opacity = 1.0;
                         // Selected node was an __unlimited node
                         this.topNode = resultNode;
                         this.targetNode = resultNode;
@@ -47,12 +49,14 @@ class TouchRecord {
                 }
             }
 
-            const view = this.stage.views[this.targetNode];
+            const view = this.stage.views[this.topNode];
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
 
-            this.stage.views[this.topNode].opacity = 0.7;
+            if (this.targetNode !== null) {
+                this.stage.views[this.targetNode].opacity = 0.6;
+            }
         }
 
         // TODO: add tolerance here as well
@@ -60,6 +64,11 @@ class TouchRecord {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
                 this.topNode = newSelected;
+                this.dragOffset = this.stage.computeDragOffset(
+                    this.dragStart,
+                    newSelected,
+                    newSelected
+                );
             }
         }
 
@@ -75,6 +84,11 @@ class TouchRecord {
                 (holeType && exprType && holeType !== exprType)) {
                 this.hoverNode = null;
             }
+        }
+
+        if (this.topNode !== null) {
+            // Show previews for lambda application, if applicable
+            this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
         }
 
         // Highlight nearby compatible notches, if applicable
@@ -114,8 +128,22 @@ class TouchRecord {
             this.stage.betaReduce(state, target, arg);
         }
         else if (this.dragged && this.fromToolbox) {
-            // Take item out of toolbox
-            this.stage.store.dispatch(action.useToolbox(this.topNode));
+            const projection = this.stage.views[this.topNode];
+            let useItem = true;
+            // Allow items to be placed back in toolbox if and only if
+            // they were dragged from and released in the toolbox in
+            // one motion
+            if (projection) {
+                const topLeft = gfxCore.absolutePos(projection);
+                const bottom = { x: 0, y: topLeft.y + projection.size.h };
+                if (this.stage.toolbox.containsPoint(bottom)) {
+                    useItem = false;
+                }
+            }
+            if (useItem) {
+                // Take item out of toolbox
+                this.stage.store.dispatch(action.useToolbox(this.topNode));
+            }
         }
 
         // Bump items out of toolbox
@@ -132,6 +160,7 @@ class TouchRecord {
     reset() {
         this.topNode = null;
         this.hoverNode = null;
+        this.prevHoverNode = null;
         this.targetNode = null;
         this.dragged = false;
         this.fromToolbox = false;
@@ -158,10 +187,28 @@ export class Stage {
         this.height = height;
 
         this.canvas = document.createElement("canvas");
-        // TODO: dynamic resizing
-        this.canvas.setAttribute("width", width);
-        this.canvas.setAttribute("height", height);
+        this.canvas.setAttribute("width", this.width);
+        this.canvas.setAttribute("height", this.height);
+
         this.ctx = this.canvas.getContext("2d");
+
+        this.computeDimensions();
+
+        let timer = null;
+        window.addEventListener("resize", () => {
+            this.computeDimensions();
+            this.toolbox.resizeRows(this.getState());
+            if (timer !== null) {
+                window.clearTimeout(timer);
+            }
+            timer = window.setTimeout(() => {
+                for (const id of this.getState().get("board")) {
+                    this.bumpAwayFromEdges(id);
+                }
+            }, 500);
+
+            this.draw();
+        });
 
         this.color = "#EEEEEE";
 
@@ -197,6 +244,30 @@ export class Stage {
         this._currentlyReducing = {};
     }
 
+    computeDimensions() {
+        this.ctx.scale(1.0, 1.0);
+        this.height = window.innerHeight - 40;
+        if (window.matchMedia("only screen and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
+            this.width = window.innerWidth - 150;
+        }
+        else if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
+            this.width = 0.9 * window.innerWidth;
+
+            // if (window.innerHeight > window.innerWidth) {
+            //     this.width *= 0.8;
+            //     this.height *= 0.8;
+            //     this.ctx.scale(1 / 0.8, 1 / 0.8);
+            // }
+
+        }
+        else {
+            this.width = Math.max(0.8 * window.innerWidth, 800);
+            this.height = Math.max(this.height, 600);
+        }
+        this.canvas.setAttribute("width", this.width);
+        this.canvas.setAttribute("height", this.height);
+    }
+
     /**
      * Allocate an ID for the given projection.
      *
@@ -217,6 +288,9 @@ export class Stage {
     }
 
     reset() {
+        animate.clock.cancelAll();
+        for (const key in this.effects) delete this.effects[key];
+        for (const key in this._currentlyReducing) delete this._currentlyReducing[key];
         for (const key in this.views) delete this.views[key];
         delete this.goal;
         this.goal = new Goal(this);
@@ -319,6 +393,11 @@ export class Stage {
                     res = curExprId;
                 }
 
+                if (curRoot === curExprId && curNode &&
+                    !this.semantics.targetable(state, curNode)) {
+                    return [ curRoot, res ];
+                }
+
                 const subpos = {
                     x: curPos.x - topLeft.x,
                     y: curPos.y - topLeft.y,
@@ -374,6 +453,16 @@ export class Stage {
         return [ root, result, toolbox ];
     }
 
+    computeDragOffset(pos, topNode, targetNode) {
+        const dragOffset = { dx: 0, dy: 0 };
+        if (targetNode !== null) {
+            const absPos = gfxCore.absolutePos(this.views[topNode]);
+            dragOffset.dx = pos.x - absPos.x;
+            dragOffset.dy = pos.y - absPos.y;
+        }
+        return dragOffset;
+    }
+
     /**
      * Helper that clones an item from the toolbox.
      */
@@ -418,11 +507,16 @@ export class Stage {
      * Helper that detaches an item from its parent.
      */
     detachFromHole(selectedNode, targetNode) {
-        const target = this.getState().getIn([ "nodes", targetNode ]);
+        const state = this.getState();
+        const target = state.getIn([ "nodes", targetNode ]);
         if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
+            if (!this.semantics.detachable(state, target.get("parent"), targetNode)) {
+                return null;
+            }
             const pos = gfxCore.absolutePos(this.views[targetNode]);
             this.store.dispatch(action.detach(targetNode));
             this.views[targetNode].pos = pos;
+            this.views[targetNode].parent = null;
             this.views[targetNode].scale.x = 1;
             this.views[targetNode].scale.y = 1;
             return targetNode;
@@ -482,6 +576,66 @@ export class Stage {
         }
     }
 
+    previewApplication(arg, target, prevTarget) {
+        if (target === prevTarget) return;
+
+        const state = this.getState();
+        const nodes = state.get("nodes");
+
+        if (prevTarget !== null) {
+            const prevTargetNode = nodes.get(prevTarget);
+            if (prevTargetNode.has("parent") && nodes.get(prevTargetNode.get("parent")).has("body")) {
+                // Clear previous preview
+                this.semantics.map(
+                    nodes,
+                    nodes.get(prevTargetNode.get("parent")).get("body"),
+                    (nodes, id) => {
+                        if (this.views[id]) {
+                            delete this.views[id].preview;
+                        }
+                        return [ nodes.get(id), nodes ];
+                    },
+                    () => true
+                );
+            }
+        }
+
+        if (target === null) return;
+
+        if (this.semantics.search(
+            nodes, arg,
+            (_, id) => nodes.get(id).get("type") === "missing"
+        ).length > 0) {
+            return;
+        }
+
+        const targetNode = nodes.get(target);
+        if (targetNode.get("type") !== "lambdaArg") return;
+
+        const lambdaBody = nodes.get(targetNode.get("parent")).get("body");
+
+        if (this.semantics.search(
+            nodes, lambdaBody,
+            (_, id) => nodes.get(id).get("type") === "missing"
+        ).length > 0) {
+            return;
+        }
+
+        const targetName = targetNode.get("name");
+        this.semantics.map(nodes, lambdaBody, (nodes, id) => {
+            const node = nodes.get(id);
+            if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
+                if (this.views[id]) {
+                    this.views[id].preview = arg;
+                }
+                return [ node, nodes ];
+            }
+            return [ node, nodes ];
+        }, (nodes, node) => (
+            node.get("type") !== "lambda" ||
+                nodes.get(node.get("arg")).get("name") !== targetName));
+    }
+
     /**
      * Helper to combine notches where needed.
      */
@@ -532,6 +686,12 @@ export class Stage {
             if (leastDistance <= 150 && closestNotch !== null) {
                 // TODO: actually check the matched notches
                 const [ parent, notchPair ] = closestNotch;
+                // Don't reattach to the same notch
+                this.views[parent].highlighted = false;
+                if (selected.get("parent") === parent) {
+                    return;
+                }
+
                 if (this.semantics.notchesAttachable(
                     this,
                     this.getState(),
@@ -539,7 +699,6 @@ export class Stage {
                     selectedNode,
                     notchPair[0]
                 )) {
-                    this.views[parent].highlighted = false;
                     animate.fx.blink(this, this.views[parent], {
                         times: 2,
                         color: "magenta",
@@ -584,6 +743,15 @@ export class Stage {
                 };
             }
         });
+
+        const finishReducing = () => {
+            reductionAnimation.stop();
+            delete this._currentlyReducing[selectedNode];
+            for (const id of reducing) {
+                this.views[id].stroke = null;
+                delete this._currentlyReducing[id];
+            }
+        };
 
         this.semantics.interpreter.reduce(this, state, node, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
@@ -635,19 +803,9 @@ export class Stage {
                 return Promise.resolve(this.getState());
             },
             error: (errorNodeId) => {
-                animate.fx.blink(this, this.views[errorNodeId], {
-                    times: 3,
-                    color: "#F00",
-                    speed: 150,
-                });
+                animate.fx.error(this, this.views[errorNodeId]);
             },
-        }).then(() => {
-            reductionAnimation.stop();
-            delete this._currentlyReducing[selectedNode];
-            for (const id of reducing) {
-                delete this._currentlyReducing[id];
-            }
-        });
+        }).finally(finishReducing);
     }
 
     /**
@@ -765,6 +923,7 @@ export class Stage {
 
     removeEffect(id) {
         delete this.effects[id];
+        this.draw();
     }
 
     isSelected(id) {
@@ -778,11 +937,39 @@ export class Stage {
 
     isHovered(id) {
         for (const touch of this._touches.values()) {
-            if (touch.hoverNode === id) {
+            // Light up topNode if hoverNode present
+            if (touch.hoverNode === id || (touch.hoverNode !== null && touch.topNode === id)) {
                 return true;
             }
         }
         return false;
+    }
+
+    setCursor(cursor) {
+        // Try fallbacks because Chrome (e.g. -webkit-grab is recognized, but not grab)
+        this.canvas.style.cursor = `-moz-${cursor}`;
+        this.canvas.style.cursor = `-webkit-${cursor}`;
+        this.canvas.style.cursor = cursor;
+    }
+
+    updateCursor(touchRecord, moved=false) {
+        if (moved && touchRecord.topNode !== null && touchRecord.hoverNode !== null) {
+            this.setCursor("copy");
+        }
+        else if (touchRecord.topNode !== null) {
+            this.setCursor("grabbing");
+        }
+        else if (touchRecord.hoverNode !== null) {
+            if (this.getState().getIn([ "nodes", touchRecord.hoverNode, "complete" ])) {
+                this.setCursor("pointer");
+            }
+            else {
+                this.setCursor("grab");
+            }
+        }
+        else {
+            this.setCursor("default");
+        }
     }
 
     _touchstart(e) {
@@ -794,12 +981,7 @@ export class Stage {
             if (topNode === null) continue;
 
             this.store.dispatch(action.raise(topNode));
-            const dragOffset = { dx: 0, dy: 0 };
-            if (targetNode !== null) {
-                const absPos = gfxCore.absolutePos(this.views[targetNode]);
-                dragOffset.dx = pos.x - absPos.x;
-                dragOffset.dy = pos.y - absPos.y;
-            }
+            const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
 
             this._touches.set(touch.identifier, new TouchRecord(
                 this,
@@ -840,12 +1022,7 @@ export class Stage {
         if (topNode === null) return;
 
         this.store.dispatch(action.raise(topNode));
-        const dragOffset = { dx: 0, dy: 0 };
-        if (targetNode !== null) {
-            const absPos = gfxCore.absolutePos(this.views[targetNode]);
-            dragOffset.dx = pos.x - absPos.x;
-            dragOffset.dy = pos.y - absPos.y;
-        }
+        const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
 
         const touch = this._touches.get("mouse");
         touch.topNode = topNode;
@@ -853,13 +1030,18 @@ export class Stage {
         touch.fromToolbox = fromToolbox;
         touch.dragOffset = dragOffset;
         touch.dragStart = pos;
+        this.updateCursor(touch);
 
         this.draw();
     }
 
     _mousemove(e) {
         const buttons = typeof e.buttons !== "undefined" ? e.buttons : e.which;
-        this._touches.get("mouse").onmove(buttons > 0, this.getMousePos(e));
+        const mouse = this._touches.get("mouse");
+        mouse.onmove(buttons > 0, this.getMousePos(e));
+
+        this.updateCursor(mouse, true);
+
         this.draw();
     }
 
@@ -867,6 +1049,7 @@ export class Stage {
         const mouse = this._touches.get("mouse");
         mouse.onend(this.getState(), this.getMousePos(e));
         mouse.reset();
+        this.updateCursor(mouse);
         this.draw();
     }
 }

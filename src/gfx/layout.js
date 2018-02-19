@@ -1,3 +1,4 @@
+import * as animate from "./animate";
 import { debugDraw, roundedRect } from "./core";
 import * as util from "./util";
 
@@ -39,6 +40,24 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
+        if (this.preview && !this.prevPreview) {
+            this.prevPreview = { x: 0.2, y: 0.2 };
+            animate.tween(this.prevPreview, {
+                x: 0.7,
+                y: 0.7,
+            }, {
+                duration: 250,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
+        else if (!this.preview) {
+            delete this.prevPreview;
+        }
+        if (this.preview) {
+            stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            return;
+        }
+
         const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
@@ -48,11 +67,13 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.parent = this;
 
-            childProjection.pos.x = x;
-            childProjection.anchor.x = 0;
-            childProjection.anchor.y = 0;
-            childProjection.scale.x = this.subexpScale;
-            childProjection.scale.y = this.subexpScale;
+            if (!childProjection.animating) {
+                childProjection.pos.x = x;
+                childProjection.anchor.x = 0;
+                childProjection.anchor.y = 0;
+                childProjection.scale.x = this.subexpScale;
+                childProjection.scale.y = this.subexpScale;
+            }
 
             childProjection.prepare(childId, subexprId, state, stage);
             x += (childProjection.size.w * childProjection.scale.x) + this.padding.inner;
@@ -62,10 +83,26 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         this.size.h = maxY;
         for (let childId of children) {
             const childProjection = stage.views[childId];
+            if (childProjection.animating) continue;
+
             childProjection.pos.y = (this.size.h * this.scale.y - childProjection.size.h * childProjection.scale.y * this.scale.y) / 2;
         }
     };
     projection.draw = function(id, exprId, state, stage, offset) {
+        if (this.preview) {
+            const temp = Object.assign({}, stage.views[this.preview], {
+                pos: {
+                    x: this.pos.x + (0.5 * this.size.w),
+                    y: this.pos.y,
+                },
+                scale: this.prevPreview,
+                anchor: { x: 0.5, y: 0 },
+                opacity: 1,
+            });
+            temp.draw(this.preview, this.preview, state, stage, offset);
+            return;
+        }
+
         baseDraw.call(this, id, exprId, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(this, offset);

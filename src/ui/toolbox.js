@@ -65,7 +65,10 @@ export default class Toolbox {
 
     startLevel(state) {
         this._firstRender = true;
+        this.resizeRows(state);
+    }
 
+    resizeRows(state) {
         // Figure out how many rows to use
         let x = TOOLBOX_LEFT_MARGIN;
         let rows = 1;
@@ -120,15 +123,15 @@ export default class Toolbox {
                 // Do nothing - don't override position
             }
             else if (this._firstRender) {
-                projection.pos.x = x + 800;
+                projection.pos.x = x + this.stage.width;
                 projection.pos.y = nodeY;
                 projection.animating = true;
                 animate
                     .tween(projection.pos, { x }, {
                         easing: animate.Easing.Cubic.Out,
-                        duration: 250,
+                        duration: 400,
                     })
-                    .delay(350 * Math.log(2 + i))
+                    .delay(400 * Math.log(2 + i))
                     .then(() => {
                         projection.animating = false;
                     });

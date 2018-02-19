@@ -1,3 +1,5 @@
+import Loader from "../../loader";
+import Audio from "../../resource/audio";
 import * as gfx from "../core";
 import * as animate from "../animate";
 
@@ -61,11 +63,30 @@ export function blink(stage, projection, opts) {
         color: "#F00",
         speed: 600,
         lineWidth: 3,
+        background: false,
     }, opts);
 
     if (!projection.__origStroke) {
         projection.__origStroke = projection.stroke;
     }
+
+    if (options.background) {
+        if (!projection.__origColor) {
+            projection.__origColor = projection.color;
+        }
+
+        const bgColor = typeof options.background === "string" ? options.background : options.color;
+
+        animate.tween(projection, { color: null }, {
+            reverse: true,
+            repeat: options.times * 2,
+            duration: options.speed,
+            easing: animate.Easing.Color(animate.Easing.Linear, projection.color, bgColor),
+        }).then(() => {
+            projection.color = projection.__origColor;
+        });
+    }
+
     projection.stroke = { color: options.color, lineWidth: 0 };
     return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
         reverse: true,
@@ -152,5 +173,44 @@ export function shatter(stage, projection, onFullComplete=null) {
                 onFullComplete();
             }
         });
+    });
+}
+
+export function poof(stage, projection) {
+    const pos = gfx.centerPos(projection);
+    const status = { t: 0.0 };
+    const images = [ "poof0", "poof1", "poof2", "poof3", "poof4" ]
+          .map(key => Loader.images[key]);
+
+    const { ctx } = stage;
+    const id = stage.addEffect({
+        prepare: () => {},
+        draw: () => {
+            ctx.save();
+            const idx = Math.min(Math.floor(status.t * images.length), images.length - 1);
+            images[idx].draw(
+                ctx,
+                pos.x - 45, pos.y - 45,
+                90, 90
+            );
+            ctx.restore();
+        },
+    });
+
+    return animate.tween(status, { t: 1.0 }, {
+        duration: 500,
+    }).then(() => {
+        stage.removeEffect(id);
+    });
+}
+
+export function error(stage, projection) {
+    Audio.play("negative_2");
+    return blink(stage, projection, {
+        times: 3,
+        speed: 200,
+        color: "#F00",
+        lineWidth: 5,
+        background: "orange",
     });
 }

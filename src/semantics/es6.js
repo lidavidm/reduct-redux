@@ -263,9 +263,42 @@ export default transform({
             subexpressions: ["callee", "argument"],
             reductionOrder: ["argument", "callee"],
             projection: {
-                type: "default",
-                shape: "()",
-                fields: ["callee", "'('", "argument", "')'"],
+                type: "decal",
+                content: {
+                    type: "default",
+                    shape: "()",
+                    fields: ["callee", "'('", "argument", "')'"],
+                },
+            },
+            stepAnimation: (semant, stage, state, expr) => {
+                // return animate.fx.shatter(stage, stage.views[expr.get("argument")]);
+                const argView = stage.views[expr.get("argument")];
+                // TODO: animating should be a counter to support simultaneous animations
+                // TODO: animate module should take care of this automatically
+                argView.animating = true;
+                stage.views[expr.get("id")].arrowOpacity = 1.0;
+                animate.tween(stage.views[expr.get("id")], { arrowOpacity: 0 }, {
+                    duration: 200,
+                    easing: animate.Easing.Cubic.InOut,
+                });
+
+                animate.tween(argView.scale, { x: 0.4, y: 0.4 }, {
+                    duration: 300,
+                    easing: animate.Easing.Cubic.Out,
+                });
+
+                animate.tween(argView.pos, { y: argView.pos.y - 75 }, {
+                    duration: 500,
+                    easing: animate.Easing.Projectile(animate.Easing.Linear),
+                });
+
+                return animate.tween(argView.pos, { x: stage.views[expr.get("callee")].pos.x }, {
+                    duration: 500,
+                    easing: animate.Easing.Linear,
+                }).then(() => {
+                    argView.animating = false;
+                    animate.fx.poof(stage, stage.views[expr.get("id")]);
+                });
             },
             stepSound: "heatup",
             smallStep: (semant, stage, state, expr) => {
@@ -321,11 +354,7 @@ export default transform({
                     isCapturing: node => node.get("type") === "lambda",
                     captureName: (nodes, node) => nodes.get(node.get("arg")).get("name"),
                     animateInvalidArg: (id) => {
-                        animate.fx.blink(stage, stage.views[id], {
-                            times: 3,
-                            speed: 200,
-                            color: "#F00",
-                        });
+                        animate.fx.error(stage, stage.views[id]);
                     },
                 }),
         },
@@ -383,6 +412,7 @@ export default transform({
             kind: "expression",
             fields: ["name"],
             subexpressions: [],
+            stepSound: "heatup",
             type: (semant, state, types, expr) => ({
                 types: new Map(),
                 complete: state.get("globals").has(expr.get("name")),
@@ -491,6 +521,9 @@ export default transform({
             ignoreForVictory: true,
             fields: ["name"],
             subexpressions: ["body"],
+            targetable: (semant, state, expr) => {
+                return !expr.has("parent");
+            },
             notches: [
                 {
                     side: "left",
@@ -500,47 +533,75 @@ export default transform({
                 },
             ],
             projection: {
-                type: "vbox",
-                horizontalAlign: 0.0,
-                color: "OrangeRed",
-                padding: {
-                    top: 10,
-                    left: 15,
-                    inner: 5,
-                    right: 10,
-                    bottom: 10,
+                type: "dynamicProperty",
+                field: (state, exprId) => {
+                    const node = state.getIn([ "nodes", exprId ]);
+                    if (node.has("parent")) {
+                        return "attached";
+                    }
+                    return "default";
                 },
-                rows: [
-                    {
-                        type: "default",
-                        shape: "()",
-                        radius: 0,
-                        padding: {
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            inner: 15,
-                        },
-                        color: "salmon",
-                        shadow: false,
-                        shadowColor: "rgba(0,0,0,0)",
-                        shadowOffset: 0,
-                        stroke: {
-                            lineWidth: 0,
-                            color: "rgba(0,0,0,0)",
-                        },
-                        strokeWhenChild: false,
-                        fields: ["'def'", "name"],
-                        subexpScale: 1.0,
+                fields: {
+                    default: {
+                        color: projection => animate.tween(projection, {
+                            color: null,
+                        }, {
+                            duration: 500,
+                            easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "OrangeRed"),
+                        }),
                     },
-                    {
-                        type: "default",
-                        shape: "none",
-                        fields: ["'   '", "body"],
-                        subexpScale: 1.0,
+                    attached: {
+                        color: projection => animate.tween(projection, {
+                            color: null,
+                        }, {
+                            duration: 500,
+                            easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "#594764"),
+                        }),
                     },
-                ],
+                },
+                projection: {
+                    type: "vbox",
+                    horizontalAlign: 0.0,
+                    color: "OrangeRed",
+                    padding: {
+                        top: 10,
+                        left: 15,
+                        inner: 5,
+                        right: 10,
+                        bottom: 10,
+                    },
+                    rows: [
+                        {
+                            type: "default",
+                            shape: "()",
+                            radius: 0,
+                            padding: {
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                inner: 15,
+                            },
+                            color: "salmon",
+                            shadow: false,
+                            shadowColor: "rgba(0,0,0,0)",
+                            shadowOffset: 0,
+                            stroke: {
+                                lineWidth: 0,
+                                color: "rgba(0,0,0,0)",
+                            },
+                            strokeWhenChild: false,
+                            fields: ["'def'", "name"],
+                            subexpScale: 1.0,
+                        },
+                        {
+                            type: "default",
+                            shape: "none",
+                            fields: ["'   '", "body"],
+                            subexpScale: 1.0,
+                        },
+                    ],
+                },
             },
         },
 
@@ -563,6 +624,7 @@ export default transform({
 
                         return [ missingNodes.length === 0, missingNodes ];
                     },
+                    canDetach: () => false,
                     onAttach: (semant, state, selfId, otherId) => {
                         const name = state.getIn([ "nodes", otherId, "name" ]);
                         state.set("globals", state.get("globals").set(name, otherId));

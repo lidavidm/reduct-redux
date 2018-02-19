@@ -1,3 +1,5 @@
+import chroma from "chroma-js";
+
 export const Easing = {
     Linear: (start, stop, t) => start + (t * (stop - start)),
 
@@ -28,6 +30,18 @@ export const Easing = {
             t -= 2;
             return start + (((stop - start) * ((t * t * t) + 2)) / 2);
         },
+    },
+
+    Color: (easing, src, dst) => {
+        const scale = chroma.scale([ src, dst ]).mode("lch");
+        return (start, stop, t) => scale(easing(0.0, 1.0, t));
+    },
+
+    Projectile: (easing) => (start, stop, t) => {
+        const dy = stop - start;
+        // console.log(start, stop, t, start + (-4 * dy * t * t) + (4 * dy * t));
+        t = easing(0.0, 1.0, t);
+        return start + (-4 * dy * t * t) + (4 * dy * t);
     },
 };
 
@@ -233,9 +247,17 @@ export class Clock {
             window.requestAnimationFrame(this.tick.bind(this));
         }
     }
+
+    cancelAll() {
+        this.running = false;
+        this.lastTimestamp = null;
+        while (this.tweens.length > 0) {
+            this.tweens.pop();
+        }
+    }
 }
 
-const clock = new Clock();
+export const clock = new Clock();
 
 export function addUpdateListener(f) {
     clock.addUpdateListener(f);
