@@ -918,8 +918,8 @@ export class Stage {
         this.canvas.style.cursor = cursor;
     }
 
-    updateCursor(touchRecord) {
-        if (touchRecord.topNode !== null && touchRecord.hoverNode !== null) {
+    updateCursor(touchRecord, moved=false) {
+        if (moved && touchRecord.topNode !== null && touchRecord.hoverNode !== null) {
             this.setCursor("copy");
         }
         else if (touchRecord.topNode !== null) {
@@ -1016,7 +1016,7 @@ export class Stage {
         const mouse = this._touches.get("mouse");
         mouse.onmove(buttons > 0, this.getMousePos(e));
 
-        this.updateCursor(mouse);
+        this.updateCursor(mouse, true);
 
         this.draw();
     }
