@@ -911,6 +911,27 @@ export class Stage {
         return false;
     }
 
+    setCursor(cursor) {
+        this.canvas.style.cursor = `-moz-${cursor}`;
+        this.canvas.style.cursor = `-webkit-${cursor}`;
+        this.canvas.style.cursor = cursor;
+    }
+
+    updateCursor(touchRecord) {
+        if (touchRecord.topNode !== null && touchRecord.hoverNode !== null) {
+            this.setCursor("copy");
+        }
+        else if (touchRecord.topNode !== null) {
+            this.setCursor("grabbing");
+        }
+        else if (touchRecord.hoverNode !== null) {
+            this.setCursor("grab");
+        }
+        else {
+            this.setCursor("default");
+        }
+    }
+
     _touchstart(e) {
         e.preventDefault();
 
@@ -979,13 +1000,18 @@ export class Stage {
         touch.fromToolbox = fromToolbox;
         touch.dragOffset = dragOffset;
         touch.dragStart = pos;
+        this.updateCursor(touch);
 
         this.draw();
     }
 
     _mousemove(e) {
         const buttons = typeof e.buttons !== "undefined" ? e.buttons : e.which;
-        this._touches.get("mouse").onmove(buttons > 0, this.getMousePos(e));
+        const mouse = this._touches.get("mouse");
+        mouse.onmove(buttons > 0, this.getMousePos(e));
+
+        this.updateCursor(mouse);
+
         this.draw();
     }
 
@@ -993,6 +1019,7 @@ export class Stage {
         const mouse = this._touches.get("mouse");
         mouse.onend(this.getState(), this.getMousePos(e));
         mouse.reset();
+        this.updateCursor(mouse);
         this.draw();
     }
 }
