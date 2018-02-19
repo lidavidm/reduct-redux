@@ -55,7 +55,7 @@ class TouchRecord {
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
 
             if (this.targetNode !== null) {
-                this.stage.views[this.targetNode].opacity = 0.6;
+                this.stage.views[this.topNode].opacity = 0.6;
             }
         }
 
@@ -63,6 +63,7 @@ class TouchRecord {
         if (mouseDown && this.targetNode) {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
+                this.stage.views[this.topNode].opacity = 1.0;
                 this.topNode = newSelected;
                 this.dragOffset = this.stage.computeDragOffset(
                     this.dragStart,
