@@ -208,7 +208,8 @@ export function makeUnparser(jssemant) {
             return `${node.name}`;
         }
         default:
-            return fail(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
+            console.log(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
+            return null;
         }
     };
     return unparseES6;
