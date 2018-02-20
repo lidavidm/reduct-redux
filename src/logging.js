@@ -31,8 +31,8 @@ class Logger {
         this.currentSessionId = null;
         this.currentTaskId = null;
         this.dynamicTaskId = null;
-        this.taskSequenceId = null;
-        this.actionSequenceId = null;
+        this.taskSequenceId = 0;
+        this.actionSequenceId = 0;
         this.isOfflineSession = false;
 
         this.loadState();
@@ -89,13 +89,15 @@ class Logger {
             return Promise.reject();
         }
 
+        this.info(`Starting task ${taskId} (sequence ${this.taskSequenceId}).`);
+
         const params = this.makeSessionParams();
         params.quest_id = taskId;
         params.session_seq_id = this.taskSequenceId;
         if (data) params.quest_detail = data;
 
         if (this.config("offline")) {
-            return this.startOfflineTask(taskId, params);
+            return this.startOfflineTask(taskId, params).catch(() => null);
         }
         // TODO: online task
         return Promise.reject();
@@ -110,6 +112,9 @@ class Logger {
             this.warn("@ Logging#endTask: no task was begun.");
             return Promise.reject();
         }
+
+        this.info(`Ending task ${taskId} (sequence ${this.taskSequenceId}).`);
+
         const params = this.makeSessionParams();
         params.quest_id = taskId;
         params.session_seq_id = this.taskSequenceId;
@@ -120,7 +125,7 @@ class Logger {
         this.taskSequenceId++;
 
         if (this.config("offline")) {
-            return this.endOfflineTask(taskId, params);
+            return this.endOfflineTask(taskId, params).catch(() => null);
         }
         // TODO: online task
         return Promise.reject();
@@ -191,7 +196,7 @@ class Logger {
             message: "static_session",
         }, false);
 
-        this.info("Starting offline session.");
+        this.info(`Starting offline session with user ID ${this.currentUserId}.`);
 
         this.saveState();
 
@@ -235,11 +240,11 @@ class Logger {
     }
 
     info(text) {
-        console.info(`%c ${text}`, "background: #bada55; color: #eee");
+        console.info(`%c ${text}`, "background: darkgreen; color: #eee");
     }
 
     warn(text) {
-        console.warn(`%c ${text}`, "background: #bada55; color: #eee");
+        console.warn(`%c ${text}`, "background: orange; color: #eee");
     }
 
     logStatic(funcname, data, uploaded) {
@@ -263,19 +268,26 @@ class Logger {
     }
 
     loadConfig() {
-
+        if (window.localStorage["loggingConfig"]) {
+            this._config = Object.assign(
+                this._config,
+                JSON.parse(window.localStorage["loggingConfig"])
+            );
+        }
     }
 
     saveConfig() {
-
+        window.localStorage["loggingConfig"] = JSON.stringify(this._config);
     }
 
     loadState() {
-
+        if (window.localStorage["userId"]) {
+            this.currentUserId = JSON.parse(window.localStorage["userId"]);
+        }
     }
 
     saveState() {
-
+        window.localStorage["userId"] = JSON.stringify(this.currentUserId);
     }
 }
 

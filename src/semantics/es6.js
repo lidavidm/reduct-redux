@@ -271,7 +271,6 @@ export default transform({
                 },
             },
             stepAnimation: (semant, stage, state, expr) => {
-                // return animate.fx.shatter(stage, stage.views[expr.get("argument")]);
                 const argView = stage.views[expr.get("argument")];
                 // TODO: animating should be a counter to support simultaneous animations
                 // TODO: animate module should take care of this automatically

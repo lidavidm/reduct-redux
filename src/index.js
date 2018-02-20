@@ -87,12 +87,9 @@ function initialize() {
 window.reset = function start() {
     stg.reset();
 
-    level.startLevel(
-        Loader.progressions["Elementary"].levels[progression.currentLevel()],
-        es6.parser.parse,
-        store,
-        stg
-    );
+    const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
+    Logging.transitionToTask(progression.currentLevel(), levelDefinition);
+    level.startLevel(levelDefinition, es6.parser.parse, store, stg);
 
     document.querySelector("#level").innerText = progression.currentLevel().toString();
     // Sync chapter dropdown with current level
