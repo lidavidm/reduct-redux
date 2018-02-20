@@ -8,6 +8,7 @@ import * as stage from "./stage";
 import * as undo from "./reducer/undo";
 
 import { Loader } from "./loader";
+import Logging from "./logging";
 
 // Load assets.
 Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
@@ -19,7 +20,7 @@ Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 
-Loader.finished.then(initialize);
+Promise.all([ Loader.finished, Logging.startSession() ]).then(initialize);
 
 const views = {};
 let store;

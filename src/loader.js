@@ -2,21 +2,9 @@ import { Howl } from "howler";
 
 import * as gfx from "./gfx/core";
 import * as globalProgressions from "./game/progression";
+import { getJSON } from "./util/ajax";
 
 const BASE_PATH = "resources/";
-
-function getJSON(path) {
-    return new Promise((resolve) => {
-        const xhr = new window.XMLHttpRequest();
-        xhr.onload = function() {
-            resolve(JSON.parse(xhr.response));
-        };
-
-        xhr.open("GET", path);
-        xhr.responseType = "text";
-        xhr.send();
-    });
-}
 
 function getImage(path) {
     return new Promise((resolve) => {
