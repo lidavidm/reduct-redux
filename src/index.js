@@ -45,8 +45,7 @@ function logState() {
             });
         }
 
-        // TODO: maintain state graph
-        Logging.log("state-save", after);
+        stg.saveState();
 
         return returnValue;
     };

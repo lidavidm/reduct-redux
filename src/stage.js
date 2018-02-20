@@ -1,4 +1,5 @@
 import * as action from "./reducer/action";
+import * as level from "./game/level";
 import * as animate from "./gfx/animate";
 import Audio from "./resource/audio";
 import * as gfxCore from "./gfx/core";
@@ -6,6 +7,9 @@ import * as progression from "./game/progression";
 import { nextId } from "./reducer/reducer";
 import Goal from "./ui/goal";
 import Toolbox from "./ui/toolbox";
+
+import Logging from "./logging/logging";
+import Network from "./logging/network";
 
 class TouchRecord {
     constructor(stage, topNode, targetNode, fromToolbox, dragOffset, dragStart) {
@@ -173,6 +177,7 @@ class TouchRecord {
  */
 export class Stage {
     constructor(width, height, store, views, semantics) {
+        this.stateGraph = new Network();
         this.store = store;
         this.views = views;
         // A set of views for the toolbox, etc. that aren't cleared
@@ -245,6 +250,18 @@ export class Stage {
         this._currentlyReducing = {};
     }
 
+    /**
+     * Log the current game state.
+     *
+     * @param changeData Data associated with this edge in the graph.
+     */
+    saveState(changeData=null) {
+        const state = level.serialize(this.getState(), this.semantics);
+        const changed = this.stateGraph.push(JSON.stringify(state), changeData);
+        Logging.log("state-save", state);
+        Logging.log("state-path-save", this.stateGraph.toString());
+    }
+
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
         this.height = window.innerHeight - 40;
@@ -294,6 +311,7 @@ export class Stage {
         for (const key in this._currentlyReducing) delete this._currentlyReducing[key];
         for (const key in this.views) delete this.views[key];
         delete this.goal;
+        this.stateGraph = new Network();
         this.goal = new Goal(this);
         this.toolbox.reset();
         this.alreadyWon = false;
