@@ -25,10 +25,7 @@ class TouchRecord {
         this.prevHoverNode = before;
         const [ _, target ] = this.stage.getNodeAtPos(pos, this.topNode);
         this.hoverNode = target;
-        if (target !== before) {
-            // TODO: get rid of this
-            this.stage.store.dispatch(action.hover(this.hoverNode));
-        }
+        this.stage.draw();
     }
 
     onmove(mouseDown, mousePos) {

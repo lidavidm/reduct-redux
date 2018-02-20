@@ -33,19 +33,6 @@ function markDirty(nodes, id) {
 }
 
 export function reduct(semantics, views) {
-    // Could remove this. Originally ID of currently hovered node was
-    // in store, but it's better to just keep it as a property of the
-    // stage. But right now updating the store triggers a redraw, so
-    // just removing this will cause visual issues.
-    function hover(state=null, act) {
-        switch (act.type) {
-        case action.HOVER: {
-            return act.nodeId;
-        }
-        default: return state;
-        }
-    }
-
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
@@ -331,7 +318,6 @@ export function reduct(semantics, views) {
 
     return {
         reducer: combineReducers({
-            hover,
             program: undoable(compose(annotateTypes, program), {
                 actionFilter: act =>
                     act.type === action.RAISE ||

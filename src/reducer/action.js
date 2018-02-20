@@ -1,7 +1,6 @@
 import * as immutable from "immutable";
 import * as animate from "../gfx/animate";
 
-export const HOVER = "hover";
 export const USE_TOOLBOX = "use-toolbox";
 export const RAISE = "raise";
 export const DETACH = "detach";
@@ -111,13 +110,6 @@ export function betaReduce(topNodeId, argNodeId, newNodeIds, addedNodes) {
         argNodeId,
         newNodeIds,
         addedNodes,
-    };
-}
-
-export function hover(nodeId) {
-    return {
-        type: HOVER,
-        nodeId: nodeId,
     };
 }
 
