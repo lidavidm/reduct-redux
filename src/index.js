@@ -108,21 +108,22 @@ window.reset = function start() {
     stg.reset();
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
-    Logging.transitionToTask(progression.currentLevel(), levelDefinition);
-    level.startLevel(levelDefinition, es6.parser.parse, store, stg);
+    Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
+        level.startLevel(levelDefinition, es6.parser.parse, store, stg);
 
-    document.querySelector("#level").innerText = progression.currentLevel().toString();
-    // Sync chapter dropdown with current level
-    let prevOption = null;
-    for (const option of document.querySelectorAll("#chapter option")) {
-        if (window.parseInt(option.getAttribute("value"), 10) <= progression.currentLevel()) {
-            prevOption = option;
+        document.querySelector("#level").innerText = progression.currentLevel().toString();
+        // Sync chapter dropdown with current level
+        let prevOption = null;
+        for (const option of document.querySelectorAll("#chapter option")) {
+            if (window.parseInt(option.getAttribute("value"), 10) <= progression.currentLevel()) {
+                prevOption = option;
+            }
+            else {
+                break;
+            }
         }
-        else {
-            break;
-        }
-    }
-    document.querySelector("#chapter").value = prevOption.getAttribute("value");
+        document.querySelector("#chapter").value = prevOption.getAttribute("value");
+    });
 };
 
 window.next = function next() {
