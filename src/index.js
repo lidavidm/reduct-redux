@@ -9,7 +9,7 @@ import * as stage from "./stage";
 import * as undo from "./reducer/undo";
 
 import { Loader } from "./loader";
-import Logging from "./logging";
+import Logging from "./logging/logging";
 
 // Load assets.
 Loader.loadAudioSprite("sounds", "resources/audio/output.json", [

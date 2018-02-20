@@ -7,7 +7,7 @@
  * downloaded as a blob
  */
 
-import * as ajax from "./util/ajax";
+import * as ajax from "../util/ajax";
 
 // TODO: need actual values
 const GAME_ID = 70017017;
