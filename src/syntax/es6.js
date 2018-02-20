@@ -210,6 +210,12 @@ export function makeUnparser(jssemant) {
         case "lambdaVar": {
             return `${node.name}`;
         }
+        case "binop": {
+            return `(${unparseES6(node.left)}) ${node.op.name} (${unparseES6(node.right)})`;
+        }
+        case "number": {
+            return `${node.value}`;
+        }
         default:
             console.log(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
             return null;

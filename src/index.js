@@ -45,7 +45,11 @@ function logState() {
             });
         }
 
-        stg.saveState();
+        // Put action as edge data
+        // TODO: how to deal with all the intermediate states??
+        // TODO: dummy action that just indicates player clicked on
+        // something, and dummy action to indicate reduction finished
+        stg.saveState(act.type);
 
         return returnValue;
     };
