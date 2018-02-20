@@ -1,6 +1,7 @@
 import "babel-polyfill";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import * as reducer from "./reducer/reducer";
+import * as action from "./reducer/action";
 import * as level from "./game/level";
 import * as progression from "./game/progression";
 import es6 from "./semantics/es6";
@@ -26,19 +27,30 @@ const views = {};
 let store;
 let stg;
 
+function logState() {
+    return next => act => {
+        const returnValue = next(act);
+
+        if (act.type !== action.RAISE) {
+            // TODO: maintain state graph
+            Logging.log("state-save", level.serialize(stg.getState(), es6));
+        }
+
+        return returnValue;
+    };
+}
+
 function initialize() {
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
     const reduct = reducer.reduct(es6, views);
-    store = createStore(reduct.reducer);
+    store = createStore(reduct.reducer, undefined, applyMiddleware(logState));
 
     stg = new stage.Stage(800, 600, store, views, es6);
     document.body.appendChild(stg.view);
 
     // When the state changes, redraw the state.
     store.subscribe(() => {
-        // TODO: maintain state graph
-        Logging.log("state-save", level.serialize(stg.getState(), es6));
         stg.draw();
 
         if (!stg.alreadyWon) {
