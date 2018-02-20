@@ -29,12 +29,24 @@ let stg;
 
 function logState() {
     return next => act => {
-        const returnValue = next(act);
-
-        if (act.type !== action.RAISE) {
-            // TODO: maintain state graph
-            Logging.log("state-save", level.serialize(stg.getState(), es6));
+        if (act.type === action.RAISE) {
+            return next(act);
         }
+
+        const before = level.serialize(stg.getState(), es6);
+        const returnValue = next(act);
+        const after = level.serialize(stg.getState(), es6);
+
+        if (act.type === action.DETACH) {
+            Logging.log("detached-expr", {
+                before,
+                after,
+                "item": null,
+            });
+        }
+
+        // TODO: maintain state graph
+        Logging.log("state-save", after);
 
         return returnValue;
     };

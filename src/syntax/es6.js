@@ -197,6 +197,9 @@ export function makeParser(jssemant) {
 export function makeUnparser(jssemant) {
     const unparseES6 = function unparseES6(node) {
         switch (node.type) {
+        case "missing": {
+            return "_";
+        }
         case "symbol": {
             return `"${node.name}"`;
         }
