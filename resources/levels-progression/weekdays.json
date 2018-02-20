@@ -35,14 +35,18 @@
         {
             "board": ["function isSameDay(x, y) { return _; }", "_ == _", "__tests(f(sat, sat) == true, f(mon, tue) == false)"],
             "goal": ["true", "true"],
-            "toolbox": ["x", "x", "y", "y"]
+            "toolbox": ["x", "x", "y", "y", "__unlimited; isSameDay;"]
         },
         {
             "board": ["tomorrow(_)", "yesterday(_)"],
             "goal": ["tue", "tue"],
             "toolbox": ["mon", "wed", "tue", "thu"],
-            "defines":["function tomorrow(x) { return x == mon ? tue : (x == tue ? wed : (x == wed ? thu : (x == thu ? fri : (x == fri ? sat : (x == sat ? sun : mon))))) }",
-                      "function yesterday(x) { return x == mon ? sun : (x == tue ? mon : (x == wed ? tue : (x == thu ? wed : (x == fri ? thu : (x == sat ? fri : sat))))) }"]
+            "defines":["function tomorrow(x) { return x == mon ? tue : (x == tue ? wed : (x == wed ? thu : (x == thu ? fri : (x == fri ? sat : (x == sat ? sun : mon))))); }",
+                      "function yesterday(x) { return x == mon ? sun : (x == tue ? mon : (x == wed ? tue : (x == thu ? wed : (x == fri ? thu : (x == sat ? fri : sat))))); }"],
+            "globals": {
+                "tomorrow": "function tomorrow(x) { return x == mon ? tue : (x == tue ? wed : (x == wed ? thu : (x == thu ? fri : (x == fri ? sat : (x == sat ? sun : mon))))); }",
+                "yesterday": "function yesterday(x) { return x == mon ? sun : (x == tue ? mon : (x == wed ? tue : (x == thu ? wed : (x == fri ? thu : (x == sat ? fri : sat))))); }"
+            }
         },
         {
             "board": [ "_(_)", "_ == tue"],
@@ -62,30 +66,30 @@
         {
             "board": ["function isMonday(x) {return _; }", "__tests(f(mon), f(tue))"],
             "goal": ["true", "false"],
-            "toolbox": ["x == _", "mon", "tue"],
-            "defines": "function isMonday() { return x == mon }"
+            "toolbox": ["x == _", "mon", "tue", "__unlimited; isMonday;"],
+            "defines": "function isMonday(x) { return x == mon }"
         },
         {
             "board": ["function isFriday(x) {return _; }", "__tests(f(mon), f(fri))"],
             "goal": ["false", "true"],
-            "toolbox": ["_ == _", "x", "mon", "tue", "fri", "sat"],
-            "defines": "function isFriday() { return x == fri }"
+            "toolbox": ["_ == _", "x", "mon", "tue", "fri", "sat", "__unlimited; isFriday;"],
+            "defines": "function isFriday(x) { return x == fri }"
         },
         {
             "board": ["function isMondayOrFriday(x) {return _; }", "isMonday(_) ? _ : _", "_(x)", "__tests(f(mon), f(tue), f(fri), f(sun))"],
             "goal": ["true", "true", "false", "false"],
-            "toolbox": ["isMonday", "isFriday", "mon", "tue", "true", "false"]
+            "toolbox": ["isMonday", "isFriday", "mon", "tue", "true", "false", "x", "__unlimited; isMondayOrFriday;"]
         },
         {
             "board": ["function isWeekend(x) {return _; }", "_ ? _ : _", "x == _", "__tests(f(sat), f(tue), f(mon), f(sun))"],
             "goal": ["true", "false", "false", "true"],
-            "toolbox": ["sat", "sun", "mon", "tue", "true", "false", "x", "_ == _"],
+            "toolbox": ["sat", "sun", "mon", "tue", "true", "false", "x", "_ == _", "__unlimited; isWeekend;"],
             "defines": "function isWeekend(x) { return x == sat ? true : x == sun }"
         },
         {
             "board": ["function isWeekday(x) {return _; }", "_ ? _ : _", "_(_)", "__tests(f(sat), f(tue), f(mon), f(sun))"],
             "goal": ["false", "true", "true", "false"],
-            "toolbox": ["isWeekend", "sat", "sun", "mon", "tue", "true", "false", "x", "_ == _"],
+            "toolbox": ["isWeekend", "sat", "sun", "mon", "tue", "true", "false", "x", "_ == _", "__unlimited; isWeekday;"],
             "defines": "function isWeekday(x) { return isWeekend(x) ? false : true }"
         }
     ],
