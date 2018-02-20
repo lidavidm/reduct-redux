@@ -169,7 +169,7 @@ class Logger {
 
         if (this.config("offline")) {
             this.logStatic("action", staticParams, false);
-            return Promise.reject(`Failed to upload action ${actionId} to the server.`);
+            return Promise.reject(`Failed to upload action ${actionId} to the server.`).catch(() => null);
         }
 
         // TODO: remote action

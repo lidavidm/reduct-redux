@@ -687,6 +687,7 @@ export default function transform(definition) {
 
     module.parser = {};
     module.parser.parse = definition.parser.parse(module);
+    module.parser.unparse = definition.parser.unparse(module);
     module.parser.postParse = definition.parser.postParse;
     module.parser.extractDefines = definition.parser.extractDefines;
     module.parser.extractGlobals = definition.parser.extractGlobals;

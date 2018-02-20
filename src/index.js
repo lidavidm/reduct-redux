@@ -37,11 +37,19 @@ function initialize() {
 
     // When the state changes, redraw the state.
     store.subscribe(() => {
+        // TODO: maintain state graph
+        Logging.log("state-save", level.serialize(stg.getState(), es6));
         stg.draw();
 
         if (!stg.alreadyWon) {
             const matching = level.checkVictory(stg.getState(), es6);
             if (Object.keys(matching).length > 0) {
+                Logging.log("victory", {
+                    // TODO: track final state
+                    final_state: level.serialize(stg.getState(), es6),
+                    // TODO: track num of moves via undo stack?
+                    // num_of_moves: undefined,
+                });
                 stg.animateVictory(matching).then(() => {
                     window.next();
                 });

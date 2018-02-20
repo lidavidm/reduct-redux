@@ -1,12 +1,13 @@
 import * as core from "./core";
 import * as animate from "../gfx/animate";
-import makeParser from "../syntax/es6";
+import { makeParser, makeUnparser } from "../syntax/es6";
 import transform from "./transform";
 
 export default transform({
     name: "ECMAScript 6",
     parser: {
         parse: makeParser,
+        unparse: makeUnparser,
 
         extractDefines: (semant, expr) => {
             if (expr.type !== "define") {

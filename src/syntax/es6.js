@@ -7,7 +7,7 @@ function modifier(ast) {
     return [ ast.body[0].expression.name, ast.body[1] ];
 }
 
-export default function makeParser(jssemant) {
+export function makeParser(jssemant) {
     return function parseES6(program, macros) {
         const ast = esprima.parse(program);
 
@@ -192,6 +192,26 @@ export default function makeParser(jssemant) {
         default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);
         }
     }
+}
+
+export function makeUnparser(jssemant) {
+    const unparseES6 = function unparseES6(node) {
+        switch (node.type) {
+        case "symbol": {
+            return `"${node.name}"`;
+        }
+        case "lambda": {
+            return `(${unparseES6(node.arg)}) => ${unparseES6(node.body)}`;
+        }
+        case "lambdaArg":
+        case "lambdaVar": {
+            return `${node.name}`;
+        }
+        default:
+            return fail(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
+        }
+    };
+    return unparseES6;
 }
 
 function fail(message, node) {

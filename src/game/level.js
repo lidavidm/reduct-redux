@@ -128,3 +128,16 @@ export function checkVictory(state, semantics) {
     }
     return {};
 }
+
+/**
+ * Convert the game state back into a JSON level description.
+ */
+export function serialize(state, semantics) {
+    const board = [];
+    const nodes = state.get("nodes");
+    for (const id of state.get("board")) {
+        board.push(semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id))));
+    }
+    console.log(board);
+    return { board };
+}
