@@ -143,7 +143,7 @@ function start() {
 
 window.reset = function reset() {
     stg.pushState("reset");
-    window.reset();
+    start();
 };
 window.next = function next() {
     stg.pushState("next");
