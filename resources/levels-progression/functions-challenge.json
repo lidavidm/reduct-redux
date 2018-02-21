@@ -1,0 +1,22 @@
+{
+    "chapterName": "Function Challenge Levels",
+    "description": "Challenge levels to anonymous functions",
+    "challenge": true,
+    "language": "JavaScript",
+    "macros": {
+        "A": "'star'",
+        "B": "'rect'",
+        "C": "'triangle'"
+    },
+    "levels": [
+        {
+            "board": ["x => x => x", "A", "B"],
+            "goal": "A",
+            "toolbox": ""
+        }
+    ],
+    "resources":{
+        "planet":"planet-functiana",
+        "aliens":["alien-function-1", "alien-function-2", "alien-function-3"]
+    }
+}

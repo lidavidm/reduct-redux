@@ -101,6 +101,7 @@ export class Loader {
                 key: name,
                 name: json.chapterName,
                 description: json.description,
+                challenge: json.challenge || false,
                 language: json.language,
                 levels: [],
                 dependencies: [],
