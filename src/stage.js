@@ -262,6 +262,14 @@ export class Stage {
         Logging.log("state-path-save", this.stateGraph.toString());
     }
 
+    /**
+     * Push and save a special state onto the state graph.
+     */
+    pushState(label) {
+        this.stateGraph.push(label);
+        Logging.log("state-path-save", this.stateGraph.toString());
+    }
+
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
         this.height = window.innerHeight - 40;

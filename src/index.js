@@ -72,7 +72,6 @@ function initialize() {
             const matching = level.checkVictory(stg.getState(), es6);
             if (Object.keys(matching).length > 0) {
                 Logging.log("victory", {
-                    // TODO: track final state
                     final_state: level.serialize(stg.getState(), es6),
                     // TODO: track num of moves via undo stack?
                     // num_of_moves: undefined,
@@ -111,15 +110,16 @@ function initialize() {
         document.querySelector("#chapter").appendChild(option);
     }
     document.querySelector("#chapter").addEventListener("change", () => {
+        stg.pushState("change-chapter");
         const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
         progression.jumpToLevel(lvl);
-        window.reset();
+        start();
     });
 
-    window.reset();
+    start();
 }
 
-window.reset = function start() {
+function start() {
     stg.reset();
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
@@ -141,11 +141,17 @@ window.reset = function start() {
     });
 };
 
-window.next = function next() {
-    progression.nextLevel();
+window.reset = function reset() {
+    stg.pushState("reset");
     window.reset();
 };
+window.next = function next() {
+    stg.pushState("next");
+    progression.nextLevel();
+    start();
+};
 window.prev = function prev() {
+    stg.pushState("prev");
     progression.prevLevel();
-    window.reset();
+    start();
 };
