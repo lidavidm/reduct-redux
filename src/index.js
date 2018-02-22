@@ -1,5 +1,6 @@
 import "babel-polyfill";
 import { createStore, applyMiddleware } from "redux";
+import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
 import * as action from "./reducer/action";
 import * as level from "./game/level";
@@ -67,6 +68,10 @@ function initialize() {
 
     stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
+    animate.addUpdateListener(() => {
+        stg.drawImpl();
+    });
+
     // TODO: resize scene as whole, then resize stage
     window.addEventListener("resize", () => {
         stg.resize();
@@ -94,7 +99,8 @@ function initialize() {
                     // num_of_moves: undefined,
                 });
                 stg.animateVictory(matching).then(() => {
-                    window.next();
+                    progression.nextLevel();
+                    start();
                 });
             }
         }
@@ -137,11 +143,12 @@ function initialize() {
 }
 
 function start() {
-    stg.reset();
+    stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
     Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
         level.startLevel(levelDefinition, es6.parser.parse, store, stg);
+        stg.drawImpl();
 
         document.querySelector("#level").innerText = progression.currentLevel().toString();
         // Sync chapter dropdown with current level

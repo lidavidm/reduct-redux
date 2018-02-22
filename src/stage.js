@@ -221,10 +221,6 @@ export class Stage {
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
 
-        animate.addUpdateListener(() => {
-            this.drawImpl();
-        });
-
         this._currentlyReducing = {};
     }
 
