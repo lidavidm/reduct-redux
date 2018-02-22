@@ -67,10 +67,12 @@ function initialize() {
 
     stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
+    // TODO: resize scene as whole, then resize stage
     window.addEventListener("resize", () => {
         stg.resize();
     });
 
+    // TODO: dispatch events to scene, then to stage
     canvas.addEventListener("mousedown", e => stg._mousedown(e));
     canvas.addEventListener("mousemove", e => stg._mousemove(e));
     canvas.addEventListener("mouseup", e => stg._mouseup(e));
