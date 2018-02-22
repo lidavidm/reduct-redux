@@ -813,6 +813,10 @@ export class Stage {
                 this.views[newNodeIds[0]].pos.y = origPos.y;
 
                 let act = action.smallStep(topNodeId, newNodeIds, addedNodes);
+                Logging.log("reduction", {
+                    before: this.saveNode(topNodeId),
+                    after: newNodeIds.map(id => this.saveNode(id, tempNodes)),
+                });
                 if (!recordUndo) {
                     act = action.skipUndo(act);
                 }
