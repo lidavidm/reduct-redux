@@ -2,7 +2,6 @@ import "babel-polyfill";
 import { createStore, applyMiddleware } from "redux";
 import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
-import * as action from "./reducer/action";
 import * as level from "./game/level";
 import * as progression from "./game/progression";
 import es6 from "./semantics/es6";
@@ -29,34 +28,6 @@ let store;
 let stg;
 let canvas;
 
-function logState() {
-    return next => act => {
-        if (act.type === action.RAISE) {
-            return next(act);
-        }
-
-        const before = level.serialize(stg.getState(), es6);
-        const returnValue = next(act);
-        const after = level.serialize(stg.getState(), es6);
-
-        if (act.type === action.DETACH) {
-            Logging.log("detached-expr", {
-                before,
-                after,
-                "item": null,
-            });
-        }
-
-        // Put action as edge data
-        // TODO: how to deal with all the intermediate states??
-        // TODO: dummy action that just indicates player clicked on
-        // something, and dummy action to indicate reduction finished
-        stg.saveState(act.type);
-
-        return returnValue;
-    };
-}
-
 function initialize() {
     canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
@@ -64,8 +35,15 @@ function initialize() {
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
     const reduct = reducer.reduct(es6, views);
-    store = createStore(reduct.reducer, undefined, applyMiddleware(logState));
-
+    store = createStore(
+        reduct.reducer,
+        undefined,
+        applyMiddleware(Logging.logMiddleware(
+            () => stg.getState(),
+            (...args) => stg.saveState(...args),
+            es6
+        ))
+    );
     stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
     animate.addUpdateListener(() => {

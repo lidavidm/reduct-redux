@@ -7,6 +7,8 @@
  * downloaded as a blob
  */
 
+import * as level from "../game/level";
+import * as action from "../reducer/action";
 import * as ajax from "../util/ajax";
 
 // TODO: need actual values
@@ -174,6 +176,34 @@ class Logger {
 
         // TODO: remote action
         return Promise.reject();
+    }
+
+    logMiddleware(getState, saveState, semantics) {
+        return () => next => (act) => {
+            if (act.type === action.RAISE) {
+                return next(act);
+            }
+
+            const before = level.serialize(getState(), semantics);
+            const returnValue = next(act);
+            const after = level.serialize(getState(), semantics);
+
+            if (act.type === action.DETACH) {
+                Logging.log("detached-expr", {
+                    before,
+                    after,
+                    item: null,
+                });
+            }
+
+            // Put action as edge data
+            // TODO: how to deal with all the intermediate states??
+            // TODO: dummy action that just indicates player clicked on
+            // something, and dummy action to indicate reduction finished
+            saveState(act.type);
+
+            return returnValue;
+        };
     }
 
     downloadStaticLog() {
