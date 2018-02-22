@@ -20,6 +20,21 @@ const IS_LOCAL = window.location.hostname === "localhost" || window.location.hos
 
 const LOCAL_LOGGER_URL = "http://localhost:3333";
 
+/** Random integer in the range [min, max). */
+function getRandInt(min, max) {
+    // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_integer_between_two_values
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getRandString(length) {
+    const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += alphabet[getRandInt(0, alphabet.length)];
+    }
+    return result;
+}
+
 class Logger {
     constructor() {
         this._config = {
@@ -73,6 +88,11 @@ class Logger {
     }
 
     startSession() {
+        if (this.currentUserId === null) {
+            this.currentUserId = getRandString(40);
+        }
+        this.currentSessionId = getRandString(36);
+
         if (this.config("offline")) {
             return this.startOfflineSession();
         }
@@ -237,10 +257,6 @@ class Logger {
 
     startOfflineSession() {
         this.isOfflineSession = true;
-        if (this.currentUserId === null) {
-            this.currentUserId = Date.now();
-        }
-        this.currentSessionId = Date.now();
         // TODO: choose condition if not present
 
         this.logStatic("startSession", {
