@@ -66,10 +66,6 @@ export function blink(stage, projection, opts) {
         background: false,
     }, opts);
 
-    if (!projection.__origStroke) {
-        projection.__origStroke = projection.stroke;
-    }
-
     if (options.background) {
         if (!projection.__origColor) {
             projection.__origColor = projection.color;
@@ -87,14 +83,23 @@ export function blink(stage, projection, opts) {
         });
     }
 
-    projection.stroke = { color: options.color, lineWidth: 0 };
+    // TODO: refactor this into a helper
+    let updatedStroke = projection.stroke;
+    const tempStroke = { color: options.color, lineWidth: 0 };
+    Object.defineProperty(projection, "stroke", {
+        get() {
+            return tempStroke;
+        },
+        set(newValue) {
+            updatedStroke = newValue;
+        },
+    });
     return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
         reverse: true,
         repeat: options.times * 2,
         duration: options.speed,
     }).then(() => {
-        projection.stroke = projection.__origStroke;
-        delete projection.__origStroke;
+        projection.stroke = updatedStroke;
         stage.drawImpl();
     });
 }
