@@ -178,7 +178,7 @@ class Logger {
         return Promise.reject();
     }
 
-    logMiddleware(getState, saveState, semantics) {
+    logMiddleware(getState, saveState, saveNode, semantics) {
         return () => next => (act) => {
             if (act.type === action.RAISE) {
                 return next(act);
@@ -189,10 +189,22 @@ class Logger {
             const after = level.serialize(getState(), semantics);
 
             if (act.type === action.DETACH) {
-                Logging.log("detached-expr", {
+                this.log("detached-expr", {
                     before,
                     after,
-                    item: null,
+                    item: saveNode(act.nodeId),
+                });
+            }
+            else if (act.type === action.UNDO) {
+                this.log("undo", {
+                    before,
+                    after,
+                });
+            }
+            else if (act.type === action.REDO) {
+                this.log("redo", {
+                    before,
+                    after,
                 });
             }
 
@@ -340,6 +352,9 @@ Logger.prototype.ACTIONS = {
     "toolbox-reject": 16,
     "toolbox-addback": 17,
     "game-complete": 18,
+    // NEW ACTIONS FOR REDUCT-REDUX
+    "undo": 100,
+    "redo": 101,
 };
 
 const Logging = new Logger();
