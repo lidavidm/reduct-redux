@@ -26,6 +26,7 @@ Promise.all([ Loader.finished, Logging.startSession() ]).then(initialize);
 const views = {};
 let store;
 let stg;
+let canvas;
 
 function logState() {
     return next => act => {
@@ -56,13 +57,15 @@ function logState() {
 }
 
 function initialize() {
+    canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
     const reduct = reducer.reduct(es6, views);
     store = createStore(reduct.reducer, undefined, applyMiddleware(logState));
 
-    stg = new stage.Stage(800, 600, store, views, es6);
-    document.body.appendChild(stg.view);
+    stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
     // When the state changes, redraw the state.
     store.subscribe(() => {

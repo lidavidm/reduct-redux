@@ -176,7 +176,7 @@ class TouchRecord {
  * Handle drawing responsibilites for Reduct.
  */
 export class Stage {
-    constructor(width, height, store, views, semantics) {
+    constructor(canvas, width, height, store, views, semantics) {
         this.stateGraph = new Network();
         this.store = store;
         this.views = views;
@@ -192,7 +192,7 @@ export class Stage {
         this.width = width;
         this.height = height;
 
-        this.canvas = document.createElement("canvas");
+        this.canvas = canvas;
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
 
@@ -327,10 +327,6 @@ export class Stage {
 
     startLevel() {
         this.toolbox.startLevel(this.getState());
-    }
-
-    get view() {
-        return this.canvas;
     }
 
     getMousePos(e) {
