@@ -71,6 +71,14 @@ function initialize() {
         stg.resize();
     });
 
+    canvas.addEventListener("mousedown", e => stg._mousedown(e));
+    canvas.addEventListener("mousemove", e => stg._mousemove(e));
+    canvas.addEventListener("mouseup", e => stg._mouseup(e));
+
+    canvas.addEventListener("touchstart", e => stg._touchstart(e));
+    canvas.addEventListener("touchmove", e => stg._touchmove(e));
+    canvas.addEventListener("touchend", e => stg._touchend(e));
+
     // When the state changes, redraw the state.
     store.subscribe(() => {
         stg.draw();

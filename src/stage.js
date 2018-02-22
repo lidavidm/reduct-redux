@@ -201,22 +201,11 @@ export class Stage {
         this.computeDimensions();
 
         this.timer = null;
-        window.addEventListener("resize", () => {
-            this.resize();
-        });
 
         this.color = "#EEEEEE";
 
         this._redrawPending = false;
         this._drawFunc = null;
-
-        this.canvas.addEventListener("mousedown", (e) => this._mousedown(e));
-        this.canvas.addEventListener("mousemove", (e) => this._mousemove(e));
-        this.canvas.addEventListener("mouseup", (e) => this._mouseup(e));
-
-        this.canvas.addEventListener("touchstart", (e) => this._touchstart(e));
-        this.canvas.addEventListener("touchmove", (e) => this._touchmove(e));
-        this.canvas.addEventListener("touchend", (e) => this._touchend(e));
 
         this._touches = new Map();
 
