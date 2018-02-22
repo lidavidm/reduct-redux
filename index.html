@@ -17,6 +17,15 @@
          #nav > span {
              color: #FFF;
          }
+         #state-graph {
+             padding: 0;
+             position: absolute;
+             right: 0;
+             top: 0;
+             width:400px;
+             height:400px;
+             background: #111;
+         }
         </style>
     </head>
     <body>
@@ -30,6 +39,7 @@
             <span>Current Level: </span>
             <span id="level"></span>
             <button id="download-log">Download Log JSON</button>
+            <button id="toggle-graph">Toggle State Graph</button>
         </div>
         <script src="./src/index.js"></script>
     </body>

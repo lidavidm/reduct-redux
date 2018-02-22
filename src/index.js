@@ -1,5 +1,7 @@
 import "babel-polyfill";
+import vis from "vis";
 import { createStore, applyMiddleware } from "redux";
+
 import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
@@ -107,6 +109,10 @@ function initialize() {
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
+    document.querySelector("#toggle-graph").addEventListener("click", () => {
+        Logging.toggleStateGraph();
+        window.updateStateGraph();
+    });
 
     for (const chapterName of Loader.progressions["Elementary"].linearChapters) {
         const option = document.createElement("option");
@@ -160,4 +166,37 @@ window.prev = function prev() {
     stg.pushState("prev");
     progression.prevLevel();
     start();
+};
+window.updateStateGraph = function updateStateGraph(networkData) {
+    if (!document.querySelector("#state-graph")) {
+        const ctr = document.createElement("div");
+        ctr.setAttribute("id", "state-graph");
+        document.body.appendChild(ctr);
+    }
+    const container = document.querySelector("#state-graph");
+
+    if (!Logging.config("stateGraph")) {
+        container.style.display = "none";
+        return;
+    }
+    container.style.display = "unset";
+
+    if (!networkData) return;
+
+    const options = {
+        edges: {
+            arrows: {
+                to: { enabled: true, scaleFactor: 1 },
+            },
+            font: {
+                color: "lightgray",
+                strokeWidth: 0,
+                background: "#222",
+            },
+        },
+        nodes: {
+            shape: "box",
+        },
+    };
+    return new vis.Network(container, networkData, options);
 };

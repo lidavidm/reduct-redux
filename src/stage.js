@@ -250,6 +250,11 @@ export class Stage {
         const changed = this.stateGraph.push(JSON.stringify(state), changeData);
         Logging.log("state-save", state);
         Logging.log("state-path-save", this.stateGraph.toString());
+
+        if (changed && window.updateStateGraph) {
+            // See index.js
+            window.updateStateGraph(this.stateGraph.toVisJSNetworkData());
+        }
     }
 
     saveNode(id, nodes=null) {

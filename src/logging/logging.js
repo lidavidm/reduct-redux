@@ -27,6 +27,7 @@ class Logger {
             local: false, // Are we logging to a local server?
             static: true, // Are we saving events to the in-browser cache?
             offline: true, // Are we only saving events offline?
+            stateGraph: false, // Are we displaying a dynamic state graph?
         };
         this.loadConfig();
 
@@ -225,6 +226,11 @@ class Logger {
             type: "application/json;charset=utf-8",
         });
         fileSaver.saveAs(blob, `log_${new Date().getTime().toString()}.json`);
+    }
+
+    toggleStateGraph() {
+        this.config("stateGraph", !this.config("stateGraph"));
+        this.saveConfig();
     }
 
     /* ~~~~~~~~~ PRIVATE METHODS ~~~~~~~~~ */
