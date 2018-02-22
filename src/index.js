@@ -67,6 +67,10 @@ function initialize() {
 
     stg = new stage.Stage(canvas, 800, 600, store, views, es6);
 
+    window.addEventListener("resize", () => {
+        stg.resize();
+    });
+
     // When the state changes, redraw the state.
     store.subscribe(() => {
         stg.draw();

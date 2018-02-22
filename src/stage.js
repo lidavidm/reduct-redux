@@ -200,20 +200,9 @@ export class Stage {
 
         this.computeDimensions();
 
-        let timer = null;
+        this.timer = null;
         window.addEventListener("resize", () => {
-            this.computeDimensions();
-            this.toolbox.resizeRows(this.getState());
-            if (timer !== null) {
-                window.clearTimeout(timer);
-            }
-            timer = window.setTimeout(() => {
-                for (const id of this.getState().get("board")) {
-                    this.bumpAwayFromEdges(id);
-                }
-            }, 500);
-
-            this.draw();
+            this.resize();
         });
 
         this.color = "#EEEEEE";
@@ -292,6 +281,21 @@ export class Stage {
         }
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
+    }
+
+    resize() {
+        this.computeDimensions();
+        this.toolbox.resizeRows(this.getState());
+        if (this.timer !== null) {
+            window.clearTimeout(this.timer);
+        }
+        this.timer = window.setTimeout(() => {
+            for (const id of this.getState().get("board")) {
+                this.bumpAwayFromEdges(id);
+            }
+        }, 500);
+
+        this.draw();
     }
 
     /**
