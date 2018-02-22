@@ -7,6 +7,8 @@
  * downloaded as a blob
  */
 
+import fileSaver from "file-saver";
+
 import * as level from "../game/level";
 import * as action from "../reducer/action";
 import * as ajax from "../util/ajax";
@@ -219,7 +221,10 @@ class Logger {
     }
 
     downloadStaticLog() {
-
+        const blob = new window.Blob([ JSON.stringify(this.staticLog, null, 2) ], {
+            type: "application/json;charset=utf-8",
+        });
+        fileSaver.saveAs(blob, `log_${new Date().getTime().toString()}.json`);
     }
 
     /* ~~~~~~~~~ PRIVATE METHODS ~~~~~~~~~ */

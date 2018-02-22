@@ -104,6 +104,9 @@ function initialize() {
     document.querySelector("#next").addEventListener("click", () => {
         window.next();
     });
+    document.querySelector("#download-log").addEventListener("click", () => {
+        Logging.downloadStaticLog();
+    });
 
     for (const chapterName of Loader.progressions["Elementary"].linearChapters) {
         const option = document.createElement("option");
