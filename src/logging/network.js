@@ -1,3 +1,5 @@
+import vis from "vis";
+
 export default class Network {
 
     constructor() {
@@ -186,11 +188,6 @@ export default class Network {
         return JSON.stringify(this.serialize());
     }
     toVisJSNetworkData(toLabel) {
-        if (!('vis' in window)) {
-            console.error('Vis.js not found.');
-            return {};
-        }
-
         const clean = s => s.replace(/__(star|rect|tri|triangle|diamond|circle|dot)/g, '');
         const toEdgeLabel = e => {
             const d = e.data;
