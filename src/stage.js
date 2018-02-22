@@ -252,8 +252,8 @@ export class Stage {
         Logging.log("state-path-save", this.stateGraph.toString());
     }
 
-    saveNode(id) {
-        const nodes = this.getState().get("nodes");
+    saveNode(id, nodes=null) {
+        nodes = nodes === null ? this.getState().get("nodes") : nodes;
         return this.semantics.parser.unparse(this.semantics.hydrate(nodes, nodes.get(id)));
     }
 
@@ -848,6 +848,8 @@ export class Stage {
         const result = this.semantics.interpreter.betaReduce(this, state, target, [ arg ]);
         if (result) {
             const [ topNode, resultNodeIds, newNodes ] = result;
+            const origExp = this.saveNode(topNode);
+            const origArg = this.saveNode(arg);
             const tempNodes = state.get("nodes").withMutations(nodes => {
                 for (const node of newNodes) {
                     nodes.set(node.get("id"), node);
@@ -888,6 +890,12 @@ export class Stage {
                 Audio.play("pop");
                 this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
             }
+
+            Logging.log("reduction-lambda", {
+                before: origExp,
+                applied: origArg,
+                after: resultNodeIds.map(id => this.saveNode(id, tempNodes)),
+            });
         }
     }
 
