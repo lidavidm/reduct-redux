@@ -36,11 +36,16 @@ class TouchRecord {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
+                if (!this.dragged && this.fromToolbox) {
+                    Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
+                }
+
                 this.dragged = true;
 
                 if (this.fromToolbox) {
                     const resultNode = this.stage.cloneToolboxItem(this.topNode);
                     if (resultNode !== null) {
+                        Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
                         this.stage.views[this.topNode].opacity = 1.0;
                         // Selected node was an __unlimited node
                         this.topNode = resultNode;
@@ -147,13 +152,24 @@ class TouchRecord {
             }
             if (useItem) {
                 // Take item out of toolbox
+                Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
                 this.stage.store.dispatch(action.useToolbox(this.topNode));
+            }
+            else {
+                Logging.log("toolbox-addback", this.stage.saveNode(this.topNode));
             }
         }
 
         // Bump items out of toolbox
         if (this.topNode !== null) {
-            this.stage.bumpAwayFromEdges(this.topNode);
+            const projection = this.stage.views[this.topNode];
+            const topLeft = gfxCore.absolutePos(projection);
+            const bottom = { x: 0, y: topLeft.y + projection.size.h };
+            if (this.stage.toolbox.containsPoint(bottom) &&
+                !this.stage.getState().get("toolbox").includes(this.topNode)) {
+                Logging.log("toolbox-reject", this.stage.saveNode(this.topNode));
+                this.stage.bumpAwayFromEdges(this.topNode);
+            }
             this.stage.views[this.topNode].opacity = 1.0;
         }
 
@@ -234,6 +250,11 @@ export class Stage {
         const changed = this.stateGraph.push(JSON.stringify(state), changeData);
         Logging.log("state-save", state);
         Logging.log("state-path-save", this.stateGraph.toString());
+    }
+
+    saveNode(id) {
+        const nodes = this.getState().get("nodes");
+        return this.semantics.parser.unparse(this.semantics.hydrate(nodes, nodes.get(id)));
     }
 
     /**
