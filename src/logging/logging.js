@@ -100,6 +100,8 @@ class Logger {
         params.user_id = this.currentUserId;
         params.session_id = this.currentSessionId;
 
+        this.info(`Starting ${this.config("offline") ? "offline" : "online"} session with user ID ${this.currentUserId}.`);
+
         const offline = this.startOfflineSession(params);
         if (this.config("offline")) {
             return offline;
@@ -142,6 +144,9 @@ class Logger {
         if (data) params.quest_detail = JSON.stringify(data);
 
         this.logStatic("startTask", params, false);
+        if (this.config("offline")) {
+            return Promise.resolve();
+        }
         return ajax.jsonp(URLS.QUEST_START, params).catch(() => null);
     }
 
@@ -166,6 +171,9 @@ class Logger {
         this.taskSequenceId++;
 
         this.logStatic("endTask", params, false);
+        if (this.config("offline")) {
+            return Promise.resolve();
+        }
         return ajax.jsonp(URLS.QUEST_END, params).catch(() => null);
     }
 
@@ -188,6 +196,7 @@ class Logger {
                 numericActionId = this.ACTIONS[actionId];
             }
             else {
+                this.warn(`@ Logging#log: unknown action ${actionId}`);
                 numericActionId = 10000; // Unknown action
             }
         }
@@ -206,11 +215,9 @@ class Logger {
         }
 
         if (this.config("offline")) {
-            return Promise.reject(`Failed to upload action ${actionId} to the server.`).catch(() => null);
+            return Promise.resolve();
         }
-
-        // TODO: remote action
-        return Promise.reject();
+        return ajax.jsonp(URLS.ACTION, remoteParams).catch(() => null);
     }
 
     logMiddleware(getState, saveState, saveNode, semantics) {
@@ -276,7 +283,6 @@ class Logger {
             message: "static_session",
         }), false);
 
-        this.info(`Starting offline session with user ID ${this.currentUserId}.`);
         this.saveState();
 
         return Promise.resolve({
@@ -312,7 +318,7 @@ class Logger {
     }
 
     warn(text) {
-        console.warn(`%c ${text}`, "background: orange; color: #eee");
+        console.warn(`%c ${text}`, "background: #dd6b00; color: #eee");
     }
 
     logStatic(funcname, data, uploaded) {
