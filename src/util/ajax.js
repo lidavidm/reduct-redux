@@ -20,10 +20,13 @@ export function postJSON(path, data) {
 
 export function jsonp(path, params) {
     params = params || {};
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const scr = document.createElement("script");
         const callback = `jsonpCallback${Date.now()}`;
+        let completed = false;
         window[callback] = (data) => {
+            completed = true;
+            delete window[callback];
             scr.remove();
             resolve(JSON.parse(data));
         };
@@ -38,5 +41,13 @@ export function jsonp(path, params) {
 
         scr.setAttribute("src", path + query);
         document.body.appendChild(scr);
+
+        window.setTimeout(() => {
+            if (completed) return;
+
+            delete window[callback];
+            scr.remove();
+            reject();
+        }, 10000);
     });
 }

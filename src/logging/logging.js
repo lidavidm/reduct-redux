@@ -19,6 +19,9 @@ const VERSION_ID = 0.49999999;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 const LOCAL_LOGGER_URL = "http://localhost:3333";
+const URLS = {
+    PAGE_LOAD: "",
+};
 
 /** Random integer in the range [min, max). */
 function getRandInt(min, max) {
@@ -93,12 +96,25 @@ class Logger {
         }
         this.currentSessionId = getRandString(36);
 
-        const offline = this.startOfflineSession();
+        const params = this.makeBaseParams();
+        params.user_id = this.currentUserId;
+
+        const offline = this.startOfflineSession(params);
         if (this.config("offline")) {
             return offline;
         }
-        // TODO: online session
-        return Promise.reject();
+
+        return ajax.jsonp(URLS.PAGE_LOAD, params).then((response) => {
+            // TODO: also accept server UID?
+            this.currentSessionId = response.session_id || this.currentSessionId;
+            this.info(`Starting offline session with user ID ${this.currentUserId}.`);
+            this.saveState();
+
+            return ({
+                user_id: this.currentUserId,
+                session_id: this.currentSessionid,
+            });
+        }).catch(() => offline);
     }
 
     get isSessionStarted() {
@@ -258,18 +274,16 @@ class Logger {
 
     /* ~~~~~~~~~ PRIVATE METHODS ~~~~~~~~~ */
 
-    startOfflineSession() {
+    startOfflineSession(params) {
         this.isOfflineSession = true;
         // TODO: choose condition if not present
 
-        this.logStatic("startSession", {
-            user_id: this.currentUserId,
+        this.logStatic("startSession", Object.assign({}, params, {
             session_id: this.currentSessionId,
             message: "static_session",
-        }, false);
+        }), false);
 
         this.info(`Starting offline session with user ID ${this.currentUserId}.`);
-
         this.saveState();
 
         return Promise.resolve({
@@ -308,7 +322,7 @@ class Logger {
     }
 
     makeBaseParams() {
-        return { "game_id": GAME_ID, "client_timestamp": Date.now() };
+        return { game_id: GAME_ID, client_timestamp: Date.now() };
     }
 
     info(text) {
