@@ -79,7 +79,6 @@ export function undoable(reducer, options={}) {
                 return state.set("$present", newPresent);
             }
 
-            console.info("Storing undo state", action);
             const extraState = options.extraState($present, newPresent);
             return state.withMutations(map => {
                 map

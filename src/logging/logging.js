@@ -93,8 +93,9 @@ class Logger {
         }
         this.currentSessionId = getRandString(36);
 
+        const offline = this.startOfflineSession();
         if (this.config("offline")) {
-            return this.startOfflineSession();
+            return offline;
         }
         // TODO: online session
         return Promise.reject();
@@ -121,9 +122,11 @@ class Logger {
         params.session_seq_id = this.taskSequenceId;
         if (data) params.quest_detail = data;
 
+        const offline = this.startOfflineTask(taskId, params).catch(() => null);
         if (this.config("offline")) {
-            return this.startOfflineTask(taskId, params).catch(() => null);
+            return offline;
         }
+
         // TODO: online task
         return Promise.reject();
     }
@@ -149,8 +152,9 @@ class Logger {
         this.dynamicTaskId = null;
         this.taskSequenceId++;
 
+        const offline = this.endOfflineTask(taskId, params).catch(() => null);
         if (this.config("offline")) {
-            return this.endOfflineTask(taskId, params).catch(() => null);
+            return offline;
         }
         // TODO: online task
         return Promise.reject();
@@ -187,13 +191,12 @@ class Logger {
             action_id: numericActionId,
         }, params);
 
+        this.logStatic("action", staticParams, false);
         if (!this.isTaskStarted) {
-            this.logStatic("action", staticParams, false);
             return Promise.reject();
         }
 
         if (this.config("offline")) {
-            this.logStatic("action", staticParams, false);
             return Promise.reject(`Failed to upload action ${actionId} to the server.`).catch(() => null);
         }
 
