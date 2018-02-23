@@ -34,6 +34,7 @@ export function jsonp(path, params) {
         // Encode params in query string
         const parts = [];
         params.jsonp = callback;
+        params.__cachebuster = Date.now();
         for (const [ key, val ] of Object.entries(params)) {
             parts.push(`${key}=${window.encodeURIComponent(val)}`);
         }
