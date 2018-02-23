@@ -17,3 +17,26 @@ export function postJSON(path, data) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify(data, null, 2));
 }
+
+export function jsonp(path, params) {
+    params = params || {};
+    return new Promise((resolve) => {
+        const scr = document.createElement("script");
+        const callback = `jsonpCallback${Date.now()}`;
+        window[callback] = (data) => {
+            scr.remove();
+            resolve(JSON.parse(data));
+        };
+
+        // Encode params in query string
+        const parts = [];
+        params.jsonp = callback;
+        for (const [ key, val ] of Object.entries(params)) {
+            parts.push(`${key}=${window.encodeURIComponent(val)}`);
+        }
+        const query = `?${parts.join("&")}`;
+
+        scr.setAttribute("src", path + query);
+        document.body.appendChild(scr);
+    });
+}
