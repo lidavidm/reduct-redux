@@ -98,6 +98,8 @@ class Logger {
 
         const params = this.makeBaseParams();
         params.user_id = this.currentUserId;
+        params.session_id = this.currentSessionId;
+        params.version_id = VERSION_ID;
 
         const offline = this.startOfflineSession(params);
         if (this.config("offline")) {
