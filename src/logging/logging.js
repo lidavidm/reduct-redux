@@ -99,7 +99,6 @@ class Logger {
         const params = this.makeBaseParams();
         params.user_id = this.currentUserId;
         params.session_id = this.currentSessionId;
-        params.version_id = VERSION_ID;
 
         const offline = this.startOfflineSession(params);
         if (this.config("offline")) {
@@ -134,19 +133,16 @@ class Logger {
         }
 
         this.info(`Starting task ${taskId} (sequence ${this.taskSequenceId}).`);
+        this.currentTaskId = taskId;
+        this.dynamicTaskId = Date.now();
+        this.taskSequenceId = 1;
 
         const params = this.makeSessionParams();
         params.quest_id = taskId;
-        params.session_seq_id = this.taskSequenceId;
-        if (data) params.quest_detail = data;
+        if (data) params.quest_detail = JSON.stringify(data);
 
-        const offline = this.startOfflineTask(taskId, params).catch(() => null);
-        if (this.config("offline")) {
-            return offline;
-        }
-
-        // TODO: online task
-        return Promise.reject();
+        this.logStatic("startTask", params, false);
+        return ajax.jsonp(URLS.QUEST_START, params).catch(() => null);
     }
 
     get isTaskStarted() {
@@ -163,19 +159,14 @@ class Logger {
 
         const params = this.makeSessionParams();
         params.quest_id = taskId;
-        params.session_seq_id = this.taskSequenceId;
-        params.dynamic_quest_id = this.dynamicTaskId;
 
         this.currentTaskId = null;
         this.dynamicTaskId = null;
+        this.taskSequenceId = 1;
         this.taskSequenceId++;
 
-        const offline = this.endOfflineTask(taskId, params).catch(() => null);
-        if (this.config("offline")) {
-            return offline;
-        }
-        // TODO: online task
-        return Promise.reject();
+        this.logStatic("endTask", params, false);
+        return ajax.jsonp(URLS.QUEST_END, params).catch(() => null);
     }
 
     transitionToTask(taskId, data=null) {
@@ -294,18 +285,6 @@ class Logger {
         });
     }
 
-    startOfflineTask(taskId, params) {
-        this.currentTaskId = taskId;
-        this.dynamicTaskId = Date.now();
-        this.logStatic("startTask", params, false);
-        return Promise.reject(`Failed to tell server that task ${taskId} has started.`);
-    }
-
-    endOfflineTask(taskId, params) {
-        this.logStatic("endTask", params, false);
-        return Promise.reject(`Failed to tell server that task ${taskId} has ended.`);
-    }
-
     makeActionParams() {
         const params = this.makeSessionParams();
         params.quest_id = this.currentTaskId;
@@ -317,14 +296,15 @@ class Logger {
 
     makeSessionParams() {
         const params = this.makeBaseParams();
-        params.version_id = VERSION_ID;
         params.user_id = this.currentUserId;
         params.session_id = this.currentSessionId;
+        params.session_seq_id = this.taskSequenceId;
+        params.dynamic_quest_id = this.dynamicTaskId;
         return params;
     }
 
     makeBaseParams() {
-        return { game_id: GAME_ID, client_timestamp: Date.now() };
+        return { game_id: GAME_ID, client_timestamp: Date.now(), version_id: VERSION_ID };
     }
 
     info(text) {
