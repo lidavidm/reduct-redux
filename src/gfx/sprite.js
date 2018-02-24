@@ -15,11 +15,15 @@ export function sprite(options={}) {
         const [ sx, sy ] = util.absoluteScale(this, offset);
 
         util.setOpacity(ctx, this.opacity, offset);
-        options.image.draw(ctx,
-                offset.x + this.pos.x * offset.sx,
-                offset.y + this.pos.y * offset.sy,
-                offset.sx * this.scale.x * this.size.w,
-                offset.sy * this.scale.y * this.size.h);
+        const width = offset.sx * this.scale.x * this.size.w;
+        const height = offset.sy * this.scale.y * this.size.h;
+        options.image.draw(
+            ctx,
+            offset.x + ((this.pos.x * offset.sx) - (this.anchor.x * width)),
+            offset.y + ((this.pos.y * offset.sy) - (this.anchor.y * height)),
+            width,
+            height
+        );
 
         debugDraw(ctx, this, offset);
 
