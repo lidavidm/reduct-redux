@@ -104,32 +104,7 @@ export default class ChapterEndStage extends BaseStage {
 
         this.draw();
 
-        // TODO: create button view
-        const buttonLabel = this.allocate(gfx.text("Keep Playing!", {
-            fontSize: 32,
-            color: "#FFF",
-        }));
-        const continueButton = gfx.layout.hbox(gfx.constant(buttonLabel), {
-            color: "lightblue",
-            padding: {
-                left: 20,
-                right: 20,
-                inner: 10,
-            },
-            size: {
-                w: 50,
-                h: 70,
-            },
-            anchor: {
-                x: 0.5,
-                y: 0.5,
-            },
-            shadow: true,
-            shadowColor: "black",
-        });
-        continueButton.onclick = () => {
-            console.log("clicked!");
-        };
+        const continueButton = gfx.ui.button(this, "Keep Playing!");
         this.continueButtonId = this.allocateInternal(continueButton);
         this.continueButton = this.internalViews[this.continueButtonId];
     }
@@ -203,10 +178,10 @@ class TouchRecord extends BaseTouchRecord {
 
     onstart() {
         if (this.topNode && this.stage.internalViews[this.topNode]) {
-            // TODO: need onstart
             const view = this.stage.internalViews[this.topNode];
-            view.shadow = false;
-            view.pos.y += 3;
+            if (view.onmousedown) {
+                view.onmousedown();
+            }
         }
     }
 
@@ -215,8 +190,6 @@ class TouchRecord extends BaseTouchRecord {
 
         if (this.topNode && this.stage.internalViews[this.topNode]) {
             const view = this.stage.internalViews[this.topNode];
-            view.shadow = true;
-            view.pos.y -= 3;
             if (view.onclick) {
                 view.onclick();
             }
