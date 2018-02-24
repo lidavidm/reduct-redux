@@ -133,11 +133,7 @@ export default class BaseStage {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this._redrawPending = false;
 
-        const state = this.getState();
-
-        for (const nodeId of state.get("board")) {
-            this.drawProjection(state, nodeId);
-        }
+        // TODO: subdraw function
 
         for (const fx of Object.values(this.effects)) {
             fx.draw();
@@ -158,74 +154,7 @@ export default class BaseStage {
      * TODO: return all possible nodes?
      */
     getNodeAtPos(pos, selectedId=null) {
-        const state = this.getState();
-        const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
-            const curNode = state.getIn([ "nodes", curExprId ]);
-            const projection = this.views[curProjId];
-            let res = null;
-
-            const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
-            if (projection.containsPoint(curPos, curOffset)) {
-                if (curRoot === null) {
-                    curRoot = curExprId;
-                    res = curExprId;
-                }
-                else if (curNode && this.semantics.targetable(state, curNode)) {
-                    res = curExprId;
-                }
-
-                if (curRoot === curExprId && curNode &&
-                    !this.semantics.targetable(state, curNode)) {
-                    return [ curRoot, res ];
-                }
-
-                const subpos = {
-                    x: curPos.x - topLeft.x,
-                    y: curPos.y - topLeft.y,
-                };
-                for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
-                    const subresult = check(
-                        subpos,
-                        childId,
-                        subexprId,
-                        curRoot,
-                        {
-                            x: 0,
-                            y: 0,
-                            sx: curOffset.sx * projection.scale.x,
-                            sy: curOffset.sy * projection.scale.y,
-                        }
-                    );
-                    if (subresult) {
-                        return subresult;
-                    }
-                }
-                if (res) {
-                    return [ curRoot, res ];
-                }
-            }
-            return null;
-        };
-
-        let result = null;
-        let root = null;
-
-        for (const nodeId of state.get("board").toArray().reverse()) {
-            if (nodeId === selectedId) continue;
-
-            const res = check(pos, nodeId, nodeId, null, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-            });
-            if (res) {
-                [ root, result ] = res;
-                break;
-            }
-        }
-
-        return [ root, result ];
+        return [ null, null ];
     }
 
     computeDragOffset(pos, topNode, targetNode) {
