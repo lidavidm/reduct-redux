@@ -312,11 +312,7 @@ export default class Stage extends BaseStage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
-    drawImpl() {
-        this.ctx.fillStyle = this.color;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this._redrawPending = false;
-
+    drawContents() {
         const state = this.getState();
         this.toolbox.drawBase(state);
         this.goal.drawImpl(state);
@@ -325,10 +321,6 @@ export default class Stage extends BaseStage {
             this.drawProjection(state, nodeId);
         }
         this.toolbox.drawImpl(state);
-
-        for (const fx of Object.values(this.effects)) {
-            fx.draw();
-        }
     }
 
     /**

@@ -128,12 +128,15 @@ export default class BaseStage {
         projection.draw(nodeId, nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
     }
 
+    drawContents() {
+    }
+
     drawImpl() {
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this._redrawPending = false;
 
-        // TODO: subdraw function
+        this.drawContents();
 
         for (const fx of Object.values(this.effects)) {
             fx.draw();
