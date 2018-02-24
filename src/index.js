@@ -7,7 +7,7 @@ import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
 import * as progression from "./game/progression";
 import es6 from "./semantics/es6";
-import * as stage from "./stage";
+import Stage from "./stage/stage";
 import * as undo from "./reducer/undo";
 
 import { Loader } from "./loader";
@@ -47,7 +47,7 @@ function initialize() {
             es6
         ))
     );
-    stg = new stage.Stage(canvas, 800, 600, store, views, es6);
+    stg = new Stage(canvas, 800, 600, store, views, es6);
 
     animate.addUpdateListener(() => {
         stg.drawImpl();
@@ -131,7 +131,8 @@ function initialize() {
 }
 
 function start() {
-    stg = new stage.Stage(canvas, 800, 600, store, views, es6);
+    animate.clock.cancelAll();
+    stg = new Stage(canvas, 800, 600, store, views, es6);
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
     Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
