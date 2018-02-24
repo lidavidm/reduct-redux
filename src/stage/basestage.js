@@ -182,6 +182,8 @@ export default class BaseStage {
     }
 
     isSelected(id) {
+        if (id === null) return false;
+
         for (const touch of this._touches.values()) {
             if (touch.targetNode === id) {
                 return true;
@@ -191,6 +193,8 @@ export default class BaseStage {
     }
 
     isHovered(id) {
+        if (id === null) return false;
+
         for (const touch of this._touches.values()) {
             // Light up topNode if hoverNode present
             if (touch.hoverNode === id || (touch.hoverNode !== null && touch.topNode === id)) {
