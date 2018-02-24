@@ -104,9 +104,18 @@ export default class ChapterEndStage extends BaseStage {
 
         this.draw();
 
-        const continueButton = gfx.ui.button(this, "Keep Playing!");
+        const continueButton = gfx.ui.button(this, "Keep Playing!", {
+            click: () => {
+                window.next();
+            },
+        });
         this.continueButtonId = this.allocateInternal(continueButton);
         this.continueButton = this.internalViews[this.continueButtonId];
+        this.continueButton.opacity = 0;
+        animate.tween(this.continueButton, { opacity: 1 }, {
+            duration: 1000,
+            easing: animate.Easing.Cubic.Out,
+        }).delay(1000);
     }
 
     get touchRecordClass() {
@@ -115,6 +124,19 @@ export default class ChapterEndStage extends BaseStage {
 
     drawContents() {
         const state = this.getState();
+
+        for (const starId of this.stars) {
+            const view = this.internalViews[starId];
+            view.prepare(null, null, state, this);
+            view.draw(null, null, state, this, {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+                opacity: 1,
+            });
+        }
+
         this.title.prepare(null, null, state, this);
         this.title.draw(null, null, state, this, {
             x: 0,
@@ -131,18 +153,6 @@ export default class ChapterEndStage extends BaseStage {
             sy: 1,
             opacity: 1,
         });
-
-        // for (const starId of this.stars) {
-        //     const view = this.internalViews[starId];
-        //     view.prepare(null, null, state, this);
-        //     view.draw(null, null, state, this, {
-        //         x: 0,
-        //         y: 0,
-        //         sx: 1,
-        //         sy: 1,
-        //         opacity: 1,
-        //     });
-        // }
     }
 
     getNodeAtPos(pos, selectedId=null) {
@@ -165,17 +175,9 @@ export default class ChapterEndStage extends BaseStage {
             this.setCursor("default");
         }
     }
-
-    _mousedown(e) {
-        const touch = super._mousedown(e);
-    }
 }
 
 class TouchRecord extends BaseTouchRecord {
-    constructor(...args) {
-        super(...args);
-    }
-
     onstart() {
         if (this.topNode && this.stage.internalViews[this.topNode]) {
             const view = this.stage.internalViews[this.topNode];

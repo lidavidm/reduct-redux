@@ -29,6 +29,8 @@ export function button(stage, label, handlers) {
     projection.onclick = function() {
         this.shadow = true;
         this.pos.y -= 3;
+
+        if (handlers.click) handlers.click();
     };
 
     projection.onmousedown = function() {
