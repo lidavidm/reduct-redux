@@ -15,6 +15,12 @@ import BaseTouchRecord from "./touchrecord";
 import BaseStage from "./basestage";
 
 class TouchRecord extends BaseTouchRecord {
+    onstart() {
+        if (this.topNode) {
+            this.stage.store.dispatch(action.raise(this.topNode));
+        }
+    }
+
     onmove(mouseDown, mousePos) {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
@@ -756,26 +762,5 @@ export default class Stage extends BaseStage {
             Audio.play("firework1");
             return Promise.all(subtweens);
         });
-    }
-
-    _touchstart(e) {
-        super._touchstart(e);
-
-        e.preventDefault();
-
-        for (const touch of e.changedTouches) {
-            const { topNode } = this._touches.get(touch.identifier);
-            if (topNode) {
-                this.store.dispatch(action.raise(topNode));
-            }
-        }
-    }
-
-    _mousedown(e) {
-        const touch = super._mousedown(e);
-        if (touch !== null) {
-            this.store.dispatch(action.raise(touch.topNode));
-        }
-        return touch;
     }
 }

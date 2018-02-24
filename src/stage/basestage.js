@@ -163,7 +163,7 @@ export default class BaseStage {
     computeDragOffset(pos, topNode, targetNode) {
         const dragOffset = { dx: 0, dy: 0 };
         if (targetNode !== null) {
-            const absPos = gfxCore.absolutePos(this.views[topNode]);
+            const absPos = gfxCore.absolutePos(this.views[topNode] || this.internalViews[topNode]);
             dragOffset.dx = pos.x - absPos.x;
             dragOffset.dy = pos.y - absPos.y;
         }
@@ -241,14 +241,16 @@ export default class BaseStage {
 
             const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
 
-            this._touches.set(touch.identifier, new (this.touchRecordClass)(
+            const touchRecord = new (this.touchRecordClass)(
                 this,
                 topNode,
                 targetNode,
                 fromToolbox,
                 dragOffset,
                 pos
-            ));
+            );
+            touchRecord.onstart();
+            this._touches.set(touch.identifier, touchRecord);
         }
     }
 
@@ -288,6 +290,7 @@ export default class BaseStage {
         touch.dragOffset = dragOffset;
         touch.dragStart = pos;
         this.updateCursor(touch);
+        touch.onstart();
 
         this.draw();
 

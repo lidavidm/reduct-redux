@@ -19,6 +19,9 @@ export default class BaseTouchRecord {
         this.stage.draw();
     }
 
+    onstart() {
+    }
+
     onmove(mouseDown, mousePos) {
         this.findHoverNode(mousePos);
     }

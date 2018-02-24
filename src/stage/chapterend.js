@@ -5,6 +5,7 @@ import * as random from "../util/random";
 import Loader from "../loader";
 
 import BaseStage from "./basestage";
+import BaseTouchRecord from "./touchrecord";
 
 export default class ChapterEndStage extends BaseStage {
     constructor(...args) {
@@ -26,7 +27,6 @@ export default class ChapterEndStage extends BaseStage {
             image: Loader.images["mainmenu-star1"],
             size: { h: 40, w: 40 },
         });
-        // TODO: support anchor for sprite
         firework.anchor = { x: 0.5, y: 0.5 };
         firework.pos = { x: (this.width / 2) - 100, y: this.height - 100 };
         this.stars.push(this.allocateInternal(firework));
@@ -56,11 +56,11 @@ export default class ChapterEndStage extends BaseStage {
                 this.stars.push(this.allocateInternal(spark));
 
                 animate.tween(spark, { opacity: 1 }, {
-                    duration: 1300,
+                    duration: 1200,
                     easing: animate.Easing.Cubic.Out,
                 }).then(() => {
                     animate.tween(spark, { opacity: 0 }, {
-                        duration: 700,
+                        duration: 400,
                         easing: animate.Easing.Cubic.Out,
                     });
                 });
@@ -68,7 +68,7 @@ export default class ChapterEndStage extends BaseStage {
                     x: spark.pos.x + (rad * Math.cos((i * 2 * Math.PI) / 20)),
                     y: spark.pos.y + (rad * Math.sin((i * 2 * Math.PI) / 20)),
                 }, {
-                    duration: 2500,
+                    duration: 1500,
                     easing: animate.Easing.Cubic.Out,
                 });
             }
@@ -127,7 +127,15 @@ export default class ChapterEndStage extends BaseStage {
             shadow: true,
             shadowColor: "black",
         });
-        this.continueButton = this.internalViews[this.allocateInternal(continueButton)];
+        continueButton.onclick = () => {
+            console.log("clicked!");
+        };
+        this.continueButtonId = this.allocateInternal(continueButton);
+        this.continueButton = this.internalViews[this.continueButtonId];
+    }
+
+    get touchRecordClass() {
+        return TouchRecord;
     }
 
     drawContents() {
@@ -140,8 +148,8 @@ export default class ChapterEndStage extends BaseStage {
             sy: 1,
             opacity: 1,
         });
-        this.continueButton.prepare(null, null, state, this);
-        this.continueButton.draw(null, null, state, this, {
+        this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
+        this.continueButton.draw(this.continueButtonId, this.continueButtonId, state, this, {
             x: this.width / 2,
             y: this.height / 2,
             sx: 1,
@@ -149,16 +157,69 @@ export default class ChapterEndStage extends BaseStage {
             opacity: 1,
         });
 
-        for (const starId of this.stars) {
-            const view = this.internalViews[starId];
-            view.prepare(null, null, state, this);
-            view.draw(null, null, state, this, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-                opacity: 1,
-            });
+        // for (const starId of this.stars) {
+        //     const view = this.internalViews[starId];
+        //     view.prepare(null, null, state, this);
+        //     view.draw(null, null, state, this, {
+        //         x: 0,
+        //         y: 0,
+        //         sx: 1,
+        //         sy: 1,
+        //         opacity: 1,
+        //     });
+        // }
+    }
+
+    getNodeAtPos(pos, selectedId=null) {
+        const projection = this.continueButton;
+        const offset = {
+            x: this.width / 2, y: this.height / 2, sx: 1, sy: 1
+        };
+
+        if (projection.containsPoint(pos, offset)) {
+            return [ this.continueButtonId, this.continueButtonId ];
+        }
+        return [ null, null ];
+    }
+
+    updateCursor(touchRecord, moved=false) {
+        if (touchRecord.hoverNode !== null) {
+            this.setCursor("pointer");
+        }
+        else {
+            this.setCursor("default");
+        }
+    }
+
+    _mousedown(e) {
+        const touch = super._mousedown(e);
+    }
+}
+
+class TouchRecord extends BaseTouchRecord {
+    constructor(...args) {
+        super(...args);
+    }
+
+    onstart() {
+        if (this.topNode && this.stage.internalViews[this.topNode]) {
+            // TODO: need onstart
+            const view = this.stage.internalViews[this.topNode];
+            view.shadow = false;
+            view.pos.y += 3;
+        }
+    }
+
+    onend(...args) {
+        super.onend(...args);
+
+        if (this.topNode && this.stage.internalViews[this.topNode]) {
+            const view = this.stage.internalViews[this.topNode];
+            view.shadow = true;
+            view.pos.y -= 3;
+            if (view.onclick) {
+                view.onclick();
+            }
         }
     }
 }
