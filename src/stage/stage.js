@@ -184,6 +184,17 @@ export default class Stage extends BaseStage {
         return TouchRecord;
     }
 
+    getNodeAtPos(pos, selectedId=null) {
+        let [ root, result ] = super.getNodeAtPos(pos, selectedId);
+        if (!result && !root) {
+            [ result, root ] = this.toolbox.getNodeAtPos(this.getState(), pos);
+            if (result) {
+                return [ root, result, true ];
+            }
+        }
+        return [ root, result, false ];
+    }
+
     /**
      * Log the current game state.
      *

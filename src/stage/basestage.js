@@ -209,7 +209,6 @@ export default class BaseStage {
 
         let result = null;
         let root = null;
-        let toolbox = false;
 
         for (const nodeId of state.get("board").toArray().reverse()) {
             if (nodeId === selectedId) continue;
@@ -226,12 +225,7 @@ export default class BaseStage {
             }
         }
 
-        if (!result && !root) {
-            [ result, root ] = this.toolbox.getNodeAtPos(state, pos);
-            if (result) toolbox = true;
-        }
-
-        return [ root, result, toolbox ];
+        return [ root, result ];
     }
 
     computeDragOffset(pos, topNode, targetNode) {

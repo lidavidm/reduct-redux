@@ -1,4 +1,4 @@
-export default class TouchRecord {
+export default class BaseTouchRecord {
     constructor(stage, topNode, targetNode, fromToolbox, dragOffset, dragStart) {
         this.stage = stage;
         this.topNode = topNode;
