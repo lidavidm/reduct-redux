@@ -8,6 +8,7 @@ import * as level from "./game/level";
 import * as progression from "./game/progression";
 import es6 from "./semantics/es6";
 import Stage from "./stage/stage";
+import ChapterEndStage from "./stage/chapterend";
 import * as undo from "./reducer/undo";
 
 import { Loader } from "./loader";
@@ -80,8 +81,7 @@ function initialize() {
                     // num_of_moves: undefined,
                 });
                 stg.animateVictory(matching).then(() => {
-                    progression.nextLevel();
-                    start();
+                    nextLevel();
                 });
             }
         }
@@ -152,7 +152,24 @@ function start() {
         }
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
-};
+}
+
+function showChapterEnd() {
+    animate.clock.cancelAll();
+    // TODO: bring back old reset
+    // for (const key in views) delete views[key];
+    stg = new ChapterEndStage(canvas, 800, 600, store, views, es6);
+}
+
+function nextLevel() {
+    if (progression.isChapterEnd()) {
+        showChapterEnd();
+    }
+    else {
+        progression.nextLevel();
+        start();
+    }
+}
 
 window.reset = function reset() {
     stg.pushState("reset");
@@ -160,14 +177,14 @@ window.reset = function reset() {
 };
 window.next = function next() {
     stg.pushState("next");
-    progression.nextLevel();
-    start();
+    nextLevel();
 };
 window.prev = function prev() {
     stg.pushState("prev");
     progression.prevLevel();
     start();
 };
+
 window.updateStateGraph = function updateStateGraph(networkData) {
     if (!document.querySelector("#state-graph")) {
         const ctr = document.createElement("div");
