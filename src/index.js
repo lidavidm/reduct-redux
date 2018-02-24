@@ -162,7 +162,7 @@ function showChapterEnd() {
 }
 
 function nextLevel() {
-    if (progression.isChapterEnd()) {
+    if (progression.isChapterEnd() && !(stg instanceof ChapterEndStage)) {
         showChapterEnd();
     }
     else {
@@ -172,15 +172,15 @@ function nextLevel() {
 }
 
 window.reset = function reset() {
-    stg.pushState("reset");
+    if (stg.pushState) stg.pushState("reset");
     start();
 };
 window.next = function next() {
-    stg.pushState("next");
+    if (stg.pushState) stg.pushState("next");
     nextLevel();
 };
 window.prev = function prev() {
-    stg.pushState("prev");
+    if (stg.pushState) stg.pushState("prev");
     progression.prevLevel();
     start();
 };
