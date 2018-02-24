@@ -13,14 +13,17 @@ export default class ChapterEndStage extends BaseStage {
 
         this.color = "#594764";
 
-        const title = gfx.layout.sticky(gfx.text("Chapter Finished!", {
-            fontSize: 64,
-            color: "#FFF",
-        }), "top", {
-            align: "center",
-            margin: 50,
-        });
-        this.title = this.internalViews[this.allocateInternal(title)];
+        this.title = this.allocateInternal(gfx.layout.sticky(
+            gfx.text("Chapter Finished!", {
+                fontSize: 64,
+                color: "#FFF",
+            }),
+            "top",
+            {
+                align: "center",
+                margin: 50,
+            }
+        ));
 
         this.stars = [];
         const firework = gfx.sprite({
@@ -32,12 +35,12 @@ export default class ChapterEndStage extends BaseStage {
         this.stars.push(this.allocateInternal(firework));
         animate.tween(firework, { opacity: 0.0 }, {
             reverse: true,
-            repeat: 3,
-            duration: 330,
+            repeat: 5,
+            duration: 200,
         });
 
         animate.tween(firework.pos, { x: this.width / 2 }, {
-            duration: 500,
+            duration: 1000,
         }).then(() => {
             this.stars.shift();
             const scale = { x: 0.1, y: 0.1 };
@@ -76,29 +79,30 @@ export default class ChapterEndStage extends BaseStage {
                 duration: 1000,
                 easing: animate.Easing.Cubic.Out,
             });
-        }).then(() => {
-            for (let i = 0; i < 50; i++) {
-                const idx = random.getRandInt(1, 15);
-                const star = gfx.sprite({
-                    image: Loader.images[`mainmenu-star${idx}`],
-                    size: { h: 20, w: 20 },
-                });
-                star.anchor = { x: 0.5, y: 0.5 };
-                star.pos = {
-                    x: random.getRandInt(0, this.width),
-                    y: random.getRandInt(0, this.height),
-                };
-                star.opacity = 0.0;
-                this.stars.push(this.allocateInternal(star));
-
-                animate.tween(star, { opacity: 0.3 }, {
-                    duration: 2500,
-                    easing: animate.Easing.Cubic.Out,
-                });
-            }
         });
+
+        for (let i = 0; i < 50; i++) {
+            const idx = random.getRandInt(1, 15);
+            const star = gfx.sprite({
+                image: Loader.images[`mainmenu-star${idx}`],
+                size: { h: 20, w: 20 },
+            });
+            star.anchor = { x: 0.5, y: 0.5 };
+            star.pos = {
+                x: random.getRandInt(0, this.width),
+                y: random.getRandInt(0, this.height),
+            };
+            star.opacity = 0.0;
+            this.stars.push(this.allocateInternal(star));
+
+            animate.tween(star, { opacity: 0.3 }, {
+                duration: 2500,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
+
         animate.tween(firework.pos, { y: this.height / 2 }, {
-            duration: 1000,
+            duration: 2000,
             easing: animate.Easing.Projectile(animate.Easing.Linear),
         });
 
@@ -126,25 +130,10 @@ export default class ChapterEndStage extends BaseStage {
         const state = this.getState();
 
         for (const starId of this.stars) {
-            const view = this.internalViews[starId];
-            view.prepare(null, null, state, this);
-            view.draw(null, null, state, this, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-                opacity: 1,
-            });
+            this.drawInternalProjection(state, starId);
         }
 
-        this.title.prepare(null, null, state, this);
-        this.title.draw(null, null, state, this, {
-            x: 0,
-            y: 0,
-            sx: 1,
-            sy: 1,
-            opacity: 1,
-        });
+        this.drawInternalProjection(state, this.title);
         this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
         this.continueButton.draw(this.continueButtonId, this.continueButtonId, state, this, {
             x: this.width / 2,

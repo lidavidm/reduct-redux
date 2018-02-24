@@ -128,6 +128,19 @@ export default class BaseStage {
         projection.draw(nodeId, nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
     }
 
+    drawInternalProjection(state, nodeId, exprId=null, offset=null) {
+        const projection = this.internalViews[nodeId];
+        projection.parent = null;
+        projection.prepare(nodeId, exprId, state, this);
+        projection.draw(nodeId, exprId, state, this, offset || {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+            opacity: 1,
+        });
+    }
+
     drawContents() {
     }
 
