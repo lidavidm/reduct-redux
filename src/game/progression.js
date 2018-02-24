@@ -47,6 +47,15 @@ export function prevLevel() {
     save();
 }
 
+export function isChapterEnd() {
+    for (const chapter of Object.values(ACTIVE_PROGRESSION_DEFINITION.progression.chapters)) {
+        if (currentLevelIdx === chapter.endIdx) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function save() {
     window.localStorage["currentLevelIdx"] = currentLevelIdx;
 }
