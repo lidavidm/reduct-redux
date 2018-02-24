@@ -2,7 +2,8 @@ export const PROGRESSIONS = {
     "Elementary": {
         dir: "levels-progression/",
         digraph: {
-            "functions": ["arithmetic"],
+            "functions": ["functions-challenge"],
+            "functions-challenge": ["arithmetic"],
             "arithmetic": ["application"],
             "application": ["definition"],
             "definition": ["define-challenges"],
@@ -35,6 +36,14 @@ export function jumpToLevel(idx) {
 }
 
 export function nextLevel() {
+    if (isChapterEnd()) {
+        const challenge = hasChallengeChapter();
+        if (challenge) {
+            currentLevelIdx = challenge.endIdx + 1;
+            save();
+            return;
+        }
+    }
     currentLevelIdx = Math.min(
         currentLevelIdx + 1,
         ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1
@@ -42,15 +51,46 @@ export function nextLevel() {
     save();
 }
 
+export function nextChallengeLevel() {
+
+}
+
 export function prevLevel() {
     currentLevelIdx = Math.max(0, currentLevelIdx - 1);
+    const chapter = currentChapter();
+    if (chapter.challenge) {
+        currentLevelIdx = chapter.startIdx - 1;
+    }
     save();
 }
 
-export function isChapterEnd() {
+export function currentChapter() {
     for (const chapter of Object.values(ACTIVE_PROGRESSION_DEFINITION.progression.chapters)) {
-        if (currentLevelIdx === chapter.endIdx) {
-            return true;
+        if (currentLevelIdx >= chapter.startIdx && currentLevelIdx <= chapter.endIdx) {
+            return chapter;
+        }
+    }
+    return null;
+}
+
+export function isChapterStart() {
+    return currentLevelIdx === currentChapter().startIdx;
+}
+
+export function isChapterEnd() {
+    return currentLevelIdx === currentChapter().endIdx;
+}
+
+export function hasChallengeChapter() {
+    const chapters = ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters;
+    for (let i = 0; i < chapters.length; i++) {
+        const chapterName = chapters[i];
+        const chapter = ACTIVE_PROGRESSION_DEFINITION.progression.chapters[chapterName];
+        if (currentLevelIdx >= chapter.startIdx && currentLevelIdx <= chapter.endIdx) {
+            const nextChapter = ACTIVE_PROGRESSION_DEFINITION.progression.chapters[chapters[i + 1]];
+            if (nextChapter && nextChapter.challenge) {
+                return nextChapter;
+            }
         }
     }
     return false;

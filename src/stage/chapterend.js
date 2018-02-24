@@ -1,5 +1,6 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
+import * as progression from "../game/progression";
 import * as random from "../util/random";
 
 import Loader from "../loader";
@@ -108,7 +109,7 @@ export default class ChapterEndStage extends BaseStage {
 
         this.draw();
 
-        const continueButton = gfx.ui.button(this, "Keep Playing!", {
+        const continueButton = gfx.ui.button(this, "Keep Playing", {
             click: () => {
                 window.next();
             },
@@ -120,6 +121,20 @@ export default class ChapterEndStage extends BaseStage {
             duration: 1000,
             easing: animate.Easing.Cubic.Out,
         }).delay(1000);
+
+        if (progression.hasChallengeChapter()) {
+            const challengeButton = gfx.ui.button(this, "Try Challenges", {
+                click: () => {
+                    window.next();
+                },
+            });
+            this.challengeButtonId = this.allocateInternal(challengeButton);
+            challengeButton.opacity = 0;
+            animate.tween(challengeButton, { opacity: 1 }, {
+                duration: 1000,
+                easing: animate.Easing.Cubic.Out,
+            }).delay(1000);
+        }
     }
 
     get touchRecordClass() {
@@ -142,6 +157,17 @@ export default class ChapterEndStage extends BaseStage {
             sy: 1,
             opacity: 1,
         });
+        if (this.challengeButtonId) {
+            const view = this.internalViews[this.challengeButtonId];
+            view.prepare(this.challengeButtonId, this.challengeButtonId, state, this);
+            view.draw(this.challengeButtonId, this.challengeButtonId, state, this, {
+                x: this.width / 2,
+                y: (this.height / 2) + 150,
+                sx: 1,
+                sy: 1,
+                opacity: 1,
+            });
+        }
     }
 
     getNodeAtPos(pos, selectedId=null) {
@@ -152,6 +178,13 @@ export default class ChapterEndStage extends BaseStage {
 
         if (projection.containsPoint(pos, offset)) {
             return [ this.continueButtonId, this.continueButtonId ];
+        }
+
+        if (this.challengeButtonId) {
+            offset.y += 150;
+            if (this.internalViews[this.challengeButtonId].containsPoint(pos, offset)) {
+                return [ this.challengeButtonId, this.challengeButtonId ];
+            }
         }
         return [ null, null ];
     }
