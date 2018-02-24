@@ -22,6 +22,7 @@ Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
     "resources/audio/output.wav",
 ]);
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
+Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "resources/graphics/menu-assets.png");
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 
 Promise.all([ Loader.finished, Logging.startSession() ]).then(initialize);
@@ -49,6 +50,7 @@ function initialize() {
         ))
     );
     stg = new Stage(canvas, 800, 600, store, views, es6);
+    window.stage = stg;
 
     animate.addUpdateListener(() => {
         stg.drawImpl();
@@ -133,6 +135,7 @@ function initialize() {
 function start() {
     animate.clock.cancelAll();
     stg = new Stage(canvas, 800, 600, store, views, es6);
+    window.stage = stg;
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
     Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
@@ -159,6 +162,7 @@ function showChapterEnd() {
     // TODO: bring back old reset
     // for (const key in views) delete views[key];
     stg = new ChapterEndStage(canvas, 800, 600, store, views, es6);
+    window.stage = stg;
 }
 
 function nextLevel() {
