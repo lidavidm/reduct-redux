@@ -150,7 +150,7 @@
             "board": ["x => xxx", "(x) => (y) => _ + _"],
             "goal": ["16"],
             "toolbox": ["x", "x", "y", "y", "0", "0", "1", "1", "2", "3"]
-        },
+        }
     ],
     "resources":{
         "planet":"planet-functiana",
