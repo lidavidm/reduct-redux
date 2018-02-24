@@ -12,6 +12,7 @@ import fileSaver from "file-saver";
 import * as level from "../game/level";
 import * as action from "../reducer/action";
 import * as ajax from "../util/ajax";
+import * as random from "../util/random";
 
 // TODO: need actual values
 const GAME_ID = 70017017;
@@ -22,21 +23,6 @@ const LOCAL_LOGGER_URL = "http://localhost:3333";
 const URLS = {
     PAGE_LOAD: "",
 };
-
-/** Random integer in the range [min, max). */
-function getRandInt(min, max) {
-    // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_integer_between_two_values
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function getRandString(length) {
-    const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += alphabet[getRandInt(0, alphabet.length)];
-    }
-    return result;
-}
 
 class Logger {
     constructor() {
@@ -92,9 +78,9 @@ class Logger {
 
     startSession() {
         if (this.currentUserId === null) {
-            this.currentUserId = getRandString(40);
+            this.currentUserId = random.getRandString(40);
         }
-        this.currentSessionId = getRandString(36);
+        this.currentSessionId = random.getRandString(36);
 
         const params = this.makeBaseParams();
         params.user_id = this.currentUserId;
