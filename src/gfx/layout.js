@@ -11,8 +11,12 @@ export function hexpand(projection) {
     return projection;
 }
 
-export function sticky(projection, direction) {
+export function sticky(projection, direction, options) {
     const origPrepare = projection.prepare;
+    projection.sticky = Object.assign({
+        margin: 0,
+        align: "left",
+    }, options || {});
     projection.prepare = function(id, exprId, state, stage) {
         origPrepare.call(this, id, exprId, state, stage);
         this.anchor.x = 0;
@@ -21,10 +25,14 @@ export function sticky(projection, direction) {
             this.pos.y = stage.height - this.size.h;
         }
         else if (direction === "top") {
-            this.pos.y = 0;
+            this.pos.y = this.sticky.margin;
         }
         else if (direction === "left") {
             this.pos.x = 0;
+        }
+
+        if (this.sticky.align === "center" && (direction === "top" || direction === "bottom")) {
+            this.pos.x = (stage.width - this.size.w) / 2;
         }
     };
     return projection;
