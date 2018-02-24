@@ -52,7 +52,11 @@ export function nextLevel() {
 }
 
 export function nextChallengeLevel() {
-
+    currentLevelIdx = Math.min(
+        currentLevelIdx + 1,
+        ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1
+    );
+    save();
 }
 
 export function prevLevel() {

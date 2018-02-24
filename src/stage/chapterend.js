@@ -125,7 +125,7 @@ export default class ChapterEndStage extends BaseStage {
         if (progression.hasChallengeChapter()) {
             const challengeButton = gfx.ui.button(this, "Try Challenges", {
                 click: () => {
-                    window.next();
+                    window.next(true);
                 },
             });
             this.challengeButtonId = this.allocateInternal(challengeButton);

@@ -165,9 +165,13 @@ function showChapterEnd() {
     window.stage = stg;
 }
 
-function nextLevel() {
+function nextLevel(enableChallenge) {
     if (progression.isChapterEnd() && !(stg instanceof ChapterEndStage)) {
         showChapterEnd();
+    }
+    else if (enableChallenge) {
+        progression.nextChallengeLevel();
+        start();
     }
     else {
         progression.nextLevel();
@@ -179,9 +183,9 @@ window.reset = function reset() {
     if (stg.pushState) stg.pushState("reset");
     start();
 };
-window.next = function next() {
+window.next = function next(challenge) {
     if (stg.pushState) stg.pushState("next");
-    nextLevel();
+    nextLevel(challenge);
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
