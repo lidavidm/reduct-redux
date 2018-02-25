@@ -1,6 +1,6 @@
 import { Howler } from "howler";
 
-import { Loader } from "../loader";
+import Loader from "../loader";
 
 class AudioEngine {
     constructor() {
