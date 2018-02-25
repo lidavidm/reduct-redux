@@ -16,7 +16,7 @@ function getImage(path) {
     });
 }
 
-export class Loader {
+export class LoaderClass {
     constructor(root) {
         this.rootPath = root;
         this.graphicsPath = root + "/graphics/";
@@ -190,4 +190,5 @@ export class Loader {
     }
 }
 
-export default Loader = new Loader();
+const Loader = new LoaderClass();
+export default Loader;

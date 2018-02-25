@@ -11,7 +11,7 @@ import Stage from "./stage/stage";
 import ChapterEndStage from "./stage/chapterend";
 import * as undo from "./reducer/undo";
 
-import { Loader } from "./loader";
+import Loader from "./loader";
 import Logging from "./logging/logging";
 
 // Load assets.
