@@ -1,6 +1,7 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import * as progression from "../game/progression";
+import Audio from "../resource/audio";
 import * as random from "../util/random";
 
 import Loader from "../loader";
@@ -13,6 +14,10 @@ export default class ChapterEndStage extends BaseStage {
         super(...args);
 
         this.color = "#594764";
+
+        if (progression.isGameEnd()) {
+            Audio.play("game-complete");
+        }
 
         this.title = this.allocateInternal(gfx.layout.sticky(
             gfx.text(progression.isGameEnd() ? "You win!" : "Chapter Finished!", {

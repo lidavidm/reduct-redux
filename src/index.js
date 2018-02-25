@@ -167,6 +167,9 @@ function showChapterEnd() {
 
 function nextLevel(enableChallenge) {
     if (progression.isChapterEnd() && !(stg instanceof ChapterEndStage)) {
+        if (progression.isGameEnd()) {
+            Logging.log("game-complete");
+        }
         showChapterEnd();
     }
     else if (enableChallenge) {
