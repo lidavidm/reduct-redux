@@ -115,7 +115,7 @@ export default class ChapterEndStage extends BaseStage {
         this.draw();
 
         if (!progression.isGameEnd()) {
-            const continueButton = gfx.ui.button(this, "Keep Playing", {
+            const continueButton = gfx.ui.button(this, "Next Chapter", {
                 click: () => {
                     window.next();
                 },
