@@ -383,9 +383,19 @@ export function text(text, options) {
         ctx.fillStyle = this.color;
         ctx.textBaseline = "alphabetic";
         ctx.font = `${this.fontSize}px ${this.font}`;
-        ctx.fillText(this.text,
-                     (offset.x + this.pos.x * offset.sx) / sx,
-                     (offset.y + this.pos.y * offset.sy) / sy + this.fontSize);
+        ctx.fillText(
+            this.text,
+            (offset.x + (this.pos.x * offset.sx)) / sx,
+            ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
+        );
+        if (this.stroke) {
+            primitive.setStroke(ctx, this.stroke);
+            ctx.strokeText(
+                this.text,
+                (offset.x + (this.pos.x * offset.sx)) / sx,
+                ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
+            );
+        }
         ctx.restore();
 
         ctx.save();
