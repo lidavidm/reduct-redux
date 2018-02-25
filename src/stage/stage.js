@@ -310,8 +310,8 @@ export default class Stage extends BaseStage {
         }, 500);
     }
 
-    startLevel(textGoal) {
-        this.goal.startLevel(textGoal);
+    startLevel(textGoal, showConcreteGoal) {
+        this.goal.startLevel(textGoal, showConcreteGoal);
         this.toolbox.startLevel(this.getState());
     }
 

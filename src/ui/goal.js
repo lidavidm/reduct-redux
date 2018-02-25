@@ -31,10 +31,24 @@ export default class Goal {
         this.textGoal = null;
     }
 
-    startLevel(textGoal) {
+    startLevel(textGoal, showConcreteGoal=false) {
         if (textGoal) {
             this.text = this.stage.allocate(gfx.text(textGoal));
-            this.textGoal = this.stage.allocate(gfx.patch3(gfx.constant(this.text), {
+            let contents = null;
+            if (showConcreteGoal) {
+                contents = (_id, state) => {
+                    const result = [ this.text ];
+                    return result.concat(state.get("goal").toArray());
+                };
+            }
+            else {
+                contents = gfx.constant(this.text);
+            }
+            const container = this.stage.allocate(gfx.layout.hbox(contents, {
+                subexpScale: 1,
+            }, gfx.baseProjection));
+
+            this.textGoal = this.stage.allocate(gfx.patch3(gfx.constant(container), {
                 left: Loader.images["caption-long-left"],
                 middle: Loader.images["caption-long-mid"],
                 right: Loader.images["caption-long-right"],

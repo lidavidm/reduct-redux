@@ -13,11 +13,13 @@
             "board": "function star() { return A; }",
             "goal": "A",
             "textgoal": "Make me a star!",
+            "showConcreteGoal": true,
             "toolbox": ["star"]
         },
         {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
+            "textgoal": "Make me two stars and a rectangle!",
             "toolbox": ["__unlimited;star", "__unlimited;rect"]
         },
         {
