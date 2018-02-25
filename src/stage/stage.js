@@ -310,7 +310,8 @@ export default class Stage extends BaseStage {
         }, 500);
     }
 
-    startLevel() {
+    startLevel(textGoal) {
+        this.goal.startLevel(textGoal);
         this.toolbox.startLevel(this.getState());
     }
 
@@ -740,12 +741,21 @@ export default class Stage extends BaseStage {
         this.alreadyWon = true;
         const state = this.getState();
         const tweens = [];
+        const views = [];
         for (const nodeId of state.get("goal").concat(state.get("board"))) {
-            if (this.semantics.ignoreForVictory(state.getIn([ "nodes", nodeId ]))) {
+            views.push([ nodeId, this.views[nodeId] ]);
+        }
+        for (const nodeId of this.goal.animatedNodes()) {
+            views.push([ nodeId, this.views[nodeId] ]);
+        }
+
+        for (const [ nodeId, view ] of views) {
+            if (state.getIn([ "nodes", nodeId ]) &&
+                this.semantics.ignoreForVictory(state.getIn([ "nodes", nodeId ]))) {
                 continue;
             }
 
-            tweens.push(animate.fx.blink(this, this.views[nodeId], {
+            tweens.push(animate.fx.blink(this, view, {
                 times: progression.currentLevel() === 0 ? 2 : 1,
                 color: "#0FF",
             }));
@@ -755,9 +765,10 @@ export default class Stage extends BaseStage {
 
         return Promise.all(tweens).then(() => {
             const subtweens = [];
-            for (const nodeId of state.get("goal").concat(state.get("board"))) {
-                subtweens.push(animate.fx.splosion(this, gfxCore.centerPos(this.views[nodeId])));
+            for (const [ _, view ] of views) {
+                subtweens.push(animate.fx.splosion(this, gfxCore.centerPos(view)));
             }
+            this.goal.victory();
             this.store.dispatch(action.victory());
             Audio.play("firework1");
             return Promise.all(subtweens);

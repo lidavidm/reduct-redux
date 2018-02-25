@@ -9,6 +9,9 @@ export function startLevel(description, parse, store, stage) {
         const macro = macros[macroName];
         macros[macroName] = () => parse(macro, {});
     }
+
+    // Parse the defined names carried over from previous levels, the
+    // globals added for this level, and any definitions on the board.
     const prevDefinedNames = description.extraDefines
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
@@ -22,11 +25,14 @@ export function startLevel(description, parse, store, stage) {
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
 
+    // Turn these defines into "macros", so that the name resolution
+    // system can handle lookup.
     for (const [ name, expr ] of
          prevDefinedNames.concat(newDefinedNames).concat(globalDefinedNames)) {
         macros[name] = expr;
     }
 
+    // Actually parse the goal, board, and toolbox.
     const goal = description.goal.map(str => parse(str, macros));
     const board = description.board
           .map(str => parse(str, macros))
@@ -34,6 +40,7 @@ export function startLevel(description, parse, store, stage) {
     const toolbox = description.toolbox
           .map(str => parse(str, macros));
 
+    // Go back and parse the globals as well.
     const globals = {};
     description.extraDefines
         .map(str => parse(str, macros))
@@ -55,9 +62,11 @@ export function startLevel(description, parse, store, stage) {
         globals[name] = parsed[0][1];
     }
 
+    // Update the store with the parsed data.
     store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
-    stage.startLevel();
+    stage.startLevel(description.textgoal);
 
+    // Lay out the board.
     const scaleFactor = (1 - (1 / 1.4)) / 2.0;
     const positions = layout.ianPacking(stage, {
         x: stage.width * scaleFactor,
@@ -73,7 +82,9 @@ export function startLevel(description, parse, store, stage) {
         }
     }
 
-    // TODO: semantics-specific layout algorithms
+    // TODO: semantics-specific layout algorithms. This lays out the
+    // notches along the side for defines. Eventually we would want
+    // this to be customizable as well.
     let notchY = 160;
     for (const nodeId of stage.getState().get("board")) {
         const node = stage.getState().get("nodes").get(nodeId);
@@ -83,6 +94,7 @@ export function startLevel(description, parse, store, stage) {
         }
     }
 
+    // "Inflate" animation.
     for (const nodeId of stage.getState().get("board")) {
         stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
         stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };

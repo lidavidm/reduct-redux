@@ -12,6 +12,7 @@
         {
             "board": "function star() { return A; }",
             "goal": "A",
+            "textgoal": "Make me a star!",
             "toolbox": ["star"]
         },
         {
