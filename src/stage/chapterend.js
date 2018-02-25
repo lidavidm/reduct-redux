@@ -15,7 +15,7 @@ export default class ChapterEndStage extends BaseStage {
         this.color = "#594764";
 
         this.title = this.allocateInternal(gfx.layout.sticky(
-            gfx.text("Chapter Finished!", {
+            gfx.text(progression.isGameEnd() ? "You win!" : "Chapter Finished!", {
                 fontSize: 64,
                 color: "#FFF",
             }),
@@ -109,31 +109,33 @@ export default class ChapterEndStage extends BaseStage {
 
         this.draw();
 
-        const continueButton = gfx.ui.button(this, "Keep Playing", {
-            click: () => {
-                window.next();
-            },
-        });
-        this.continueButtonId = this.allocateInternal(continueButton);
-        this.continueButton = this.internalViews[this.continueButtonId];
-        this.continueButton.opacity = 0;
-        animate.tween(this.continueButton, { opacity: 1 }, {
-            duration: 1000,
-            easing: animate.Easing.Cubic.Out,
-        }).delay(1000);
-
-        if (progression.hasChallengeChapter()) {
-            const challengeButton = gfx.ui.button(this, "Try Challenges", {
+        if (!progression.isGameEnd()) {
+            const continueButton = gfx.ui.button(this, "Keep Playing", {
                 click: () => {
-                    window.next(true);
+                    window.next();
                 },
             });
-            this.challengeButtonId = this.allocateInternal(challengeButton);
-            challengeButton.opacity = 0;
-            animate.tween(challengeButton, { opacity: 1 }, {
+            this.continueButtonId = this.allocateInternal(continueButton);
+            this.continueButton = this.internalViews[this.continueButtonId];
+            this.continueButton.opacity = 0;
+            animate.tween(this.continueButton, { opacity: 1 }, {
                 duration: 1000,
                 easing: animate.Easing.Cubic.Out,
             }).delay(1000);
+
+            if (progression.hasChallengeChapter()) {
+                const challengeButton = gfx.ui.button(this, "Try Challenges", {
+                    click: () => {
+                        window.next(true);
+                    },
+                });
+                this.challengeButtonId = this.allocateInternal(challengeButton);
+                challengeButton.opacity = 0;
+                animate.tween(challengeButton, { opacity: 1 }, {
+                    duration: 1000,
+                    easing: animate.Easing.Cubic.Out,
+                }).delay(1000);
+            }
         }
     }
 
@@ -149,14 +151,17 @@ export default class ChapterEndStage extends BaseStage {
         }
 
         this.drawInternalProjection(state, this.title);
-        this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
-        this.continueButton.draw(this.continueButtonId, this.continueButtonId, state, this, {
-            x: this.width / 2,
-            y: this.height / 2,
-            sx: 1,
-            sy: 1,
-            opacity: 1,
-        });
+
+        if (this.continueButtonId) {
+            this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
+            this.continueButton.draw(this.continueButtonId, this.continueButtonId, state, this, {
+                x: this.width / 2,
+                y: this.height / 2,
+                sx: 1,
+                sy: 1,
+                opacity: 1,
+            });
+        }
         if (this.challengeButtonId) {
             const view = this.internalViews[this.challengeButtonId];
             view.prepare(this.challengeButtonId, this.challengeButtonId, state, this);
@@ -176,8 +181,10 @@ export default class ChapterEndStage extends BaseStage {
             x: this.width / 2, y: this.height / 2, sx: 1, sy: 1
         };
 
-        if (projection.containsPoint(pos, offset)) {
-            return [ this.continueButtonId, this.continueButtonId ];
+        if (this.continueButtonId) {
+            if (projection.containsPoint(pos, offset)) {
+                return [ this.continueButtonId, this.continueButtonId ];
+            }
         }
 
         if (this.challengeButtonId) {
