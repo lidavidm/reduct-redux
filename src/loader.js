@@ -121,6 +121,8 @@ export class LoaderClass {
                 if (!lvl.syntax) lvl.syntax = [];
                 else if (typeof lvl.syntax === "string") lvl.syntax = [lvl.syntax];
 
+                if (typeof lvl.showConcreteGoal === "undefined") lvl.showConcreteGoal = true;
+
                 d.levels.push(lvl);
             });
 
