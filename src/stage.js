@@ -86,12 +86,12 @@ class TouchRecord {
             // Click on object to reduce
             let selectedNode = this.topNode;
 
-            if (this.targetNode) {
+            /*if (this.targetNode) {
                 const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
                 if (!targetLocked) {
                     selectedNode = this.targetNode;
                 }
-            }
+            }*/
 
             this.stage.step(state, selectedNode);
         }
