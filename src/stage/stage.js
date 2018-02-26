@@ -807,4 +807,20 @@ export default class Stage extends BaseStage {
             return Promise.all(subtweens);
         });
     }
+
+    _mousedown(e) {
+        if (this.syntaxJournal.isOpen) {
+            this.syntaxJournal.close();
+        }
+
+        super._mousedown(e);
+    }
+
+    _touchstart(e) {
+        if (this.syntaxJournal.isOpen) {
+            this.syntaxJournal.close();
+        }
+
+        super._touchstart(e);
+    }
 }
