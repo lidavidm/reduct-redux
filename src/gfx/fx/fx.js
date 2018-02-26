@@ -87,6 +87,7 @@ export function blink(stage, projection, opts) {
     let updatedStroke = projection.stroke;
     const tempStroke = { color: options.color, lineWidth: 0 };
     Object.defineProperty(projection, "stroke", {
+        configurable: true,
         get() {
             return tempStroke;
         },
@@ -94,11 +95,12 @@ export function blink(stage, projection, opts) {
             updatedStroke = newValue;
         },
     });
-    return animate.tween(projection.stroke, { lineWidth: options.lineWidth }, {
+    return animate.tween(tempStroke, { lineWidth: options.lineWidth }, {
         reverse: true,
         repeat: options.times * 2,
         duration: options.speed,
     }).then(() => {
+        delete projection.stroke;
         projection.stroke = updatedStroke;
         stage.drawImpl();
     });
