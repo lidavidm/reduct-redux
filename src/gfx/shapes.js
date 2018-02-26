@@ -23,7 +23,11 @@ function drawPrimitive(exprId, projection, state, stage, offset,
 
     util.setOpacity(ctx, projection.opacity, offset);
 
-    if (hasParent && !locked) {
+    if (projection.stroke) {
+        primitive.setStroke(ctx, projection);
+        stroke = true;
+    }
+    else if (hasParent && !locked) {
         const [ sx, sy ] = util.absoluteScale(projection, offset);
         ctx.fillStyle = "#000";
         primitive.setStroke(ctx, {
@@ -54,10 +58,6 @@ function drawPrimitive(exprId, projection, state, stage, offset,
             color: projection.highlightColor || "yellow",
         });
 
-        stroke = true;
-    }
-    else if (projection.stroke) {
-        primitive.setStroke(ctx, projection);
         stroke = true;
     }
 
