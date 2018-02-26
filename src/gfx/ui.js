@@ -73,5 +73,9 @@ export function imageButton(images, handlers) {
         sprites[state].draw.apply(this, args);
     };
 
+    projection.highlight = function() {
+        state = "hover";
+    };
+
     return projection;
 }

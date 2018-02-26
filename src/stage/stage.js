@@ -818,9 +818,14 @@ export default class Stage extends BaseStage {
      * Add new items to the syntax journal.
      */
     learnSyntax(syntaxes) {
+        const journalButton = this.internalViews[this.toolbox.syntaxJournal];
+
         const step = () => {
             const syntax = syntaxes.shift();
-            if (!syntax) return;
+            if (!syntax) {
+                this.draw();
+                return;
+            }
 
             const image = Loader.images[syntax];
             const sprite = gfxCore.sprite({
@@ -831,11 +836,12 @@ export default class Stage extends BaseStage {
 
             sprite.opacity = 0;
             sprite.pos = {
-                x: (this.width - image.naturalWidth) / 2,
-                y: (this.height - image.naturalHeight) / 2,
+                x: this.width / 2,
+                y: this.height / 2,
             };
+            sprite.anchor = { x: 0.5, y: 0.5 };
             animate.tween(sprite, { opacity: 1 }, {
-                duration: 500,
+                duration: 800,
                 easing: animate.Easing.Cubic.Out,
             }).then(() => {
                 animate.tween(sprite.scale, { x: 0.1, y: 0.1 }, {
@@ -843,11 +849,15 @@ export default class Stage extends BaseStage {
                     easing: animate.Easing.Cubic.Out,
                 });
 
-                return animate.tween(sprite.pos, { x: this.width, y: this.height }, {
+                return animate.tween(sprite.pos, {
+                    x: journalButton.pos.x + (journalButton.size.w / 2),
+                    y: journalButton.pos.y + (journalButton.size.h / 2),
+                }, {
                     duration: 2000,
                     easing: animate.Easing.Cubic.InOut,
                 });
             }).then(() => {
+                journalButton.highlight();
                 this._newSyntax.shift();
                 step();
             });
