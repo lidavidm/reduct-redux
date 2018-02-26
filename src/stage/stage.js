@@ -22,7 +22,7 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         const view = this.stage.getView(this.topNode);
-        if (view.onmousedown) {
+        if (view && view.onmousedown) {
             view.onmousedown();
         }
     }
