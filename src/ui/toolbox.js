@@ -28,6 +28,8 @@ export default class Toolbox {
             normal: Loader.images["journal-default"],
             hover: Loader.images["journal-hover"],
             active: Loader.images["journal-mousedown"],
+        }, {
+            click: () => console.log("SYNTAX JOURNAL CLICKED"),
         }), "bottom", {
             align: "right",
         });

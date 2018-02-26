@@ -16,7 +16,8 @@ import BaseStage from "./basestage";
 
 class TouchRecord extends BaseTouchRecord {
     onstart() {
-        if (this.topNode) {
+        this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
+        if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
         }
     }
@@ -25,13 +26,13 @@ class TouchRecord extends BaseTouchRecord {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
-                if (!this.dragged && this.fromToolbox) {
+                if (this.isExpr && !this.dragged && this.fromToolbox) {
                     Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
                 }
 
                 this.dragged = true;
 
-                if (this.fromToolbox) {
+                if (this.isExpr && this.fromToolbox) {
                     const resultNode = this.stage.cloneToolboxItem(this.topNode);
                     if (resultNode !== null) {
                         Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
@@ -44,18 +45,18 @@ class TouchRecord extends BaseTouchRecord {
                 }
             }
 
-            const view = this.stage.views[this.topNode];
+            const view = this.stage.getView(this.topNode);
             const absSize = gfxCore.absoluteSize(view);
             view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
 
-            if (this.targetNode !== null) {
+            if (this.isExpr && this.targetNode !== null) {
                 this.stage.views[this.topNode].opacity = 0.6;
             }
         }
 
         // TODO: add tolerance here as well
-        if (mouseDown && this.targetNode) {
+        if (this.isExpr && mouseDown && this.targetNode) {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
                 this.stage.views[this.topNode].opacity = 1.0;
@@ -69,7 +70,7 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         this.findHoverNode(mousePos);
-        if (this.topNode && this.hoverNode) {
+        if (this.isExpr && this.topNode && this.hoverNode) {
             const state = this.stage.getState();
             const holeExprType = state.getIn([ "nodes", this.hoverNode, "type" ]);
             const holeType = state.getIn([ "nodes", this.hoverNode, "ty" ]);
@@ -82,11 +83,12 @@ class TouchRecord extends BaseTouchRecord {
             }
         }
 
-        if (this.topNode !== null) {
+        if (this.isExpr && this.topNode !== null) {
             // Show previews for lambda application, if applicable
             this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
         }
 
+        // onmouseenter/onmouseexit for views (e.g. buttons)
         if (this.hoverNode !== this.prevHoverNode) {
             const view = this.stage.getView(this.hoverNode);
             const prevView = this.stage.getView(this.prevHoverNode);
@@ -103,7 +105,14 @@ class TouchRecord extends BaseTouchRecord {
     }
 
     onend(state, mousePos) {
-        if (!this.dragged && this.topNode !== null && !this.fromToolbox) {
+        if (!this.dragged) {
+            const view = this.stage.getView(this.topNode);
+            if (view.onclick) {
+                view.onclick();
+            }
+        }
+
+        if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
             // Click on object to reduce
             let selectedNode = this.topNode;
 
@@ -116,7 +125,7 @@ class TouchRecord extends BaseTouchRecord {
 
             this.stage.step(state, selectedNode);
         }
-        else if (this.dragged && this.hoverNode &&
+        else if (this.isExpr && this.dragged && this.hoverNode &&
                  state.getIn([ "nodes", this.hoverNode, "type"]) === "missing") {
             // Drag something into hole
             // Use type inference to decide whether hole can be filled
@@ -128,7 +137,7 @@ class TouchRecord extends BaseTouchRecord {
                 this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
             }
         }
-        else if (this.dragged && this.hoverNode && this.topNode) {
+        else if (this.isExpr && this.dragged && this.hoverNode && this.topNode) {
             // Clear application previews (otherwise they stick around
             // if beta-reduction is undone)
             this.stage.previewApplication(this.topNode, null, this.hoverNode);
@@ -137,7 +146,7 @@ class TouchRecord extends BaseTouchRecord {
             const target = this.hoverNode;
             this.stage.betaReduce(state, target, arg);
         }
-        else if (this.dragged && this.fromToolbox) {
+        else if (this.isExpr && this.dragged && this.fromToolbox) {
             const projection = this.stage.views[this.topNode];
             let useItem = true;
             // Allow items to be placed back in toolbox if and only if
@@ -161,7 +170,7 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         // Bump items out of toolbox
-        if (this.topNode !== null) {
+        if (this.isExpr && this.topNode !== null) {
             const projection = this.stage.views[this.topNode];
             const topLeft = gfxCore.absolutePos(projection);
             const bottom = { x: 0, y: topLeft.y + projection.size.h };
@@ -173,7 +182,7 @@ class TouchRecord extends BaseTouchRecord {
             this.stage.views[this.topNode].opacity = 1.0;
         }
 
-        this.stage.snapNotches(this.topNode);
+        if (this.isExpr) this.stage.snapNotches(this.topNode);
 
         this.findHoverNode(mousePos);
     }

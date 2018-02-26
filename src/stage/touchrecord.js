@@ -9,6 +9,7 @@ export default class BaseTouchRecord {
         this.dragged = false;
         this.hoverNode = null;
         this.prevHoverNode = null;
+        this.isExpr = false;
     }
 
     findHoverNode(pos) {
@@ -37,5 +38,6 @@ export default class BaseTouchRecord {
         this.targetNode = null;
         this.dragged = false;
         this.fromToolbox = false;
+        this.isExpr = false;
     }
 }
