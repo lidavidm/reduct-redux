@@ -32,6 +32,12 @@ export const Easing = {
         },
     },
 
+    Exponential: {
+        Out: (start, stop, t) => {
+            return ((stop - start) * (1 - (2 ** (-10 * t)))) + start;
+        },
+    },
+
     Color: (easing, src, dst) => {
         const scale = chroma.scale([ src, dst ]).mode("lch");
         return (start, stop, t) => scale(easing(0.0, 1.0, t));

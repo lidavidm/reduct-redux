@@ -26,8 +26,8 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
             y: pos.y + (rad * Math.sin(theta)),
             r: 0,
         }, {
-            duration: 400,
-            easing: animate.Easing.Cubic.Out,
+            duration: 600,
+            easing: animate.Easing.Exponential.Out,
         }));
     }
 
