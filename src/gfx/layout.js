@@ -40,6 +40,10 @@ export function sticky(projection, direction, options) {
         else if (direction === "left") {
             this.pos.x = 0;
         }
+        else if (direction === "center") {
+            this.pos.x = (stage.width - this.size.w) / 2;
+            this.pos.y = (stage.height - this.size.h) / 2;
+        }
 
         if (direction === "top" || direction === "bottom") {
             if (this.sticky.align === "center") {
