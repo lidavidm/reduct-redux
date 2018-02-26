@@ -87,6 +87,17 @@ class TouchRecord extends BaseTouchRecord {
             this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
         }
 
+        if (this.hoverNode !== this.prevHoverNode) {
+            const view = this.stage.getView(this.hoverNode);
+            const prevView = this.stage.getView(this.prevHoverNode);
+            if (view && view.onmouseenter) {
+                view.onmouseenter();
+            }
+            if (prevView && prevView.onmouseexit) {
+                prevView.onmouseexit();
+            }
+        }
+
         // Highlight nearby compatible notches, if applicable
         this.stage.highlightNotches(this.topNode);
     }
