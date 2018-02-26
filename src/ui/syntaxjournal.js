@@ -23,10 +23,14 @@ export default class SyntaxJournal {
     }
 
     drawImpl(state) {
-        if (this.state === "open") {
+        if (this.isOpen) {
             this.stage.drawInternalProjection(state, this.overlay);
             this.stage.drawInternalProjection(state, this.background);
         }
+    }
+
+    get isOpen() {
+        return this.state === "open";
     }
 
     open() {

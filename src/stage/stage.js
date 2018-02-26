@@ -218,6 +218,10 @@ export default class Stage extends BaseStage {
     }
 
     getNodeAtPos(pos, selectedId=null) {
+        if (this.syntaxJournal.isOpen) {
+            return [ null, null, false ];
+        }
+
         const state = this.getState();
         const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
             const curNode = state.getIn([ "nodes", curExprId ]);
