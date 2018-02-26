@@ -118,6 +118,8 @@ export class LoaderClass {
                 if (!lvl.defines) lvl.defines = [];
                 else if (typeof lvl.defines === "string") lvl.defines = [lvl.defines];
                 if (!lvl.globals) lvl.globals = {};
+                if (!lvl.syntax) lvl.syntax = [];
+                else if (typeof lvl.syntax === "string") lvl.syntax = [lvl.syntax];
 
                 d.levels.push(lvl);
             });

@@ -103,6 +103,12 @@ export function startLevel(description, parse, store, stage) {
             easing: animate.Easing.Cubic.In,
         });
     }
+
+    if (description.syntax.length > 0) {
+        animate.after(500).then(() => {
+            stage.learnSyntax(description.syntax);
+        });
+    }
 }
 
 export function checkVictory(state, semantics) {

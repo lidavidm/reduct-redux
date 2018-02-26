@@ -9,6 +9,7 @@ import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
 import SyntaxJournal from "../ui/syntaxjournal";
 
+import Loader from "../loader";
 import Logging from "../logging/logging";
 import Network from "../logging/network";
 
@@ -211,6 +212,7 @@ export default class Stage extends BaseStage {
         this.syntaxJournal = new SyntaxJournal(this);
 
         this._currentlyReducing = {};
+        this._newSyntax = [];
     }
 
     get touchRecordClass() {
@@ -361,6 +363,10 @@ export default class Stage extends BaseStage {
 
         this.toolbox.drawImpl(state);
         this.syntaxJournal.drawImpl(state);
+
+        for (const id of this._newSyntax) {
+            this.drawInternalProjection(state, id);
+        }
     }
 
     /**
@@ -806,6 +812,49 @@ export default class Stage extends BaseStage {
             Audio.play("firework1");
             return Promise.all(subtweens);
         });
+    }
+
+    /**
+     * Add new items to the syntax journal.
+     */
+    learnSyntax(syntaxes) {
+        const step = () => {
+            const syntax = syntaxes.shift();
+            if (!syntax) return;
+
+            const image = Loader.images[syntax];
+            const sprite = gfxCore.sprite({
+                image,
+                size: { w: image.naturalWidth, h: image.naturalHeight },
+            });
+            const id = this.allocateInternal(sprite);
+
+            sprite.opacity = 0;
+            sprite.pos = {
+                x: (this.width - image.naturalWidth) / 2,
+                y: (this.height - image.naturalHeight) / 2,
+            };
+            animate.tween(sprite, { opacity: 1 }, {
+                duration: 500,
+                easing: animate.Easing.Cubic.Out,
+            }).then(() => {
+                animate.tween(sprite.scale, { x: 0.1, y: 0.1 }, {
+                    duration: 1000,
+                    easing: animate.Easing.Cubic.Out,
+                });
+
+                return animate.tween(sprite.pos, { x: this.width, y: this.height }, {
+                    duration: 2000,
+                    easing: animate.Easing.Cubic.InOut,
+                });
+            }).then(() => {
+                this._newSyntax.shift();
+                step();
+            });
+
+            this._newSyntax.push(id);
+        };
+        step();
     }
 
     _mousedown(e) {
