@@ -26,6 +26,8 @@ export const ACTIVE_PROGRESSION_DEFINITION = PROGRESSIONS[ACTIVE_PROGRESSION];
 
 let currentLevelIdx = 0;
 
+let learnedSyntaxes = [];
+
 export function currentLevel() {
     return currentLevelIdx;
 }
@@ -104,13 +106,29 @@ export function hasChallengeChapter() {
     return false;
 }
 
+export function learnSyntax(name) {
+    if (learnedSyntaxes.indexOf(name) === -1) {
+        learnedSyntaxes.push(name);
+    }
+    save();
+}
+
+export function getLearnedSyntaxes() {
+    return learnedSyntaxes;
+}
+
 export function save() {
     window.localStorage["currentLevelIdx"] = currentLevelIdx;
+    window.localStorage["learnedSyntaxes"] = JSON.stringify(learnedSyntaxes);
 }
 
 export function restore() {
     if (window.localStorage["currentLevelIdx"]) {
         currentLevelIdx = window.parseInt(window.localStorage["currentLevelIdx"], 10);
+    }
+
+    if (window.localStorage["learnedSyntaxes"]) {
+        learnedSyntaxes = JSON.parse(window.localStorage["learnedSyntaxes"]);
     }
 
     // Guard against negatives, NaN
