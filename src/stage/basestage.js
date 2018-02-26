@@ -229,18 +229,26 @@ export default class BaseStage {
     }
 
     updateCursor(touchRecord, moved=false) {
-        if (moved && touchRecord.topNode !== null && touchRecord.hoverNode !== null) {
+        if (moved &&
+            touchRecord.isExpr &&
+            touchRecord.topNode !== null &&
+            touchRecord.hoverNode !== null) {
             this.setCursor("copy");
         }
         else if (touchRecord.topNode !== null) {
-            this.setCursor("grabbing");
+            if (touchRecord.isExpr) {
+                this.setCursor("grabbing");
+            }
         }
         else if (touchRecord.hoverNode !== null) {
             if (this.getState().getIn([ "nodes", touchRecord.hoverNode, "complete" ])) {
                 this.setCursor("pointer");
             }
-            else {
+            else if (touchRecord.isExpr) {
                 this.setCursor("grab");
+            }
+            else {
+                this.setCursor("pointer");
             }
         }
         else {
