@@ -90,6 +90,10 @@ export default class BaseStage {
         return id;
     }
 
+    getView(id) {
+        return this.views[id] || this.internalViews[id];
+    }
+
     getMousePos(e) {
         const rect = this.canvas.getBoundingClientRect();
         return {

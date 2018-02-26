@@ -40,3 +40,38 @@ export function button(stage, label, handlers) {
 
     return projection;
 }
+
+export function imageButton(images, handlers) {
+    const projection = gfx.baseProjection();
+
+    const sprites = {
+        normal: gfx.sprite({ image: images.normal }),
+        hover: gfx.sprite({ image: images.hover }),
+        active: gfx.sprite({ image: images.active }),
+    };
+
+    let state = "normal";
+
+    projection.onclick = function() {
+        if (handlers.click) handlers.click();
+        state = "normal";
+    };
+
+    projection.onmousedown = function() {
+        state = "active";
+    };
+
+    projection.onmouseenter = function() {
+        state = "hover";
+    };
+
+    projection.onmouseexit = function() {
+        state = "normal";
+    };
+
+    projection.draw = function(...args) {
+        sprites[state].draw.apply(this, args);
+    };
+
+    return projection;
+}
