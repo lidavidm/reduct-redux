@@ -24,6 +24,16 @@ export default class Toolbox {
             size: { h: 12, w: 25 },
         }));
 
+        const syntaxJournal = gfx.layout.sticky(gfx.ui.imageButton({
+            normal: Loader.images["journal-default"],
+            hover: Loader.images["journal-hover"],
+            active: Loader.images["journal-mousedown"],
+        }), "bottom", {
+            align: "right",
+        });
+        syntaxJournal.size = { w: 79, h: 78 };
+        this.syntaxJournal = stage.allocateInternal(syntaxJournal);
+
         this._firstRender = true;
         this.rows = 1;
     }
@@ -45,6 +55,11 @@ export default class Toolbox {
 
     getNodeAtPos(state, pos) {
         if (!this.containsPoint(pos)) return [ null, null ];
+
+        const journal = this.stage.internalViews[this.syntaxJournal];
+        if (journal.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+            return [ this.syntaxJournal, this.syntaxJournal ];
+        }
 
         for (const nodeId of state.get("toolbox")) {
             if (!this.stage.semantics.targetable(state, state.get("nodes").get(nodeId))) {
@@ -95,6 +110,14 @@ export default class Toolbox {
     drawBase(state) {
         this.stage.internalViews[this.bg].prepare(null, null, state, this.stage);
         this.stage.internalViews[this.bg].draw(null, null, state, this.stage, {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+        });
+
+        this.stage.internalViews[this.syntaxJournal].prepare(null, null, state, this.stage);
+        this.stage.internalViews[this.syntaxJournal].draw(null, null, state, this.stage, {
             x: 0,
             y: 0,
             sx: 1,
