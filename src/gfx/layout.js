@@ -3,10 +3,20 @@ import { debugDraw, roundedRect } from "./core";
 import * as util from "./util";
 
 export function hexpand(projection) {
+    return expand(projection, { horizontal: true });
+}
+
+export function expand(projection, options) {
     const origPrepare = projection.prepare;
+    projection.expand = options;
     projection.prepare = function(id, exprId, state, stage) {
         origPrepare.call(this, id, exprId, state, stage);
-        this.size.w = stage.width;
+        if (this.expand.horizontal) {
+            this.size.w = stage.width;
+        }
+        if (this.expand.vertical) {
+            this.size.h = stage.height;
+        }
     };
     return projection;
 }
