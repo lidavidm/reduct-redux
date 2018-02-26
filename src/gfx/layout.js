@@ -31,8 +31,13 @@ export function sticky(projection, direction, options) {
             this.pos.x = 0;
         }
 
-        if (this.sticky.align === "center" && (direction === "top" || direction === "bottom")) {
-            this.pos.x = (stage.width - this.size.w) / 2;
+        if (direction === "top" || direction === "bottom") {
+            if (this.sticky.align === "center") {
+                this.pos.x = (stage.width - this.size.w) / 2;
+            }
+            else if (this.sticky.align === "right") {
+                this.pos.x = stage.width - this.size.w;
+            }
         }
     };
     return projection;
