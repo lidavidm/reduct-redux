@@ -29,7 +29,7 @@ export default class Toolbox {
             hover: Loader.images["journal-hover"],
             active: Loader.images["journal-mousedown"],
         }, {
-            click: () => console.log("SYNTAX JOURNAL CLICKED"),
+            click: () => this.stage.syntaxJournal.toggle(),
         }), "bottom", {
             align: "right",
         });

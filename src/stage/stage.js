@@ -4,9 +4,10 @@ import * as animate from "../gfx/animate";
 import Audio from "../resource/audio";
 import * as gfxCore from "../gfx/core";
 import * as progression from "../game/progression";
-import { nextId } from "../reducer/reducer";
+
 import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
+import SyntaxJournal from "../ui/syntaxjournal";
 
 import Logging from "../logging/logging";
 import Network from "../logging/network";
@@ -207,6 +208,7 @@ export default class Stage extends BaseStage {
 
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
+        this.syntaxJournal = new SyntaxJournal(this);
 
         this._currentlyReducing = {};
     }
@@ -352,7 +354,9 @@ export default class Stage extends BaseStage {
         for (const nodeId of state.get("board")) {
             this.drawProjection(state, nodeId);
         }
+
         this.toolbox.drawImpl(state);
+        this.syntaxJournal.drawImpl(state);
     }
 
     /**
