@@ -20,6 +20,11 @@ class TouchRecord extends BaseTouchRecord {
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
         }
+
+        const view = this.stage.getView(this.topNode);
+        if (view.onmousedown) {
+            view.onmousedown();
+        }
     }
 
     onmove(mouseDown, mousePos) {
