@@ -288,6 +288,20 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
     };
 }
 
+export const rect = baseShape("roundedRect", {
+    color: "lightgray",
+    radius: 20,
+    shadowColor: "#000",
+    shadowOffset: 4,
+    strokeWhenChild: true,
+}, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
+    ctx.fillRect(x, y, w, h);
+    if (shouldStroke) {
+        ctx.strokeRect(x, y, w, h);
+    }
+    // TODO: notches
+});
+
 export const roundedRect = baseShape("roundedRect", {
     color: "lightgray",
     radius: 20,
