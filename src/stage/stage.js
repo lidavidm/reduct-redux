@@ -112,7 +112,7 @@ class TouchRecord extends BaseTouchRecord {
     onend(state, mousePos) {
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
-            if (view.onclick) {
+            if (view && view.onclick) {
                 view.onclick();
             }
         }
