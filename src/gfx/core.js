@@ -260,8 +260,8 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
                 if (node.get("complete")) {
                     primitive.setStroke(ctx, {
-                        lineWidth: 4,
-                        color: "DeepPink",
+                        lineWidth: 5,
+                        color: "pink",
                     });
                     shouldStroke = true;
                 }
