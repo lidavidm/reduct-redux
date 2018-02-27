@@ -32,6 +32,11 @@ export default class SyntaxJournal {
 
             const bg = this.stage.getView(this.background);
             let y = bg.pos.y + 40;
+
+            const { ctx } = this.stage;
+            ctx.save();
+            ctx.globalCompositeOperation = "multiply";
+
             for (const syntax of progression.getLearnedSyntaxes()) {
                 if (!this.syntaxes[syntax]) {
                     const image = Loader.images[syntax];
@@ -56,6 +61,8 @@ export default class SyntaxJournal {
                     opacity: bg.opacity,
                 });
             }
+
+            ctx.restore();
         }
     }
 
