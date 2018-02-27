@@ -335,7 +335,7 @@
 		},
 		"toolbox-bg.png":
 		{
-			"frame": {"x":1825,"y":218,"w":32,"h":166},
+			"frame": {"x":1826,"y":218,"w":30,"h":166},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":166},
