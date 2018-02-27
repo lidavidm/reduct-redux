@@ -154,6 +154,7 @@ export default class ChapterEndStage extends BaseStage {
             const count = random.getRandInt(15, 30);
             const size = random.getRandInt(25, 40);
 
+            const duration = random.getRandInt(600, 1200);
             for (let i = 0; i < count; i++) {
                 const idx = random.getRandInt(1, 15);
                 const spark = gfx.sprite({
@@ -167,11 +168,11 @@ export default class ChapterEndStage extends BaseStage {
                 this.stars.push(this.allocateInternal(spark));
 
                 animate.tween(spark, { opacity: 1 }, {
-                    duration: 1200,
+                    duration,
                     easing: animate.Easing.Cubic.Out,
                 }).then(() => {
                     animate.tween(spark, { opacity: 0 }, {
-                        duration: 400,
+                        duration: duration / 3,
                         easing: animate.Easing.Cubic.Out,
                     });
                 });
@@ -179,7 +180,7 @@ export default class ChapterEndStage extends BaseStage {
                     x: spark.pos.x + (rad * Math.cos((i * 2 * Math.PI) / count)),
                     y: spark.pos.y + (rad * Math.sin((i * 2 * Math.PI) / count)),
                 }, {
-                    duration: 1500,
+                    duration: 1.25 * duration,
                     easing: animate.Easing.Cubic.Out,
                 });
             }
