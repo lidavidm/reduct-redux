@@ -32,6 +32,7 @@ export default class ChapterEndStage extends BaseStage {
         ));
 
         this.stars = [];
+        this.bgStars = [];
 
         this.spawnFirework(
             { x: (this.width / 2) - 100, y: this.height - 100 },
@@ -39,7 +40,8 @@ export default class ChapterEndStage extends BaseStage {
             0
         );
 
-        for (let i = 0; i < progression.chapterIdx(); i++) {
+        const count = progression.chapterIdx() + (progression.isGameEnd() ? 10 : 0);
+        for (let i = 0; i < count; i++) {
             const offset = random.getRandInt(-250, 250);
             const angle = random.getRandInt(0, 24) * ((2 * Math.PI) / 24);
             this.spawnFirework(
@@ -48,15 +50,16 @@ export default class ChapterEndStage extends BaseStage {
                     x: (this.width / 2) + (100 * Math.cos(angle)),
                     y: (this.height / 2) + (100 * Math.sin(angle)),
                 },
-                Math.random() > 0.7 ? 0 : random.getRandInt(0, 2000)
+                i * 750
             );
         }
 
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             const idx = random.getRandInt(1, 15);
+            const size = random.getRandInt(10, 20);
             const star = gfx.sprite({
                 image: Loader.images[`mainmenu-star${idx}`],
-                size: { h: 20, w: 20 },
+                size: { h: size, w: size },
             });
             star.anchor = { x: 0.5, y: 0.5 };
             star.pos = {
@@ -64,13 +67,32 @@ export default class ChapterEndStage extends BaseStage {
                 y: random.getRandInt(0, this.height),
             };
             star.opacity = 0.0;
-            this.stars.push(this.allocateInternal(star));
+            star.opacityDelta = 0.05;
 
-            animate.tween(star, { opacity: 0.3 }, {
+            const id = this.allocateInternal(star);
+            this.stars.push(id);
+            this.bgStars.push(id);
+
+            animate.tween(star, { opacity: (0.5 * Math.random()) + 0.3 }, {
                 duration: 2500,
                 easing: animate.Easing.Cubic.Out,
             });
         }
+
+        animate.infinite((dt) => {
+            for (const id of this.bgStars) {
+                const view = this.internalViews[id];
+                view.opacity += view.opacityDelta * (dt / 100);
+                if (view.opacity > 1.0) {
+                    view.opacity = 1.0;
+                    view.opacityDelta *= -1;
+                }
+                else if (view.opacity < 0.2) {
+                    view.opacity = 0.2;
+                    view.opacityDelta *= -1;
+                }
+            }
+        });
 
         this.draw();
 
