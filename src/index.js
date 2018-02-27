@@ -123,7 +123,7 @@ function initialize() {
         document.querySelector("#chapter").appendChild(option);
     }
     document.querySelector("#chapter").addEventListener("change", () => {
-        stg.pushState("change-chapter");
+        if (stg.pushState) stg.pushState("change-chapter");
         const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
         progression.jumpToLevel(lvl);
         start();

@@ -79,6 +79,17 @@ export function currentChapter() {
     return null;
 }
 
+export function chapterIdx() {
+    let idx = 0;
+    for (const chapter of Object.values(ACTIVE_PROGRESSION_DEFINITION.progression.chapters)) {
+        if (currentLevelIdx >= chapter.startIdx && currentLevelIdx <= chapter.endIdx) {
+            break;
+        }
+        idx += 1;
+    }
+    return idx;
+}
+
 export function isChapterStart() {
     return currentLevelIdx === currentChapter().startIdx;
 }

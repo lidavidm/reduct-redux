@@ -32,60 +32,25 @@ export default class ChapterEndStage extends BaseStage {
         ));
 
         this.stars = [];
-        const firework = gfx.sprite({
-            image: Loader.images["mainmenu-star1"],
-            size: { h: 40, w: 40 },
-        });
-        firework.anchor = { x: 0.5, y: 0.5 };
-        firework.pos = { x: (this.width / 2) - 100, y: this.height - 100 };
-        this.stars.push(this.allocateInternal(firework));
-        animate.tween(firework, { opacity: 0.0 }, {
-            reverse: true,
-            repeat: 5,
-            duration: 200,
-        });
 
-        animate.tween(firework.pos, { x: this.width / 2 }, {
-            duration: 1000,
-        }).then(() => {
-            this.stars.shift();
-            const scale = { x: 0.1, y: 0.1 };
-            const rad = Math.min(this.width, this.height) / 2.5;
+        this.spawnFirework(
+            { x: (this.width / 2) - 100, y: this.height - 100 },
+            { x: this.width / 2, y: this.height / 2 },
+            0
+        );
 
-            for (let i = 0; i < 20; i++) {
-                const idx = random.getRandInt(1, 15);
-                const spark = gfx.sprite({
-                    image: Loader.images[`mainmenu-star${idx}`],
-                    size: { h: 40, w: 40 },
-                });
-                spark.anchor = { x: 0.5, y: 0.5 };
-                spark.scale = scale;
-                spark.pos = { x: firework.pos.x, y: firework.pos.y };
-                spark.opacity = 0.0;
-                this.stars.push(this.allocateInternal(spark));
-
-                animate.tween(spark, { opacity: 1 }, {
-                    duration: 1200,
-                    easing: animate.Easing.Cubic.Out,
-                }).then(() => {
-                    animate.tween(spark, { opacity: 0 }, {
-                        duration: 400,
-                        easing: animate.Easing.Cubic.Out,
-                    });
-                });
-                animate.tween(spark.pos, {
-                    x: spark.pos.x + (rad * Math.cos((i * 2 * Math.PI) / 20)),
-                    y: spark.pos.y + (rad * Math.sin((i * 2 * Math.PI) / 20)),
-                }, {
-                    duration: 1500,
-                    easing: animate.Easing.Cubic.Out,
-                });
-            }
-            return animate.tween(scale, { x: 1, y: 1 }, {
-                duration: 1000,
-                easing: animate.Easing.Cubic.Out,
-            });
-        });
+        for (let i = 0; i < progression.chapterIdx(); i++) {
+            const offset = random.getRandInt(-250, 250);
+            const angle = random.getRandInt(0, 24) * ((2 * Math.PI) / 24);
+            this.spawnFirework(
+                { x: (this.width / 2) - offset, y: this.height - 100 },
+                {
+                    x: (this.width / 2) + (100 * Math.cos(angle)),
+                    y: (this.height / 2) + (100 * Math.sin(angle)),
+                },
+                Math.random() > 0.7 ? 0 : random.getRandInt(0, 2000)
+            );
+        }
 
         for (let i = 0; i < 50; i++) {
             const idx = random.getRandInt(1, 15);
@@ -106,11 +71,6 @@ export default class ChapterEndStage extends BaseStage {
                 easing: animate.Easing.Cubic.Out,
             });
         }
-
-        animate.tween(firework.pos, { y: this.height / 2 }, {
-            duration: 2000,
-            easing: animate.Easing.Projectile(animate.Easing.Linear),
-        });
 
         this.draw();
 
@@ -142,6 +102,70 @@ export default class ChapterEndStage extends BaseStage {
                 }).delay(1000);
             }
         }
+    }
+
+    spawnFirework(startPos, targetPos, delay) {
+        const firework = gfx.sprite({
+            image: Loader.images["mainmenu-star1"],
+            size: { h: 40, w: 40 },
+        });
+        firework.anchor = { x: 0.5, y: 0.5 };
+        firework.pos = startPos;
+        this.stars.push(this.allocateInternal(firework));
+        animate.tween(firework, { opacity: 0.0 }, {
+            reverse: true,
+            repeat: 5,
+            duration: 200,
+        }).delay(delay);
+
+        animate.tween(firework.pos, { y: targetPos.y }, {
+            duration: 2000,
+            easing: animate.Easing.Projectile(animate.Easing.Linear),
+        }).delay(delay);
+
+        animate.tween(firework.pos, { x: targetPos.x }, {
+            duration: 1000,
+        }).delay(delay).then(() => {
+            this.stars.shift();
+            const scale = { x: 0.1, y: 0.1 };
+            const rad = Math.min(this.width, this.height) / 2.5;
+            const count = random.getRandInt(15, 30);
+            const size = random.getRandInt(25, 40);
+
+            for (let i = 0; i < count; i++) {
+                const idx = random.getRandInt(1, 15);
+                const spark = gfx.sprite({
+                    image: Loader.images[`mainmenu-star${idx}`],
+                    size: { h: size, w: size },
+                });
+                spark.anchor = { x: 0.5, y: 0.5 };
+                spark.scale = scale;
+                spark.pos = { x: firework.pos.x, y: firework.pos.y };
+                spark.opacity = 0.0;
+                this.stars.push(this.allocateInternal(spark));
+
+                animate.tween(spark, { opacity: 1 }, {
+                    duration: 1200,
+                    easing: animate.Easing.Cubic.Out,
+                }).then(() => {
+                    animate.tween(spark, { opacity: 0 }, {
+                        duration: 400,
+                        easing: animate.Easing.Cubic.Out,
+                    });
+                });
+                animate.tween(spark.pos, {
+                    x: spark.pos.x + (rad * Math.cos((i * 2 * Math.PI) / count)),
+                    y: spark.pos.y + (rad * Math.sin((i * 2 * Math.PI) / count)),
+                }, {
+                    duration: 1500,
+                    easing: animate.Easing.Cubic.Out,
+                });
+            }
+            return animate.tween(scale, { x: 1, y: 1 }, {
+                duration: 1000,
+                easing: animate.Easing.Cubic.Out,
+            });
+        });
     }
 
     get touchRecordClass() {
