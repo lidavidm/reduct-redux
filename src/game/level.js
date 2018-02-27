@@ -65,6 +65,7 @@ export function startLevel(description, parse, store, stage) {
     // Update the store with the parsed data.
     store.dispatch(action.startLevel(stage, goal, board, toolbox, globals));
     stage.startLevel(description.textgoal, description.showConcreteGoal);
+    stage.registerNewDefinedNames(newDefinedNames.map(elem => elem[0]));
 
     // Lay out the board.
     const scaleFactor = (1 - (1 / 1.4)) / 2.0;

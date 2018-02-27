@@ -402,8 +402,7 @@ export default function transform(definition) {
             }
 
             const innerExpr = innerState.get("nodes").get(exprId);
-
-            if (innerExpr.get("type") === "reference" && innerExpr.get("name") === "repeat") {
+            if (innerExpr.get("type") === "reference" && !stage.newDefinedNames.includes(innerExpr.get("name"))) {
                 return module.interpreter.reducers
                     .big(stage, innerState, topExpr, callbacks)
                     .then((topId) => {

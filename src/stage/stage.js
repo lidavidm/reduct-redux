@@ -213,6 +213,8 @@ export default class Stage extends BaseStage {
 
         this._currentlyReducing = {};
         this._newSyntax = [];
+
+        this.newDefinedNames = []; //Field to keep track of which function names are newly defined so that we big-step it during reduction.
     }
 
     get touchRecordClass() {
@@ -346,6 +348,10 @@ export default class Stage extends BaseStage {
     startLevel(textGoal, showConcreteGoal) {
         this.goal.startLevel(textGoal, showConcreteGoal);
         this.toolbox.startLevel(this.getState());
+    }
+
+    registerNewDefinedNames(names) {
+        this.newDefinedNames = names;
     }
 
     getState() {
