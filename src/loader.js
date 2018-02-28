@@ -1,3 +1,4 @@
+import FontFaceObserver from "fontfaceobserver";
 import { Howl } from "howler";
 
 import * as gfx from "./gfx/core";
@@ -204,6 +205,13 @@ export class LoaderClass {
 
                 this.finishLoad();
             });
+    }
+
+    waitForFonts(fonts) {
+        this.startLoad();
+        Promise.all(fonts.map(name => new FontFaceObserver(name).load())).then(() => {
+            this.finishLoad();
+        });
     }
 }
 
