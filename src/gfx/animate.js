@@ -190,6 +190,7 @@ export class Clock {
         this.tweens = [];
         this.running = false;
         this.lastTimestamp = null;
+        this.scale = 1.0;
     }
 
     addUpdateListener(f) {
@@ -197,7 +198,7 @@ export class Clock {
     }
 
     tick(t) {
-        const dt = t - this.lastTimestamp;
+        const dt = this.scale * (t - this.lastTimestamp);
         const completed = [];
         let running = false;
         for (const tween of this.tweens) {
@@ -298,7 +299,7 @@ export function after(ms) {
     return new Promise((resolve) => {
         window.setTimeout(function() {
             resolve();
-        }, ms);
+        }, ms * clock.scale);
     });
 }
 
