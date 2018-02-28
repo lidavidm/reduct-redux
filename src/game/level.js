@@ -162,6 +162,5 @@ export function serialize(state, semantics) {
             board.push(result);
         }
     }
-    console.log(board);
     return { board };
 }

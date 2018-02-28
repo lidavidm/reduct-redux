@@ -223,6 +223,7 @@ export function makeUnparser(jssemant) {
             }
             return `(${unparseES6(node.arg)}) => ${unparseES6(node.body)}`;
         }
+        case "reference":
         case "lambdaArg":
         case "lambdaVar": {
             return `${node.name}`;
@@ -235,6 +236,15 @@ export function makeUnparser(jssemant) {
         }
         case "number": {
             return `${node.value}`;
+        }
+        case "bool": {
+            return `${node.value}`;
+        }
+        case "dynamicVariant": {
+            return `__variant_${node.variant}_${node.value}`;
+        }
+        case "conditional": {
+            return `(${unparseES6(node.condition)}) ? (${unparseES6(node.positive)}) : (${unparseES6(node.negative)})`;
         }
         case "define": {
             let args = "";
