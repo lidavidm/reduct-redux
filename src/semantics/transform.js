@@ -264,7 +264,7 @@ export default function transform(definition) {
         const nodes = state.get("nodes");
         exp = nodes.get(exprId);
         return module
-            .interpreter.animateStep(stage, nodes, exp)
+            .interpreter.animateStep(stage, state, exp)
             .then(() => module.interpreter.smallStep(stage, state, exp))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
