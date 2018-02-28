@@ -213,6 +213,13 @@ export function makeUnparser(jssemant) {
                     }
                     return `(${unparseES6(node.arg)}) => ${replicator.join("")}`;
                 }
+                else {
+                    const cases = [];
+                    for (let i = 0; i < node.body.numChildren; i++) {
+                        cases.push(unparseES6(node.body[`child${i}`]));
+                    }
+                    return `__tests(${cases.join(", ")})`;
+                }
             }
             return `(${unparseES6(node.arg)}) => ${unparseES6(node.body)}`;
         }
