@@ -303,5 +303,22 @@ export function after(ms) {
     });
 }
 
+let scales = {};
+
+export function setDurationScale(category, factor) {
+    scales[category] = factor;
+}
+
+export function replaceDurationScales(_scales) {
+    scales = Object.assign({}, _scales);
+}
+
+export function scaleDuration(ms, ...categories) {
+    for (const category of categories) {
+        ms *= (typeof scales[category] === "undefined" ? 1.0 : scales[category]);
+    }
+    return ms;
+}
+
 import * as fx from "./fx/fx";
 export { fx };

@@ -443,7 +443,12 @@ export default function transform(definition) {
             fuel -= 1;
 
             return takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
-                return animate.after(800)
+                const duration = animate.scaleDuration(
+                    800,
+                    "multi-step",
+                    `expr-${topExpr.get("type")}`
+                );
+                return animate.after(duration)
                     .then(() => loop(newState, innerExpr));
             }, (finalId) => {
                 console.debug(`semant.interpreter.reducers.hybrid: ${fuel} fuel remaining`);

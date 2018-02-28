@@ -10,7 +10,10 @@
             "fade": {
                 "number": 1
             },
-            "showFade": false
+            "showFade": false,
+            "animationScales": {
+                "expr-binop": 2
+            }
         },
         {
             "board": [],

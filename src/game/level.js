@@ -3,6 +3,8 @@ import * as animate from "../gfx/animate";
 import * as layout from "../ui/layout";
 
 export function startLevel(description, parse, store, stage) {
+    animate.replaceDurationScales(description.animationScales);
+
     const macros = Object.assign({}, description.macros);
     for (const macroName of Object.keys(macros)) {
         // Needs to be a thunk in order to allocate new ID each time

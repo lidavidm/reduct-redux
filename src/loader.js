@@ -121,6 +121,8 @@ export class LoaderClass {
                 if (!lvl.syntax) lvl.syntax = [];
                 else if (typeof lvl.syntax === "string") lvl.syntax = [lvl.syntax];
 
+                if (!lvl.animationScales) lvl.animationScales = {};
+
                 if (typeof lvl.showConcreteGoal === "undefined") lvl.showConcreteGoal = true;
 
                 d.levels.push(lvl);
@@ -142,6 +144,7 @@ export class LoaderClass {
         const filenames = Object.keys(definition.digraph);
 
         let extraDefines = [];
+        let animationScales = {};
 
         Promise.all(filenames.map(
             (filename) => this.loadChapter(
@@ -175,6 +178,16 @@ export class LoaderClass {
 
                             // TODO: patch defines
                             for (const level of chapter.levels) {
+                                const newScales = Object.assign(
+                                    {},
+                                    animationScales,
+                                    level.animationScales
+                                );
+                                level.animationScales = Object.assign(
+                                    level.animationScales,
+                                    animationScales
+                                );
+                                animationScales = newScales;
                                 level.extraDefines = extraDefines;
                                 extraDefines = extraDefines.concat(level.defines);
                             }
