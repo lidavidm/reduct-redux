@@ -160,7 +160,7 @@ export function shatter(stage, projection, onFullComplete=null) {
             status,
             { a: 1 },
             {
-                duration: 400,
+                duration: 500,
                 easing: animate.Easing.Cubic.In,
                 callback: () => {
                     resolve();
@@ -173,7 +173,7 @@ export function shatter(stage, projection, onFullComplete=null) {
                 x: pos.x - (0.1 * size.w),
                 y: pos.y - (0.2 * size.h),
             },
-            { duration: 600, easing: animate.Easing.Cubic.Out }
+            { duration: 800, easing: animate.Easing.Cubic.Out }
         ).then(() => {
             stage.removeEffect(id);
             if (onFullComplete) {

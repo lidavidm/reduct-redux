@@ -325,7 +325,7 @@ export default function transform(definition) {
 
             return takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
                 if (animated) {
-                    return animate.after(200)
+                    return animate.after(800)
                         .then(() => loop(newState, innerExpr));
                 }
                 return loop(newState, innerExpr);
@@ -443,7 +443,7 @@ export default function transform(definition) {
             fuel -= 1;
 
             return takeStep(innerState, topExpr).then(([ newState, innerExpr ]) => {
-                return animate.after(500)
+                return animate.after(800)
                     .then(() => loop(newState, innerExpr));
             }, (finalId) => {
                 console.debug(`semant.interpreter.reducers.hybrid: ${fuel} fuel remaining`);
