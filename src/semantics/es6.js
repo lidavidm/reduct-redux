@@ -201,11 +201,42 @@ export default transform({
             // TODO: need some way to specify that "positive" and
             // "negative" should not be evaluated
             subexpressions: ["condition", "positive", "negative"],
+            // projection: {
+            //     type: "default",
+            //     shape: "()",
+            //     color: "lightblue",
+            //     fields: ["'if'", "condition", "'then'", "positive", "'else'", "negative"],
+            // },
             projection: {
-                type: "default",
-                shape: "()",
+                type: "vbox",
+                horizontalAlign: 0.0,
                 color: "lightblue",
-                fields: ["'if'", "condition", "'then'", "positive", "'else'", "negative"],
+                rows: [
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'if'", "condition", "'then'"],
+                        subexpScale: 1.0,
+                    },
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'    '", "positive"],
+                        subexpScale: 1.0,
+                    },
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'else'"],
+                        subexpScale: 1.0,
+                    },
+                    {
+                        type: "default",
+                        shape: "none",
+                        fields: ["'    '", "negative"],
+                        subexpScale: 1.0,
+                    },
+                ],
             },
             type: (semant, state, types, expr) => {
                 const result = new Map();
