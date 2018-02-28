@@ -111,10 +111,14 @@ function initialize() {
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
-    document.querySelector("#toggle-graph").addEventListener("click", () => {
+    // document.querySelector("#toggle-graph").addEventListener("click", () => {
+    //     Logging.toggleStateGraph();
+    //     window.updateStateGraph();
+    // });
+    window.toggleStateGraph = function() {
         Logging.toggleStateGraph();
         window.updateStateGraph();
-    });
+    };
 
     for (const chapterName of Loader.progressions["Elementary"].linearChapters) {
         const option = document.createElement("option");
