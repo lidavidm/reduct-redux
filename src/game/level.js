@@ -157,7 +157,10 @@ export function serialize(state, semantics) {
     const board = [];
     const nodes = state.get("nodes");
     for (const id of state.get("board")) {
-        board.push(semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id))));
+        const result = semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id)));
+        if (result !== null) {
+            board.push(result);
+        }
     }
     console.log(board);
     return { board };

@@ -204,6 +204,16 @@ export function makeUnparser(jssemant) {
             return `"${node.name}"`;
         }
         case "lambda": {
+            if (node.body.type === "vtuple") {
+                if (node.body.child0.type === "lambdaVar") {
+                    // Unparse replicator block
+                    let replicator = [];
+                    for (let i = 0; i < node.body.numChildren; i++) {
+                        replicator.push(node.body.child0.name);
+                    }
+                    return `(${unparseES6(node.arg)}) => ${replicator.join("")}`;
+                }
+            }
             return `(${unparseES6(node.arg)}) => ${unparseES6(node.body)}`;
         }
         case "lambdaArg":
@@ -213,11 +223,26 @@ export function makeUnparser(jssemant) {
         case "binop": {
             return `(${unparseES6(node.left)}) ${node.op.name} (${unparseES6(node.right)})`;
         }
+        case "apply": {
+            return `(${unparseES6(node.callee)})(${unparseES6(node.argument)})`;
+        }
         case "number": {
             return `${node.value}`;
         }
+        case "define": {
+            let args = "";
+            let body = node.body;
+            if (node.body && node.body.type === "lambda") {
+                args = unparseES6(node.body.arg);
+                body = node.body.body;
+            }
+            return `function ${node.name}(${args}) { return ${unparseES6(body)}; }`;
+        }
+        case "defineAttach": {
+            return null;
+        }
         default:
-            console.log(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
+            console.error(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
             return null;
         }
     };
