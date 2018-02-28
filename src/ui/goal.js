@@ -33,7 +33,10 @@ export default class Goal {
 
     startLevel(textGoal, showConcreteGoal=false) {
         if (textGoal) {
-            this.text = this.stage.allocate(gfx.text(textGoal));
+            this.text = this.stage.allocate(gfx.text(textGoal, {
+                fontSize: 20,
+                font: gfx.text.sans,
+            }));
             let contents = null;
             if (showConcreteGoal) {
                 contents = (_id, state) => {

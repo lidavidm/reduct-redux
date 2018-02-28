@@ -368,7 +368,7 @@ export function text(text, options) {
     const projection = baseProjection(Object.assign({
         text,
         fontSize: 28,
-        font: "Consolas, Monaco, monospace",
+        font: "'Fira Mono', Consolas, Monaco, monospace",
         color: "#000",
         type: "text",
     }, options));
@@ -379,7 +379,7 @@ export function text(text, options) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
             TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(this.text).width;
         }
-        this.size.h = 32;
+        this.size.h = this.fontSize * 1.1;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
     projection.draw = function(id, exprId, state, stage, offset) {
@@ -418,6 +418,9 @@ export function text(text, options) {
     };
     return projection;
 }
+
+// Font family definitions
+text.sans = "'Fira Sans', Arial, sans-serif";
 
 /**
  * Create a projection that renders based on an expression field or function.
