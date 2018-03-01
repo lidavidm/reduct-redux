@@ -185,8 +185,8 @@ export class LoaderClass {
                                     level.animationScales
                                 );
                                 level.animationScales = Object.assign(
-                                    level.animationScales,
-                                    animationScales
+                                    animationScales,
+                                    level.animationScales
                                 );
                                 animationScales = newScales;
                                 level.extraDefines = extraDefines;
