@@ -143,8 +143,8 @@ export class InterpolateTween extends Tween {
             }
         }
 
-        for (const property of Object.keys(this.properties)) {
-            const { target, start, end, easing } = this.properties[property];
+        for (const attr of this.properties) {
+            const { target, property, start, end, easing } = attr;
             target[property] = easing(start, end, t);
         }
 
@@ -228,26 +228,36 @@ export class Clock {
 
     tween(target, properties, options) {
         const duration = options.duration || 300;
-        const props = {};
-        const easing = options.easing || Easing.Linear;
+        const props = [];
+        const defaultEasing = options.easing || Easing.Linear;
 
-        const buildProps = (subTarget, subProps) => {
-            for (const [ prop, final ] of Object.entries(subProps)) {
+        const buildProps = (subTarget, subProps, easing) => {
+            for (let [ prop, final ] of Object.entries(subProps)) {
+                if (Array.isArray(final)) {
+                    if (final.length === 2) {
+                        [ final, easing ] = final;
+                    }
+                    else {
+                        throw "Tween target can only be array if array is length 2";
+                    }
+                }
+
                 if (typeof final === "number" || typeof final === "string") {
-                    props[prop] = {
+                    props.push({
                         target: subTarget,
+                        property: prop,
                         start: subTarget[prop],
                         end: final,
                         easing,
-                    };
+                    });
                 }
                 else if (final) {
-                    buildProps(subTarget[prop], final);
+                    buildProps(subTarget[prop], final, easing);
                 }
             }
         };
 
-        buildProps(target, properties);
+        buildProps(target, properties, defaultEasing);
 
         return this.addTween(new InterpolateTween(this, props, duration, options));
     }
