@@ -266,8 +266,24 @@ export class Clock {
         };
 
         buildProps(target, properties, defaultEasing);
+        // Set flag so that layout functions know to skip this view,
+        // if it is a child. Use counter to allow overlapping tweens.
+        if (typeof target.animating === "number") {
+            target.animating += 1;
+        }
+        else {
+            target.animating = 1;
+        }
 
-        return this.addTween(new InterpolateTween(this, props, duration, options));
+        return this.addTween(new InterpolateTween(this, props, duration, options))
+            .then(() => {
+                if (typeof target.animating === "number") {
+                    target.animating -= 1;
+                }
+                else {
+                    target.animating = 0;
+                }
+            });
     }
 
     addTween(tween) {

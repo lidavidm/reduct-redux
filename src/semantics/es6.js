@@ -309,9 +309,6 @@ export default transform({
                 const lambdaArgView = callee.get("type") === "lambda" ? stage.views[callee.get("arg")] : null;
                 const argView = stage.views[expr.get("argument")];
                 const applyView = stage.views[expr.get("id")];
-                // TODO: animating should be a counter to support simultaneous animations
-                // TODO: animate module should take care of this automatically
-                argView.animating = true;
 
                 // Fade out arrow
                 animate.tween(applyView, { arrowOpacity: [ 1.0, 0.0 ] }, {
@@ -320,7 +317,7 @@ export default transform({
                 });
 
                 // Scale down argument
-                animate.tween(argView.scale, { x: 0.4, y: 0.4 }, {
+                animate.tween(argView, { scale: { x: 0.4, y: 0.4 } }, {
                     duration: animate.scaleDuration(300, "expr-apply"),
                     easing: animate.Easing.Cubic.Out,
                 });
@@ -339,12 +336,10 @@ export default transform({
                     // Replace arg hole with preview
                     if (lambdaArgView) {
                         lambdaView.strokeWhenChild = false;
-                        lambdaArgView.animating = true;
 
                         for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
                             if (exprId !== callee.get("body")) {
-                                stage.views[childId].animating = true;
-                                animate.tween(stage.views[childId].scale, { x: 0 }, {
+                                animate.tween(stage.views[childId], { scale: { x: 0 } }, {
                                     duration: 500,
                                     easing: animate.Easing.Cubic.InOut,
                                 });
@@ -375,8 +370,7 @@ export default transform({
 
                     for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
                         if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
-                            stage.views[childId].animating = true;
-                            animate.tween(stage.views[childId].scale, { x: 0 }, {
+                            animate.tween(stage.views[childId], { scale: { x: 0 } }, {
                                 duration: 500,
                                 easing: animate.Easing.Cubic.InOut,
                             });
@@ -394,7 +388,6 @@ export default transform({
                             outroDuration: 400,
                         }))
                         .then(() => {
-                            argView.animating = false;
                             argView.opacity = 1;
                         });
                 });

@@ -150,26 +150,18 @@ export default class Toolbox {
             else if (this._firstRender) {
                 projection.pos.x = x + this.stage.width;
                 projection.pos.y = nodeY;
-                projection.animating = true;
                 animate
-                    .tween(projection.pos, { x }, {
+                    .tween(projection, { pos: { x } }, {
                         easing: animate.Easing.Cubic.Out,
                         duration: 400,
                     })
-                    .delay(400 * Math.log(2 + i))
-                    .then(() => {
-                        projection.animating = false;
-                    });
+                    .delay(400 * Math.log(2 + i));
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
-                projection.animating = true;
                 animate
-                    .tween(projection.pos, { x, y: nodeY }, {
+                    .tween(projection, { pos: { x, y: nodeY } }, {
                         duration: 250,
                         easing: animate.Easing.Cubic.Out,
-                    })
-                    .then(() => {
-                        projection.animating = false;
                     });
             }
             else if (!projection.animating) {
