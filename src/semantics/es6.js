@@ -337,10 +337,10 @@ export default transform({
                     const reset = [];
                     const clearPreview = [];
 
-                    const duration = 700;
-                    const totalTime = duration + 300;
-                    const introDuration = 400;
-                    const outroDuration = 400;
+                    const duration = animate.scaleDuration(700, "expr-apply");
+                    const totalTime = animate.scaleDuration(duration + 300, "expr-apply");
+                    const introDuration = animate.scaleDuration(400, "expr-apply");
+                    const outroDuration = animate.scaleDuration(400, "expr-apply");
                     // How long to wait before clearing the 'animating' flag
                     const restTime = totalTime + introDuration + outroDuration;
 
