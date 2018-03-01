@@ -658,7 +658,8 @@ export default class Stage extends BaseStage {
             }
         };
 
-        this.semantics.interpreter.reduce(this, state, node, {
+        const mode = document.querySelector("#evaluation-mode").value;
+        this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);

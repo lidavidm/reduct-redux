@@ -374,6 +374,26 @@ export default function transform(definition) {
                     }
                     return callbacks.update(...args);
                 },
+            }), false, false
+        );
+    };
+
+    module.interpreter.reducers.medium = function mediumStepReducer(stage, state, exp, callbacks) {
+        // Only play animation if we actually take any sort of
+        // small-step
+        let playedAnim = false;
+        return module.interpreter.reducers.multi(
+            stage, state, exp,
+            Object.assign({}, callbacks, {
+                update: (...args) => {
+                    if (!playedAnim) {
+                        playedAnim = true;
+                        return module.interpreter
+                            .animateStep(stage, state, exp)
+                            .then(() => callbacks.update(...args));
+                    }
+                    return callbacks.update(...args);
+                },
                 stop: (state, topExpr) => {
                     let curExpr = topExpr;
                     const rhs = [];
@@ -424,7 +444,7 @@ export default function transform(definition) {
             const innerExpr = innerState.get("nodes").get(exprId);
             if (innerExpr.get("type") === "reference" && !stage.newDefinedNames.includes(innerExpr.get("name"))) {
                 return module.interpreter.reducers
-                    .big(stage, innerState, topExpr, callbacks)
+                    .medium(stage, innerState, topExpr, callbacks)
                     .then((topId) => {
                         const newState = stage.getState();
                         return [ newState, newState.getIn([ "nodes", topId ]) ];
@@ -487,11 +507,20 @@ export default function transform(definition) {
      * undo/redo stack, and mark which undo/redo states are big-steps,
      * small-steps, etc. to allow fine-grained undo/redo.
      */
-    module.interpreter.reduce = function reduce(stage, state, exp, callbacks) {
-        // return module.interpreter.reducers.single(stage, state, exp, callbacks);
-        // return module.interpreter.reducers.multi(stage, state, exp, callbacks);
-        // return module.interpreter.reducers.big(stage, state, exp, callbacks);
-        return module.interpreter.reducers.hybrid(stage, state, exp, callbacks);
+    module.interpreter.reduce = function reduce(stage, state, exp, mode, callbacks) {
+        switch (mode) {
+        case "small":
+            return module.interpreter.reducers.single(stage, state, exp, callbacks);
+        case "multi":
+            return module.interpreter.reducers.multi(stage, state, exp, callbacks);
+        case "big":
+            return module.interpreter.reducers.big(stage, state, exp, callbacks);
+        case "medium":
+            return module.interpreter.reducers.medium(stage, state, exp, callbacks);
+        case "hybrid":
+        default:
+            return module.interpreter.reducers.hybrid(stage, state, exp, callbacks);
+        }
     };
 
     /**
