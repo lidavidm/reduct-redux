@@ -92,10 +92,9 @@ export class Tween {
 
 
 export class InterpolateTween extends Tween {
-    constructor(clock, target, properties, duration, options) {
+    constructor(clock, properties, duration, options) {
         super(clock, options);
 
-        this.target = target;
         this.properties = properties;
         this.duration = duration;
         this.remaining = duration;
@@ -145,8 +144,8 @@ export class InterpolateTween extends Tween {
         }
 
         for (const property of Object.keys(this.properties)) {
-            const { start, end, easing } = this.properties[property];
-            this.target[property] = easing(start, end, t);
+            const { target, start, end, easing } = this.properties[property];
+            target[property] = easing(start, end, t);
         }
 
         if (completed) {
@@ -231,11 +230,26 @@ export class Clock {
         const duration = options.duration || 300;
         const props = {};
         const easing = options.easing || Easing.Linear;
-        for (const [ prop, final ] of Object.entries(properties)) {
-            props[prop] = { start: target[prop], end: final, easing };
-        }
 
-        return this.addTween(new InterpolateTween(this, target, props, duration, options));
+        const buildProps = (subTarget, subProps) => {
+            for (const [ prop, final ] of Object.entries(subProps)) {
+                if (typeof final === "number" || typeof final === "string") {
+                    props[prop] = {
+                        target: subTarget,
+                        start: subTarget[prop],
+                        end: final,
+                        easing,
+                    };
+                }
+                else if (final) {
+                    buildProps(subTarget[prop], final);
+                }
+            }
+        };
+
+        buildProps(target, properties);
+
+        return this.addTween(new InterpolateTween(this, props, duration, options));
     }
 
     addTween(tween) {

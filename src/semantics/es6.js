@@ -365,18 +365,21 @@ export default transform({
                         stage.semantics.searchNoncapturing(state.get("nodes"), targetName, lambdaBody)
                             .forEach((id) => {
                                 if (stage.views[id]) {
+                                    stage.views[id].previewOptions = { duration: 500 };
                                     stage.views[id].preview = expr.get("argument");
                                 }
                             });
                     }
 
                     const applyView = stage.views[expr.get("id")];
-                    animate.tween(applyView, { subexpScale: 1.0 }, {
-                        duration: 500,
-                        easing: animate.Easing.Cubic.InOut,
-                    });
-
-                    animate.tween(applyView.padding, { inner: 0, left: 0, right: 0 }, {
+                    animate.tween(applyView, {
+                        subexpScale: 1.0,
+                        padding: {
+                            inner: 0,
+                            left: 0,
+                            right: 0,
+                        },
+                    }, {
                         duration: 500,
                         easing: animate.Easing.Cubic.InOut,
                     });
@@ -658,7 +661,7 @@ export default transform({
                 fields: {
                     default: {
                         color: projection => animate.tween(projection, {
-                            color: null,
+                            color: "#594764",
                         }, {
                             duration: 500,
                             easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "OrangeRed"),
@@ -666,7 +669,7 @@ export default transform({
                     },
                     attached: {
                         color: projection => animate.tween(projection, {
-                            color: null,
+                            color: "OrangeRed",
                         }, {
                             duration: 500,
                             easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "#594764"),

@@ -193,11 +193,13 @@ export function previewer(projection) {
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview && !this.prevPreview) {
             this.prevPreview = { x: 0.2, y: 0.2 };
+
+            const duration = (this.previewOptions ? this.previewOptions.duration : 250) || 250;
             animate.tween(this.prevPreview, {
                 x: this.subexpScale,
                 y: this.subexpScale,
             }, {
-                duration: 250,
+                duration,
                 easing: animate.Easing.Cubic.Out,
             });
         }
