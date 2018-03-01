@@ -154,6 +154,14 @@ export class InterpolateTween extends Tween {
         }
         return true;
     }
+
+    /** Resets properties affected back to their initial value. */
+    undo() {
+        for (const attr of this.properties) {
+            const { target, property, start } = attr;
+            target[property] = start;
+        }
+    }
 }
 
 export class InfiniteTween extends Tween {
@@ -275,15 +283,23 @@ export class Clock {
             target.animating = 1;
         }
 
-        return this.addTween(new InterpolateTween(this, props, duration, options))
-            .then(() => {
-                if (typeof target.animating === "number") {
-                    target.animating -= 1;
-                }
-                else {
-                    target.animating = 0;
-                }
-            });
+        const decrementAnimatingCount = () => {
+            if (typeof target.animating === "number") {
+                target.animating -= 1;
+            }
+            else {
+                target.animating = 0;
+            }
+        };
+
+        const result = this.addTween(new InterpolateTween(this, props, duration, options));
+        result.then(() => {
+            if (options.restTime) {
+                return after(options.restTime);
+            }
+            return null;
+        }).then(() => decrementAnimatingCount());
+        return result;
     }
 
     addTween(tween) {

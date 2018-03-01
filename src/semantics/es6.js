@@ -304,9 +304,9 @@ export default transform({
             },
             stepAnimation: (semant, stage, state, expr) => {
                 const callee = state.getIn([ "nodes", expr.get("callee") ]);
-                const lambdaBody = callee.get("type") === "lambda" ? callee.get("body") : null;
-                const lambdaView = callee.get("type") === "lambda" ? stage.views[callee.get("id")] : null;
-                const lambdaArgView = callee.get("type") === "lambda" ? stage.views[callee.get("arg")] : null;
+                const isCalleeLambda = callee.get("type") === "lambda";
+                const lambdaBody = isCalleeLambda ? callee.get("body") : null;
+                const lambdaView = isCalleeLambda ? stage.views[callee.get("id")] : null;
                 const argView = stage.views[expr.get("argument")];
                 const applyView = stage.views[expr.get("id")];
 
@@ -333,16 +333,28 @@ export default transform({
                 }).then(() => {
                     argView.opacity = 0;
 
+                    // List of tweens to reset at end
+                    const reset = [];
+                    const clearPreview = [];
+
+                    const duration = 700;
+                    const totalTime = duration + 300;
+                    const introDuration = 400;
+                    const outroDuration = 400;
+                    // How long to wait before clearing the 'animating' flag
+                    const restTime = totalTime + introDuration + outroDuration;
+
                     // Replace arg hole with preview
-                    if (lambdaArgView) {
+                    if (isCalleeLambda) {
                         lambdaView.strokeWhenChild = false;
 
                         for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
                             if (exprId !== callee.get("body")) {
-                                animate.tween(stage.views[childId], { scale: { x: 0 } }, {
-                                    duration: 500,
+                                reset.push(animate.tween(stage.views[childId], { scale: { x: 0 } }, {
+                                    duration,
+                                    restTime,
                                     easing: animate.Easing.Cubic.InOut,
-                                });
+                                }));
                             }
                         }
 
@@ -350,13 +362,14 @@ export default transform({
                         stage.semantics.searchNoncapturing(state.get("nodes"), targetName, lambdaBody)
                             .forEach((id) => {
                                 if (stage.views[id]) {
-                                    stage.views[id].previewOptions = { duration: 500 };
+                                    stage.views[id].previewOptions = { duration };
                                     stage.views[id].preview = expr.get("argument");
+                                    clearPreview.push(stage.views[id]);
                                 }
                             });
                     }
 
-                    animate.tween(applyView, {
+                    reset.push(animate.tween(applyView, {
                         subexpScale: 1.0,
                         padding: {
                             inner: 0,
@@ -364,28 +377,38 @@ export default transform({
                             right: 0,
                         },
                     }, {
-                        duration: 500,
+                        duration,
+                        restTime,
                         easing: animate.Easing.Cubic.InOut,
-                    });
+                    }));
 
                     for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
                         if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
-                            animate.tween(stage.views[childId], { scale: { x: 0 } }, {
-                                duration: 500,
+                            reset.push(animate.tween(stage.views[childId], { scale: { x: 0 } }, {
+                                duration,
+                                restTime,
                                 easing: animate.Easing.Cubic.InOut,
-                            });
+                            }));
                         }
                     }
-                    animate.tween(argView, { x: 0 }, {
-                        duration: 500,
+
+                    reset.push(animate.tween(argView, { x: 0 }, {
+                        duration,
+                        restTime,
                         easing: animate.Easing.Cubic.InOut,
-                    });
+                    }));
 
-
-                    return animate.after(900)
+                    return animate.after(totalTime)
                         .then(() => animate.fx.shatter(stage, applyView, {
-                            introDuration: 400,
-                            outroDuration: 400,
+                            introDuration,
+                            outroDuration,
+                            onFullComplete: () => {
+                                reset.forEach(tween => tween.undo());
+                                clearPreview.forEach((view) => {
+                                    view.preview = null;
+                                    delete view.previewOptions;
+                                });
+                            },
                         }))
                         .then(() => {
                             argView.opacity = 1;
