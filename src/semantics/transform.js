@@ -133,6 +133,21 @@ export default function transform(definition) {
         return module.projections[type](stage, nodes, expr);
     };
 
+    module.searchNoncapturing = function(nodes, targetName, exprId) {
+        const result = [];
+        module.map(nodes, exprId, (nodes, id) => {
+            const node = nodes.get(id);
+            if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
+                result.push(id);
+                return [ node, nodes ];
+            }
+            return [ node, nodes ];
+        }, (nodes, node) => (
+            node.get("type") !== "lambda" ||
+                nodes.get(node.get("arg")).get("name") !== targetName));
+        return result;
+    };
+
     /**
      * Submodule for evaluating expressions.
      */

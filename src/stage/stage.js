@@ -534,18 +534,11 @@ export default class Stage extends BaseStage {
         }
 
         const targetName = targetNode.get("name");
-        this.semantics.map(nodes, lambdaBody, (nodes, id) => {
-            const node = nodes.get(id);
-            if (node.get("type") === "lambdaVar" && node.get("name") === targetName) {
-                if (this.views[id]) {
-                    this.views[id].preview = arg;
-                }
-                return [ node, nodes ];
+        this.semantics.searchNoncapturing(nodes, targetName, lambdaBody).forEach((id) => {
+            if (this.views[id]) {
+                this.views[id].preview = arg;
             }
-            return [ node, nodes ];
-        }, (nodes, node) => (
-            node.get("type") !== "lambda" ||
-                nodes.get(node.get("arg")).get("name") !== targetName));
+        });
     }
 
     /**
