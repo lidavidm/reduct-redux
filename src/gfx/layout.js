@@ -98,20 +98,6 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         }
     };
     projection.draw = function(id, exprId, state, stage, offset) {
-        if (this.preview) {
-            const temp = Object.assign({}, stage.views[this.preview], {
-                pos: {
-                    x: this.pos.x + (0.5 * this.size.w),
-                    y: this.pos.y,
-                },
-                scale: this.prevPreview,
-                anchor: { x: 0.5, y: 0 },
-                opacity: 1,
-            });
-            temp.draw(this.preview, this.preview, state, stage, offset);
-            return;
-        }
-
         baseDraw.call(this, id, exprId, state, stage, offset);
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
@@ -202,7 +188,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
 }
 
 export function previewer(projection) {
-    const origPrepare = projection.prepare;
+    const { prepare, draw } = projection;
 
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview && !this.prevPreview) {
@@ -223,7 +209,25 @@ export function previewer(projection) {
             return;
         }
 
-        origPrepare.call(this, id, exprId, state, stage);
+        prepare.call(this, id, exprId, state, stage);
+    };
+
+    projection.draw = function(id, exprId, state, stage, offset) {
+        if (this.preview) {
+            const temp = Object.assign({}, stage.views[this.preview], {
+                pos: {
+                    x: this.pos.x + (0.5 * this.size.w),
+                    y: this.pos.y,
+                },
+                scale: this.prevPreview,
+                anchor: { x: 0.5, y: 0 },
+                opacity: 1,
+            });
+            temp.draw(this.preview, this.preview, state, stage, offset);
+            return;
+        }
+
+        draw.call(this, id, exprId, state, stage, offset);
     };
 
     return projection;
