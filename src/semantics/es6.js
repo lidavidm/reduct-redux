@@ -327,14 +327,13 @@ export default transform({
                 });
 
                 // Jump argument to hole
-                animate.tween(argView.pos, { y: argView.pos.y - 75 }, {
+                return animate.tween(argView, {
+                    pos: {
+                        x: [ stage.views[expr.get("callee")].pos.x, animate.Easing.Linear ],
+                        y: [ argView.pos.y - 75, animate.Easing.Projectile(animate.Easing.Linear) ],
+                    },
+                }, {
                     duration: animate.scaleDuration(500, "expr-apply"),
-                    easing: animate.Easing.Projectile(animate.Easing.Linear),
-                });
-
-                return animate.tween(argView.pos, { x: stage.views[expr.get("callee")].pos.x }, {
-                    duration: animate.scaleDuration(500, "expr-apply"),
-                    easing: animate.Easing.Linear,
                 }).then(() => {
                     argView.opacity = 0;
 
@@ -343,24 +342,16 @@ export default transform({
                         lambdaView.strokeWhenChild = false;
                         lambdaArgView.animating = true;
 
-                        // animate.after(500).then(() => {
-                            // animate.tween(lambdaArgView.scale, { x: 0 }, {
-                            //     duration: 500,
-                            //     easing: animate.Easing.Cubic.InOut,
-                            // });
-                            for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
-                                if (exprId !== callee.get("body")) {
-                                    stage.views[childId].animating = true;
-                                    animate.tween(stage.views[childId].scale, { x: 0 }, {
-                                        duration: 500,
-                                        easing: animate.Easing.Cubic.InOut,
-                                    });
-                                }
+                        for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
+                            if (exprId !== callee.get("body")) {
+                                stage.views[childId].animating = true;
+                                animate.tween(stage.views[childId].scale, { x: 0 }, {
+                                    duration: 500,
+                                    easing: animate.Easing.Cubic.InOut,
+                                });
                             }
-                            delete lambdaArgView.preview;
-                        // });
+                        }
 
-                        // lambdaArgView.preview = expr.get("argument");
                         const targetName = state.getIn([ "nodes", callee.get("arg"), "name" ]);
                         stage.semantics.searchNoncapturing(state.get("nodes"), targetName, lambdaBody)
                             .forEach((id) => {
