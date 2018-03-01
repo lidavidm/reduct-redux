@@ -233,12 +233,20 @@ export class Clock {
 
         const buildProps = (subTarget, subProps, easing) => {
             for (let [ prop, final ] of Object.entries(subProps)) {
+                let start = null;
+
                 if (Array.isArray(final)) {
-                    if (final.length === 2) {
+                    if (final.length === 2 && typeof final[1] === "function") {
                         [ final, easing ] = final;
                     }
+                    else if (final.length === 2) {
+                        [ start, final ] = final;
+                    }
+                    else if (final.length === 3) {
+                        [ start, final, easing ] = final;
+                    }
                     else {
-                        throw "Tween target can only be array if array is length 2";
+                        throw "Tween target can only be array if array is length 2 or 3";
                     }
                 }
 
@@ -246,7 +254,7 @@ export class Clock {
                     props.push({
                         target: subTarget,
                         property: prop,
-                        start: subTarget[prop],
+                        start: start || subTarget[prop],
                         end: final,
                         easing,
                     });

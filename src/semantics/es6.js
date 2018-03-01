@@ -308,14 +308,13 @@ export default transform({
                 const lambdaView = callee.get("type") === "lambda" ? stage.views[callee.get("id")] : null;
                 const lambdaArgView = callee.get("type") === "lambda" ? stage.views[callee.get("arg")] : null;
                 const argView = stage.views[expr.get("argument")];
+                const applyView = stage.views[expr.get("id")];
                 // TODO: animating should be a counter to support simultaneous animations
                 // TODO: animate module should take care of this automatically
                 argView.animating = true;
 
-                stage.views[expr.get("id")].arrowOpacity = 1.0;
-
                 // Fade out arrow
-                animate.tween(stage.views[expr.get("id")], { arrowOpacity: 0 }, {
+                animate.tween(applyView, { arrowOpacity: [ 1.0, 0.0 ] }, {
                     duration: animate.scaleDuration(200, "expr-apply"),
                     easing: animate.Easing.Cubic.InOut,
                 });
@@ -362,7 +361,6 @@ export default transform({
                             });
                     }
 
-                    const applyView = stage.views[expr.get("id")];
                     animate.tween(applyView, {
                         subexpScale: 1.0,
                         padding: {
@@ -390,16 +388,15 @@ export default transform({
                     });
 
 
-                    return animate.after(900).then(() => {
-                        return animate.fx.shatter(stage, applyView, {
+                    return animate.after(900)
+                        .then(() => animate.fx.shatter(stage, applyView, {
                             introDuration: 400,
                             outroDuration: 400,
+                        }))
+                        .then(() => {
+                            argView.animating = false;
+                            argView.opacity = 1;
                         });
-                    }).then(() => {
-                        argView.animating = false;
-                        argView.opacity = 1;
-                        lambdaArgView.preview = null;
-                    });
                 });
             },
             stepSound: "heatup",
