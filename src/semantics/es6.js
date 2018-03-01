@@ -307,24 +307,29 @@ export default transform({
                 // TODO: animating should be a counter to support simultaneous animations
                 // TODO: animate module should take care of this automatically
                 argView.animating = true;
+
                 stage.views[expr.get("id")].arrowOpacity = 1.0;
+
+                // Fade out arrow
                 animate.tween(stage.views[expr.get("id")], { arrowOpacity: 0 }, {
-                    duration: 200,
+                    duration: animate.scaleDuration(200, "expr-apply"),
                     easing: animate.Easing.Cubic.InOut,
                 });
 
+                // Scale down argument
                 animate.tween(argView.scale, { x: 0.4, y: 0.4 }, {
-                    duration: 300,
+                    duration: animate.scaleDuration(300, "expr-apply"),
                     easing: animate.Easing.Cubic.Out,
                 });
 
+                // Jump argument to hole
                 animate.tween(argView.pos, { y: argView.pos.y - 75 }, {
-                    duration: 500,
+                    duration: animate.scaleDuration(500, "expr-apply"),
                     easing: animate.Easing.Projectile(animate.Easing.Linear),
                 });
 
                 return animate.tween(argView.pos, { x: stage.views[expr.get("callee")].pos.x }, {
-                    duration: 500,
+                    duration: animate.scaleDuration(500, "expr-apply"),
                     easing: animate.Easing.Linear,
                 }).then(() => {
                     argView.animating = false;

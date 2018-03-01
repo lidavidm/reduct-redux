@@ -6,12 +6,18 @@
         {
             "board": "(x => x)(1)",
             "goal": "1",
-            "toolbox": ""
+            "toolbox": "",
+            "animationScales": {
+                "expr-apply": 1.5
+            }
         },
         {
             "board": ["(x => x + 1)(_)", "(x => x)(_)"],
             "goal": "4",
-            "toolbox": ["2", "3", "4"]
+            "toolbox": ["2", "3", "4"],
+            "animationScales": {
+                "expr-binop": 1
+            }
         },
         {
             "board": ["_(2)", "_(_)"],
