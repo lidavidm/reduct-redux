@@ -106,7 +106,9 @@ export function blink(stage, projection, opts) {
     });
 }
 
-export function shatter(stage, projection, onFullComplete=null) {
+export function shatter(stage, projection, options) {
+    const { onFullComplete } = options;
+
     const size = gfx.absoluteSize(projection);
     const pos = gfx.absolutePos(projection);
     const status = {
@@ -160,7 +162,7 @@ export function shatter(stage, projection, onFullComplete=null) {
             status,
             { a: 1 },
             {
-                duration: 500,
+                duration: options.introDuration || 500,
                 easing: animate.Easing.Cubic.In,
                 callback: () => {
                     resolve();
@@ -173,7 +175,7 @@ export function shatter(stage, projection, onFullComplete=null) {
                 x: pos.x - (0.1 * size.w),
                 y: pos.y - (0.2 * size.h),
             },
-            { duration: 800, easing: animate.Easing.Cubic.Out }
+            { duration: options.outroDuration || 800, easing: animate.Easing.Cubic.Out }
         ).then(() => {
             stage.removeEffect(id);
             if (onFullComplete) {

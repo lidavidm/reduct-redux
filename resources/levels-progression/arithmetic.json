@@ -12,7 +12,7 @@
             },
             "showFade": false,
             "animationScales": {
-                "expr-binop": 2
+                "expr-binop": 1.2
             }
         },
         {

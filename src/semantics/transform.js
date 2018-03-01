@@ -200,7 +200,12 @@ export default function transform(definition) {
         if (defn && defn.stepAnimation) {
             return defn.stepAnimation(module, stage, state, exp);
         }
-        return animate.fx.shatter(stage, stage.views[exp.get("id")]);
+
+        const scaleCategory = `expr-${exp.get("type")}`;
+        return animate.fx.shatter(stage, stage.views[exp.get("id")], {
+            introDuration: animate.scaleDuration(600, scaleCategory),
+            outroDuration: animate.scaleDuration(600, scaleCategory),
+        });
     };
 
     /**
