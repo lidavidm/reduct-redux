@@ -67,24 +67,6 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
-        if (this.preview && !this.prevPreview) {
-            this.prevPreview = { x: 0.2, y: 0.2 };
-            animate.tween(this.prevPreview, {
-                x: 0.7,
-                y: 0.7,
-            }, {
-                duration: 250,
-                easing: animate.Easing.Cubic.Out,
-            });
-        }
-        else if (!this.preview) {
-            delete this.prevPreview;
-        }
-        if (this.preview) {
-            stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
-            return;
-        }
-
         const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
@@ -215,6 +197,34 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
     };
 
     projection.children = util.genericChildrenFunc(childrenFunc);
+
+    return projection;
+}
+
+export function previewer(projection) {
+    const origPrepare = projection.prepare;
+
+    projection.prepare = function(id, exprId, state, stage) {
+        if (this.preview && !this.prevPreview) {
+            this.prevPreview = { x: 0.2, y: 0.2 };
+            animate.tween(this.prevPreview, {
+                x: 0.7,
+                y: 0.7,
+            }, {
+                duration: 250,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
+        else if (!this.preview) {
+            delete this.prevPreview;
+        }
+        if (this.preview) {
+            stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            return;
+        }
+
+        origPrepare.call(this, id, exprId, state, stage);
+    };
 
     return projection;
 }

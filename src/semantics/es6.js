@@ -437,10 +437,13 @@ export default transform({
             fields: ["name"],
             subexpressions: [],
             projection: {
-                type: "default",
-                shape: "()",
-                strokeWhenChild: false,
-                fields: ["name"],
+                type: "preview",
+                content: {
+                    type: "default",
+                    shape: "()",
+                    strokeWhenChild: false,
+                    fields: ["name"],
+                },
             },
         },
 
