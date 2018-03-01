@@ -194,8 +194,8 @@ export function previewer(projection) {
         if (this.preview && !this.prevPreview) {
             this.prevPreview = { x: 0.2, y: 0.2 };
             animate.tween(this.prevPreview, {
-                x: 0.7,
-                y: 0.7,
+                x: this.subexpScale,
+                y: this.subexpScale,
             }, {
                 duration: 250,
                 easing: animate.Easing.Cubic.Out,
@@ -219,6 +219,7 @@ export function previewer(projection) {
                     x: this.pos.x + (0.5 * this.size.w),
                     y: this.pos.y,
                 },
+                shadow: false,
                 scale: this.prevPreview,
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,

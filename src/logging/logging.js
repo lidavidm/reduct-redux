@@ -371,6 +371,7 @@ Logger.prototype.ACTIONS = {
     "toolbox-addback": 17,
     "game-complete": 18,
     // NEW ACTIONS FOR REDUCT-REDUX
+    "state-path-save": 99,
     "undo": 100,
     "redo": 101,
 };

@@ -303,6 +303,10 @@ export default transform({
                 },
             },
             stepAnimation: (semant, stage, state, expr) => {
+                const callee = state.getIn([ "nodes", expr.get("callee") ]);
+                const lambdaBody = callee.get("type") === "lambda" ? callee.get("body") : null;
+                const lambdaView = callee.get("type") === "lambda" ? stage.views[callee.get("id")] : null;
+                const lambdaArgView = callee.get("type") === "lambda" ? stage.views[callee.get("arg")] : null;
                 const argView = stage.views[expr.get("argument")];
                 // TODO: animating should be a counter to support simultaneous animations
                 // TODO: animate module should take care of this automatically
@@ -332,8 +336,76 @@ export default transform({
                     duration: animate.scaleDuration(500, "expr-apply"),
                     easing: animate.Easing.Linear,
                 }).then(() => {
-                    argView.animating = false;
-                    animate.fx.poof(stage, stage.views[expr.get("id")]);
+                    argView.opacity = 0;
+
+                    // Replace arg hole with preview
+                    if (lambdaArgView) {
+                        lambdaView.strokeWhenChild = false;
+                        lambdaArgView.animating = true;
+
+                        // animate.after(500).then(() => {
+                            // animate.tween(lambdaArgView.scale, { x: 0 }, {
+                            //     duration: 500,
+                            //     easing: animate.Easing.Cubic.InOut,
+                            // });
+                            for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
+                                if (exprId !== callee.get("body")) {
+                                    stage.views[childId].animating = true;
+                                    animate.tween(stage.views[childId].scale, { x: 0 }, {
+                                        duration: 500,
+                                        easing: animate.Easing.Cubic.InOut,
+                                    });
+                                }
+                            }
+                            delete lambdaArgView.preview;
+                        // });
+
+                        // lambdaArgView.preview = expr.get("argument");
+                        const targetName = state.getIn([ "nodes", callee.get("arg"), "name" ]);
+                        stage.semantics.searchNoncapturing(state.get("nodes"), targetName, lambdaBody)
+                            .forEach((id) => {
+                                if (stage.views[id]) {
+                                    stage.views[id].preview = expr.get("argument");
+                                }
+                            });
+                    }
+
+                    const applyView = stage.views[expr.get("id")];
+                    animate.tween(applyView, { subexpScale: 1.0 }, {
+                        duration: 500,
+                        easing: animate.Easing.Cubic.InOut,
+                    });
+
+                    animate.tween(applyView.padding, { inner: 0, left: 0, right: 0 }, {
+                        duration: 500,
+                        easing: animate.Easing.Cubic.InOut,
+                    });
+
+                    for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
+                        if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
+                            stage.views[childId].animating = true;
+                            animate.tween(stage.views[childId].scale, { x: 0 }, {
+                                duration: 500,
+                                easing: animate.Easing.Cubic.InOut,
+                            });
+                        }
+                    }
+                    animate.tween(argView, { x: 0 }, {
+                        duration: 500,
+                        easing: animate.Easing.Cubic.InOut,
+                    });
+
+
+                    return animate.after(900).then(() => {
+                        return animate.fx.shatter(stage, applyView, {
+                            introDuration: 400,
+                            outroDuration: 400,
+                        });
+                    }).then(() => {
+                        argView.animating = false;
+                        argView.opacity = 1;
+                        lambdaArgView.preview = null;
+                    });
                 });
             },
             stepSound: "heatup",
@@ -404,24 +476,27 @@ export default transform({
                 return !lambdaParent.has("parent");
             },
             projection: {
-                type: "dynamic",
-                resetFields: ["text", "color"],
-                field: (state, exprId) => {
-                    const isFunctionHole = !!state.getIn([ "nodes", exprId, "functionHole" ]);
-                    if (isFunctionHole) return "functionHole";
-                    return "default";
-                },
-                default: {
-                    type: "text",
-                    text: "({name})",
-                },
-                cases: {
-                    functionHole: {
-                        type: "default",
-                        shape: "()",
-                        radius: 0,
-                        fields: ["name"],
-                        color: "orangered",
+                type: "preview",
+                content: {
+                    type: "dynamic",
+                    resetFields: ["text", "color"],
+                    field: (state, exprId) => {
+                        const isFunctionHole = !!state.getIn([ "nodes", exprId, "functionHole" ]);
+                        if (isFunctionHole) return "functionHole";
+                        return "default";
+                    },
+                    default: {
+                        type: "text",
+                        text: "({name})",
+                    },
+                    cases: {
+                        functionHole: {
+                            type: "default",
+                            shape: "()",
+                            radius: 0,
+                            fields: ["name"],
+                            color: "orangered",
+                        },
                     },
                 },
             },
