@@ -198,6 +198,7 @@ export class Clock {
         this.running = false;
         this.lastTimestamp = null;
         this.scale = 1.0;
+        this.tick = this.tick.bind(this);
     }
 
     addUpdateListener(f) {
@@ -223,7 +224,7 @@ export class Clock {
 
         if (this.running) {
             this.lastTimestamp = t;
-            window.requestAnimationFrame(this.tick.bind(this));
+            window.requestAnimationFrame(this.tick);
         }
         else {
             this.lastTimestamp = null;
