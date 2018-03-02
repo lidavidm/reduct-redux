@@ -162,6 +162,10 @@ export class InterpolateTween extends Tween {
             target[property] = start;
         }
     }
+
+    cancel() {
+        this.status = "completed";
+    }
 }
 
 export class InfiniteTween extends Tween {

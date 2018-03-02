@@ -203,7 +203,7 @@ export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
 
-        this.sidebarWidth = 400;
+        this.sidebarWidth = 250;
 
         this.stateGraph = new Network();
         this.alreadyWon = false;
@@ -379,10 +379,10 @@ export default class Stage extends BaseStage {
         const y = e.clientY - rect.top;
 
         if (x >= this.sidebarWidth) {
-            return { x: x - this.sidebarWidth, y };
+            return { x: x - this.sidebarWidth, y, sidebar: false };
         }
 
-        return { x, y };
+        return { x, y, sidebar: true };
     }
 
     drawContents() {
@@ -907,6 +907,11 @@ export default class Stage extends BaseStage {
     }
 
     _mousedown(e) {
+        if (this.getMousePos(e).sidebar) {
+            this.sidebar.toggle();
+            return;
+        }
+
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
         }
@@ -915,6 +920,11 @@ export default class Stage extends BaseStage {
     }
 
     _touchstart(e) {
+        if (this.getMousePos(e).sidebar) {
+            this.sidebar.toggle();
+            return;
+        }
+
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
         }

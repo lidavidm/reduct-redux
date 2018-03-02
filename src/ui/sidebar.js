@@ -9,6 +9,10 @@ export default class Sidebar {
         this.stage = stage;
 
         this.viewMap = new Map();
+        this.fullWidth = 250;
+
+        this._tween = null;
+        this.status = "closed";
 
         const gradient = stage.ctx.createLinearGradient(0, 0, 15, 0);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
@@ -33,10 +37,32 @@ export default class Sidebar {
         }
 
         for (const name of names) {
-            this.viewMap.set(name, this.project(state, name, globals.get(name)));
+            const viewId = this.project(state, name, globals.get(name));
+            this.viewMap.set(name, viewId);
         }
 
         return names.size;
+    }
+
+    toggle() {
+        if (this._tween) {
+            this._tween.cancel();
+        }
+
+        if (this.status === "closed") {
+            this.status = "open";
+            this._tween = animate.tween(this.stage, { sidebarWidth: this.fullWidth }, {
+                duration: 500,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
+        else {
+            this.status = "closed";
+            this._tween = animate.tween(this.stage, { sidebarWidth: 250 }, {
+                duration: 500,
+                easing: animate.Easing.Cubic.Out,
+            });
+        }
     }
 
     drawImpl(state) {
@@ -60,7 +86,9 @@ export default class Sidebar {
             }
             const viewId = this.viewMap.get(key);
             this.stage.drawProjection(state, viewId, offset);
-            offset.y += gfx.absoluteSize(this.stage.views[viewId]).h + 10;
+            const size = gfx.absoluteSize(this.stage.views[viewId]);
+            offset.y += size.h + 10;
+            this.fullWidth = Math.max(this.fullWidth, size.w + 20);
         }
 
         ctx.translate(sidebarWidth - 15, 0);
