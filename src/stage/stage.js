@@ -7,6 +7,7 @@ import * as progression from "../game/progression";
 
 import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
+import Sidebar from "../ui/sidebar";
 import SyntaxJournal from "../ui/syntaxjournal";
 
 import Loader from "../loader";
@@ -201,6 +202,9 @@ class TouchRecord extends BaseTouchRecord {
 export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
+
+        this.sidebarWidth = 400;
+
         this.stateGraph = new Network();
         this.alreadyWon = false;
 
@@ -209,6 +213,7 @@ export default class Stage extends BaseStage {
 
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
+        this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
 
         this._currentlyReducing = {};
@@ -219,6 +224,10 @@ export default class Stage extends BaseStage {
 
     get touchRecordClass() {
         return TouchRecord;
+    }
+
+    get width() {
+        return this._width - this.sidebarWidth;
     }
 
     getNodeAtPos(pos, selectedId=null) {
@@ -358,8 +367,26 @@ export default class Stage extends BaseStage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
+    getMousePos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (x >= this.sidebarWidth) {
+            return { x: x - this.sidebarWidth, y };
+        }
+
+        return { x, y };
+    }
+
     drawContents() {
         const state = this.getState();
+
+        this.sidebar.drawImpl(state);
+
+        this.ctx.save();
+        this.ctx.translate(this.sidebarWidth, 0);
+
         this.toolbox.drawBase(state);
         this.goal.drawImpl(state);
 
@@ -373,6 +400,8 @@ export default class Stage extends BaseStage {
         for (const id of this._newSyntax) {
             this.drawInternalProjection(state, id);
         }
+
+        this.ctx.restore();
     }
 
     /**

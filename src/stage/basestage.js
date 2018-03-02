@@ -17,8 +17,8 @@ export default class BaseStage {
 
         this.effects = {};
 
-        this.width = width;
-        this.height = height;
+        this._width = width;
+        this._height = height;
 
         this.canvas = canvas;
         this.canvas.setAttribute("width", this.width);
@@ -51,19 +51,27 @@ export default class BaseStage {
 
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
-        this.height = window.innerHeight - 40;
+        this._height = window.innerHeight - 40;
         if (window.matchMedia("only screen and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
-            this.width = window.innerWidth - 150;
+            this._width = window.innerWidth - 150;
         }
         else if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
-            this.width = 0.9 * window.innerWidth;
+            this._width = 0.9 * window.innerWidth;
         }
         else {
-            this.width = Math.max(0.8 * window.innerWidth, 800);
-            this.height = Math.max(this.height, 600);
+            this._width = Math.max(window.innerWidth, 1200);
+            this._height = Math.max(this._height, 600);
         }
-        this.canvas.setAttribute("width", this.width);
-        this.canvas.setAttribute("height", this.height);
+        this.canvas.setAttribute("width", this._width);
+        this.canvas.setAttribute("height", this._height);
+    }
+
+    get width() {
+        return this._width;
+    }
+
+    get height() {
+        return this._height;
     }
 
     resize() {
@@ -124,12 +132,18 @@ export default class BaseStage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
-    drawProjection(state, nodeId) {
+    drawProjection(state, nodeId, offset=null) {
         const projection = this.views[nodeId];
         // TODO: autoresizing
         projection.parent = null;
         projection.prepare(nodeId, nodeId, state, this);
-        projection.draw(nodeId, nodeId, state, this, { x: 0, y: 0, sx: 1, sy: 1 });
+        projection.draw(nodeId, nodeId, state, this, offset || {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+            opacity: 1,
+        });
     }
 
     drawInternalProjection(state, nodeId, exprId=null, offset=null) {

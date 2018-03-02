@@ -223,7 +223,8 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
 
             const node = state.getIn([ "nodes", exprId ]);
 
-            if (this.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
+            if ((this.shadow !== false) &&
+                (this.shadow || (node && (!node.get("parent") || !node.get("locked"))))) {
                 ctx.fillStyle = this.shadowColor;
                 draw(ctx, this,
                      x, y + this.shadowOffset * offset.sy,
