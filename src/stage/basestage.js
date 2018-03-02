@@ -163,15 +163,13 @@ export default class BaseStage {
     }
 
     drawImpl() {
-        this.ctx.fillStyle = this.color;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this._redrawPending = false;
-
         this.drawContents();
 
         for (const fx of Object.values(this.effects)) {
             fx.draw();
         }
+
+        this._redrawPending = false;
     }
 
     draw() {
