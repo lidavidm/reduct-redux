@@ -165,10 +165,6 @@ export default class BaseStage {
     drawImpl() {
         this.drawContents();
 
-        for (const fx of Object.values(this.effects)) {
-            fx.draw();
-        }
-
         this._redrawPending = false;
     }
 

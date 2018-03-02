@@ -409,6 +409,10 @@ export default class Stage extends BaseStage {
             this.drawInternalProjection(state, id);
         }
 
+        for (const fx of Object.values(this.effects)) {
+            fx.draw();
+        }
+
         this.ctx.restore();
     }
 
