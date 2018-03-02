@@ -58,6 +58,13 @@ export default class Sidebar {
             offset.y += gfx.absoluteSize(this.stage.views[viewId]).h + 10;
         }
 
+        const gradient = ctx.createLinearGradient(sidebarWidth - 15, 0, sidebarWidth - 3, 0);
+        gradient.addColorStop(0, "rgba(0,0,0,0)");
+        gradient.addColorStop(1, "#594764");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(sidebarWidth - 15, 0, 15, this.stage.height);
+
         ctx.restore();
     }
 
@@ -108,6 +115,13 @@ export default class Sidebar {
                 ),
                 {
                     subexpScale: 1.0,
+                    padding: {
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        inner: 0,
+                    },
                 },
                 gfx.baseProjection
             ))

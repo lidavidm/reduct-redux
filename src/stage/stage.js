@@ -392,6 +392,8 @@ export default class Stage extends BaseStage {
 
         this.ctx.save();
         this.ctx.translate(this.sidebarWidth, 0);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect(0, 0, this.width, this.height);
 
         this.toolbox.drawBase(state);
         this.goal.drawImpl(state);
