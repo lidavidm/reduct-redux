@@ -11,6 +11,10 @@ export default class Sidebar {
         this.viewMap = new Map();
     }
 
+    startLevel(state) {
+        return state.get("globals").size;
+    }
+
     drawImpl(state) {
         const { ctx, sidebarWidth } = this.stage;
         ctx.save();
