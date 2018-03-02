@@ -9,6 +9,11 @@ export default class Sidebar {
         this.stage = stage;
 
         this.viewMap = new Map();
+
+        const gradient = stage.ctx.createLinearGradient(0, 0, 15, 0);
+        gradient.addColorStop(0, "rgba(0,0,0,0)");
+        gradient.addColorStop(1, "#594764");
+        this.gradient = gradient;
     }
 
     startLevel(state) {
@@ -58,12 +63,9 @@ export default class Sidebar {
             offset.y += gfx.absoluteSize(this.stage.views[viewId]).h + 10;
         }
 
-        const gradient = ctx.createLinearGradient(sidebarWidth - 15, 0, sidebarWidth - 3, 0);
-        gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(1, "#594764");
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(sidebarWidth - 15, 0, 15, this.stage.height);
+        ctx.translate(sidebarWidth - 15, 0);
+        ctx.fillStyle = this.gradient;
+        ctx.fillRect(0, 0, 15, this.stage.height);
 
         ctx.restore();
     }
