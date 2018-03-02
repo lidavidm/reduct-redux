@@ -12,7 +12,26 @@ export default class Sidebar {
     }
 
     startLevel(state) {
-        return state.get("globals").size;
+        // Only show globals if they have a reference on the board
+        const nodes = state.get("nodes");
+        const globals = state.get("globals");
+
+        const names = new Set();
+
+        for (const id of state.get("toolbox").concat(state.get("board"))) {
+            this.stage.semantics.search(nodes, id, (_, nid) => {
+                const expr = nodes.get(nid);
+                if (expr.get("type") === "reference" && globals.has(expr.get("name"))) {
+                    names.add(expr.get("name"));
+                }
+            });
+        }
+
+        for (const name of names) {
+            this.viewMap.set(name, this.project(state, name, globals.get(name)));
+        }
+
+        return names.size;
     }
 
     drawImpl(state) {
@@ -30,9 +49,9 @@ export default class Sidebar {
             opacity: 1,
         };
 
-        for (const [ key, id ] of state.get("globals")) {
+        for (const [ key ] of state.get("globals")) {
             if (!this.viewMap.has(key)) {
-                this.viewMap.set(key, this.project(state, key, id));
+                continue;
             }
             const viewId = this.viewMap.get(key);
             this.stage.drawProjection(state, viewId, offset);
