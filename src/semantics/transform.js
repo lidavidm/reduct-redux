@@ -447,7 +447,11 @@ export default function transform(definition) {
                     .medium(stage, innerState, topExpr, callbacks)
                     .then((topId) => {
                         const newState = stage.getState();
-                        return [ newState, newState.getIn([ "nodes", topId ]) ];
+                        const node = newState.getIn([ "nodes", topId ]);
+                        if (module.kind(node) !== "expression") {
+                            return Promise.reject(topId);
+                        }
+                        return [ newState, node ];
                     });
             }
 
