@@ -13,6 +13,17 @@
     },
     "levels": [
         {
+            "board": [
+                "function repeatAdd1(x,n) { return x == 0 ? n : addOne(repeatAdd1(x - 1, n)); }",
+                "repeatAdd1(5, 5)",
+                "repeatAdd1(9, 9)",
+                "repeatAdd1(7, 7)"
+            ],
+            "goal": ["5", "6", "3"],
+            "toolbox": "",
+            "defines": "function repeatAdd1(x, n) { return x == 0 ? n : addOne(repeatAdd1(x - 1, n)); }"
+        },
+        {
             "board": ["function broken(x) { return broken(x); }", "broken(2)"],
             "goal": [],
             "toolbox": [],
