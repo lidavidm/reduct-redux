@@ -913,14 +913,28 @@ export default class Stage extends BaseStage {
     _mousedown(e) {
         if (this.getMousePos(e).sidebar) {
             this.sidebar.toggle();
-            return;
+            return null;
         }
 
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
         }
 
-        super._mousedown(e);
+        return super._mousedown(e);
+    }
+
+    _mousemove(e) {
+        if (this.getMousePos(e).sidebar) {
+            return;
+        }
+        super._mousemove(e);
+    }
+
+    _mouseup(e) {
+        if (this.getMousePos(e).sidebar) {
+            return;
+        }
+        super._mouseup(e);
     }
 
     _touchstart(e) {
@@ -931,6 +945,22 @@ export default class Stage extends BaseStage {
 
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
+        }
+
+        super._touchstart(e);
+    }
+
+    _touchmove(e) {
+        if (this.getMousePos(e).sidebar) {
+            return;
+        }
+
+        super._touchmove(e);
+    }
+
+    _touchend(e) {
+        if (this.getMousePos(e).sidebar) {
+            return;
         }
 
         super._touchstart(e);
