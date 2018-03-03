@@ -16,6 +16,11 @@
             "toolbox": ["star"]
         },
         {
+            "board": ["function star() { return A; }", "function star() { return A; }", "function star() { return A; }"], 
+            "goal": "A",
+            "toolbox": ["star"]
+        },
+        {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
             "textgoal": "Make me two stars and a rectangle!",
