@@ -4,7 +4,7 @@ import Loader from "../loader";
 
 const TOOLBOX_ROW_HEIGHT = 90;
 const TOOLBOX_LEFT_MARGIN = 40;
-const TOOLBOX_RIGHT_MARGIN = 40;
+const TOOLBOX_RIGHT_MARGIN = 90;
 const TOOLBOX_INNER_MARGIN = 20;
 
 export default class Toolbox {
