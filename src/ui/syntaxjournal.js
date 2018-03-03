@@ -159,7 +159,19 @@ export default class SyntaxJournal {
     }
 
     close() {
-        this.state = "closed";
+        const overlay = this.stage.getView(this.overlay);
+        const bg = this.stage.getView(this.background);
+
+        animate.tween(overlay, { opacity: 0 }, {
+            duration: 500,
+            easing: animate.Easing.Cubic.Out,
+        });
+        animate.tween(bg, { opacity: 0 }, {
+            duration: 500,
+            easing: animate.Easing.Cubic.Out,
+        }).then(() => {
+            this.state = "closed";
+        });
     }
 
     toggle() {
