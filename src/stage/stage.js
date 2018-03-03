@@ -720,6 +720,7 @@ export default class Stage extends BaseStage {
 
         if (this.mode == "big") {
             this.mode = "small";
+            document.querySelector("#ffwd").style.background = "#add8e6";
         }
     }
 

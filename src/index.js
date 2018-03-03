@@ -124,6 +124,7 @@ function initialize() {
         }
     });
     document.querySelector("#ffwd").addEventListener("click", (b) => {
+        document.querySelector("#ffwd").style.background = "#6d8891";
         stg.setFfwd();
     });
     // document.querySelector("#toggle-graph").addEventListener("click", () => {
