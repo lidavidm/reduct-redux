@@ -15,6 +15,11 @@
             "toolbox": ["star"]
         },
         {
+            "board": ["function star() { return A; }", "function star() { return A; }", "function star() { return A; }"], 
+            "goal": "A",
+            "toolbox": ["star"]
+        },
+        {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
             "toolbox": ["__unlimited;star", "__unlimited;rect"]
