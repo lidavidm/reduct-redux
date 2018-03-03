@@ -36,6 +36,8 @@ export default class SyntaxJournal {
             normal: Loader.images["btn-next-default"],
             hover: Loader.images["btn-next-hover"],
             active: Loader.images["btn-next-down"],
+        }, {
+            click: () => this.currentSyntax++,
         }), "center", {
             marginX: 270,
         }));
@@ -44,6 +46,8 @@ export default class SyntaxJournal {
             normal: Loader.images["btn-back-default"],
             hover: Loader.images["btn-back-hover"],
             active: Loader.images["btn-back-down"],
+        }, {
+            click: () => this.currentSyntax--,
         }), "center", {
             marginX: -250,
         }));
@@ -55,9 +59,21 @@ export default class SyntaxJournal {
     }
 
     getNodeAtPos(state, pos) {
-        const journal = this.stage.internalViews[this.button];
-        if (journal.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
-            return [ this.button, this.button ];
+        if (this.state === "closed") {
+            const journal = this.stage.internalViews[this.button];
+            if (journal.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+                return [ this.button, this.button ];
+            }
+        }
+        else {
+            const prev = this.stage.getView(this.prev);
+            const next = this.stage.getView(this.next);
+            if (this.showBack && prev.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+                return [ this.prev, this.prev ];
+            }
+            else if (this.showForward && next.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+                return [ this.next, this.next ];
+            }
         }
         return [ null, null ];
     }

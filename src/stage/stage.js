@@ -232,6 +232,11 @@ export default class Stage extends BaseStage {
 
     getNodeAtPos(pos, selectedId=null) {
         if (this.syntaxJournal.isOpen) {
+            const [ result, root ] = this.syntaxJournal.getNodeAtPos(state, pos);
+            if (result) {
+                return [ root, result, true ];
+            }
+
             return [ null, null, false ];
         }
 
@@ -918,13 +923,18 @@ export default class Stage extends BaseStage {
     }
 
     _mousedown(e) {
-        if (this.getMousePos(e).sidebar) {
+        const pos = this.getMousePos(e);
+
+        if (pos.sidebar) {
             this.sidebar.toggle();
             return null;
         }
 
         if (this.syntaxJournal.isOpen) {
-            this.syntaxJournal.close();
+            const [ topNode ] = this.syntaxJournal.getNodeAtPos(this.getState(), pos);
+            if (topNode === null) {
+                this.syntaxJournal.close();
+            }
         }
 
         return super._mousedown(e);
