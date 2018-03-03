@@ -125,12 +125,13 @@ export default class SyntaxJournal {
             this.project();
             const syntax = progression.getLearnedSyntaxes()[this.currentSyntax];
 
-            const view = this.stage.getView(this.syntaxes[syntax]);
-            view.pos.x = this.stage.width / 2;
-            view.pos.y = y;
-            y += view.size.h + 10;
-
-            this.stage.drawProjection(state, this.syntaxes[syntax], offset);
+            if (syntax) {
+                const view = this.stage.getView(this.syntaxes[syntax]);
+                view.pos.x = this.stage.width / 2;
+                view.pos.y = y;
+                y += view.size.h + 10;
+                this.stage.drawProjection(state, this.syntaxes[syntax], offset);
+            }
 
             ctx.restore();
         }
@@ -202,6 +203,14 @@ export default class SyntaxJournal {
                         children.push(this.stage.allocate(gfx.text(item, {
                             font: gfx.text.script,
                         })));
+                    }
+                    else if (item.image) {
+                        const img = Loader.images[item.image];
+                        const itemSprite = gfx.sprite({
+                            image: img,
+                            size: { w: img.naturalWidth, h: img.naturalHeight },
+                        });
+                        children.push(this.stage.allocate(itemSprite));
                     }
                 }
 

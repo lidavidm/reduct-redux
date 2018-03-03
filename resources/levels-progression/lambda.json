@@ -3,6 +3,9 @@
     "contents": [
         "This is a lambda function.",
         "Drag something into the argument,",
-        "and it'll emerge on the other side!"
+        "and it'll emerge on the other side!",
+        "We can also have more illustrations.",
+        { "image": "journal-syntax-anonfunc" },
+        "This would be more explanatory text."
     ]
 }

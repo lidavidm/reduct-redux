@@ -1,8 +1,7 @@
 {
     "header": "journal-syntax-concat",
     "contents": [
-        "This is a lambda function.",
-        "Drag something into the argument,",
-        "and it'll emerge on the other side!"
+        "Add two numbers together.",
+        "Make the computer do the work!"
     ]
 }
