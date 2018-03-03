@@ -112,6 +112,20 @@ function initialize() {
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
+    document.querySelector("#pause").addEventListener("click", (b) => {
+        stg.togglePause();
+        const button = document.querySelector("#pause");
+        if (button.innerText == "Pause") {
+            button.innerText = "Resume";
+            document.querySelector("#ffwd").style.display='block';
+        } else {
+            button.innerText = "Pause";
+            document.querySelector("#ffwd").style.display='none';
+        }
+    });
+    document.querySelector("#ffwd").addEventListener("click", (b) => {
+        stg.setFfwd();
+    });
     // document.querySelector("#toggle-graph").addEventListener("click", () => {
     //     Logging.toggleStateGraph();
     //     window.updateStateGraph();

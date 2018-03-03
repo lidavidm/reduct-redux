@@ -211,10 +211,11 @@ export default class Stage extends BaseStage {
         this.goal = new Goal(this);
         this.syntaxJournal = new SyntaxJournal(this);
 
-        this._currentlyReducing = {};
+        this._currentlyReducing = {}; 
         this._newSyntax = [];
 
         this.newDefinedNames = []; //Field to keep track of which function names are newly defined so that we big-step it during reduction.
+        this.mode = "hybrid"; //Field to keep track of the mode. 
     }
 
     get touchRecordClass() {
@@ -658,8 +659,8 @@ export default class Stage extends BaseStage {
             }
         };
 
-        const mode = document.querySelector("#evaluation-mode").value;
-        this.semantics.interpreter.reduce(this, state, node, mode, {
+        // const mode = document.querySelector("#evaluation-mode").value;
+        this.semantics.interpreter.reduce(this, state, node, this.mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
@@ -716,6 +717,10 @@ export default class Stage extends BaseStage {
                 animate.fx.error(this, this.views[errorNodeId]);
             },
         }).finally(finishReducing);
+
+        if (this.mode == "big") {
+            this.mode = "small";
+        }
     }
 
     /**
@@ -867,6 +872,18 @@ export default class Stage extends BaseStage {
             this._newSyntax.push(id);
         };
         step();
+    }
+
+    togglePause() {
+        if (this.mode == "hybrid") {
+            this.mode = "small"
+        } else {
+            this.mode = "hybrid"
+        }
+    }
+
+    setFfwd() {
+        this.mode = "big";
     }
 
     _mousedown(e) {
