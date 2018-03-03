@@ -58,17 +58,68 @@
              height:400px;
              background: #111;
          }
+
+         #overlay-nav {
+             position: absolute;
+             top: 2.75em;
+             right: 0.25em;
+             text-align: right;
+         }
+
+         #overlay-nav button {
+             background: #7a76ac;
+             color: #FFF;
+             width: 4em;
+             height: 4em;
+             border: 0;
+             border-radius: 4em;
+             margin: 0.1em;
+             position: relative;
+         }
+
+         #overlay-nav button:hover {
+             background: #b780d9;
+         }
+
+         #overlay-nav button:active {
+             background: #4c2d75;
+         }
+
+         #overlay-nav button i {
+             font-size: 3em;
+         }
+
+         #overlay-nav button span {
+             font-size: 1.25rem;
+             top: 1rem;
+             text-align: center;
+             left: 0;
+             right: 0;
+             position: absolute;
+             opacity: 0;
+             transition: all ease-in-out 0.2s;
+         }
+
+         #overlay-nav button:hover span {
+             opacity: 1;
+             background: rgba(0,0,0,0.8);
+         }
         </style>
     </head>
     <body>
+        <nav id="overlay-nav">
+            <div>
+                <button id="prev"><i class="material-icons">arrow_back</i><span>Prev</span></button>
+                <button id="reset"><i class="material-icons">refresh</i><span>Reset</span></button>
+                <button id="next"><i class="material-icons">arrow_forward</i><span>Next</span></button>
+            </div>
+
+            <div>
+                <button id="undo"><i class="material-icons">undo</i><span>Undo!</span></button>
+                <button id="redo"><i class="material-icons">redo</i><span>Redo!</span></button>
+            </div>
+        </nav>
         <div id="nav">
-            <button id="prev">Prev</button>
-            <button id="reset">Reset</button>
-            <button id="next">Next</button>
-
-            <button id="undo">Undo!</button>
-            <button id="redo">Redo!</button>
-
             <select id="chapter"></select>
             <div id="current-level">
                 <span>Current Level: </span>
