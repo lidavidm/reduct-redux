@@ -303,7 +303,11 @@ export default class Stage extends BaseStage {
         }
 
         if (!result && !root) {
-            [ result, root ] = this.toolbox.getNodeAtPos(this.getState(), pos);
+            [ result, root ] = this.toolbox.getNodeAtPos(state, pos);
+            if (result) {
+                return [ root, result, true ];
+            }
+            [ result, root ] = this.syntaxJournal.getNodeAtPos(state, pos);
             if (result) {
                 return [ root, result, true ];
             }
@@ -396,6 +400,7 @@ export default class Stage extends BaseStage {
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         this.toolbox.drawBase(state);
+        this.syntaxJournal.drawBase(state);
         this.goal.drawImpl(state);
 
         for (const nodeId of state.get("board")) {
@@ -859,7 +864,7 @@ export default class Stage extends BaseStage {
      * Add new items to the syntax journal.
      */
     learnSyntax(syntaxes) {
-        const journalButton = this.internalViews[this.toolbox.syntaxJournal];
+        const journalButton = this.internalViews[this.syntaxJournal.button];
 
         const step = () => {
             const syntax = syntaxes.shift();

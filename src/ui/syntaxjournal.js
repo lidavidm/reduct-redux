@@ -7,6 +7,18 @@ export default class SyntaxJournal {
     constructor(stage) {
         this.stage = stage;
 
+        const syntaxJournal = gfx.layout.sticky(gfx.ui.imageButton({
+            normal: Loader.images["journal-default"],
+            hover: Loader.images["journal-hover"],
+            active: Loader.images["journal-mousedown"],
+        }, {
+            click: () => this.stage.syntaxJournal.toggle(),
+        }), "bottom", {
+            align: "right",
+        });
+        syntaxJournal.size = { w: 79, h: 78 };
+        this.button = stage.allocateInternal(syntaxJournal);
+
         this.overlay = stage.allocateInternal(gfx.layout.expand(gfx.rect({
             color: "#000",
             opacity: 0.7,
@@ -23,6 +35,24 @@ export default class SyntaxJournal {
         this.state = "closed";
 
         this.syntaxes = {};
+    }
+
+    getNodeAtPos(state, pos) {
+        const journal = this.stage.internalViews[this.button];
+        if (journal.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+            return [ this.button, this.button ];
+        }
+        return [ null, null ];
+    }
+
+    drawBase(state) {
+        this.stage.internalViews[this.button].prepare(null, null, state, this.stage);
+        this.stage.internalViews[this.button].draw(null, null, state, this.stage, {
+            x: 0,
+            y: 0,
+            sx: 1,
+            sy: 1,
+        });
     }
 
     drawImpl(state) {
