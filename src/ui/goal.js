@@ -7,8 +7,9 @@ export default class Goal {
         this.stage = stage;
 
         const chapter = progression.currentChapter();
-        const alienIndex = (progression.currentLevel() - chapter.startIdx)
-              % chapter.resources.aliens.length;
+        const alienIndex = Math.floor(((progression.currentLevel() - chapter.startIdx) /
+                                       ((chapter.endIdx - chapter.startIdx) + 1)) *
+                                      chapter.resources.aliens.length);
         const image = Loader.images[chapter.resources.aliens[alienIndex]];
         const alien = stage.allocate(gfx.sprite({
             image,
