@@ -16,7 +16,7 @@
         {
             "board": ["x => x", "x => x", "x => x", "A"],
             "goal": "A",
-            "syntax": "journal-syntax-anonfunc",
+            "syntax": "lambda",
             "toolbox": ""
         },
         {

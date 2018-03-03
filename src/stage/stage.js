@@ -875,7 +875,9 @@ export default class Stage extends BaseStage {
 
             progression.learnSyntax(syntax);
 
-            const image = Loader.images[syntax];
+            const defn = progression.getSyntaxDefinition(syntax);
+
+            const image = Loader.images[defn.header];
             const sprite = gfxCore.sprite({
                 image,
                 size: { w: image.naturalWidth, h: image.naturalHeight },

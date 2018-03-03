@@ -85,6 +85,16 @@ export class LoaderClass {
         });
     }
 
+    loadSyntax(progression, name, path) {
+        this.startLoad();
+
+        return getJSON(`${BASE_PATH}/${path}`).then((json) => {
+            this.progressions[progression].syntax[name] = json;
+
+            this.finishLoad();
+        });
+    }
+
     loadChapter(progression, name, path) {
         this.startLoad();
 
@@ -141,6 +151,7 @@ export class LoaderClass {
             chapters: {},
             levels: [],
             linearChapters: [],
+            syntax: {},
         };
         const filenames = Object.keys(definition.digraph);
 
@@ -191,6 +202,12 @@ export class LoaderClass {
                                 animationScales = newScales;
                                 level.extraDefines = extraDefines;
                                 extraDefines = extraDefines.concat(level.defines);
+
+                                for (const syntax of level.syntax) {
+                                    if (progression.syntax[syntax]) continue;
+
+                                    progression.syntax[syntax] = this.loadSyntax(name, syntax, `${definition.dir}/${syntax}.json`);
+                                }
                             }
 
                             continue outerLoop;

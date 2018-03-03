@@ -69,7 +69,8 @@ export default class SyntaxJournal {
 
             for (const syntax of progression.getLearnedSyntaxes()) {
                 if (!this.syntaxes[syntax]) {
-                    const image = Loader.images[syntax];
+                    const defn = progression.getSyntaxDefinition(syntax);
+                    const image = Loader.images[defn.header];
                     const sprite = gfx.sprite({
                         image,
                         size: { w: image.naturalWidth, h: image.naturalHeight },

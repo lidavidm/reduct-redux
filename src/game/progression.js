@@ -128,6 +128,10 @@ export function getLearnedSyntaxes() {
     return learnedSyntaxes;
 }
 
+export function getSyntaxDefinition(name) {
+    return ACTIVE_PROGRESSION_DEFINITION.progression.syntax[name];
+}
+
 export function save() {
     window.localStorage["currentLevelIdx"] = currentLevelIdx;
     window.localStorage["learnedSyntaxes"] = JSON.stringify(learnedSyntaxes);
