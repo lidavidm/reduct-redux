@@ -1,3 +1,5 @@
+import VERSION from "../version";
+
 export const PROGRESSIONS = {
     "Elementary": {
         dir: "levels-progression/",
@@ -135,9 +137,14 @@ export function getSyntaxDefinition(name) {
 export function save() {
     window.localStorage["currentLevelIdx"] = currentLevelIdx;
     window.localStorage["learnedSyntaxes"] = JSON.stringify(learnedSyntaxes);
+    window.localStorage["version"] = VERSION;
 }
 
 export function restore() {
+    if (window.localStorage["version"] !== VERSION) {
+        return;
+    }
+
     if (window.localStorage["currentLevelIdx"]) {
         currentLevelIdx = window.parseInt(window.localStorage["currentLevelIdx"], 10);
     }
