@@ -198,6 +198,11 @@ export default class ChapterEndStage extends BaseStage {
     drawContents() {
         const state = this.getState();
 
+        this.ctx.save();
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect(0, 0, this.width, this.height);
+        this.ctx.restore();
+
         for (const starId of this.stars) {
             this.drawInternalProjection(state, starId);
         }
