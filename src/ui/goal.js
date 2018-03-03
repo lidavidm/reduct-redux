@@ -15,6 +15,7 @@ export default class Goal {
             image,
             size: { h: 80, w: 80 * (image.frame.w / image.frame.h) },
         }));
+        this.stage.views[alien].pos = { x: 5, y: 5 };
 
         this.alien = alien;
 
@@ -65,18 +66,30 @@ export default class Goal {
         alien.prepare(null, null, state, this.stage);
 
         const { ctx } = this.stage;
+        const shadowSize = 3;
+        const padding = 20;
         ctx.save();
         ctx.beginPath();
         ctx.fillStyle = "#000";
-        ctx.moveTo(0, 18 + alien.size.h);
-        ctx.quadraticCurveTo(18 + alien.size.w, 18 + alien.size.h, 15 + alien.size.w, 0);
+        ctx.moveTo(0, padding + shadowSize + alien.pos.y + alien.size.h);
+        ctx.quadraticCurveTo(
+            padding + alien.pos.x + alien.size.w,
+            padding + shadowSize + alien.pos.y + alien.size.h,
+            padding + alien.pos.x + alien.size.w,
+            0
+        );
         ctx.lineTo(0, 0);
         ctx.fill();
 
         ctx.beginPath();
         ctx.fillStyle = "#594764";
-        ctx.moveTo(0, 15 + alien.size.h);
-        ctx.quadraticCurveTo(15 + alien.size.w, 15 + alien.size.h, 15 + alien.size.w, 0);
+        ctx.moveTo(0, padding + alien.pos.y + alien.size.h);
+        ctx.quadraticCurveTo(
+            padding + alien.pos.x + alien.size.w,
+            padding + alien.pos.y + alien.size.h,
+            padding + alien.pos.x + alien.size.w,
+            0
+        );
         ctx.lineTo(0, 0);
         ctx.fill();
         ctx.restore();
