@@ -95,7 +95,7 @@
     ],
     "resources":{
         "planet":"planet-functiana",
-        "aliens":["alien-function-1", "alien-function-2", "alien-function-3"],
+        "aliens":["alien-boolean-1", "alien-conditional-1", "alien-boolean-2", "alien-conditional-2", "alien-boolean-3", "alien-conditional-3", "alien-boolean-4", "alien-conditional-4", "alien-boolean-5"],
         "curve":[
             {"x":0.0948925373586549, "y":-0.5999436303971474},
             {"x":0.0948925373586549, "y":-0.5999436303971474},

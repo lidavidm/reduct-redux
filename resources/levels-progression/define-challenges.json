@@ -34,7 +34,7 @@
     ],
     "resources":{
         "planet":"planet-functiana",
-        "aliens": ["alien-function-1", "alien-function-2", "alien-function-3"],
+        "aliens":["alien-bag-1", "alien-function-1", "alien-bag-2", "alien-function-2", "alien-bag-3", "alien-function-3"],
         "curve": [
             {"x":0.0948925373586549, "y":-0.5999436303971474},
             {"x":0.0948925373586549, "y":-0.5999436303971474},
