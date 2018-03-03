@@ -422,6 +422,7 @@ export function text(text, options) {
 
 // Font family definitions
 text.sans = "'Fira Sans', Arial, sans-serif";
+text.script = "'Nanum Pen Script', 'Comic Sans', cursive";
 
 /**
  * Create a projection that renders based on an expression field or function.

@@ -24,7 +24,7 @@ Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
 Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "resources/graphics/menu-assets.png");
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
-Loader.waitForFonts([ "Fira Mono", "Fira Sans" ]);
+Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
 Promise.all([ Loader.finished, Logging.startSession() ]).then(initialize);
 

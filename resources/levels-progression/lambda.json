@@ -2,6 +2,7 @@
     "header": "journal-syntax-anonfunc",
     "contents": [
         "This is a lambda function.",
-        "Drag something over the argument, and it'll appear on the other side!"
+        "Drag something into the argument,",
+        "and it'll emerge on the other side!"
     ]
 }

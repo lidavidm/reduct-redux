@@ -70,13 +70,40 @@ export default class SyntaxJournal {
             for (const syntax of progression.getLearnedSyntaxes()) {
                 if (!this.syntaxes[syntax]) {
                     const defn = progression.getSyntaxDefinition(syntax);
+
+                    const children = [];
+
                     const image = Loader.images[defn.header];
                     const sprite = gfx.sprite({
                         image,
                         size: { w: image.naturalWidth, h: image.naturalHeight },
                     });
-                    sprite.anchor = { x: 0.5, y: 0 };
-                    this.syntaxes[syntax] = this.stage.allocateInternal(sprite);
+                    children.push(this.stage.allocate(sprite));
+
+                    for (const item of defn.contents) {
+                        if (typeof item === "string") {
+                            children.push(this.stage.allocate(gfx.text(item, {
+                                font: gfx.text.script,
+                            })));
+                        }
+                    }
+
+                    const container = gfx.layout.vbox(
+                        gfx.constant(...children),
+                        {
+                            subexpScale: 1,
+                            padding: {
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                inner: 10,
+                            },
+                        },
+                        gfx.baseProjection
+                    );
+                    container.anchor = { x: 0.5, y: 0 };
+                    this.syntaxes[syntax] = this.stage.allocate(container);
                 }
 
                 const view = this.stage.getView(this.syntaxes[syntax]);
@@ -84,7 +111,7 @@ export default class SyntaxJournal {
                 view.pos.y = y;
                 y += view.size.h + 10;
 
-                this.stage.drawInternalProjection(state, this.syntaxes[syntax], null, {
+                this.stage.drawProjection(state, this.syntaxes[syntax], {
                     x: 0,
                     y: 0,
                     sx: 1,

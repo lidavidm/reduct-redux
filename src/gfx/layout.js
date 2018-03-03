@@ -108,7 +108,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             y: y,
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
-            opacity: this.opacity,
+            opacity: this.opacity * offset.opacity,
         });
 
         for (const [ childId, subexprId ] of this.children(exprId, state)) {
@@ -175,7 +175,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             y: y,
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
-            opacity: this.opacity,
+            opacity: this.opacity * offset.opacity,
         });
         for (const [ childId, subexprId ] of this.children(exprId, state)) {
             stage.views[childId].draw(childId, subexprId, state, stage, subOffset);
