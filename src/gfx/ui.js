@@ -50,6 +50,11 @@ export function imageButton(images, handlers) {
         active: gfx.sprite({ image: images.active }),
     };
 
+    projection.size = {
+        w: images.normal.naturalWidth,
+        h: images.normal.naturalHeight,
+    };
+
     let state = "normal";
 
     projection.onclick = function() {

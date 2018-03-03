@@ -25,6 +25,8 @@ export function sticky(projection, direction, options) {
     const origPrepare = projection.prepare;
     projection.sticky = Object.assign({
         margin: 0,
+        marginX: 0,
+        marginY: 0,
         align: "left",
     }, options || {});
     projection.prepare = function(id, exprId, state, stage) {
@@ -41,8 +43,8 @@ export function sticky(projection, direction, options) {
             this.pos.x = 0;
         }
         else if (direction === "center") {
-            this.pos.x = (stage.width - this.size.w) / 2;
-            this.pos.y = (stage.height - this.size.h) / 2;
+            this.pos.x = ((stage.width - this.size.w) / 2) + this.sticky.marginX;
+            this.pos.y = ((stage.height - this.size.h) / 2) + this.sticky.marginY;
         }
 
         if (direction === "top" || direction === "bottom") {

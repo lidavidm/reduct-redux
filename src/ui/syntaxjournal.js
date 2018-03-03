@@ -32,9 +32,26 @@ export default class SyntaxJournal {
             size: { w: 558, h: 534 },
         }), "center"));
 
+        this.next = stage.allocateInternal(gfx.layout.sticky(gfx.ui.imageButton({
+            normal: Loader.images["btn-next-default"],
+            hover: Loader.images["btn-next-hover"],
+            active: Loader.images["btn-next-down"],
+        }), "center", {
+            marginX: 270,
+        }));
+
+        this.prev = stage.allocateInternal(gfx.layout.sticky(gfx.ui.imageButton({
+            normal: Loader.images["btn-back-default"],
+            hover: Loader.images["btn-back-hover"],
+            active: Loader.images["btn-back-down"],
+        }), "center", {
+            marginX: -250,
+        }));
+
         this.state = "closed";
 
         this.syntaxes = {};
+        this.currentSyntax = 0;
     }
 
     getNodeAtPos(state, pos) {
@@ -55,70 +72,49 @@ export default class SyntaxJournal {
         });
     }
 
+    get showBack() {
+        return this.currentSyntax > 0;
+    }
+
+    get showForward() {
+        return this.currentSyntax < Object.keys(this.syntaxes).length - 1;
+    }
+
     drawImpl(state) {
         if (this.isOpen) {
+            const bg = this.stage.getView(this.background);
+            const offset = {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+                opacity: bg.opacity,
+            };
+
             this.stage.drawInternalProjection(state, this.overlay);
             this.stage.drawInternalProjection(state, this.background);
+            if (this.showBack) {
+                this.stage.drawInternalProjection(state, this.prev, null, offset);
+            }
+            if (this.showForward) {
+                this.stage.drawInternalProjection(state, this.next, null, offset);
+            }
 
-            const bg = this.stage.getView(this.background);
             let y = bg.pos.y + 40;
 
             const { ctx } = this.stage;
             ctx.save();
             ctx.globalCompositeOperation = "multiply";
 
-            for (const syntax of progression.getLearnedSyntaxes()) {
-                if (!this.syntaxes[syntax]) {
-                    const defn = progression.getSyntaxDefinition(syntax);
+            this.project();
+            const syntax = progression.getLearnedSyntaxes()[this.currentSyntax];
 
-                    const children = [];
+            const view = this.stage.getView(this.syntaxes[syntax]);
+            view.pos.x = this.stage.width / 2;
+            view.pos.y = y;
+            y += view.size.h + 10;
 
-                    const image = Loader.images[defn.header];
-                    const sprite = gfx.sprite({
-                        image,
-                        size: { w: image.naturalWidth, h: image.naturalHeight },
-                    });
-                    children.push(this.stage.allocate(sprite));
-
-                    for (const item of defn.contents) {
-                        if (typeof item === "string") {
-                            children.push(this.stage.allocate(gfx.text(item, {
-                                font: gfx.text.script,
-                            })));
-                        }
-                    }
-
-                    const container = gfx.layout.vbox(
-                        gfx.constant(...children),
-                        {
-                            subexpScale: 1,
-                            padding: {
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                inner: 10,
-                            },
-                        },
-                        gfx.baseProjection
-                    );
-                    container.anchor = { x: 0.5, y: 0 };
-                    this.syntaxes[syntax] = this.stage.allocate(container);
-                }
-
-                const view = this.stage.getView(this.syntaxes[syntax]);
-                view.pos.x = this.stage.width / 2;
-                view.pos.y = y;
-                y += view.size.h + 10;
-
-                this.stage.drawProjection(state, this.syntaxes[syntax], {
-                    x: 0,
-                    y: 0,
-                    sx: 1,
-                    sy: 1,
-                    opacity: bg.opacity,
-                });
-            }
+            this.stage.drawProjection(state, this.syntaxes[syntax], offset);
 
             ctx.restore();
         }
@@ -156,6 +152,48 @@ export default class SyntaxJournal {
         }
         else {
             this.open();
+        }
+    }
+
+    project() {
+        for (const syntax of progression.getLearnedSyntaxes()) {
+            if (!this.syntaxes[syntax]) {
+                const defn = progression.getSyntaxDefinition(syntax);
+
+                const children = [];
+
+                const image = Loader.images[defn.header];
+                const sprite = gfx.sprite({
+                    image,
+                    size: { w: image.naturalWidth, h: image.naturalHeight },
+                });
+                children.push(this.stage.allocate(sprite));
+
+                for (const item of defn.contents) {
+                    if (typeof item === "string") {
+                        children.push(this.stage.allocate(gfx.text(item, {
+                            font: gfx.text.script,
+                        })));
+                    }
+                }
+
+                const container = gfx.layout.vbox(
+                    gfx.constant(...children),
+                    {
+                        subexpScale: 1,
+                        padding: {
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            inner: 10,
+                        },
+                    },
+                    gfx.baseProjection
+                );
+                container.anchor = { x: 0.5, y: 0 };
+                this.syntaxes[syntax] = this.stage.allocate(container);
+            }
         }
     }
 }
