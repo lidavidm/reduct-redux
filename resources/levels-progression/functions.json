@@ -8,15 +8,16 @@
         "C": "'triangle'"
     },
     "levels": [
-       {
+        {
             "board": ["x => x", "A"],
             "goal": "A",
-            "textgoal": "Make a star!",
+            "textgoal" : "Make a star!",
             "toolbox": ""
         },
         {
             "board": ["x => x", "x => x", "x => x", "A"],
             "goal": "A",
+            "syntax": "lambda",
             "toolbox": ""
         },
         {
