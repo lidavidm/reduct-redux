@@ -52,18 +52,6 @@ export function argumentBar() {
             );
         }
 
-        ctx.scale(sx, sy);
-        ctx.textBaseline = "alphabetic";
-        ctx.font = `28px ${gfx.text.mono}`;
-        for (let i = 1; i < this.count; i++) {
-            const dx = sx * (60 * i);
-            ctx.fillText(
-                ",",
-                (offset.x + ((this.pos.x + (dx - 5)) * offset.sx)) / sx,
-                ((offset.y + (this.pos.y * offset.sy)) / sy) + 40
-            );
-        }
-
         ctx.restore();
     };
     return projection;

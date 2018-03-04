@@ -726,13 +726,12 @@ export default transform({
                                     strokeWhenChild: false,
                                     subexpScale: 1.0,
                                     children: [
-                                        { type: "text", text: "{name}(" },
+                                        { type: "text", text: "{name} " },
                                         {
                                             type: "generic",
                                             view: [ "custom", "argumentBar" ],
                                             options: {},
                                         },
-                                        { type: "text", text: ")" },
                                     ],
                                 },
                             ],
