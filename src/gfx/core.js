@@ -365,11 +365,11 @@ export const hexaRect = baseShape("hexaRect", {
 // TODO: make this part of the stage instead?
 const TEXT_SIZE_CACHE = {};
 
-export function text(text, options) {
+export function text(txt, options) {
     const projection = baseProjection(Object.assign({
-        text,
+        text: txt,
         fontSize: 28,
-        font: "'Fira Mono', Consolas, Monaco, monospace",
+        font: text.mono,
         color: "#000",
         type: "text",
     }, options));
@@ -424,6 +424,7 @@ export function text(text, options) {
 }
 
 // Font family definitions
+text.mono = "'Fira Mono', Consolas, Monaco, monospace";
 text.sans = "'Fira Sans', Arial, sans-serif";
 text.script = "'Nanum Pen Script', 'Comic Sans', cursive";
 

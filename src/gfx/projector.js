@@ -253,6 +253,17 @@ function previewProjector(definition) {
     };
 }
 
+function genericProjector(definition) {
+    return function genericProjectorFactory(stage, nodes, expr) {
+        const path = definition.projection.view.slice();
+        let view = gfx;
+        while (path.length > 0) {
+            view = view[path.shift()];
+        }
+        return view(definition.projection.options);
+    };
+}
+
 export default function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -278,6 +289,8 @@ export default function projector(definition) {
         return decalProjector(definition);
     case "preview":
         return previewProjector(definition);
+    case "generic":
+        return genericProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }
