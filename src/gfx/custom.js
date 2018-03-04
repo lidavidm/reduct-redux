@@ -19,7 +19,7 @@ export function argumentBar() {
 
         while (body.get("type") === "lambda") {
             this.count += 1;
-            this.size.w += 60;
+            this.size.w += 50;
             body = state.getIn([ "nodes", body.get("body") ]);
         }
 
@@ -34,16 +34,27 @@ export function argumentBar() {
 
         util.setOpacity(ctx, this.opacity, offset);
 
-        const w = sx * 50;
-        const h = sy * this.size.h;
+        const w = sx * 40;
+        const h = sy * (this.size.h - 10);
 
-        ctx.fillStyle = "#555";
-
+        const dy = sy * 5;
         for (let i = 0; i < this.count; i++) {
-            const dx = sx * (60 * i);
+            const dx = sx * (50 * i);
+            ctx.fillStyle = "#000";
             primitive.roundRect(
                 ctx,
-                x + dx, y, w, h,
+                x + dx, y + (dy - 3), w, h,
+                sx * 22,
+                true,
+                false,
+                1.0,
+                null
+            );
+
+            ctx.fillStyle = "#555";
+            primitive.roundRect(
+                ctx,
+                x + dx, y + dy, w, h,
                 sx * 22,
                 true,
                 false,

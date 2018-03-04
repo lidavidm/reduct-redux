@@ -708,13 +708,6 @@ export default transform({
                                     type: "hbox",
                                     shape: "()",
                                     radius: 0,
-                                    padding: {
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        inner: 0,
-                                    },
                                     color: "salmon",
                                     shadow: false,
                                     shadowColor: "rgba(0,0,0,0)",
@@ -724,7 +717,11 @@ export default transform({
                                         color: "rgba(0,0,0,0)",
                                     },
                                     strokeWhenChild: false,
-                                    subexpScale: 1.0,
+                                    padding: {
+                                        left: 10,
+                                        right: 10,
+                                        inner: 0,
+                                    },
                                     children: [
                                         { type: "text", text: "{name} " },
                                         {
