@@ -227,7 +227,7 @@ export default function transform(definition) {
      * Given an expression, find the first child that needs to have a
      * step taken, or the first child that is blocking evaluation.
      */
-    module.interpreter.singleStep = function singleStep(state, expr) {
+    module.interpreter.singleStep = function singleStep(state, expr, exprFilter=null) {
         const nodes = state.get("nodes");
         const kind = module.kind(expr);
         if (kind !== "expression") {
@@ -236,21 +236,26 @@ export default function transform(definition) {
         }
 
         let substepFilter = () => true;
+        if (exprFilter === null) exprFilter = () => false;
+
         const defn = definition.expressions[expr.get("type")];
         if (defn && defn.substepFilter) {
             substepFilter = defn.substepFilter;
         }
-        for (const field of module.subexpressions(expr)) {
-            const subexprId = expr.get(field);
-            const subexpr = nodes.get(subexprId);
-            const subexprKind = module.kind(subexpr);
 
-            if (!substepFilter(module, state, expr, field)) {
-                continue;
-            }
+        if (!exprFilter(state, expr)) {
+            for (const field of module.subexpressions(expr)) {
+                const subexprId = expr.get(field);
+                const subexpr = nodes.get(subexprId);
+                const subexprKind = module.kind(subexpr);
 
-            if (subexprKind !== "value" && subexprKind !== "syntax") {
-                return module.interpreter.singleStep(state, subexpr);
+                if (!substepFilter(module, state, expr, field)) {
+                    continue;
+                }
+
+                if (subexprKind !== "value" && subexprKind !== "syntax") {
+                    return module.interpreter.singleStep(state, subexpr, exprFilter);
+                }
             }
         }
 
@@ -267,8 +272,6 @@ export default function transform(definition) {
      * A submodule containing evaluation strategies.
      */
     module.interpreter.reducers = {};
-    // TODO: need a "hybrid multi-step" that big-steps expressions we
-    // don't care about and that can delay evaluating references
     module.interpreter.reducers.single = function singleStepReducer(
         stage, state, exp, callbacks,
         recordUndo=true
@@ -283,6 +286,48 @@ export default function transform(definition) {
 
         const nodes = state.get("nodes");
         exp = nodes.get(exprId);
+        return module
+            .interpreter.animateStep(stage, state, exp)
+            .then(() => module.interpreter.smallStep(stage, state, exp))
+            .then(([ topNodeId, newNodeIds, addedNodes ]) => {
+                callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
+                // TODO: handle multiple new nodes
+                return newNodeIds[0];
+            });
+    };
+
+    module.interpreter.reducers.over = function stepOverReducer(
+        stage, state, exp, callbacks,
+        recordUndo=true
+    ) {
+        // Step over previously defined names
+
+        // Return true if we are at an apply expression where the
+        // callee is a previously defined function
+        const shouldStepOver = (state, expr) => {
+            if (expr.get("type") !== "apply") {
+                return false;
+            }
+            const callee = state.getIn([ "nodes", expr.get("callee") ]);
+            return callee.get("type") === "reference" &&
+                !stage.newDefinedNames.includes(callee.get("name"));
+        };
+
+        const [ result, exprId ] = module.interpreter.singleStep(state, exp, shouldStepOver);
+
+        if (result === "error") {
+            callbacks.error(exprId);
+            return Promise.reject(exprId);
+        }
+
+        const nodes = state.get("nodes");
+        exp = nodes.get(exprId);
+
+        if (shouldStepOver(state, exp)) {
+            const name = nodes.get(exp.get("callee")).get("name");
+            console.debug(`semant.interpreter.reducers.over: stepping over call to ${name}`);
+            return module.interpreter.reducers.big(stage, state, exp, callbacks);
+        }
         return module
             .interpreter.animateStep(stage, state, exp)
             .then(() => module.interpreter.smallStep(stage, state, exp))
@@ -515,6 +560,8 @@ export default function transform(definition) {
         switch (mode) {
         case "small":
             return module.interpreter.reducers.single(stage, state, exp, callbacks);
+        case "over":
+            return module.interpreter.reducers.over(stage, state, exp, callbacks);
         case "multi":
             return module.interpreter.reducers.multi(stage, state, exp, callbacks);
         case "big":
