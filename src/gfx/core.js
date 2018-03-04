@@ -375,15 +375,18 @@ export function text(text, options) {
     }, options));
 
     projection.prepare = function(id, exprId, state, stage) {
-        const cacheKey = `${this.fontSize};${this.font};${this.text}`;
+        const curText = typeof this.text === "function" ? this.text(state, exprId) : this.text;
+
+        const cacheKey = `${this.fontSize};${this.font};${curText}`;
         if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
-            TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(this.text).width;
+            TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(curText).width;
         }
         this.size.h = this.fontSize * 1.1;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
     projection.draw = function(id, exprId, state, stage, offset) {
+        const curText = typeof this.text === "function" ? this.text(state, exprId) : this.text;
         const ctx = stage.ctx;
 
         const [ sx, sy ] = util.absoluteScale(this, offset);
@@ -399,14 +402,14 @@ export function text(text, options) {
         ctx.textBaseline = "alphabetic";
         ctx.font = `${this.fontSize}px ${this.font}`;
         ctx.fillText(
-            this.text,
+            curText,
             (offset.x + (this.pos.x * offset.sx)) / sx,
             ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
         );
         if (this.stroke) {
             primitive.setStroke(ctx, this.stroke);
             ctx.strokeText(
-                this.text,
+                curText,
                 (offset.x + (this.pos.x * offset.sx)) / sx,
                 ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
             );

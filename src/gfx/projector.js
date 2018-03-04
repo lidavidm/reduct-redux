@@ -86,10 +86,12 @@ function defaultProjector(definition) {
 
 function textProjector(definition) {
     return function textProjectorFactory(stage, nodes, expr) {
-        return gfx.text(definition.projection.text.replace(
+        const textDefn = definition.projection.text;
+        const text = typeof textDefn === "function" ? textDefn : textDefn.replace(
             /\{([a-zA-Z0-9]+)\}/,
             (match, field) => expr.get(field)
-        ));
+        );
+        return gfx.text(text);
     };
 }
 
