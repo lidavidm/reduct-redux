@@ -693,27 +693,51 @@ export default transform({
                     },
                     rows: [
                         {
-                            type: "default",
-                            shape: "()",
-                            radius: 0,
-                            padding: {
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                inner: 15,
-                            },
-                            color: "salmon",
-                            shadow: false,
-                            shadowColor: "rgba(0,0,0,0)",
-                            shadowOffset: 0,
-                            stroke: {
-                                lineWidth: 0,
-                                color: "rgba(0,0,0,0)",
-                            },
-                            strokeWhenChild: false,
-                            fields: ["'def'", "name"],
+                            type: "hbox",
+                            shape: "none",
                             subexpScale: 1.0,
+                            padding: {
+                                left: 0, right: 0, inner: 10,
+                            },
+                            children: [
+                                {
+                                    type: "default",
+                                    shape: "()",
+                                    radius: 0,
+                                    padding: {
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        inner: 15,
+                                    },
+                                    color: "salmon",
+                                    shadow: false,
+                                    shadowColor: "rgba(0,0,0,0)",
+                                    shadowOffset: 0,
+                                    stroke: {
+                                        lineWidth: 0,
+                                        color: "rgba(0,0,0,0)",
+                                    },
+                                    strokeWhenChild: false,
+                                    fields: ["'def'", "name"],
+                                    subexpScale: 1.0,
+                                },
+                                {
+                                    type: "text",
+                                    text: (state, id) => {
+                                        const define = state.getIn([ "nodes", id ]);
+                                        let body = state.getIn([ "nodes", define.get("body") ]);
+                                        const result = [];
+                                        while (body.get("type") === "lambda") {
+                                            const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
+                                            result.push(`[${name}]`);
+                                            body = state.getIn([ "nodes", body.get("body") ]);
+                                        }
+                                        return result.join(" ");
+                                    },
+                                },
+                            ],
                         },
                         {
                             type: "default",

@@ -167,7 +167,7 @@ function hboxProjector(definition) {
     const subprojectors = [];
     const baseProjection = shapeToProjection(definition.projection.shape, options);
 
-    for (const subprojection of definition.projection.rows) {
+    for (const subprojection of definition.projection.children) {
         subprojectors.push(projector(Object.assign({}, definition, {
             projection: subprojection,
         })));
