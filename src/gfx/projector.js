@@ -9,23 +9,29 @@ const optionFields = [
     "stroke", "highlightColor"
 ];
 
+function shapeToProjection(shape, options) {
+    let baseProjection = gfx.roundedRect;
+    if (shape === "<>") {
+        baseProjection = gfx.hexaRect;
+        options.padding = { left: 18, right: 18, inner: 10 };
+    }
+    else if (shape === "none") {
+        baseProjection = gfx.baseProjection;
+    }
+    else if (shape === "notch") {
+        baseProjection = gfx.notchProjection;
+    }
+
+    return baseProjection;
+}
+
 /**
  * The default projector lays out children in a horizontal box with a
  * rounded or hexagonal background.
  */
 function defaultProjector(definition) {
     const options = {};
-    let baseProjection = gfx.roundedRect;
-    if (definition.projection.shape === "<>") {
-        baseProjection = gfx.hexaRect;
-        options.padding = { left: 18, right: 18, inner: 10 };
-    }
-    else if (definition.projection.shape === "none") {
-        baseProjection = gfx.baseProjection;
-    }
-    else if (definition.projection.shape === "notch") {
-        baseProjection = gfx.notchProjection;
-    }
+    const baseProjection = shapeToProjection(definition.projection.shape, options);
 
     for (const field of optionFields) {
         if (typeof definition.projection[field] !== "undefined") {
@@ -154,6 +160,33 @@ function dynamicPropertyProjector(definition) {
     };
 }
 
+function hboxProjector(definition) {
+    const options = {};
+    const subprojectors = [];
+    const baseProjection = shapeToProjection(definition.projection.shape, options);
+
+    for (const subprojection of definition.projection.rows) {
+        subprojectors.push(projector(Object.assign({}, definition, {
+            projection: subprojection,
+        })));
+    }
+
+    for (const field of optionFields) {
+        if (typeof definition.projection[field] !== "undefined") {
+            options[field] = definition.projection[field];
+        }
+    }
+
+    return function hboxProjectorFactory(stage, nodes, expr) {
+        const subprojections = [];
+        for (const subproj of subprojectors) {
+            subprojections.push(stage.allocate(subproj(stage, nodes, expr)));
+        }
+        const childrenFunc = (id, _state) => subprojections.map(projId => [ projId, id ]);
+        return gfx.layout.hbox(childrenFunc, options, baseProjection);
+    };
+}
+
 function vboxProjector(definition) {
     const options = {};
     const subprojectors = [];
@@ -233,6 +266,8 @@ export default function projector(definition) {
         return dynamicProjector(definition);
     case "dynamicProperty":
         return dynamicPropertyProjector(definition);
+    case "hbox":
+        return hboxProjector(definition);
     case "vbox":
         return vboxProjector(definition);
     case "sticky":
