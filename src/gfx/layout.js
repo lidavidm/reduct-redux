@@ -69,7 +69,6 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
-        const children = childrenFunc(exprId, state);
         let x = this.padding.left;
 
         let maxY = 40;
@@ -92,7 +91,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         }
         this.size.w = x - this.padding.inner + this.padding.right;
         this.size.h = maxY;
-        for (let childId of children) {
+        for (const [ childId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
             if (childProjection.animating) continue;
 
