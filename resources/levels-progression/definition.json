@@ -1,4 +1,5 @@
-{ "chapterName": "Function Definition",
+{
+    "chapterName": "Function Definition",
     "description": "Introduction to function definitions",
     "language": "JavaScript",
     "macros": {
@@ -11,14 +12,11 @@
         {
             "board": "function star() { return A; }",
             "goal": "A",
-            "textgoal": "Make me a star!",
             "toolbox": ["star"]
-        }, 
+        },
         {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
-            "textgoal": "Make me two stars and a rectangle!",
-            "showConcreteGoal": false,
             "toolbox": ["__unlimited;star", "__unlimited;rect"]
         },
         {
@@ -184,13 +182,13 @@
         {
             "board": ["repeat(x)", "_(_)", "_(_)", "x", "addOne", "function double(x) { return _; }", "__tests(f(4), f(5))"],
             "goal": ["8", "10"],
-            "toolbox": "double",
+            "toolbox": "",
             "defines": "function double(x) { return (repeat(x, addOne))(x); }"
         },
         {
             "board": ["(repeat(_))(_)", "_(_)", "x", "x", "function triple(x) { return _; }", "__tests(f(3), f(_))"],
             "goal": ["6", "9"],
-            "toolbox": ["addTwo", "addOne", "triple", "0", "1", "2", "3"],
+            "toolbox": ["addTwo", "addOne", "0", "1", "2"],
             "defines": "function triple(x) { return (repeat(x, addTwo))(x); }",
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
@@ -199,22 +197,22 @@
         {
             "board": ["function first(left, right) { return left; }", "__tests(f(3, 6), f(7, 3), f(_, _))"],
             "goal": ["3", "7", "9"],
-            "toolbox": ["first", "8", "9", "10"]
+            "toolbox": ["8", "9", "10"]
         },
         {
             "board": ["function second(left, right) { return _; }", "__tests(f(_, _), f(_, 8))"],
             "goal": ["5", "8"],
-            "toolbox": ["left", "right", "second", "1", "2", "3", "4", "5"]
+            "toolbox": ["left", "right", "1", "2", "3", "4", "5"]
         },
         {
-            "board": ["function secondPlusOne(a, b) { return _; }", "__tests(f(1, 6), f(_, _), f(_, _))", "addOne(_)"],
+            "board": ["function secondPlusOne(a, b) { return _; }", "__tests(f(1, 6), f(_, _), f(_, _))", "addOne(_)", "a", "b"],
             "goal": ["2", "6", "7"],
-            "toolbox": ["secondPlusOne", "a", "b", "5", "1", "3", "8"]
+            "toolbox": ""
         },
         {
-            "board": ["function firstPlusTwo(left, right) { return _; }", "__tests(f(_, _), f(_, _), f(7, 9))", "2", "3", "4", "5"],
+            "board": ["function firstPlusTwo(left, right) { return _; }", "__tests(f(_, _), f(_, _), f(7, 9))", "a", "b", "2", "3", "4", "5"],
             "goal": ["4", "7", "9"],
-            "toolbox": ["firstPlusTwo", "addOne", "addTwo", "left", "right", "_(_)"],
+            "toolbox": ["addOne", "addTwo"],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
             }
@@ -222,10 +220,7 @@
         {
             "board": ["function apply(func) { return _; }", "__tests(f(doNothing, 3), f(addSix, 3), f(triple, 4))", "_(_)"],
             "goal": ["3", "9", "12"],
-            "toolbox": ["apply", "num => _", "func", "num"],
-            "globals": {
-                "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            "toolbox": ["apply", "num => _", "func", "num"]
         },
         {
             "board": ["function addTogether(a, b) { return _; }", "__tests(f(_, _), f(_, _), f(1, 2))", "repeat(_)", "a", "b", "addOne"],
@@ -236,7 +231,7 @@
     ],
     "resources":{
         "planet":"planet-functiana",
-        "aliens":["alien-bag-1", "alien-function-1", "alien-bag-2", "alien-function-2", "alien-bag-3", "alien-function-3"],
+        "aliens":["alien-function-1", "alien-function-2", "alien-function-3"],
         "curve":[
             {"x":0.0948925373586549, "y":-0.5999436303971474},
             {"x":0.0948925373586549, "y":-0.5999436303971474},
