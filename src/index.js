@@ -175,6 +175,9 @@ function start() {
         }
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
+    //reset buttons
+    document.querySelector("#pause").innerText = "Pause";
+    document.querySelector("#ffwd").style.display='none';
 }
 
 function showChapterEnd() {
