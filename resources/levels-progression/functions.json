@@ -11,6 +11,7 @@
         {
             "board": ["x => x", "A"],
             "goal": "A",
+            "textgoal" : "Make a star!",
             "toolbox": ""
         },
         {
