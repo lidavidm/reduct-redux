@@ -518,10 +518,11 @@ export function dynamicProperty(projection, keyFunc, mappings) {
     return projection;
 }
 
+import * as custom from "./custom";
 import * as layout from "./layout";
 import * as shapes from "./shapes";
 import * as ui from "./ui";
 
 export { default as decal } from "./decal";
 export * from "./sprite";
-export { layout, primitive, shapes, ui };
+export { custom, layout, primitive, shapes, ui };

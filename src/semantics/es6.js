@@ -701,7 +701,11 @@ export default transform({
                             },
                             children: [
                                 {
-                                    type: "default",
+                                    type: "text",
+                                    text: "def ",
+                                },
+                                {
+                                    type: "hbox",
                                     shape: "()",
                                     radius: 0,
                                     padding: {
@@ -709,7 +713,7 @@ export default transform({
                                         left: 0,
                                         right: 0,
                                         bottom: 0,
-                                        inner: 15,
+                                        inner: 0,
                                     },
                                     color: "salmon",
                                     shadow: false,
@@ -720,22 +724,16 @@ export default transform({
                                         color: "rgba(0,0,0,0)",
                                     },
                                     strokeWhenChild: false,
-                                    fields: ["'def'", "name"],
                                     subexpScale: 1.0,
-                                },
-                                {
-                                    type: "text",
-                                    text: (state, id) => {
-                                        const define = state.getIn([ "nodes", id ]);
-                                        let body = state.getIn([ "nodes", define.get("body") ]);
-                                        const result = [];
-                                        while (body.get("type") === "lambda") {
-                                            const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
-                                            result.push(`[${name}]`);
-                                            body = state.getIn([ "nodes", body.get("body") ]);
-                                        }
-                                        return result.join(" ");
-                                    },
+                                    children: [
+                                        { type: "text", text: "{name}(" },
+                                        {
+                                            type: "generic",
+                                            view: [ "custom", "argumentBar" ],
+                                            options: {},
+                                        },
+                                        { type: "text", text: ")" },
+                                    ],
                                 },
                             ],
                         },
