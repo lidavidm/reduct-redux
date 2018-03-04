@@ -1,4 +1,4 @@
- "chapterName": "Function Definition",
+{ "chapterName": "Function Definition",
     "description": "Introduction to function definitions",
     "language": "JavaScript",
     "macros": {
@@ -13,15 +13,7 @@
             "goal": "A",
             "textgoal": "Make me a star!",
             "toolbox": ["star"]
-        },
-         {
-            "board" : ["function star() { return A; }", "function star() { return A; }", "function star() { return A; }"],
-            "goal" : "A",
-            "textgoal": "Drag the star to (x) more then once!",
-            "toolbox" : ["star"]
-        },
-        
-        
+        }, 
         {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
