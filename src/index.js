@@ -112,6 +112,21 @@ function initialize() {
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
+    document.querySelector("#pause").addEventListener("click", (b) => {
+        stg.togglePause();
+        const button = document.querySelector("#pause");
+        if (button.innerText == "||") {
+            button.innerText = ">";
+            document.querySelector("#ffwd").style.display='block';
+        } else {
+            button.innerText = "||";
+            document.querySelector("#ffwd").style.display='none';
+        }
+    });
+    document.querySelector("#ffwd").addEventListener("click", (b) => {
+        document.querySelector("#ffwd").style.background = "#6d8891";
+        stg.setFfwd();
+    });
     // document.querySelector("#toggle-graph").addEventListener("click", () => {
     //     Logging.toggleStateGraph();
     //     window.updateStateGraph();
@@ -160,6 +175,9 @@ function start() {
         }
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
+    //reset buttons
+    document.querySelector("#pause").innerText = "||";
+    document.querySelector("#ffwd").style.display='none';
 }
 
 function showChapterEnd() {

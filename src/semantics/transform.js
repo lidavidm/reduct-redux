@@ -528,6 +528,7 @@ export default function transform(definition) {
 
         let fuel = 50;
         const loop = (innerState, topExpr) => {
+            if (stage.mode != "hybrid") return Promise.resolve(topExpr.get("id"));
             if (fuel <= 0) return Promise.resolve(topExpr.get("id"));
             fuel -= 1;
 
