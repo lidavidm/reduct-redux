@@ -115,11 +115,11 @@ function initialize() {
     document.querySelector("#pause").addEventListener("click", (b) => {
         stg.togglePause();
         const button = document.querySelector("#pause");
-        if (button.innerText == "Pause") {
-            button.innerText = "Resume";
+        if (button.innerText == "||") {
+            button.innerText = ">";
             document.querySelector("#ffwd").style.display='block';
         } else {
-            button.innerText = "Pause";
+            button.innerText = "||";
             document.querySelector("#ffwd").style.display='none';
         }
     });
@@ -176,7 +176,7 @@ function start() {
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
     //reset buttons
-    document.querySelector("#pause").innerText = "Pause";
+    document.querySelector("#pause").innerText = "||";
     document.querySelector("#ffwd").style.display='none';
 }
 
