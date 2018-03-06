@@ -216,11 +216,11 @@ export default class Stage extends BaseStage {
         this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
 
-        this._currentlyReducing = {}; 
+        this._currentlyReducing = {};
         this._newSyntax = [];
 
         this.newDefinedNames = []; //Field to keep track of which function names are newly defined so that we big-step it during reduction.
-        this.mode = "hybrid"; //Field to keep track of the mode. 
+        this.mode = "hybrid"; //Field to keep track of the mode.
     }
 
     get touchRecordClass() {
@@ -929,10 +929,11 @@ export default class Stage extends BaseStage {
     }
 
     togglePause() {
-        if (this.mode == "hybrid") {
-            this.mode = "small"
-        } else {
-            this.mode = "hybrid"
+        if (this.mode === "hybrid") {
+            this.mode = "small";
+        }
+        else {
+            this.mode = "hybrid";
         }
     }
 
