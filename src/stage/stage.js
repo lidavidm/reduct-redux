@@ -770,7 +770,7 @@ export default class Stage extends BaseStage {
         }).finally(finishReducing);
 
         if (this.mode == "big") {
-            this.mode = "small";
+            this.mode = "over";
             document.querySelector("#ffwd").style.background = "#add8e6";
         }
     }
@@ -930,7 +930,7 @@ export default class Stage extends BaseStage {
 
     togglePause() {
         if (this.mode === "hybrid") {
-            this.mode = "small";
+            this.mode = "over";
         }
         else {
             this.mode = "hybrid";
