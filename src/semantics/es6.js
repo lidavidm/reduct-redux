@@ -693,27 +693,45 @@ export default transform({
                     },
                     rows: [
                         {
-                            type: "default",
-                            shape: "()",
-                            radius: 0,
-                            padding: {
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                inner: 15,
-                            },
-                            color: "salmon",
-                            shadow: false,
-                            shadowColor: "rgba(0,0,0,0)",
-                            shadowOffset: 0,
-                            stroke: {
-                                lineWidth: 0,
-                                color: "rgba(0,0,0,0)",
-                            },
-                            strokeWhenChild: false,
-                            fields: ["'def'", "name"],
+                            type: "hbox",
+                            shape: "none",
                             subexpScale: 1.0,
+                            padding: {
+                                left: 0, right: 0, inner: 10,
+                            },
+                            children: [
+                                {
+                                    type: "text",
+                                    text: "def ",
+                                },
+                                {
+                                    type: "hbox",
+                                    shape: "()",
+                                    radius: 0,
+                                    color: "salmon",
+                                    shadow: false,
+                                    shadowColor: "rgba(0,0,0,0)",
+                                    shadowOffset: 0,
+                                    stroke: {
+                                        lineWidth: 0,
+                                        color: "rgba(0,0,0,0)",
+                                    },
+                                    strokeWhenChild: false,
+                                    padding: {
+                                        left: 10,
+                                        right: 10,
+                                        inner: 0,
+                                    },
+                                    children: [
+                                        { type: "text", text: "{name} " },
+                                        {
+                                            type: "generic",
+                                            view: [ "custom", "argumentBar" ],
+                                            options: {},
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         {
                             type: "default",
