@@ -326,6 +326,12 @@ export default function transform(definition) {
         if (shouldStepOver(state, exp)) {
             const name = nodes.get(exp.get("callee")).get("name");
             console.debug(`semant.interpreter.reducers.over: stepping over call to ${name}`);
+            // Step over the highest direct apply ancestor
+            while (exp.has("parent")) {
+                const parent = nodes.get(exp.get("parent"));
+                if (parent.get("type") !== "apply") break;
+                exp = parent;
+            }
             return module.interpreter.reducers.big(stage, state, exp, callbacks);
         }
         return module
