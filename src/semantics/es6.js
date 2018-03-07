@@ -1,4 +1,5 @@
 import * as core from "./core";
+import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import { makeParser, makeUnparser } from "../syntax/es6";
 import transform from "./transform";
@@ -322,16 +323,21 @@ export default transform({
                 });
 
                 // Jump argument to hole
+                const calleeView = stage.views[expr.get("callee")];
+                let centerX = (calleeView.pos.x + (0.5 * calleeView.size.w))
+                    - (0.5 * argView.size.w);
+                if (isCalleeLambda) {
+                    centerX = gfx.centerPos(stage.views[callee.get("arg")]).x
+                        - gfx.absolutePos(lambdaView).x;
+                }
                 return animate.tween(argView, {
                     pos: {
-                        x: [ stage.views[expr.get("callee")].pos.x, animate.Easing.Linear ],
+                        x: [ centerX, animate.Easing.Linear ],
                         y: [ argView.pos.y - 75, animate.Easing.Projectile(animate.Easing.Linear) ],
                     },
                 }, {
                     duration: animate.scaleDuration(500, "expr-apply"),
                 }).then(() => {
-                    argView.opacity = 0;
-
                     // List of tweens to reset at end
                     const reset = [];
                     const clearPreview = [];
@@ -345,6 +351,28 @@ export default transform({
 
                     // Replace arg hole with preview
                     if (isCalleeLambda) {
+                        animate.tween(argView, {
+                            scale: { x: 0, y: 0 },
+                            opacity: 0,
+                        }, {
+                            duration,
+                            easing: animate.Easing.Cubic.Out,
+                        });
+
+                        reset.push(animate.tween(lambdaView, {
+                            subexpScale: 1.0,
+                            padding: {
+                                inner: 0,
+                                right: 0,
+                                left: 0,
+                            },
+                            backgroundOpacity: 0,
+                        }, {
+                            duration,
+                            restTime,
+                            easing: animate.Easing.Cubic.InOut,
+                        }));
+
                         lambdaView.strokeWhenChild = false;
 
                         for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
@@ -367,6 +395,9 @@ export default transform({
                                 }
                             });
                     }
+                    else {
+                        argView.opacity = 0;
+                    }
 
                     reset.push(animate.tween(applyView, {
                         subexpScale: 1.0,
@@ -375,6 +406,7 @@ export default transform({
                             left: 0,
                             right: 0,
                         },
+                        backgroundOpacity: 0,
                     }, {
                         duration,
                         restTime,

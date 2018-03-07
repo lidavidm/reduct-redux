@@ -23,6 +23,7 @@ export function baseProjection(options) {
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
         opacity: 1.0,
+        backgroundOpacity: 1.0,
     }, options);
 
     if (options && options.notches) {
@@ -219,7 +220,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             const [ sx, sy ] = util.absoluteScale(this, offset);
             const { x, y } = util.topLeftPos(this, offset);
 
-            util.setOpacity(ctx, this.opacity, offset);
+            util.setOpacity(ctx, this.opacity, offset, this.backgroundOpacity);
 
             const node = state.getIn([ "nodes", exprId ]);
 
