@@ -457,6 +457,7 @@ export default transform({
                 type: "default",
                 shape: "()",
                 fields: ["arg", "'=>'", "body"],
+                subexpScale: 1.0,
             },
             betaReduce: (semant, stage, state, expr, argIds) =>
                 core.genericBetaReduce(semant, state, {
