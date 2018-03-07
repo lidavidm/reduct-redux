@@ -25,8 +25,8 @@ export function argumentBar() {
             txt.text = name;
             txt.prepare(null, null, state, stage);
             const size = Math.max(txt.size.w, 40);
-            this.names.push([ name, size ]);
-            this.size.w += size + 10;
+            this.names.push([ name, size + 10 ]);
+            this.size.w += size + 20;
             body = state.getIn([ "nodes", body.get("body") ]);
         }
 
