@@ -10,6 +10,7 @@ export default class BaseTouchRecord {
         this.hoverNode = null;
         this.prevHoverNode = null;
         this.isExpr = false;
+        this.currTime = Date.now();
     }
 
     findHoverNode(pos) {
@@ -21,6 +22,7 @@ export default class BaseTouchRecord {
     }
 
     onstart() {
+        this.currTime = Date.now();
     }
 
     onmove(mouseDown, mousePos) {
@@ -39,5 +41,6 @@ export default class BaseTouchRecord {
         this.dragged = false;
         this.fromToolbox = false;
         this.isExpr = false;
+        this.currTime = Date.now();
     }
 }

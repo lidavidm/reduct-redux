@@ -28,6 +28,7 @@ class TouchRecord extends BaseTouchRecord {
         if (view && view.onmousedown) {
             view.onmousedown();
         }
+        this.currTime = Date.now();
     }
 
     onmove(mouseDown, mousePos) {
@@ -121,17 +122,26 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
-            // Click on object to reduce
-            let selectedNode = this.topNode;
-
-            /*if (this.targetNode) {
-                const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
-                if (!targetLocked) {
-                    selectedNode = this.targetNode;
+            if (Date.now() - this.currTime > 500) {
+                console.log("LONG CLICK");
+                const referenceID = this.stage.getReferenceNameAtPos(mousePos)
+                if (referenceID) {
+                    const referenceNameNode = state.getIn(["nodes", referenceID]);
+                    this.stage.referenceClicked(state, referenceID);
                 }
-            }*/
+            } else {
+                // Click on object to reduce
+                let selectedNode = this.topNode;
 
-            this.stage.step(state, selectedNode);
+                /*if (this.targetNode) {
+                    const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
+                    if (!targetLocked) {
+                        selectedNode = this.targetNode;
+                    }
+                }*/
+
+                this.stage.step(state, selectedNode);
+            }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
                  state.getIn([ "nodes", this.hoverNode, "type"]) === "missing") {
@@ -319,6 +329,65 @@ export default class Stage extends BaseStage {
             }
         }
         return [ root, result, false ];
+    }
+
+    getReferenceNameAtPos(pos) {
+        const state = this.getState();
+        const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
+            const curNode = state.getIn([ "nodes", curExprId ]);
+            const projection = this.views[curProjId];
+            let res = null;
+
+            const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
+            if (projection.containsPoint(curPos, curOffset)) {
+                if (curNode && curNode.get("type") == "reference") {
+                    res = curExprId;
+                }
+
+                const subpos = {
+                    x: curPos.x - topLeft.x,
+                    y: curPos.y - topLeft.y,
+                };
+                for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
+                    const subresult = check(
+                        subpos,
+                        childId,
+                        subexprId,
+                        curRoot,
+                        {
+                            x: 0,
+                            y: 0,
+                            sx: curOffset.sx * projection.scale.x,
+                            sy: curOffset.sy * projection.scale.y,
+                        }
+                    );
+                    if (subresult) {
+                        return subresult;
+                    }
+                }
+                if (res) {
+                    return res;
+                }
+            }
+            return null;
+        };
+
+        let result = null;
+
+        for (const nodeId of state.get("board").toArray().reverse()) {
+            const res = check(pos, nodeId, nodeId, null, {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+            });
+            if (res) {
+                result = res;
+                break;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -926,6 +995,13 @@ export default class Stage extends BaseStage {
             this._newSyntax.push(id);
         };
         step();
+    }
+
+    
+    referenceClicked(state, referenceID) {
+        const referenceNameNode = state.getIn(["nodes", referenceID]);
+        const name = referenceNameNode.get("name");
+        console.log(name);
     }
 
     togglePause() {
