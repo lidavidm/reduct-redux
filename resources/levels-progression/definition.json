@@ -42,7 +42,6 @@
             "goal": ["B", "B", "B"],
             "toolbox": "__unlimited;squarify"
         },
-        //add 5 basic intro boolean levels
          {
             "board": ["'star' == 'star'"],
             "goal": ["true"],
@@ -68,7 +67,6 @@
             "goal": ["true"],
             "toolbox": ["'rect'", "'star'"]
         },
-        //end of added boolean levels
         {
             "board": ["function addOne(x) { return _; }", "2", "4"],
             "goal": ["3", "6"],
