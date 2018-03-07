@@ -1004,9 +1004,14 @@ export default class Stage extends BaseStage {
     referenceClicked(state, referenceID, mousePos) {
         const referenceNameNode = state.getIn(["nodes", referenceID]);
         const name = referenceNameNode.get("name");
-        const functionNodeID = state.get("globals").get(name)
-        const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
-        this.functionDef = new FunctionDef(this, state, name, functionBodyID, mousePos);
+        const functionNodeID = state.get("globals").get(name);
+        const type = state.get("nodes").get(functionNodeID).get("type");
+        if (type == "define") {
+            const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
+            this.functionDef = new FunctionDef(this, state, name, functionBodyID, mousePos);
+        } else {
+            this.functionDef = new FunctionDef(this, state, name, functionNodeID, mousePos);
+        }
     }
 
     togglePause() {
