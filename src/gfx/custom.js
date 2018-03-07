@@ -9,17 +9,24 @@ import * as util from "./util";
 export function argumentBar() {
     const projection = gfx.baseProjection();
 
+    const txt = gfx.text("", {
+        color: "#888",
+    });
 
     projection.prepare = function(id, exprId, state, stage) {
-        this.count = 0;
+        this.names = [];
         this.size = { w: 0, h: 50 };
 
         const define = state.getIn([ "nodes", exprId ]);
         let body = state.getIn([ "nodes", define.get("body") ]);
 
         while (body.get("type") === "lambda") {
-            this.count += 1;
-            this.size.w += 50;
+            const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
+            txt.text = name;
+            txt.prepare(null, null, state, stage);
+            const size = Math.max(txt.size.w, 40);
+            this.names.push([ name, size ]);
+            this.size.w += size + 10;
             body = state.getIn([ "nodes", body.get("body") ]);
         }
 
@@ -34,12 +41,13 @@ export function argumentBar() {
 
         util.setOpacity(ctx, this.opacity, offset);
 
-        const w = sx * 40;
         const h = sy * (this.size.h - 10);
 
         const dy = sy * 5;
-        for (let i = 0; i < this.count; i++) {
-            const dx = sx * (50 * i);
+        let i = 0;
+        let dx = 0;
+        for (const [ name, width ] of this.names) {
+            const w = sx * width;
             ctx.fillStyle = "#000";
             primitive.roundRect(
                 ctx,
@@ -61,6 +69,17 @@ export function argumentBar() {
                 1.0,
                 null
             );
+
+            txt.text = name;
+            txt.draw(null, null, state, stage, Object.assign({}, offset, {
+                x: x + dx + (5 * offset.sx),
+                y: y + (5 * offset.sy),
+                sx,
+                sy,
+            }));
+
+            i += 1;
+            dx += sx * (width + 10);
         }
 
         ctx.restore();
