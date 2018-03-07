@@ -60,8 +60,14 @@ export function sticky(projection, direction, options) {
 }
 
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
+    if (options && options.padding) {
+        options.padding = Object.assign({
+            left: 10, inner: 5, right: 10,
+        }, options.padding);
+    }
+
     const projection = baseProjection(Object.assign({}, {
-        padding: { left: 10, inner: 10, right: 10 },
+        padding: { left: 10, inner: 5, right: 10 },
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
@@ -125,9 +131,14 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 }
 
 export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
+    if (options && options.padding) {
+        options.padding = Object.assign({
+            top: 5, left: 0, inner: 5, right: 0, bottom: 5,
+        }, options.padding);
+    }
     const projection = baseProjection(Object.assign({
         horizontalAlign: 0.5,
-        padding: { top: 10, left: 0, inner: 10, right: 0, bottom: 10 },
+        padding: { top: 5, left: 0, inner: 5, right: 0, bottom: 5 },
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;

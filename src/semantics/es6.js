@@ -198,8 +198,6 @@ export default transform({
         conditional: {
             kind: "expression",
             fields: [],
-            // TODO: need some way to specify that "positive" and
-            // "negative" should not be evaluated
             subexpressions: ["condition", "positive", "negative"],
             // projection: {
             //     type: "default",
@@ -211,6 +209,7 @@ export default transform({
                 type: "vbox",
                 horizontalAlign: 0.0,
                 color: "lightblue",
+                subexpScale: 1.0,
                 rows: [
                     {
                         type: "default",
@@ -594,13 +593,6 @@ export default transform({
                         type: "default",
                         color: "OrangeRed",
                         radius: 0,
-                        padding: {
-                            top: 10,
-                            bottom: 10,
-                            left: 5,
-                            right: 5,
-                            inner: 5,
-                        },
                         shape: "()",
                         strokeWhenChild: false,
                         fields: ["name"],
@@ -698,7 +690,7 @@ export default transform({
                             shape: "none",
                             subexpScale: 1.0,
                             padding: {
-                                left: 0, right: 0, inner: 10,
+                                left: 0, right: 0,
                             },
                             children: [
                                 {
@@ -719,8 +711,8 @@ export default transform({
                                     },
                                     strokeWhenChild: false,
                                     padding: {
-                                        left: 10,
-                                        right: 10,
+                                        left: 5,
+                                        right: 5,
                                         inner: 0,
                                     },
                                     children: [
