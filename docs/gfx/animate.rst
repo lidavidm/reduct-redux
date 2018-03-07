@@ -8,12 +8,22 @@ The animation framework.
 
    import * as animate from "./gfx/animate";
 
-
-.. autoattribute:: animate.addUpdateListener
-
 .. autofunction:: animate.after
 .. autofunction:: animate.tween
 .. autofunction:: animate.infinite
+.. autofunction:: animate.addUpdateListener
+
+.. autoclass:: animate.Easing
+   :members: Color, Projectile
+
+   .. autoclass:: animate.Easing.Quadratic
+      :members:
+   .. autoclass:: animate.Easing.Cubic
+      :members:
+   .. autoclass:: animate.Easing.Exponential
+      :members:
+
+.. autoclass:: animate.InfiniteTween
 
 .. autoclass:: animate.Clock
    :members:

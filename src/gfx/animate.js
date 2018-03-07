@@ -4,10 +4,22 @@
 
 import chroma from "chroma-js";
 
+/**
+ * A set of easing functions.
+ */
 export const Easing = {
+    /**
+     * A linear tween.
+     */
     Linear: (start, stop, t) => start + (t * (stop - start)),
 
+    /**
+     * Quadratic tweens.
+     */
     Quadratic: {
+        /**
+         * An ease-in tween.
+         */
         In: (start, stop, t) => start + (t * t * (stop - start)),
         Out: (start, stop, t) => start - (t * (t - 2) * (stop - start)),
         InOut: (start, stop, t) => {
@@ -20,6 +32,9 @@ export const Easing = {
         },
     },
 
+    /**
+     * Cubic tweens.
+     */
     Cubic: {
         In: (start, stop, t) => start + (t * t * t * (stop - start)),
         Out: (start, stop, t) => {
@@ -36,17 +51,26 @@ export const Easing = {
         },
     },
 
+    /**
+     * Exponential tweens.
+     */
     Exponential: {
         Out: (start, stop, t) => {
             return ((stop - start) * (1 - (2 ** (-10 * t)))) + start;
         },
     },
 
+    /**
+     * Color tween.
+     */
     Color: (easing, src, dst) => {
         const scale = chroma.scale([ src, dst ]).mode("lch");
         return (start, stop, t) => scale(easing(0.0, 1.0, t));
     },
 
+    /**
+     * Parabolic projectile trajectory tween.
+     */
     Projectile: (easing) => (start, stop, t) => {
         const dy = stop - start;
         // console.log(start, stop, t, start + (-4 * dy * t * t) + (4 * dy * t));
@@ -172,6 +196,9 @@ export class InterpolateTween extends Tween {
     }
 }
 
+/**
+ * A tween that continues running until explicitly stopped.
+ */
 export class InfiniteTween extends Tween {
     constructor(clock, updater, options) {
         super(clock, options);
@@ -367,7 +394,7 @@ export function addUpdateListener(f) {
  * @param {Object} properties - A (nested) dictionary of property
  * values to tween to.
  * @param {Object} options - Other options for the tween. See
- * :js:func:`animate.Clock.tween`.
+ * :js:func:`~animate.Clock.tween`.
  */
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
@@ -376,7 +403,9 @@ export function tween(target, properties, options={}) {
 /**
  * Add an infinite tween to the default clock.
  *
- *
+ * @param {Function} updater - The update function. See
+ * :class:`~animate.InfiniteTween`.
+ * @param {Object} options
  */
 export function infinite(updater, options={}) {
     return clock.addTween(new InfiniteTween(clock, updater, options));
