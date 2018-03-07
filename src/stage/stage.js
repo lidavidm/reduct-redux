@@ -9,6 +9,7 @@ import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
 import Sidebar from "../ui/sidebar";
 import SyntaxJournal from "../ui/syntaxjournal";
+import FunctionDef from "../ui/functiondef";
 
 import Loader from "../loader";
 import Logging from "../logging/logging";
@@ -123,11 +124,10 @@ class TouchRecord extends BaseTouchRecord {
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
             if (Date.now() - this.currTime > 500) {
-                console.log("LONG CLICK");
                 const referenceID = this.stage.getReferenceNameAtPos(mousePos)
                 if (referenceID) {
                     const referenceNameNode = state.getIn(["nodes", referenceID]);
-                    this.stage.referenceClicked(state, referenceID);
+                    this.stage.referenceClicked(state, referenceID, mousePos);
                 }
             } else {
                 // Click on object to reduce
@@ -225,6 +225,7 @@ export default class Stage extends BaseStage {
         this.goal = new Goal(this);
         this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
+        this.functionDef = null;
 
         this._currentlyReducing = {};
         this._newSyntax = [];
@@ -487,6 +488,9 @@ export default class Stage extends BaseStage {
 
         for (const id of this._newSyntax) {
             this.drawInternalProjection(state, id);
+        }
+        if (this.functionDef) {
+            this.functionDef.drawImpl(state);
         }
 
         for (const fx of Object.values(this.effects)) {
@@ -998,10 +1002,12 @@ export default class Stage extends BaseStage {
     }
 
     
-    referenceClicked(state, referenceID) {
+    referenceClicked(state, referenceID, mousePos) {
         const referenceNameNode = state.getIn(["nodes", referenceID]);
         const name = referenceNameNode.get("name");
-        console.log(name);
+        const functionNodeID = state.get("globals").get(name)
+        const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
+        this.functionDef = new FunctionDef(this, state, name, functionBodyID, mousePos);
     }
 
     togglePause() {
@@ -1030,6 +1036,10 @@ export default class Stage extends BaseStage {
             if (topNode === null) {
                 this.syntaxJournal.close();
             }
+        }
+
+        if (this.functionDef) {
+            this.functionDef = null;
         }
 
         return super._mousedown(e);
