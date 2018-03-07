@@ -84,26 +84,32 @@ export function blink(stage, projection, opts) {
     }
 
     // TODO: refactor this into a helper
+
     let updatedStroke = projection.stroke;
     const tempStroke = { color: options.color, lineWidth: 0 };
-    Object.defineProperty(projection, "stroke", {
-        configurable: true,
-        get() {
-            return tempStroke;
-        },
-        set(newValue) {
-            updatedStroke = newValue;
-        },
-    });
-    return animate.tween(tempStroke, { lineWidth: options.lineWidth }, {
-        reverse: true,
-        repeat: options.times * 2,
-        duration: options.speed,
-    }).then(() => {
-        delete projection.stroke;
-        projection.stroke = updatedStroke;
-        stage.drawImpl();
-    });
+    const descriptor = Object.getOwnPropertyDescriptor(projection, "stroke");
+    // Don't blink if fx already in progress
+    if (!descriptor || !descriptor.get) {
+        Object.defineProperty(projection, "stroke", {
+            configurable: true,
+            get() {
+                return tempStroke;
+            },
+            set(newValue) {
+                updatedStroke = newValue;
+            },
+        });
+        return animate.tween(tempStroke, { lineWidth: options.lineWidth }, {
+            reverse: true,
+            repeat: options.times * 2,
+            duration: options.speed,
+        }).then(() => {
+            delete projection.stroke;
+            projection.stroke = updatedStroke;
+            stage.drawImpl();
+        });
+    }
+    return Promise.resolve();
 }
 
 export function shatter(stage, projection, options) {
