@@ -1,3 +1,7 @@
+/**
+ * The animation & tweening library.
+ */
+
 import chroma from "chroma-js";
 
 export const Easing = {
@@ -195,6 +199,9 @@ export class InfiniteTween extends Tween {
     }
 }
 
+/**
+ * An animation loop and tween manager.
+ */
 export class Clock {
     constructor() {
         this.listeners = [];
@@ -239,6 +246,9 @@ export class Clock {
         }
     }
 
+    /**
+     * Add a tween to this clock.
+     */
     tween(target, properties, options) {
         const duration = options.duration || 300;
         const props = [];
@@ -333,16 +343,41 @@ export class Clock {
     }
 }
 
+/**
+ * The default clock.
+ */
 export const clock = new Clock();
 
+/**
+ * Add a callback that is fired every animation tick.
+ *
+ * Useful to trigger a re-render whenever an animation updates.
+ *
+ * @param {Function} f - The function to be called.
+ */
 export function addUpdateListener(f) {
     clock.addUpdateListener(f);
 }
 
+/**
+ * Add a tween to the default clock (and start the clock if
+ * applicable).
+ *
+ * @param {Object} target - The object whose properties to tween.
+ * @param {Object} properties - A (nested) dictionary of property
+ * values to tween to.
+ * @param {Object} options - Other options for the tween. See
+ * :js:func:`gfx/animate.Clock#tween`.
+ */
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
 }
 
+/**
+ * Add an infinite tween to the default clock.
+ *
+ *
+ */
 export function infinite(updater, options={}) {
     return clock.addTween(new InfiniteTween(clock, updater, options));
 }
@@ -364,6 +399,12 @@ export function chain(target, ...properties) {
     return base;
 }
 
+/**
+ * A helper function to resolve a Promise after a specified delay.
+ *
+ * @param ms {number} The delay in milliseconds.
+ * @returns {Promise}
+ */
 export function after(ms) {
     return new Promise((resolve) => {
         window.setTimeout(function() {

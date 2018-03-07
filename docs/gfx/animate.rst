@@ -4,6 +4,18 @@ gfx/animate
 
 The animation framework.
 
-.. js:autofunction:: module:gfx/animate.after
+.. code-block:: js
 
-.. autoclass:: module:gfx/animate.Clock
+   import * as animate from "./gfx/animate";
+
+
+.. autoattribute:: animate.addUpdateListener
+
+.. autofunction:: animate.after
+.. autofunction:: animate.tween
+.. autofunction:: animate.infinite
+
+.. autoclass:: animate.Clock
+   :members:
+
+.. autoattribute:: animate.clock
