@@ -367,7 +367,7 @@ export function addUpdateListener(f) {
  * @param {Object} properties - A (nested) dictionary of property
  * values to tween to.
  * @param {Object} options - Other options for the tween. See
- * :js:func:`gfx/animate.Clock#tween`.
+ * :js:func:`animate.Clock.tween`.
  */
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
