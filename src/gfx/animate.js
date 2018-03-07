@@ -201,8 +201,23 @@ export class Clock {
         this.tweens = [];
         this.running = false;
         this.lastTimestamp = null;
-        this.scale = 1.0;
+        this._scale = null;
         this.tick = this.tick.bind(this);
+    }
+
+    get scale() {
+        if (this._scale) {
+            return this._scale;
+        }
+        const el = document.querySelector("#animation-speed-slider");
+        if (el) {
+            return el.value;
+        }
+        return 1;
+    }
+
+    set scale(s) {
+        this._scale = s;
     }
 
     addUpdateListener(f) {
