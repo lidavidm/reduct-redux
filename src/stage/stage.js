@@ -203,7 +203,7 @@ export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
 
-        this.sidebarWidth = 250;
+        this.sidebarWidth = 0;
 
         this.stateGraph = new Network();
         this.alreadyWon = false;

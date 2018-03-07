@@ -49,6 +49,12 @@ export default class Sidebar {
             this._tween.cancel();
         }
 
+        if (this.viewMap.size === 0) {
+            // No entries, don't appear
+            this.stage.sidebarWidth = 0;
+            return;
+        }
+
         if (this.status === "closed") {
             this.status = "open";
             this._tween = animate.tween(this.stage, { sidebarWidth: this.fullWidth }, {
