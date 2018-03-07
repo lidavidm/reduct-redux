@@ -305,7 +305,7 @@ export const rect = baseShape("roundedRect", {
 
 export const roundedRect = baseShape("roundedRect", {
     color: "lightgray",
-    radius: 20,
+    radius: 18,
     shadowColor: "#000",
     shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression
