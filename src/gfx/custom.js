@@ -44,7 +44,6 @@ export function argumentBar() {
         const h = sy * (this.size.h - 10);
 
         const dy = sy * 5;
-        let i = 0;
         let dx = 0;
         for (const [ name, width ] of this.names) {
             const w = sx * width;
@@ -78,7 +77,6 @@ export function argumentBar() {
                 sy,
             }));
 
-            i += 1;
             dx += sx * (width + 10);
         }
 
