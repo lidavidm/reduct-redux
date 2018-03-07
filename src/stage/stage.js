@@ -126,7 +126,6 @@ class TouchRecord extends BaseTouchRecord {
             if (Date.now() - this.currTime > 500) {
                 const referenceID = this.stage.getReferenceNameAtPos(mousePos)
                 if (referenceID) {
-                    const referenceNameNode = state.getIn(["nodes", referenceID]);
                     this.stage.referenceClicked(state, referenceID, mousePos);
                 }
             } else {
