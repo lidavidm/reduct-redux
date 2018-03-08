@@ -121,29 +121,14 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
-            // Click on object to reduce
-            let selectedNode = this.topNode;
-
-            /*if (this.targetNode) {
-                const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
-                if (!targetLocked) {
-                    selectedNode = this.targetNode;
-                }
-            }*/
-
-            this.stage.step(state, selectedNode);
+            // Click on object to reduce; always targets toplevel node
+            this.stage.step(state, this.topNode);
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
-                 state.getIn([ "nodes", this.hoverNode, "type"]) === "missing") {
+                 this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
             // Drag something into hole
-            // Use type inference to decide whether hole can be filled
-            const holeType = state.getIn([ "nodes", this.hoverNode, "ty" ]);
-            const exprType = state.getIn([ "nodes", this.topNode, "ty" ]);
-            if (!holeType || !exprType || holeType === exprType) {
-                Audio.play("pop");
-
-                this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
-            }
+            Audio.play("pop");
+            this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
         }
         else if (this.isExpr && this.dragged && this.hoverNode && this.topNode) {
             // Clear application previews (otherwise they stick around

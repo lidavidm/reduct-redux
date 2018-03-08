@@ -605,6 +605,28 @@ export default function transform(definition) {
     };
 
     /**
+     * Can an expression have something dropped into it?
+     */
+    module.droppable = function(state, itemId, targetId) {
+        // TODO: don't hardcode these checks
+        const item = state.getIn([ "nodes", itemId ]);
+        const target = state.getIn([ "nodes", targetId ]);
+
+        if (target.get("type") === "missing") {
+            // Use type inference to decide whether hole can be filled
+            const holeType = target.get("ty");
+            const exprType = item.get("ty");
+            if (!holeType || !exprType || holeType === exprType) {
+                return "hole";
+            }
+        }
+        else if (target.get("type") === "lambdaArg") {
+            return "arg";
+        }
+        return false;
+    };
+
+    /**
      * Is an expression selectable/hoverable by the mouse?
      */
     module.targetable = function(state, expr) {
