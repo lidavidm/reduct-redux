@@ -70,7 +70,10 @@ def csv2json(infile, outfile):
                     level[field] = val
             levels.append(level)
 
-    print(json.dumps(levels, indent=4))
+    chapter["levels"] = levels
+    with open(outfile, "w") as outf:
+        json.dump(chapter, outf, indent=4)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Turn a JSON file into CSV, or take a CSV file and a JSON file and replace the JSON file's levels with the CSV file's.")
