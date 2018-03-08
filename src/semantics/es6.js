@@ -389,7 +389,10 @@ export default transform({
                         stage.semantics.searchNoncapturing(state.get("nodes"), targetName, lambdaBody)
                             .forEach((id) => {
                                 if (stage.views[id]) {
-                                    stage.views[id].previewOptions = { duration };
+                                    stage.views[id].previewOptions = {
+                                        duration,
+                                        maxScale: 1,
+                                    };
                                     stage.views[id].preview = expr.get("argument");
                                     clearPreview.push(stage.views[id]);
                                 }
