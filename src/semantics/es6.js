@@ -310,17 +310,20 @@ export default transform({
                 const argView = stage.views[expr.get("argument")];
                 const applyView = stage.views[expr.get("id")];
 
+                // List of tweens to reset at end
+                const reset = [];
+
                 // Fade out arrow
-                animate.tween(applyView, { arrowOpacity: [ 1.0, 0.0 ] }, {
+                reset.push(animate.tween(applyView, { arrowOpacity: [ 1.0, 0.0 ] }, {
                     duration: animate.scaleDuration(200, "expr-apply"),
                     easing: animate.Easing.Cubic.InOut,
-                });
+                }));
 
                 // Scale down argument
-                animate.tween(argView, { scale: { x: 0.4, y: 0.4 } }, {
+                reset.push(animate.tween(argView, { scale: { x: 0.4, y: 0.4 } }, {
                     duration: animate.scaleDuration(300, "expr-apply"),
                     easing: animate.Easing.Cubic.Out,
-                });
+                }));
 
                 // Jump argument to hole
                 const calleeView = stage.views[expr.get("callee")];
@@ -338,12 +341,10 @@ export default transform({
                 }, {
                     duration: animate.scaleDuration(500, "expr-apply"),
                 }).then(() => {
-                    // List of tweens to reset at end
-                    const reset = [];
                     const clearPreview = [];
 
                     const duration = animate.scaleDuration(700, "expr-apply");
-                    const totalTime = duration + animate.scaleDuration(300, "expr-apply");
+                    const totalTime = duration + animate.scaleDuration(50, "expr-apply");
                     const introDuration = animate.scaleDuration(400, "expr-apply");
                     const outroDuration = animate.scaleDuration(400, "expr-apply");
                     // How long to wait before clearing the 'animating' flag
@@ -391,7 +392,6 @@ export default transform({
                                 if (stage.views[id]) {
                                     stage.views[id].previewOptions = {
                                         duration,
-                                        maxScale: 1,
                                     };
                                     stage.views[id].preview = expr.get("argument");
                                     clearPreview.push(stage.views[id]);
@@ -433,17 +433,13 @@ export default transform({
                     }));
 
                     return animate.after(totalTime)
-                        .then(() => animate.fx.shatter(stage, applyView, {
-                            introDuration,
-                            outroDuration,
-                            onFullComplete: () => {
-                                reset.forEach(tween => tween.undo());
-                                clearPreview.forEach((view) => {
-                                    view.preview = null;
-                                    delete view.previewOptions;
-                                });
-                            },
-                        }))
+                        .then(() => {
+                            reset.forEach(tween => tween.undo());
+                            clearPreview.forEach((view) => {
+                                view.preview = null;
+                                delete view.previewOptions;
+                            });
+                        })
                         .then(() => {
                             argView.opacity = 1;
                         });
