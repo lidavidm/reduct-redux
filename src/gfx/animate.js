@@ -383,7 +383,7 @@ export function after(ms) {
     return new Promise((resolve) => {
         window.setTimeout(function() {
             resolve();
-        }, ms * clock.scale);
+        }, ms / clock.scale);
     });
 }
 
