@@ -10,8 +10,13 @@ import os
 import sys
 
 
-fieldnames = ["board", "goal", "textgoal", "toolbox", "defines", "globals"]
-singleton_fields = {"textgoal", "globals"}
+fieldnames = ["board", "goal", "textgoal", "toolbox", "defines", "globals", "syntax", "animationScales"]
+singleton_fields = {"textgoal", "globals", "animationScales"}
+field_defaults = {
+    "animationScales": {},
+    "globals": {},
+    "syntax": [],
+}
 
 
 def json2csv(infile, outfile):
@@ -24,7 +29,7 @@ def json2csv(infile, outfile):
             row = {}
             for key in fieldnames:
                 if key not in lvl:
-                    row[key] = ""
+                    row[key] = field_defaults.get(key, "")
                 elif key not in singleton_fields and not isinstance(lvl[key], list):
                     row[key] = [lvl[key]]
                 else:
