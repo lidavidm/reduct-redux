@@ -73,7 +73,7 @@ export function blink(stage, projection, opts) {
 
         const bgColor = typeof options.background === "string" ? options.background : options.color;
 
-        animate.tween(projection, { color: null }, {
+        animate.tween(projection, { color: bgColor }, {
             reverse: true,
             repeat: options.times * 2,
             duration: options.speed,
@@ -223,7 +223,7 @@ export function error(stage, projection) {
     Audio.play("negative_2");
     return blink(stage, projection, {
         times: 3,
-        speed: 200,
+        speed: 350,
         color: "#F00",
         lineWidth: 5,
         background: "orange",
