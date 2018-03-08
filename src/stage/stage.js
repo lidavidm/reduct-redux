@@ -21,11 +21,24 @@ class TouchRecord extends BaseTouchRecord {
     constructor(...args) {
         super(...args);
         this.dropTargets = [];
+        this.highlightAnimation = null;
     }
 
     reset() {
         super.reset();
+        this.stopHighlight();
+        this.highlightAnimation = null;
         this.dropTargets = [];
+    }
+
+    stopHighlight() {
+        for (const id of this.dropTargets) {
+            this.stage.getView(id).stroke = null;
+        }
+
+        if (this.highlightAnimation) {
+            this.highlightAnimation.stop();
+        }
     }
 
     onstart() {
@@ -38,18 +51,25 @@ class TouchRecord extends BaseTouchRecord {
             const nodes = state.get("nodes");
 
             state.get("board").forEach((id) => {
+                if (id === this.topNode) return;
+
                 this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
                     nodes, id,
                     (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
                 ));
             });
 
-            for (const targetId of this.dropTargets) {
-                this.stage.getView(targetId).stroke = {
-                    color: "lightblue",
-                    lineWidth: 3,
-                };
-            }
+            let time = 0;
+            this.highlightAnimation = animate.infinite((dt) => {
+                time += dt;
+
+                for (const targetId of this.dropTargets) {
+                    this.stage.getView(targetId).stroke = {
+                        color: targetId === this.hoverNode ? "gold" : "lightblue",
+                        lineWidth: 3 + (1.5 * Math.cos(time / 750)),
+                    };
+                }
+            });
         }
 
         const view = this.stage.getView(this.topNode);
@@ -141,6 +161,8 @@ class TouchRecord extends BaseTouchRecord {
     }
 
     onend(state, mousePos) {
+        this.stopHighlight();
+
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
             if (view && view.onclick) {

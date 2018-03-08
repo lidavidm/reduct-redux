@@ -299,6 +299,7 @@ export const rect = baseShape("roundedRect", {
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
     ctx.fillRect(x, y, w, h);
     if (shouldStroke) {
+        // TODO: stroke opacity, etc
         ctx.strokeRect(x, y, w, h);
     }
     // TODO: notches
