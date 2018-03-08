@@ -305,8 +305,9 @@ export default transform({
             stepAnimation: (semant, stage, state, expr) => {
                 const callee = state.getIn([ "nodes", expr.get("callee") ]);
                 const isCalleeLambda = callee.get("type") === "lambda";
-                const lambdaBody = isCalleeLambda ? callee.get("body") : null;
-                const lambdaView = isCalleeLambda ? stage.views[callee.get("id")] : null;
+
+                const introDuration = animate.scaleDuration(400, "expr-apply");
+                const outroDuration = animate.scaleDuration(400, "expr-apply");
                 const argView = stage.views[expr.get("argument")];
                 const applyView = stage.views[expr.get("id")];
 
@@ -327,26 +328,38 @@ export default transform({
 
                 // Jump argument to hole
                 const calleeView = stage.views[expr.get("callee")];
-                let centerX = (calleeView.pos.x + (0.5 * calleeView.size.w))
-                    - (0.5 * argView.size.w);
+                const lambdaBody = isCalleeLambda ? callee.get("body") : null;
+                const lambdaView = isCalleeLambda ? stage.views[callee.get("id")] : null;
+
+                let centerX = gfx.centerPos(calleeView).x - gfx.absolutePos(applyView).x;
                 if (isCalleeLambda) {
                     centerX = gfx.centerPos(stage.views[callee.get("arg")]).x
                         - gfx.absolutePos(lambdaView).x;
                 }
-                return animate.tween(argView, {
+
+                const jumpTween = animate.tween(argView, {
                     pos: {
                         x: [ centerX, animate.Easing.Linear ],
                         y: [ argView.pos.y - 75, animate.Easing.Projectile(animate.Easing.Linear) ],
                     },
                 }, {
                     duration: animate.scaleDuration(500, "expr-apply"),
-                }).then(() => {
+                });
+
+                if (!isCalleeLambda) {
+                    return jumpTween.then(() => {
+                        return animate.fx.shatter(stage, stage.getView(expr.get("id")), {
+                            introDuration,
+                            outroDuration,
+                        });
+                    });
+                }
+
+                return jumpTween.then(() => {
                     const clearPreview = [];
 
                     const duration = animate.scaleDuration(700, "expr-apply");
                     const totalTime = duration + animate.scaleDuration(50, "expr-apply");
-                    const introDuration = animate.scaleDuration(400, "expr-apply");
-                    const outroDuration = animate.scaleDuration(400, "expr-apply");
                     // How long to wait before clearing the 'animating' flag
                     const restTime = totalTime + introDuration + outroDuration;
 
