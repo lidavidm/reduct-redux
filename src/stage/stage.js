@@ -21,6 +21,7 @@ class TouchRecord extends BaseTouchRecord {
     constructor(...args) {
         super(...args);
         this.dropTargets = [];
+        this.dropTweens = [];
         this.highlightAnimation = null;
     }
 
@@ -29,11 +30,16 @@ class TouchRecord extends BaseTouchRecord {
         this.stopHighlight();
         this.highlightAnimation = null;
         this.dropTargets = [];
+        this.dropTweens = [];
     }
 
     stopHighlight() {
         for (const id of this.dropTargets) {
             this.stage.getView(id).stroke = null;
+        }
+
+        for (const tween of this.dropTweens) {
+            tween.undo();
         }
 
         if (this.highlightAnimation) {
@@ -58,6 +64,18 @@ class TouchRecord extends BaseTouchRecord {
                     (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
                 ));
             });
+
+            for (const targetId of this.dropTargets) {
+                const view = this.stage.getView(targetId);
+                if (view.type === "text") continue;
+
+                this.dropTweens.push(animate.tween(view, {
+                    padding: { left: 40, right: 40 },
+                }, {
+                    duration: 600,
+                    easing: animate.Easing.Cubic.Out,
+                }));
+            }
 
             let time = 0;
             this.highlightAnimation = animate.infinite((dt) => {
