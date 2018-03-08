@@ -185,8 +185,8 @@ class TouchRecord extends BaseTouchRecord {
             if (this.stage.toolbox.containsPoint(bottom) &&
                 !this.stage.getState().get("toolbox").includes(this.topNode)) {
                 Logging.log("toolbox-reject", this.stage.saveNode(this.topNode));
-                this.stage.bumpAwayFromEdges(this.topNode);
             }
+            this.stage.bumpAwayFromEdges(this.topNode);
             this.stage.views[this.topNode].opacity = 1.0;
         }
 
