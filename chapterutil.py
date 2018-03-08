@@ -4,13 +4,23 @@ CLI utility to convert between level JSON and chapter CSV.
 """
 
 import argparse
+import ast
 import json
 import csv
 import os
 import sys
 
 
-fieldnames = ["board", "goal", "textgoal", "toolbox", "defines", "globals", "syntax", "animationScales"]
+fieldnames = {
+    "board": ast.literal_eval,
+    "goal": ast.literal_eval,
+    "textgoal": str,
+    "toolbox": ast.literal_eval,
+    "defines": lambda x: ast.literal_eval(x) if x else None,
+    "globals": ast.literal_eval,
+    "syntax": ast.literal_eval,
+    "animationScales": ast.literal_eval,
+}
 singleton_fields = {"textgoal", "globals", "animationScales"}
 field_defaults = {
     "animationScales": {},
@@ -44,8 +54,23 @@ def json2csv(infile, outfile):
 
 
 def csv2json(infile, outfile):
-    pass
+    with open(outfile) as outf:
+        chapter = json.load(outf)
 
+    levels = []
+    with open(infile) as inf:
+        reader = csv.DictReader(inf)
+        for lvl in reader:
+            level = {}
+            for field, converter in fieldnames.items():
+                val = converter(lvl[field])
+                if val and isinstance(val, list) and len(val) == 1 and not val[0]:
+                    pass
+                elif val:
+                    level[field] = val
+            levels.append(level)
+
+    print(json.dumps(levels, indent=4))
 
 def main():
     parser = argparse.ArgumentParser(description="Turn a JSON file into CSV, or take a CSV file and a JSON file and replace the JSON file's levels with the CSV file's.")
