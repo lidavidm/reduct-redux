@@ -459,6 +459,14 @@ export default transform({
                 });
             },
             stepSound: "heatup",
+            validateStep: (semant, state, expr) => {
+                const callee = state.getIn([ "nodes", expr.get("callee") ]);
+                const kind = semant.kind(callee);
+                if (kind === "value" && callee.get("type") !== "lambda") {
+                    return expr.get("callee");
+                }
+                return null;
+            },
             smallStep: (semant, stage, state, expr) => {
                 const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
                     stage,
