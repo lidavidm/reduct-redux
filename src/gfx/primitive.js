@@ -69,6 +69,8 @@ export function roundRect(ctx, x, y, width, height, radius, fill, stroke, stroke
     }
     ctx.closePath();
     if (fill) ctx.fill();
+    // Don't shadow a stroke
+    ctx.shadowColor = "rgba(0,0,0,0)";
     if (stroke) strokeWithOpacity(ctx, strokeOpacity);
 }
 

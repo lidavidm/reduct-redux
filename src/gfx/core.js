@@ -259,18 +259,18 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
                 });
                 shouldStroke = true;
             }
-            else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
-                if (node.get("complete")) {
-                    primitive.setStroke(ctx, {
-                        lineWidth: 5,
-                        color: "pink",
-                    });
-                    shouldStroke = true;
-                }
-            }
             else {
                 primitive.setStroke(ctx, null);
             }
+
+            if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
+                if (node.get("complete")) {
+                    ctx.shadowColor = "DeepPink";
+                    ctx.shadowBlur = 10;
+                    ctx.shadowOffsetY = 0;
+                }
+            }
+
 
             draw(ctx, this,
                  x, y,
