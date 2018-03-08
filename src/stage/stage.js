@@ -18,10 +18,38 @@ import BaseTouchRecord from "./touchrecord";
 import BaseStage from "./basestage";
 
 class TouchRecord extends BaseTouchRecord {
+    constructor(...args) {
+        super(...args);
+        this.dropTargets = [];
+    }
+
+    reset() {
+        super.reset();
+        this.dropTargets = [];
+    }
+
     onstart() {
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
+
+            // Highlight droppable holes
+            const state = this.stage.getState();
+            const nodes = state.get("nodes");
+
+            state.get("board").forEach((id) => {
+                this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
+                    nodes, id,
+                    (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
+                ));
+            });
+
+            for (const targetId of this.dropTargets) {
+                this.stage.getView(targetId).stroke = {
+                    color: "lightblue",
+                    lineWidth: 3,
+                };
+            }
         }
 
         const view = this.stage.getView(this.topNode);
