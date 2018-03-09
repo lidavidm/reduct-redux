@@ -8,6 +8,7 @@ import * as level from "./game/level";
 import * as progression from "./game/progression";
 import es6 from "./semantics/es6";
 import Stage from "./stage/stage";
+import TutorialStage from "./stage/tutorial";
 import ChapterEndStage from "./stage/chapterend";
 import * as undo from "./reducer/undo";
 
@@ -154,7 +155,7 @@ function initialize() {
 
 function start() {
     animate.clock.cancelAll();
-    stg = new Stage(canvas, 800, 600, store, views, es6);
+    stg = new TutorialStage(canvas, 800, 600, store, views, es6);
     window.stage = stg;
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];

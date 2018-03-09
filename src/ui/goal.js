@@ -53,7 +53,7 @@ export default class Goal {
                 subexpScale: 1,
             }, gfx.baseProjection));
 
-            this.textGoal = this.stage.allocate(gfx.patch3(gfx.constant(container), {
+            this.container = this.stage.allocate(gfx.patch3(gfx.constant(container), {
                 left: Loader.images["caption-long-left"],
                 middle: Loader.images["caption-long-mid"],
                 right: Loader.images["caption-long-right"],
@@ -98,7 +98,7 @@ export default class Goal {
             x: 0, y: 0, sx: 1, sy: 1,
         });
 
-        const view = this.stage.views[this.textGoal ? this.textGoal : this.container];
+        const view = this.stage.views[this.container];
         view.prepare(null, null, state, this.stage);
         view.draw(null, null, state, this.stage, {
             x: alien.size.w, y: 5, sx: 1, sy: 1,
