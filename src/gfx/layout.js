@@ -34,7 +34,7 @@ export function sticky(projection, direction, options) {
         this.anchor.x = 0;
         this.anchor.y = 0;
         if (direction === "bottom") {
-            this.pos.y = stage.height - this.size.h;
+            this.pos.y = stage.height - this.size.h - this.sticky.margin;
         }
         else if (direction === "top") {
             this.pos.y = this.sticky.margin;
