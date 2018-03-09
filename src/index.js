@@ -155,7 +155,12 @@ function initialize() {
 
 function start() {
     animate.clock.cancelAll();
-    stg = new TutorialStage(canvas, 800, 600, store, views, es6);
+    if (progression.currentLevel() === 0) {
+        stg = new TutorialStage(canvas, 800, 600, store, views, es6);
+    }
+    else {
+        stg = new Stage(canvas, 800, 600, store, views, es6);
+    }
     window.stage = stg;
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
