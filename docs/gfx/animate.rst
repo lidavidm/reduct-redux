@@ -14,18 +14,25 @@ The animation framework.
 .. autofunction:: animate.addUpdateListener
 
 .. autoclass:: animate.Easing
-   :members: Color, Projectile
+   :members: Projectile
 
-   .. autoclass:: animate.Easing.Quadratic
+   .. autoclass:: Quadratic
       :members:
-   .. autoclass:: animate.Easing.Cubic
+   .. autoclass:: Cubic
       :members:
-   .. autoclass:: animate.Easing.Exponential
+   .. autoclass:: Exponential
       :members:
+   .. autofunction:: Color
 
-.. autoclass:: animate.InfiniteTween
+      More explanation written in reST.
 
 .. autoclass:: animate.Clock
    :members:
+
+.. autoclass:: animate.Tween
+
+.. autoclass:: animate.InterpolateTween
+
+.. autoclass:: animate.InfiniteTween
 
 .. autoattribute:: animate.clock

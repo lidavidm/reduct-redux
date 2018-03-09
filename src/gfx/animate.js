@@ -6,6 +6,12 @@ import chroma from "chroma-js";
 
 /**
  * A set of easing functions.
+ *
+ * @example
+ * animate.tween(view, { pos: { x: 0 } }, {
+ *     duration: 500,
+ *     easing: animate.Easing.Linear,
+ * });
  */
 export const Easing = {
     /**
@@ -61,7 +67,32 @@ export const Easing = {
     },
 
     /**
-     * Color tween.
+     * Interpolate between colors in the CIELAB color space (so it
+     * looks more natural than directly tweening RGB values).
+     *
+     * Right now this easing is not automatically applied. To tween a
+     * color, pass the final color as the target value and
+     * additionally specify the source and target colors to this
+     * easing function, passing the return value as the easing option.
+     *
+     * @param {Function} easing - The underlying easing function to use.
+     * @param {String} src - The start color.
+     * @param {String} dst - The final color.
+     *
+     * @example
+     * // Use linear interpolation underneath
+     * animate.tween(view, { color: "#000" }, {
+     *     duration: 500,
+     *     easing: animate.Easing.Color(animate.Easing.Linear, view.color, "#000"),
+     * });
+     * @example
+     * // Use cubic interpolation underneath
+     * animate.tween(view, { color: "#000" }, {
+     *     duration: 500,
+     *     easing: animate.Easing.Color(animate.Easing.Cubic.In, view.color, "#000"),
+     * });
+     *
+     * @returns {Function} The easing function.
      */
     Color: (easing, src, dst) => {
         const scale = chroma.scale([ src, dst ]).mode("lch");
@@ -69,7 +100,8 @@ export const Easing = {
     },
 
     /**
-     * Parabolic projectile trajectory tween.
+     * Parabolic projectile trajectory tween. Used similarly to
+     * :func:`Color`.
      */
     Projectile: (easing) => (start, stop, t) => {
         const dy = stop - start;
@@ -79,7 +111,9 @@ export const Easing = {
     },
 };
 
-
+/**
+ * The base class for a tween.
+ */
 export class Tween {
     constructor(clock, options) {
         this.clock = clock;
@@ -119,6 +153,11 @@ export class Tween {
 }
 
 
+/**
+ * A tween that interpolates from a start value to an end value.
+ *
+ * @augments animate.Tween
+ */
 export class InterpolateTween extends Tween {
     constructor(clock, properties, duration, options) {
         super(clock, options);
@@ -243,6 +282,12 @@ export class Clock {
         this.listeners.push(f);
     }
 
+    /**
+     * Update all tweens by the given delta time. If any tweens are
+     * still running, automatically requests a new animation frame,
+     * otherwise pauses the clock. This helps save CPU cycles and
+     * battery power when no animations are running.
+     */
     tick(t) {
         const dt = this.scale * (t - this.lastTimestamp);
         const completed = [];
@@ -274,7 +319,26 @@ export class Clock {
     }
 
     /**
-     * Add a tween to this clock.
+     * Add a :class:`InterpolateTween` tween to this clock.
+     *
+     * @param {Object} target - The object whose properties should be tweened.
+     * @param {Object} properties - A dictionary of property values to
+     * be tweened. The RHS should be the final value of the
+     * property. It can also be a list, where in order, the list
+     * (optionally) contains the start value, the final value, and an
+     * easing function to use for just that property. Properties can
+     * be nested, e.g. passing ``{ pos: { x: 0 }}`` will tween
+     * ``target.pos.x`` to 0.
+     * @param {Object} options - Various options for the tween.
+     * @param {number} [options.duration=300] - The duration of the tween.
+     * @param {Function} [options.easing=animate.Easing.Linear] - The
+     * default easing function to use.
+     * @param {number} [options.restTime] - If given, an amount of
+     * time to wait before decrementing the ``animating`` counter on
+     * ``target``. Some views use this counter to avoid performing
+     * layout on children that are being animated, so that the
+     * animation is not overridden by the view.
+     * @returns {animate.InterpolateTween} The tween object.
      */
     tween(target, properties, options) {
         const duration = options.duration || 300;
@@ -372,6 +436,9 @@ export class Clock {
 
 /**
  * The default clock.
+ *
+ * @example
+ * // clock example
  */
 export const clock = new Clock();
 
