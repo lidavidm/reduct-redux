@@ -43,7 +43,7 @@ extensions = [
     'sphinx.ext.mathjax',
 ]
 
-js_source_path = ["../src", "../src/gfx"]
+js_source_path = ["../src", "../src/gfx", "../src/gfx/fx"]
 root_for_relative_js_paths = "../src"
 primary_domain = "js"
 

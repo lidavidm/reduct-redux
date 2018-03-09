@@ -30,9 +30,21 @@ The animation framework.
    :members:
 
 .. autoclass:: animate.Tween
+   :members:
 
 .. autoclass:: animate.InterpolateTween
+   :members:
 
 .. autoclass:: animate.InfiniteTween
+   :members:
 
 .. autoattribute:: animate.clock
+
+----------------
+Built-in Effects
+----------------
+
+This module ships with a number of handy effects, accessible through
+``animate.fx``.
+
+.. autofunction:: fx.splosion

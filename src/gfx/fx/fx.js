@@ -1,8 +1,15 @@
+/**
+ * Handy built-in effects.
+ */
+
 import Loader from "../../loader";
 import Audio from "../../resource/audio";
 import * as gfx from "../core";
 import * as animate from "../animate";
 
+/**
+ * An explosion effect.
+ */
 export function splosion(stage, pos, color="gold", numOfParticles=20, explosionRadius=100) {
     const parts = [];
     const tweens = [];

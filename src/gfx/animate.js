@@ -118,6 +118,10 @@ export class Tween {
     constructor(clock, options) {
         this.clock = clock;
         this.options = options;
+        /**
+         * The underlying Promise object of this tween, which is
+         * resolved when the tween finishes.
+         */
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -130,11 +134,22 @@ export class Tween {
         return false;
     }
 
+    /**
+     * A convenience function to register a callback for when the
+     * tween finishes.
+     * @returns {Promise}
+     */
     then(cb1, cb2) {
         return this.promise.then(cb1, cb2);
     }
 
+    /**
+     * Pause this tween and resume execution after a specified delay.
+     * @param {number} ms
+     * @returns The tween itself.
+     */
     delay(ms) {
+        // TODO: respect Clock.scale
         this.status = "paused";
         setTimeout(() => {
             this.status = "running";
@@ -143,6 +158,9 @@ export class Tween {
         return this;
     }
 
+    /**
+     * Force this tween to mark itself as completed.
+     */
     completed() {
         this.status = "completed";
         this.resolve();
@@ -237,6 +255,10 @@ export class InterpolateTween extends Tween {
 
 /**
  * A tween that continues running until explicitly stopped.
+ *
+ * @param clock
+ * @param {Function} updater - A function that is called on every tick
+ * with the delta-time value. It can return ``true`` to stop running.
  */
 export class InfiniteTween extends Tween {
     constructor(clock, updater, options) {
@@ -260,6 +282,9 @@ export class InfiniteTween extends Tween {
         return true;
     }
 
+    /**
+     * Stop running this infinite tween.
+     */
     stop() {
         this.stopped = true;
     }
@@ -274,6 +299,16 @@ export class Clock {
         this.tweens = [];
         this.running = false;
         this.lastTimestamp = null;
+        /**
+         * A global scale factor applied to tween durations. This is
+         * dynamic, i.e. instead of statically changing the durations
+         * of new tweens, this value is multiplied by the delta time
+         * used to update tweens. Thus, changing this affects
+         * animations in progress. However, it will not dynamically
+         * affect :func:`animate.after`, which does scale its duration
+         * according to this, but does not readjust its duration
+         * afterwards.
+         */
         this.scale = 1.0;
         this.tick = this.tick.bind(this);
     }
@@ -329,7 +364,9 @@ export class Clock {
      * easing function to use for just that property. Properties can
      * be nested, e.g. passing ``{ pos: { x: 0 }}`` will tween
      * ``target.pos.x`` to 0.
-     * @param {Object} options - Various options for the tween.
+     * @param {Object} options - Various options for the tween. Any
+     * options not described here are passed to the tween
+     * constructor—see :class:`animate.InterpolateTween`.
      * @param {number} [options.duration=300] - The duration of the tween.
      * @param {Function} [options.easing=animate.Easing.Linear] - The
      * default easing function to use.
@@ -408,6 +445,13 @@ export class Clock {
         return result;
     }
 
+    /**
+     * Directly add a tween to this clock.
+     *
+     * Starts the clock if paused.
+     *
+     * @param {animate.Tween} tween
+     */
     addTween(tween) {
         this.tweens.push(tween);
         if (!this.running) {
@@ -417,6 +461,9 @@ export class Clock {
         return tween;
     }
 
+    /**
+     * Start the clock, if paused.
+     */
     start() {
         if (!this.running) {
             this.running = true;
@@ -425,6 +472,9 @@ export class Clock {
         }
     }
 
+    /**
+     * Cancel all tweens on this clock and stop the clock.
+     */
     cancelAll() {
         this.running = false;
         this.lastTimestamp = null;
@@ -511,6 +561,12 @@ export function after(ms) {
 
 let scales = {};
 
+/**
+ * Set the duration scale factor for a given category.
+ *
+ * @param {String} category
+ * @param {number} factor
+ */
 export function setDurationScale(category, factor) {
     scales[category] = factor;
 }
@@ -519,6 +575,17 @@ export function replaceDurationScales(_scales) {
     scales = Object.assign({}, _scales);
 }
 
+/**
+ * Scale a duration by the given categories' scale factors.
+ *
+ * @param {number} duration
+ * @param {...String} categories
+ *
+ * @example
+ * animate.tween(view, { opacity: 0 }, {
+ *     duration: animate.scaleDuration(300, "expr-add", "global-scale"),
+ * });
+ */
 export function scaleDuration(ms, ...categories) {
     for (const category of categories) {
         ms *= (typeof scales[category] === "undefined" ? 1.0 : scales[category]);
