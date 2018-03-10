@@ -121,57 +121,6 @@ export default class Sidebar {
             }
         }
 
-        this.stage.views[result].shadow = false;
-        this.stage.views[result].stroke = { lineWidth: 1, color: "gray" };
-
-        return this.stage.allocate(gfx.layout.vbox(gfx.constant(
-            this.stage.allocate(gfx.layout.hbox(
-                gfx.constant(this.stage.allocate(gfx.text(`def ${name}`))),
-                {
-                    radius: 0,
-                    padding: {
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        inner: 15,
-                    },
-                    color: "salmon",
-                    stroke: {
-                        lineWidth: 0,
-                        color: "rgba(0,0,0,0)",
-                    },
-                    subexpScale: 1.0,
-                }
-            )),
-            this.stage.allocate(gfx.layout.hbox(
-                gfx.constant(
-                    this.stage.allocate(gfx.text("    ")),
-                    id
-                ),
-                {
-                    subexpScale: 1.0,
-                    padding: {
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        inner: 0,
-                    },
-                },
-                gfx.baseProjection
-            ))
-        ), {
-            color: "OrangeRed",
-            padding: {
-                top: 10,
-                left: 15,
-                inner: 5,
-                right: 10,
-                bottom: 10,
-            },
-            horizontalAlign: 0,
-            shadow: true,
-        }));
+        return id;
     }
 }

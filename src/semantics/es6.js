@@ -22,7 +22,7 @@ export default transform({
             if (expr.type !== "define") {
                 return null;
             }
-            return [ expr.name, expr.body ];
+            return [ expr.name, expr ];
         },
 
         extractGlobalNames: (semant, name) => {
