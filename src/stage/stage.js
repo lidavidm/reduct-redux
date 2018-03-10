@@ -197,6 +197,7 @@ class TouchRecord extends BaseTouchRecord {
             // Drag something into hole
             Audio.play("pop");
             this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
+            animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
         }
         else if (this.isExpr && this.dragged && this.hoverNode && this.topNode) {
             // Clear application previews (otherwise they stick around
@@ -224,6 +225,7 @@ class TouchRecord extends BaseTouchRecord {
                 // Take item out of toolbox
                 Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
                 this.stage.store.dispatch(action.useToolbox(this.topNode));
+                animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
             }
             else {
                 Logging.log("toolbox-addback", this.stage.saveNode(this.topNode));

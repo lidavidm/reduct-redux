@@ -6,6 +6,7 @@ import Loader from "../../loader";
 import Audio from "../../resource/audio";
 import * as gfx from "../core";
 import * as animate from "../animate";
+import * as primitive from "../primitive";
 
 /**
  * An explosion effect.
@@ -306,6 +307,47 @@ export function emerge(stage, state, bodyView, resultIds) {
     });
 
     return Promise.all(tweens).then(() => {
+        stage.removeEffect(id);
+    });
+}
+
+export function expandingShape(stage, projection, options={}) {
+    const centerPos = gfx.centerPos(projection);
+    const state = {
+        pos: centerPos,
+        size: gfx.absoluteSize(projection),
+        color: options.color || "white",
+        scale: { x: 1, y: 1 },
+        radius: projection.radius,
+        opacity: 1,
+    };
+
+    const { ctx } = stage;
+    const id = stage.addEffect({
+        prepare: () => {},
+        draw: () => {
+            const w = state.size.w * state.scale.x;
+            const h = state.size.h * state.scale.y;
+            primitive.setStroke(ctx, { lineWidth: 2, color: state.color });
+            primitive.roundRect(
+                ctx,
+                state.pos.x - (w / 2), state.pos.y - (h / 2),
+                w, h,
+                state.scale.x * state.radius,
+                false, true, state.opacity,
+            );
+        },
+    });
+
+    return animate.tween(state, {
+        scale: {
+            x: 4,
+            y: 4,
+        },
+        opacity: 0,
+    }, {
+        duration: options.duration || 500,
+    }).then(() => {
         stage.removeEffect(id);
     });
 }
