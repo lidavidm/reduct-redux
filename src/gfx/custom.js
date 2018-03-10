@@ -36,13 +36,13 @@ export function argumentBar() {
             for (const name of define.get("params")) {
                 txt.text = name;
                 txt.prepare(null, null, state, stage);
-                const size = Math.max(txt.size.w, 40);
-                this.names.push([ name, size + 10 ]);
-                this.size.w += size + 20;
+                const size = txt.size.w;
+                this.names.push([ name, size ]);
+                this.size.w += Math.max(size, 40) + 20;
             }
         }
 
-        this.size.w = Math.max(0, this.size.w - 10);
+        this.size.w = Math.max(0, this.size.w - 20);
     };
     projection.draw = function(id, exprId, state, stage, offset) {
         const { ctx } = stage;
@@ -58,7 +58,7 @@ export function argumentBar() {
         const dy = sy * 5;
         let dx = 0;
         for (const [ name, width ] of this.names) {
-            const w = sx * width;
+            const w = sx * Math.max(width, 40);
             ctx.fillStyle = "#000";
             primitive.roundRect(
                 ctx,
@@ -83,13 +83,13 @@ export function argumentBar() {
 
             txt.text = name;
             txt.draw(null, null, state, stage, Object.assign({}, offset, {
-                x: x + dx + (5 * offset.sx),
+                x: x + dx + Math.max(0, (w - width) / 2),
                 y: y + (5 * offset.sy),
                 sx,
                 sy,
             }));
 
-            dx += sx * (width + 10);
+            dx += w + (20 * sx);
         }
 
         ctx.restore();
