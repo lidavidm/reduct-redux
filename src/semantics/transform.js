@@ -620,7 +620,8 @@ export default function transform(definition) {
                 return "hole";
             }
         }
-        else if (target.get("type") === "lambdaArg") {
+        else if (target.get("type") === "lambdaArg" &&
+                 !state.getIn([ "nodes", target.get("parent"), "parent" ])) {
             return "arg";
         }
         return false;
