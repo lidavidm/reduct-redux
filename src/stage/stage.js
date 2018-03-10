@@ -426,6 +426,9 @@ export default class Stage extends BaseStage {
         if (numSidebarEntries === 0) {
             this.sidebarWidth = 0;
         }
+        else {
+            this.sidebarWidth = 250;
+        }
     }
 
     registerNewDefinedNames(names) {
