@@ -125,6 +125,16 @@ export default class BaseStage {
         x = Math.max(minX, Math.min(x, maxX));
         y = Math.max(minY, Math.min(y, maxY));
 
+        if (x >= this.width - w - 250 && y <= 120) {
+            // Overlaps buttons in corner
+            if (y >= 60) {
+                y = 130;
+            }
+            else {
+                x = this.width - w - 250;
+            }
+        }
+
         return { x, y };
     }
 
