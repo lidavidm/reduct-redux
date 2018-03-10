@@ -4,31 +4,6 @@
     "language": "JavaScript",
     "levels": [
         {
-            "board": ["'star' == 'star'"],
-            "goal": ["true"],
-            "toolbox": []
-        },
-        {
-            "board": ["'triangle' == _"],
-            "goal": ["true"],
-            "toolbox":"'triangle'"
-        },
-        {
-            "board": ["'triangle' == 'star'", "_ == 'star'"],
-            "goal": ["true", "false"],
-            "toolbox": ["'star'", "'triangle'", "'rect'"]
-        },
-        {
-            "board": ["_ == _"],
-            "goal": ["false"],
-            "toolbox": ["'triangle'", "'star'", "'rect'", "'star'", "'triangle'", "'rect'"]
-        },
-        {
-            "board": ["(x) => 'star' == x"],
-            "goal": ["true"],
-            "toolbox": ["'rect'", "'star'"]
-        },
-        {
             "board": ["(x) => x == 1", "(y) => 2 == y", "2"],
             "goal": ["true", "false"],
             "toolbox": ["1", "3", "4"]
