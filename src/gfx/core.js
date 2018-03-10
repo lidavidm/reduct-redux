@@ -1,3 +1,7 @@
+/**
+ * @module gfx/core
+ */
+
 import * as image from "./image";
 import * as notch from "./notch";
 import * as primitive from "./primitive";
