@@ -18,27 +18,37 @@ export function argumentBar() {
         this.size = { w: 0, h: 50 };
 
         const define = state.getIn([ "nodes", exprId ]);
-        let body = state.getIn([ "nodes", define.get("body") ]);
 
-        if (define.get("params") === "dynamic") {
-            while (body.get("type") === "lambda") {
-                const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
-                txt.text = name;
-                txt.prepare(null, null, state, stage);
-                const size = Math.max(txt.size.w, 40);
-                this.names.push([ name, size + 10 ]);
-                this.size.w += size + 20;
-                body = state.getIn([ "nodes", body.get("body") ]);
-            }
+        if (define.get("type") === "define" && define.get("params") === "dynamic") {
+            // let body = state.getIn([ "nodes", define.get("body") ]);
+            // while (body.get("type") === "lambda") {
+            //     const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
+            //     txt.text = name;
+            //     txt.prepare(null, null, state, stage);
+            //     const size = Math.max(txt.size.w, 40);
+            //     this.names.push([ name, size + 10 ]);
+            //     this.size.w += size + 20;
+            //     body = state.getIn([ "nodes", body.get("body") ]);
+            // }
+
+            throw "Dynamic parameter lists are unimplemented.";
         }
         else {
             this.names = [];
-            for (const name of define.get("params")) {
-                txt.text = name;
-                txt.prepare(null, null, state, stage);
-                const size = txt.size.w;
-                this.names.push([ name, size ]);
-                this.size.w += Math.max(size, 40) + 20;
+            const params = define.get("type") === "define" ?
+                  define.get("params") :
+                  state.getIn([ "nodes", state.getIn([ "globals", define.get("name") ]), "params" ]);
+            for (const name of params) {
+                if (define.get(`arg_${name}`)) {
+
+                }
+                else {
+                    txt.text = name;
+                    txt.prepare(null, null, state, stage);
+                    const size = txt.size.w;
+                    this.names.push([ name, size ]);
+                    this.size.w += Math.max(size, 40) + 20;
+                }
             }
         }
 

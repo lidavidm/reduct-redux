@@ -674,12 +674,22 @@ export default transform({
                 },
                 cases: {
                     enabled: {
-                        type: "default",
+                        type: "hbox",
                         color: "OrangeRed",
                         radius: 0,
                         shape: "()",
                         strokeWhenChild: false,
-                        fields: ["name"],
+                        children: [
+                            {
+                                type: "text",
+                                text: "{name}",
+                            },
+                            {
+                                type: "generic",
+                                view: [ "custom", "argumentBar" ],
+                                options: {},
+                            },
+                        ],
                     },
                 },
             },
