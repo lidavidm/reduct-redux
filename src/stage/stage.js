@@ -39,6 +39,7 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         for (const tween of this.dropTweens) {
+            tween.completed();
             tween.undo();
         }
 
@@ -47,47 +48,48 @@ class TouchRecord extends BaseTouchRecord {
         }
     }
 
+    startHighlight() {
+        const state = this.stage.getState();
+        const nodes = state.get("nodes");
+
+        state.get("board").forEach((id) => {
+            if (id === this.topNode) return;
+
+            this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
+                nodes, id,
+                (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
+            ));
+        });
+
+        for (const targetId of this.dropTargets) {
+            const view = this.stage.getView(targetId);
+            if (view.type === "text") continue;
+
+            this.dropTweens.push(animate.tween(view, {
+                padding: { left: 40, right: 40 },
+            }, {
+                duration: 600,
+                easing: animate.Easing.Cubic.Out,
+            }));
+        }
+
+        let time = 0;
+        this.highlightAnimation = animate.infinite((dt) => {
+            time += dt;
+
+            for (const targetId of this.dropTargets) {
+                this.stage.getView(targetId).stroke = {
+                    color: targetId === this.hoverNode ? "gold" : "lightblue",
+                    lineWidth: 3 + (1.5 * Math.cos(time / 750)),
+                };
+            }
+        });
+    }
+
     onstart() {
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
-
-            // Highlight droppable holes
-            const state = this.stage.getState();
-            const nodes = state.get("nodes");
-
-            state.get("board").forEach((id) => {
-                if (id === this.topNode) return;
-
-                this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
-                    nodes, id,
-                    (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
-                ));
-            });
-
-            for (const targetId of this.dropTargets) {
-                const view = this.stage.getView(targetId);
-                if (view.type === "text") continue;
-
-                this.dropTweens.push(animate.tween(view, {
-                    padding: { left: 40, right: 40 },
-                }, {
-                    duration: 600,
-                    easing: animate.Easing.Cubic.Out,
-                }));
-            }
-
-            let time = 0;
-            this.highlightAnimation = animate.infinite((dt) => {
-                time += dt;
-
-                for (const targetId of this.dropTargets) {
-                    this.stage.getView(targetId).stroke = {
-                        color: targetId === this.hoverNode ? "gold" : "lightblue",
-                        lineWidth: 3 + (1.5 * Math.cos(time / 750)),
-                    };
-                }
-            });
         }
 
         const view = this.stage.getView(this.topNode);
@@ -104,6 +106,10 @@ class TouchRecord extends BaseTouchRecord {
                     Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
                 }
 
+                if (!this.dragged) {
+                    // Highlight droppable holes
+                    this.startHighlight();
+                }
                 this.dragged = true;
 
                 if (this.isExpr && this.fromToolbox) {
@@ -133,6 +139,9 @@ class TouchRecord extends BaseTouchRecord {
         if (this.isExpr && mouseDown && this.targetNode) {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
+                // Highlight droppable holes
+                this.startHighlight();
+
                 this.stage.views[this.topNode].opacity = 1.0;
                 this.topNode = newSelected;
                 this.dragOffset = this.stage.computeDragOffset(
