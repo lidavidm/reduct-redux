@@ -6,7 +6,7 @@ import * as gfx from "./core";
 const optionFields = [
     "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
     "notches", "subexpScale", "shadow", "shadowColor", "horizontalAlign",
-    "stroke", "highlightColor"
+    "stroke", "highlightColor", "ellipsize"
 ];
 
 function shapeToProjection(shape, options) {

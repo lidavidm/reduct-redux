@@ -211,6 +211,7 @@ export default transform({
                 horizontalAlign: 0.0,
                 color: "lightblue",
                 subexpScale: 1.0,
+                ellipsize: true,
                 rows: [
                     {
                         type: "default",

@@ -140,11 +140,27 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         horizontalAlign: 0.5,
         padding: { top: 5, left: 0, inner: 5, right: 0, bottom: 5 },
         subexpScale: 0.85,
+        ellipsize: false,
     }, options));
     const baseDraw = projection.draw;
     projection.type = "vbox";
 
+    projection.isEllipsized = function(id, exprId, state) {
+        const parent = state.getIn([ "nodes", exprId, "parent" ]);
+        const parent2 = state.getIn([ "nodes", parent, "parent" ]);
+        const parent3 = state.getIn([ "nodes", parent2, "parent" ]);
+        return this.ellipsize &&
+            (id === exprId) && // Are we the top-level projection for this expression?
+            parent && parent2 && parent3;
+    };
+
     projection.prepare = function(id, exprId, state, stage) {
+        if (this.isEllipsized(id, exprId, state)) {
+            this.size.w = 50;
+            this.size.h = 50;
+            return;
+        }
+
         let maxX = 50;
         let y = this.padding.top;
 
@@ -174,8 +190,26 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
     projection.draw = function(id, exprId, state, stage, offset) {
         baseDraw.call(this, id, exprId, state, stage, offset);
 
-        const [ sx, sy ] = util.absoluteScale(this, offset);
         const { x, y } = util.topLeftPos(this, offset);
+
+        if (this.isEllipsized(id, exprId, state)) {
+            const [ sx, sy ] = util.absoluteScale(this, offset);
+            const { ctx } = stage;
+
+            ctx.save();
+            ctx.fillStyle = "gray";
+            const r = 5 * Math.min(sx, sy);
+            const w = offset.sx * this.scale.x * (this.size.w - (4 * r));
+            const h = offset.sy * this.scale.y * this.size.h;
+            ctx.beginPath();
+            ctx.arc(x + (2 * r), y + (h / 2), r, 0, 2 * Math.PI, false);
+            ctx.arc(x + (2 * r) + (w / 2), y + (h / 2), r, 0, 2 * Math.PI, false);
+            ctx.arc(x + (2 * r) + w, y + (h / 2), r, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.restore();
+
+            return;
+        }
 
         const subOffset = Object.assign({}, offset, {
             x: x,
