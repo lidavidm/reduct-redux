@@ -390,12 +390,16 @@ export class Clock {
      * ``target``. Some views use this counter to avoid performing
      * layout on children that are being animated, so that the
      * animation is not overridden by the view.
+     * @param {boolean} [options.setAnimatingFlag] - Don't set the
+     * ``animating`` counter.
      * @returns {animate.InterpolateTween} The tween object.
      */
     tween(target, properties, options) {
         const duration = options.duration || 300;
         const props = [];
         const defaultEasing = options.easing || Easing.Linear;
+        const setAnimatingFlag = typeof options.setAnimatingFlag === "undefined" ? true :
+              options.setAnimatingFlag;
 
         const buildProps = (subTarget, subProps, easing) => {
             for (let [ prop, final ] of Object.entries(subProps)) {
@@ -434,11 +438,13 @@ export class Clock {
         buildProps(target, properties, defaultEasing);
         // Set flag so that layout functions know to skip this view,
         // if it is a child. Use counter to allow overlapping tweens.
-        if (typeof target.animating === "number") {
-            target.animating += 1;
-        }
-        else {
-            target.animating = 1;
+        if (setAnimatingFlag) {
+            if (typeof target.animating === "number") {
+                target.animating += 1;
+            }
+            else {
+                target.animating = 1;
+            }
         }
 
         const decrementAnimatingCount = () => {
@@ -451,12 +457,14 @@ export class Clock {
         };
 
         const result = this.addTween(new InterpolateTween(this, props, duration, options));
-        result.then(() => {
-            if (options.restTime) {
-                return after(options.restTime);
-            }
-            return null;
-        }).then(() => decrementAnimatingCount());
+        if (setAnimatingFlag) {
+            result.then(() => {
+                if (options.restTime) {
+                    return after(options.restTime);
+                }
+                return null;
+            }).then(() => decrementAnimatingCount());
+        }
         return result;
     }
 

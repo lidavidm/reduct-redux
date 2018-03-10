@@ -70,6 +70,8 @@ class TouchRecord extends BaseTouchRecord {
             }, {
                 duration: 600,
                 easing: animate.Easing.Cubic.Out,
+                // Don't override layout
+                setAnimatingFlag: false,
             }));
         }
 
