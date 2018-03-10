@@ -288,6 +288,37 @@ export default transform({
             // Filter to determine which subexpressions to evaluate
             // before stepping the overall expression.
             substepFilter: (semant, state, expr, field) => field === "condition",
+            stepAnimation: (semant, stage, state, expr) => {
+                const nodes = state.get("nodes");
+                const cond = nodes.get(expr.get("condition")).get("value");
+                const color = cond ? "#00F" : "#F00";
+                const branch = stage.getView(cond ? expr.get("positive") : expr.get("negative"));
+
+                const view = stage.getView(expr.get("condition"));
+
+                view.stroke = { lineWidth: 0, color };
+                branch.stroke = { lineWidth: 0, color };
+                const tween = animate.tween(view, { stroke: { lineWidth: 4 } }, {
+                    duration: animate.scaleDuration(700, "expr-conditional"),
+                    easing: animate.Easing.Cubic.In,
+                });
+
+                return tween
+                    // .then(() => animate.tween(branch, { stroke: { lineWidth: 4 } }, {
+                    //     duration: animate.scaleDuration(700, "expr-conditional"),
+                    //     easing: animate.Easing.Cubic.In,
+                    // }))
+                    .then(() => animate.fx.blink(stage, branch, {
+                        times: 3,
+                        color,
+                        speed: animate.scaleDuration(300, "expr-conditional"),
+                    }))
+                    .then(() => animate.after(animate.scaleDuration(700, "expr-conditional")))
+                    .then(() => {
+                        view.stroke = null;
+                        branch.stroke = null;
+                    });
+            },
         },
 
         apply: {
