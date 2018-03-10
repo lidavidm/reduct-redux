@@ -318,7 +318,7 @@ export function expandingShape(stage, projection, options={}) {
         size: gfx.absoluteSize(projection),
         color: options.color || "white",
         scale: { x: 1, y: 1 },
-        radius: projection.radius,
+        radius: projection.radius || 0,
         opacity: 1,
     };
 
