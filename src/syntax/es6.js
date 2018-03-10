@@ -165,14 +165,16 @@ export function makeParser(jssemant) {
         case "FunctionDeclaration": {
             const name = node.id.name;
             if (node.params.length === 0) {
-                return jssemant.define(name, parseNode(node.body, macros));
+                return jssemant.define(name, [], parseNode(node.body, macros));
             }
 
             let result = parseNode(node.body, macros);
+            const args = [];
             for (const arg of node.params.reverse()) {
+                args.push(arg.name);
                 result = jssemant.lambda(jssemant.lambdaArg(arg.name), result);
             }
-            return jssemant.define(name, result);
+            return jssemant.define(name, args, result);
         }
 
         case "VariableDeclaration": {
@@ -186,7 +188,7 @@ export function makeParser(jssemant) {
             const name = node.declarations[0].id.name;
             const body = parseNode(node.declarations[0].init, macros);
 
-            return jssemant.define(name, body);
+            return jssemant.define(name, [], body);
         }
 
         default: return fail(`parsers.es6: Unrecognized ES6 node type ${node.type}`, node);

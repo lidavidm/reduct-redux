@@ -20,14 +20,26 @@ export function argumentBar() {
         const define = state.getIn([ "nodes", exprId ]);
         let body = state.getIn([ "nodes", define.get("body") ]);
 
-        while (body.get("type") === "lambda") {
-            const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
-            txt.text = name;
-            txt.prepare(null, null, state, stage);
-            const size = Math.max(txt.size.w, 40);
-            this.names.push([ name, size + 10 ]);
-            this.size.w += size + 20;
-            body = state.getIn([ "nodes", body.get("body") ]);
+        if (define.get("params") === "dynamic") {
+            while (body.get("type") === "lambda") {
+                const name = state.getIn([ "nodes", body.get("arg"), "name" ]);
+                txt.text = name;
+                txt.prepare(null, null, state, stage);
+                const size = Math.max(txt.size.w, 40);
+                this.names.push([ name, size + 10 ]);
+                this.size.w += size + 20;
+                body = state.getIn([ "nodes", body.get("body") ]);
+            }
+        }
+        else {
+            this.names = [];
+            for (const name of define.get("params")) {
+                txt.text = name;
+                txt.prepare(null, null, state, stage);
+                const size = Math.max(txt.size.w, 40);
+                this.names.push([ name, size + 10 ]);
+                this.size.w += size + 20;
+            }
         }
 
         this.size.w = Math.max(0, this.size.w - 10);

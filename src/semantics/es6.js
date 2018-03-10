@@ -717,7 +717,7 @@ export default transform({
         define: {
             kind: "statement",
             ignoreForVictory: true,
-            fields: ["name"],
+            fields: ["name", "params"],
             subexpressions: ["body"],
             targetable: (semant, state, expr) => {
                 return !expr.has("parent");
