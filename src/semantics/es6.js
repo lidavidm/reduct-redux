@@ -686,6 +686,9 @@ export default transform({
                 }
                 return null;
             },
+            // If expr is nested, don't care about subexpressions
+            substepFilter: (semant, stage, expr, _field) =>
+                !(expr.has ? expr.has("parent") : typeof expr.parent !== "undefined"),
             projection: {
                 type: "dynamic",
                 field: (state, exprId) => {
