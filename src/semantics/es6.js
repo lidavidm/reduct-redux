@@ -657,10 +657,22 @@ export default transform({
             smallStep: (semant, stage, state, expr) => {
                 let res = state.get("globals").get(expr.get("name"));
                 if (!res) return null;
+
                 const resNode = state.get("nodes").get(res);
                 if (resNode.get("type") === "define") {
                     res = resNode.get("body");
                 }
+
+                if (!expr.has("parent") && expr.get("params") && expr.get("params").length > 0) {
+                    const params = expr.get("params");
+                    const [ _, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
+                        stage,
+                        state, res,
+                        params.map(name => expr.get(`arg_${name}`)),
+                    );
+                    return [ expr.get("id"), newNodeIds, addedNodes ];
+                }
+
                 const result = semant.clone(res, state.get("nodes"));
                 return [
                     expr.get("id"),
