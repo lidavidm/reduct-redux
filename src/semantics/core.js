@@ -213,6 +213,7 @@ export const missing = {
     fields: [],
     subexpressions: [],
     locked: false,
+    alwaysTargetable: true,
     type: () => ({
         types: new Map(),
         complete: false,

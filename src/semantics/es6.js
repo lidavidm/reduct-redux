@@ -20,7 +20,12 @@ export default transform({
             if (expr.params) {
                 const params = expr.params;
                 thunk = () => {
-                    const missing = params.map(_ => semant.missing());
+                    const missing = params.map(_ => {
+                        // TODO: why is locked not respected?
+                        const a = semant.missing();
+                        a.locked = false;
+                        return a;
+                    });
                     return semant.reference(expr.name, expr.params, ...missing);
                 };
             }

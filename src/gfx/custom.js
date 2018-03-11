@@ -134,5 +134,23 @@ export function argumentBar() {
 
         ctx.restore();
     };
+
+    projection.children = function* (exprId, state) {
+        const expr = state.getIn([ "nodes", exprId ]);
+        if (expr.get("type") === "define") return;
+        const params = state.getIn([
+            "nodes",
+            state.getIn([ "globals", expr.get("name") ]),
+            "params",
+        ]);
+
+        for (const name of params) {
+            const subexprField = `arg_${name}`;
+            if (expr.get(subexprField)) {
+                const child = expr.get(subexprField);
+                yield [ child, child ];
+            }
+        }
+    };
     return projection;
 }
