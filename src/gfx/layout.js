@@ -151,6 +151,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         return this.ellipsize &&
             (id === exprId) && // Are we the top-level projection for this expression?
             parent && parent2 &&
+            state.getIn([ "nodes", exprId, "type" ]) === state.getIn([ "nodes", parent, "type"]) &&
             state.getIn([ "nodes", parent, "type" ]) === state.getIn([ "nodes", parent2, "type"]);
     };
 
