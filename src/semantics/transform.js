@@ -75,7 +75,10 @@ export default function transform(definition) {
             for (const fieldName of exprDefinition.fields) {
                 result[fieldName] = params[argPointer++];
             }
-            for (const fieldName of exprDefinition.subexpressions) {
+            const subexprs = typeof exprDefinition.subexpressions === "function" ?
+                  exprDefinition.subexpressions(module, immutable.Map(result))
+                  : exprDefinition.subexpressions;
+            for (const fieldName of subexprs) {
                 result[fieldName] = params[argPointer++];
             }
             return result;
@@ -106,7 +109,10 @@ export default function transform(definition) {
         const defn = definition.expressions[type];
         if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
 
-        const subexprs = defn.reductionOrder || defn.subexpressions;
+        const subexprBase = defn.reductionOrder || defn.subexpressions;
+        const subexprs = typeof subexprBase === "function" ?
+              subexprBase(module, expr)
+              : defn.reductionOrder || defn.subexpressions;
         // Handle notches
         if (defn.notches && defn.notches.length > 0) {
             const result = subexprs.slice();

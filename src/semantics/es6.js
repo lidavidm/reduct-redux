@@ -617,8 +617,11 @@ export default transform({
 
         reference: {
             kind: "expression",
-            fields: ["name"],
-            subexpressions: [],
+            fields: ["name", "params"],
+            subexpressions: (semant, expr) => {
+                const params = (expr.get ? expr.get("params") : expr.params) || [];
+                return params.map(name => `arg_${name}`);
+            },
             stepSound: "heatup",
             type: (semant, state, types, expr) => ({
                 types: new Map(),
