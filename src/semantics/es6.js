@@ -14,8 +14,20 @@ export default transform({
             if (expr.type !== "define") {
                 return null;
             }
+            // we have access to expr.params
             // needs to be a thunk
-            return [ expr.name, () => semant.reference(expr.name) ];
+            let thunk = null;
+            if (expr.params) {
+                const params = expr.params;
+                thunk = () => {
+                    const missing = params.map(_ => semant.missing());
+                    return semant.reference(expr.name, expr.params, ...missing);
+                };
+            }
+            else {
+                thunk = () => semant.reference(expr.name, []);
+            }
+            return [ expr.name, thunk ];
         },
 
         extractGlobals: (semant, expr) => {

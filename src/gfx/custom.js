@@ -38,9 +38,25 @@ export function argumentBar() {
             const params = define.get("type") === "define" ?
                   define.get("params") :
                   state.getIn([ "nodes", state.getIn([ "globals", define.get("name") ]), "params" ]);
-            for (const name of params) {
-                if (define.get(`arg_${name}`)) {
 
+            for (const name of params) {
+                const subexprField = `arg_${name}`;
+                if (define.get(subexprField)) {
+                    const subexprId = define.get(subexprField);
+                    const childProjection = stage.getView(subexprId);
+                    childProjection.parent = this;
+                    childProjection.pos.x = this.size.w;
+                    childProjection.anchor.x = 0;
+                    childProjection.anchor.y = 0;
+                    // TODO: use subexpScale
+                    childProjection.scale.x = 0.85;
+                    childProjection.scale.y = 0.85;
+
+                    childProjection.prepare(subexprId, subexprId, state, stage);
+                    // TODO: use padding
+                    this.size.w += (childProjection.size.w * childProjection.scale.x) + 20;
+                    this.names.push([ null, subexprId ]);
+                    childProjection.pos.y = (this.size.h - childProjection.size.h * childProjection.scale.y) / 2;
                 }
                 else {
                     txt.text = name;
@@ -68,38 +84,52 @@ export function argumentBar() {
         const dy = sy * 5;
         let dx = 0;
         for (const [ name, width ] of this.names) {
-            const w = sx * Math.max(width, 40);
-            ctx.fillStyle = "#000";
-            primitive.roundRect(
-                ctx,
-                x + dx, y + (dy - 3), w, h,
-                sx * 22,
-                true,
-                false,
-                1.0,
-                null
-            );
+            if (name === null) {
+                const subexprId = width;
+                const subOffset = Object.assign({}, offset, {
+                    x,
+                    y,
+                    sx: offset.sx * this.scale.x,
+                    sy: offset.sy * this.scale.y,
+                    opacity: this.opacity * offset.opacity,
+                });
 
-            ctx.fillStyle = "#555";
-            primitive.roundRect(
-                ctx,
-                x + dx, y + dy, w, h,
-                sx * 22,
-                true,
-                false,
-                1.0,
-                null
-            );
+                stage.getView(subexprId).draw(subexprId, subexprId, state, stage, subOffset);
+            }
+            else {
+                const w = sx * Math.max(width, 40);
+                ctx.fillStyle = "#000";
+                primitive.roundRect(
+                    ctx,
+                    x + dx, y + (dy - 3), w, h,
+                    sx * 22,
+                    true,
+                    false,
+                    1.0,
+                    null
+                );
 
-            txt.text = name;
-            txt.draw(null, null, state, stage, Object.assign({}, offset, {
-                x: x + dx + Math.max(0, (w - width) / 2),
-                y: y + (5 * offset.sy),
-                sx,
-                sy,
-            }));
+                ctx.fillStyle = "#555";
+                primitive.roundRect(
+                    ctx,
+                    x + dx, y + dy, w, h,
+                    sx * 22,
+                    true,
+                    false,
+                    1.0,
+                    null
+                );
 
-            dx += w + (20 * sx);
+                txt.text = name;
+                txt.draw(null, null, state, stage, Object.assign({}, offset, {
+                    x: x + dx + Math.max(0, (w - width) / 2),
+                    y: y + (5 * offset.sy),
+                    sx,
+                    sy,
+                }));
+
+                dx += w + (20 * sx);
+            }
         }
 
         ctx.restore();
