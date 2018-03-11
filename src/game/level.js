@@ -19,8 +19,9 @@ export function startLevel(description, parse, store, stage) {
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
-    const globalDefinedNames = Object.keys(description.globals)
-          .map(name => stage.semantics.parser.extractGlobalNames(stage.semantics, name));
+    const globalDefinedNames = Object.entries(description.globals)
+          .map(([ name, expr ]) =>
+               stage.semantics.parser.extractGlobalNames(stage.semantics, name, expr));
     const newDefinedNames = description.board
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])

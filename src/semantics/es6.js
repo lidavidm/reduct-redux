@@ -22,10 +22,12 @@ export default transform({
             if (expr.type !== "define") {
                 return null;
             }
+            // We have access to expr.params
             return [ expr.name, expr ];
         },
 
-        extractGlobalNames: (semant, name) => {
+        extractGlobalNames: (semant, name, expr) => {
+            // We have access to expr.params
             return [ name, () => semant.reference(name) ];
         },
 
