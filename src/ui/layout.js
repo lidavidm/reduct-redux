@@ -1,4 +1,5 @@
 import * as gfx from "../gfx/core";
+import * as progression from "../game/progression";
 
 /**
  * Seeded random number gen code from olsn @
@@ -131,10 +132,12 @@ export function ianPacking(stage, bounds, nodeIds) {
         }
     }
 
-    let maxDist = 100000000;
+    let maxDist = progression.currentLevel() === 0 ? 100000000 : 0;
     let maxIdx = -1;
     for (let i = 0; i < candidates.length; i++) {
-        if (pairwiseTotals[i] < maxDist) {
+        if (progression.currentLevel() === 0 ?
+            pairwiseTotals[i] < maxDist :
+            pairwiseTotals[i] > maxDist) {
             maxDist = pairwiseTotals[i];
             maxIdx = i;
         }
@@ -145,4 +148,133 @@ export function ianPacking(stage, bounds, nodeIds) {
     }
 
     return null;
+}
+
+export function repulsorPacking(stage, bounds, nodeIds) {
+    nodeIds.sort();
+
+    SEED = 6;
+
+    for (const nodeId of nodeIds) {
+        stage.views[nodeId].prepare(nodeId, nodeId, stage.getState(), stage);
+    }
+
+    const sizeCache = {};
+    const getSize = function(id) {
+        if (!sizeCache[id]) {
+            sizeCache[id] = gfx.absoluteSize(stage.views[id]);
+        }
+        return sizeCache[id];
+    };
+
+    const intersects = function(positions, id1, id2) {
+        const pos1 = positions.get(id1);
+        const sz1 = getSize(id1);
+        const pos2 = positions.get(id2);
+        const sz2 = getSize(id2);
+        return !(pos2.x > pos1.x + sz1.w ||
+                 pos2.x + sz2.w < pos1.x ||
+                 pos2.y > pos1.y + sz1.h ||
+                 pos2.y + sz2.h < pos1.y);
+    };
+
+    const distance = function(positions, id1, id2) {
+        const pos1 = positions.get(id1);
+        const sz1 = getSize(id1);
+        const pos2 = positions.get(id2);
+        const sz2 = getSize(id2);
+
+        // TODO: cast ray between origins, find intersecting points
+        // with both their sides and take distances of that
+
+        return Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
+    };
+
+    const positions = new Map();
+    let force = 40;
+
+    // if (progression.currentLevel() === 0) {
+        const centerX = bounds.x + (bounds.w / 2);
+        const centerY = bounds.y + (bounds.h / 2);
+        for (const nodeId of nodeIds) {
+            positions.set(nodeId, { x: centerX, y: centerY });
+        }
+    // }
+    // else {
+    //     for (const nodeId of nodeIds) {
+    //         const size = getSize(nodeId);
+
+    //         let y = 0;
+    //         while (y < 50) {
+    //             y = (seededRandom() * (bounds.h - size.h)) + bounds.y;
+    //         }
+
+    //         const x = Math.max((seededRandom() * (bounds.w - size.w)) + bounds.x, bounds.x);
+
+    //         const pos = { x, y };
+    //         positions.set(nodeId, pos);
+    //     }
+    // }
+
+
+    for (let i = 0; i < 20; i++) {
+        const forces = new Map();
+
+        for (const id1 of nodeIds) {
+            forces.set(id1, { x: 0, y: 0 });
+        }
+
+        for (const id1 of nodeIds) {
+            for (const id2 of nodeIds) {
+                if (id1 <= id2) continue;
+
+                let dx = 0;
+                let dy = 0;
+                // const pos1 = positions.get(id1);
+                // const pos2 = positions.get(id2);
+
+                // if (intersects(positions, id1, id2)) {
+                //     dx = force;
+                //     dy = force;
+
+                //     if (pos1.x < pos2.x) {
+                //         dx *= -1;
+                //     }
+
+                //     if (pos1.y < pos2.y) {
+                //         dy *= -1;
+                //     }
+
+                // }
+                // else {
+                    // Use centerpos
+                    const pos1 = gfx.centerPos(stage.getView(id1));
+                    const pos2 = gfx.centerPos(stage.getView(id2));
+                    const d = Math.max(1, distance(positions, id1, id2)) / 5;
+                    const delx = pos2.x - pos1.x;
+                    const dely = pos2.y - pos1.y;
+                const angle = i === 0 ? seededRandom(0, 2 * Math.PI) : Math.atan2(dely, delx);
+
+                    dx = -(force / d) * Math.cos(angle);
+                    dy = -(force / d) * Math.sin(angle);
+                // }
+
+                forces.get(id1).x += dx;
+                forces.get(id1).y += dy;
+                forces.get(id2).x -= dx;
+                forces.get(id2).y -= dy;
+            }
+        }
+
+        for (const id1 of nodeIds) {
+            // TODO constrain via bounds
+            const pos = positions.get(id1);
+            pos.x += forces.get(id1).x;
+            pos.y += forces.get(id1).y;
+        }
+
+        force = Math.max(25, force * 0.9);
+    }
+
+    return positions;
 }
