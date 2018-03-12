@@ -491,7 +491,7 @@ export class Clock {
         if (!this.running) {
             this.running = true;
             this.lastTimestamp = window.performance.now();
-            window.requestAnimationFrame(this.tick.bind(this));
+            window.requestAnimationFrame(this.tick);
         }
     }
 

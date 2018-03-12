@@ -55,7 +55,7 @@ function initialize() {
     window.stage = stg;
 
     animate.addUpdateListener(() => {
-        stg.drawImpl();
+        stg.draw();
     });
 
     // TODO: resize scene as whole, then resize stage
