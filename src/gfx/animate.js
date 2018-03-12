@@ -1,9 +1,31 @@
+/**
+ * The animation & tweening library.
+ */
+
 import chroma from "chroma-js";
 
+/**
+ * A set of easing functions.
+ *
+ * @example
+ * animate.tween(view, { pos: { x: 0 } }, {
+ *     duration: 500,
+ *     easing: animate.Easing.Linear,
+ * });
+ */
 export const Easing = {
+    /**
+     * A linear tween.
+     */
     Linear: (start, stop, t) => start + (t * (stop - start)),
 
+    /**
+     * Quadratic tweens.
+     */
     Quadratic: {
+        /**
+         * An ease-in tween.
+         */
         In: (start, stop, t) => start + (t * t * (stop - start)),
         Out: (start, stop, t) => start - (t * (t - 2) * (stop - start)),
         InOut: (start, stop, t) => {
@@ -16,6 +38,9 @@ export const Easing = {
         },
     },
 
+    /**
+     * Cubic tweens.
+     */
     Cubic: {
         In: (start, stop, t) => start + (t * t * t * (stop - start)),
         Out: (start, stop, t) => {
@@ -32,17 +57,52 @@ export const Easing = {
         },
     },
 
+    /**
+     * Exponential tweens.
+     */
     Exponential: {
         Out: (start, stop, t) => {
             return ((stop - start) * (1 - (2 ** (-10 * t)))) + start;
         },
     },
 
+    /**
+     * Interpolate between colors in the CIELAB color space (so it
+     * looks more natural than directly tweening RGB values).
+     *
+     * Right now this easing is not automatically applied. To tween a
+     * color, pass the final color as the target value and
+     * additionally specify the source and target colors to this
+     * easing function, passing the return value as the easing option.
+     *
+     * @param {Function} easing - The underlying easing function to use.
+     * @param {String} src - The start color.
+     * @param {String} dst - The final color.
+     *
+     * @example
+     * // Use linear interpolation underneath
+     * animate.tween(view, { color: "#000" }, {
+     *     duration: 500,
+     *     easing: animate.Easing.Color(animate.Easing.Linear, view.color, "#000"),
+     * });
+     * @example
+     * // Use cubic interpolation underneath
+     * animate.tween(view, { color: "#000" }, {
+     *     duration: 500,
+     *     easing: animate.Easing.Color(animate.Easing.Cubic.In, view.color, "#000"),
+     * });
+     *
+     * @returns {Function} The easing function.
+     */
     Color: (easing, src, dst) => {
         const scale = chroma.scale([ src, dst ]).mode("lch");
         return (start, stop, t) => scale(easing(0.0, 1.0, t));
     },
 
+    /**
+     * Parabolic projectile trajectory tween. Used similarly to
+     * :func:`Color`.
+     */
     Projectile: (easing) => (start, stop, t) => {
         const dy = stop - start;
         // console.log(start, stop, t, start + (-4 * dy * t * t) + (4 * dy * t));
@@ -51,11 +111,17 @@ export const Easing = {
     },
 };
 
-
+/**
+ * The base class for a tween.
+ */
 export class Tween {
     constructor(clock, options) {
         this.clock = clock;
         this.options = options;
+        /**
+         * The underlying Promise object of this tween, which is
+         * resolved when the tween finishes.
+         */
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -68,11 +134,22 @@ export class Tween {
         return false;
     }
 
+    /**
+     * A convenience function to register a callback for when the
+     * tween finishes.
+     * @returns {Promise}
+     */
     then(cb1, cb2) {
         return this.promise.then(cb1, cb2);
     }
 
+    /**
+     * Pause this tween and resume execution after a specified delay.
+     * @param {number} ms
+     * @returns The tween itself.
+     */
     delay(ms) {
+        // TODO: respect Clock.scale
         this.status = "paused";
         setTimeout(() => {
             this.status = "running";
@@ -81,6 +158,9 @@ export class Tween {
         return this;
     }
 
+    /**
+     * Force this tween to mark itself as completed.
+     */
     completed() {
         this.status = "completed";
         this.resolve();
@@ -91,6 +171,11 @@ export class Tween {
 }
 
 
+/**
+ * A tween that interpolates from a start value to an end value.
+ *
+ * @augments animate.Tween
+ */
 export class InterpolateTween extends Tween {
     constructor(clock, properties, duration, options) {
         super(clock, options);
@@ -168,6 +253,13 @@ export class InterpolateTween extends Tween {
     }
 }
 
+/**
+ * A tween that continues running until explicitly stopped.
+ *
+ * @param clock
+ * @param {Function} updater - A function that is called on every tick
+ * with the delta-time value. It can return ``true`` to stop running.
+ */
 export class InfiniteTween extends Tween {
     constructor(clock, updater, options) {
         super(clock, options);
@@ -190,25 +282,62 @@ export class InfiniteTween extends Tween {
         return true;
     }
 
+    /**
+     * Stop running this infinite tween.
+     */
     stop() {
         this.stopped = true;
     }
 }
 
+/**
+ * An animation loop and tween manager.
+ */
 export class Clock {
     constructor() {
         this.listeners = [];
         this.tweens = [];
         this.running = false;
         this.lastTimestamp = null;
-        this.scale = 1.0;
+        /**
+         * A global scale factor applied to tween durations. This is
+         * dynamic, i.e. instead of statically changing the durations
+         * of new tweens, this value is multiplied by the delta time
+         * used to update tweens. Thus, changing this affects
+         * animations in progress. However, it will not dynamically
+         * affect :func:`animate.after`, which does scale its duration
+         * according to this, but does not readjust its duration
+         * afterwards.
+         */
+        this.scale = null;
         this.tick = this.tick.bind(this);
+    }
+
+    get scale() {
+        if (this._scale) {
+            return this._scale;
+        }
+        const el = document.querySelector("#animation-speed-slider");
+        if (el) {
+            return el.value;
+        }
+        return 1;
+    }
+
+    set scale(s) {
+        this._scale = s;
     }
 
     addUpdateListener(f) {
         this.listeners.push(f);
     }
 
+    /**
+     * Update all tweens by the given delta time. If any tweens are
+     * still running, automatically requests a new animation frame,
+     * otherwise pauses the clock. This helps save CPU cycles and
+     * battery power when no animations are running.
+     */
     tick(t) {
         const dt = this.scale * (t - this.lastTimestamp);
         const completed = [];
@@ -239,6 +368,30 @@ export class Clock {
         }
     }
 
+    /**
+     * Add a :class:`InterpolateTween` tween to this clock.
+     *
+     * @param {Object} target - The object whose properties should be tweened.
+     * @param {Object} properties - A dictionary of property values to
+     * be tweened. The RHS should be the final value of the
+     * property. It can also be a list, where in order, the list
+     * (optionally) contains the start value, the final value, and an
+     * easing function to use for just that property. Properties can
+     * be nested, e.g. passing ``{ pos: { x: 0 }}`` will tween
+     * ``target.pos.x`` to 0.
+     * @param {Object} options - Various options for the tween. Any
+     * options not described here are passed to the tween
+     * constructor—see :class:`animate.InterpolateTween`.
+     * @param {number} [options.duration=300] - The duration of the tween.
+     * @param {Function} [options.easing=animate.Easing.Linear] - The
+     * default easing function to use.
+     * @param {number} [options.restTime] - If given, an amount of
+     * time to wait before decrementing the ``animating`` counter on
+     * ``target``. Some views use this counter to avoid performing
+     * layout on children that are being animated, so that the
+     * animation is not overridden by the view.
+     * @returns {animate.InterpolateTween} The tween object.
+     */
     tween(target, properties, options) {
         const duration = options.duration || 300;
         const props = [];
@@ -307,6 +460,13 @@ export class Clock {
         return result;
     }
 
+    /**
+     * Directly add a tween to this clock.
+     *
+     * Starts the clock if paused.
+     *
+     * @param {animate.Tween} tween
+     */
     addTween(tween) {
         this.tweens.push(tween);
         if (!this.running) {
@@ -316,6 +476,9 @@ export class Clock {
         return tween;
     }
 
+    /**
+     * Start the clock, if paused.
+     */
     start() {
         if (!this.running) {
             this.running = true;
@@ -324,6 +487,9 @@ export class Clock {
         }
     }
 
+    /**
+     * Cancel all tweens on this clock and stop the clock.
+     */
     cancelAll() {
         this.running = false;
         this.lastTimestamp = null;
@@ -333,16 +499,46 @@ export class Clock {
     }
 }
 
+/**
+ * The default clock.
+ *
+ * @example
+ * // clock example
+ */
 export const clock = new Clock();
 
+/**
+ * Add a callback that is fired every animation tick.
+ *
+ * Useful to trigger a re-render whenever an animation updates.
+ *
+ * @param {Function} f - The function to be called.
+ */
 export function addUpdateListener(f) {
     clock.addUpdateListener(f);
 }
 
+/**
+ * Add a tween to the default clock (and start the clock if
+ * applicable).
+ *
+ * @param {Object} target - The object whose properties to tween.
+ * @param {Object} properties - A (nested) dictionary of property
+ * values to tween to.
+ * @param {Object} options - Other options for the tween. See
+ * :js:func:`~animate.Clock.tween`.
+ */
 export function tween(target, properties, options={}) {
     return clock.tween(target, properties, options);
 }
 
+/**
+ * Add an infinite tween to the default clock.
+ *
+ * @param {Function} updater - The update function. See
+ * :class:`~animate.InfiniteTween`.
+ * @param {Object} options
+ */
 export function infinite(updater, options={}) {
     return clock.addTween(new InfiniteTween(clock, updater, options));
 }
@@ -364,16 +560,28 @@ export function chain(target, ...properties) {
     return base;
 }
 
+/**
+ * A helper function to resolve a Promise after a specified delay.
+ *
+ * @param ms {number} The delay in milliseconds.
+ * @returns {Promise}
+ */
 export function after(ms) {
     return new Promise((resolve) => {
         window.setTimeout(function() {
             resolve();
-        }, ms * clock.scale);
+        }, ms / clock.scale);
     });
 }
 
 let scales = {};
 
+/**
+ * Set the duration scale factor for a given category.
+ *
+ * @param {String} category
+ * @param {number} factor
+ */
 export function setDurationScale(category, factor) {
     scales[category] = factor;
 }
@@ -382,6 +590,17 @@ export function replaceDurationScales(_scales) {
     scales = Object.assign({}, _scales);
 }
 
+/**
+ * Scale a duration by the given categories' scale factors.
+ *
+ * @param {number} duration
+ * @param {...String} categories
+ *
+ * @example
+ * animate.tween(view, { opacity: 0 }, {
+ *     duration: animate.scaleDuration(300, "expr-add", "global-scale"),
+ * });
+ */
 export function scaleDuration(ms, ...categories) {
     for (const category of categories) {
         ms *= (typeof scales[category] === "undefined" ? 1.0 : scales[category]);

@@ -127,6 +127,9 @@ export function learnSyntax(name) {
 }
 
 export function getLearnedSyntaxes() {
+    // Filter out undefined syntaxes
+    learnedSyntaxes = learnedSyntaxes.filter(name => getSyntaxDefinition(name));
+    save();
     return learnedSyntaxes;
 }
 

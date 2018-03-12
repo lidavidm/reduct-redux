@@ -34,7 +34,7 @@ export function sticky(projection, direction, options) {
         this.anchor.x = 0;
         this.anchor.y = 0;
         if (direction === "bottom") {
-            this.pos.y = stage.height - this.size.h;
+            this.pos.y = stage.height - this.size.h - this.sticky.margin;
         }
         else if (direction === "top") {
             this.pos.y = this.sticky.margin;
@@ -60,8 +60,14 @@ export function sticky(projection, direction, options) {
 }
 
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
+    if (options && options.padding) {
+        options.padding = Object.assign({
+            left: 10, inner: 5, right: 10,
+        }, options.padding);
+    }
+
     const projection = baseProjection(Object.assign({}, {
-        padding: { left: 10, inner: 10, right: 10 },
+        padding: { left: 10, inner: 5, right: 10 },
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
@@ -125,9 +131,14 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 }
 
 export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
+    if (options && options.padding) {
+        options.padding = Object.assign({
+            top: 5, left: 0, inner: 5, right: 0, bottom: 5,
+        }, options.padding);
+    }
     const projection = baseProjection(Object.assign({
         horizontalAlign: 0.5,
-        padding: { top: 10, left: 0, inner: 10, right: 0, bottom: 10 },
+        padding: { top: 5, left: 0, inner: 5, right: 0, bottom: 5 },
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
@@ -192,8 +203,8 @@ export function previewer(projection) {
 
             const duration = (this.previewOptions ? this.previewOptions.duration : 250) || 250;
             animate.tween(this.prevPreview, {
-                x: this.subexpScale,
-                y: this.subexpScale,
+                x: 1.0,
+                y: 1.0,
             }, {
                 duration,
                 easing: animate.Easing.Cubic.Out,
@@ -212,13 +223,18 @@ export function previewer(projection) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.preview) {
+            const subexpScale = (this.previewOptions && this.previewOptions.maxScale) ?
+                  this.previewOptions.maxScale : this.subexpScale;
             const temp = Object.assign({}, stage.views[this.preview], {
                 pos: {
                     x: this.pos.x + (0.5 * this.size.w),
                     y: this.pos.y,
                 },
                 shadow: false,
-                scale: this.prevPreview,
+                scale: {
+                    x: this.prevPreview.x * subexpScale,
+                    y: this.prevPreview.y * subexpScale,
+                },
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,
             });

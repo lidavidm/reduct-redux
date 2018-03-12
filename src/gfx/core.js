@@ -1,3 +1,7 @@
+/**
+ * @module gfx/core
+ */
+
 import * as image from "./image";
 import * as notch from "./notch";
 import * as primitive from "./primitive";
@@ -23,6 +27,7 @@ export function baseProjection(options) {
         scale: { x: 1, y: 1 },
         size: { w: 0, h: 0 },
         opacity: 1.0,
+        backgroundOpacity: 1.0,
     }, options);
 
     if (options && options.notches) {
@@ -219,7 +224,7 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             const [ sx, sy ] = util.absoluteScale(this, offset);
             const { x, y } = util.topLeftPos(this, offset);
 
-            util.setOpacity(ctx, this.opacity, offset);
+            util.setOpacity(ctx, this.opacity, offset, this.backgroundOpacity);
 
             const node = state.getIn([ "nodes", exprId ]);
 
@@ -258,18 +263,18 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
                 });
                 shouldStroke = true;
             }
-            else if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
-                if (node.get("complete")) {
-                    primitive.setStroke(ctx, {
-                        lineWidth: 5,
-                        color: "pink",
-                    });
-                    shouldStroke = true;
-                }
-            }
             else {
                 primitive.setStroke(ctx, null);
             }
+
+            if (node && !node.get("parent") && stage.semantics.kind(node) === "expression") {
+                if (node.get("complete")) {
+                    ctx.shadowColor = "DeepPink";
+                    ctx.shadowBlur = 10;
+                    ctx.shadowOffsetY = 0;
+                }
+            }
+
 
             draw(ctx, this,
                  x, y,
@@ -298,6 +303,7 @@ export const rect = baseShape("roundedRect", {
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke, notches) => {
     ctx.fillRect(x, y, w, h);
     if (shouldStroke) {
+        // TODO: stroke opacity, etc
         ctx.strokeRect(x, y, w, h);
     }
     // TODO: notches
@@ -305,7 +311,7 @@ export const rect = baseShape("roundedRect", {
 
 export const roundedRect = baseShape("roundedRect", {
     color: "lightgray",
-    radius: 20,
+    radius: 18,
     shadowColor: "#000",
     shadowOffset: 4,
     strokeWhenChild: true,  // Draw border when child of another expression

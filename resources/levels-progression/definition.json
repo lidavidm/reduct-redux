@@ -43,6 +43,31 @@
             "toolbox": "__unlimited;squarify"
         },
         {
+            "board": ["'star' == 'star'"],
+            "goal": ["true"],
+            "toolbox": []
+        },
+        {
+            "board": ["'triangle' == _"],
+            "goal": ["true"],
+            "toolbox":"'triangle'"
+        },
+        {
+            "board": ["'triangle' == 'star'", "_ == 'star'"],
+            "goal": ["true", "false"],
+            "toolbox": ["'star'", "'triangle'", "'rect'"]
+        },
+        {
+            "board": ["_ == _"],
+            "goal": ["false"],
+            "toolbox": ["'triangle'", "'star'", "'rect'", "'star'", "'triangle'", "'rect'"]
+        },
+        {
+            "board": ["(x) => 'star' == x"],
+            "goal": ["true"],
+            "toolbox": ["'rect'", "'star'"]
+        },
+        {
             "board": ["function addOne(x) { return _; }", "2", "4"],
             "goal": ["3", "6"],
             "toolbox": ["__unlimited;addOne", "x", "_ + 1"],
@@ -67,7 +92,7 @@
         {
             "board": ["_(3)", "_(4)", "_(8)"],
             "goal": ["3", "6", "8"],
-            "toolbox": ["__unlimited;addOne;", "__unlimited;doNothing;"]
+            "toolbox": ["__unlimited;addOne;","_(_)", "__unlimited;doNothing;"]
         },
         {
             "board": ["_(3)", "_(8)", "addOne(_)"],

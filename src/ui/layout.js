@@ -99,7 +99,8 @@ export function ianPacking(stage, bounds, nodeIds) {
     }
     // 3. When the list of candidates reaches a threshold #, quit.
 
-    // 4. Select the candidate with the greatest pairwise distance between expressions.
+    // 4. Select the candidate with the (least seems to work better?)
+    // pairwise distance between expressions.
     const pairwiseTotals = [];
     const pairwiseCalcs = [];
     const computePairwiseDist = function(a, b) {
@@ -130,10 +131,10 @@ export function ianPacking(stage, bounds, nodeIds) {
         }
     }
 
-    let maxDist = 0;
+    let maxDist = 100000000;
     let maxIdx = -1;
     for (let i = 0; i < candidates.length; i++) {
-        if (pairwiseTotals[i] > maxDist) {
+        if (pairwiseTotals[i] < maxDist) {
             maxDist = pairwiseTotals[i];
             maxIdx = i;
         }

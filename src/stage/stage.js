@@ -19,10 +19,76 @@ import BaseTouchRecord from "./touchrecord";
 import BaseStage from "./basestage";
 
 class TouchRecord extends BaseTouchRecord {
+    constructor(...args) {
+        super(...args);
+        this.dropTargets = [];
+        this.dropTweens = [];
+        this.highlightAnimation = null;
+    }
+
+    reset() {
+        super.reset();
+        this.stopHighlight();
+        this.highlightAnimation = null;
+        this.dropTargets = [];
+        this.dropTweens = [];
+    }
+
+    stopHighlight() {
+        for (const id of this.dropTargets) {
+            this.stage.getView(id).stroke = null;
+        }
+
+        for (const tween of this.dropTweens) {
+            tween.undo();
+        }
+
+        if (this.highlightAnimation) {
+            this.highlightAnimation.stop();
+        }
+    }
+
     onstart() {
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
+
+            // Highlight droppable holes
+            const state = this.stage.getState();
+            const nodes = state.get("nodes");
+
+            state.get("board").forEach((id) => {
+                if (id === this.topNode) return;
+
+                this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
+                    nodes, id,
+                    (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
+                ));
+            });
+
+            for (const targetId of this.dropTargets) {
+                const view = this.stage.getView(targetId);
+                if (view.type === "text") continue;
+
+                this.dropTweens.push(animate.tween(view, {
+                    padding: { left: 40, right: 40 },
+                }, {
+                    duration: 600,
+                    easing: animate.Easing.Cubic.Out,
+                }));
+            }
+
+            let time = 0;
+            this.highlightAnimation = animate.infinite((dt) => {
+                time += dt;
+
+                for (const targetId of this.dropTargets) {
+                    this.stage.getView(targetId).stroke = {
+                        color: targetId === this.hoverNode ? "gold" : "lightblue",
+                        lineWidth: 3 + (1.5 * Math.cos(time / 750)),
+                    };
+                }
+            });
         }
 
         const view = this.stage.getView(this.topNode);
@@ -115,6 +181,8 @@ class TouchRecord extends BaseTouchRecord {
     }
 
     onend(state, mousePos) {
+        this.stopHighlight();
+
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
             if (view && view.onclick) {
@@ -129,30 +197,15 @@ class TouchRecord extends BaseTouchRecord {
                     this.stage.referenceClicked(state, referenceID, mousePos);
                 }
             } else {
-                // Click on object to reduce
-                let selectedNode = this.topNode;
-
-                /*if (this.targetNode) {
-                    const targetLocked = state.getIn([ "nodes", this.targetNode, "locked" ]);
-                    if (!targetLocked) {
-                        selectedNode = this.targetNode;
-                    }
-                }*/
-
-                this.stage.step(state, selectedNode);
+                // Click on object to reduce; always targets toplevel node
+                this.stage.step(state, this.topNode);
             }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
-                 state.getIn([ "nodes", this.hoverNode, "type"]) === "missing") {
+                 this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
             // Drag something into hole
-            // Use type inference to decide whether hole can be filled
-            const holeType = state.getIn([ "nodes", this.hoverNode, "ty" ]);
-            const exprType = state.getIn([ "nodes", this.topNode, "ty" ]);
-            if (!holeType || !exprType || holeType === exprType) {
-                Audio.play("pop");
-
-                this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
-            }
+            Audio.play("pop");
+            this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
         }
         else if (this.isExpr && this.dragged && this.hoverNode && this.topNode) {
             // Clear application previews (otherwise they stick around
@@ -194,8 +247,8 @@ class TouchRecord extends BaseTouchRecord {
             if (this.stage.toolbox.containsPoint(bottom) &&
                 !this.stage.getState().get("toolbox").includes(this.topNode)) {
                 Logging.log("toolbox-reject", this.stage.saveNode(this.topNode));
-                this.stage.bumpAwayFromEdges(this.topNode);
             }
+            this.stage.bumpAwayFromEdges(this.topNode);
             this.stage.views[this.topNode].opacity = 1.0;
         }
 
@@ -212,7 +265,7 @@ export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
 
-        this.sidebarWidth = 250;
+        this.sidebarWidth = 0;
 
         this.stateGraph = new Network();
         this.alreadyWon = false;
