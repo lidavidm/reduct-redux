@@ -207,7 +207,6 @@ class TouchRecord extends BaseTouchRecord {
                     this.stage.functionDef = null;
                 }
                 this.stage.step(state, this.topNode);
-
             }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
@@ -288,13 +287,18 @@ export default class Stage extends BaseStage {
         this.goal = new Goal(this);
         this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
+        // TODO: this only allows one function definition be shown at
+        // a time - this will break with multitouch
         this.functionDef = null;
 
         this._currentlyReducing = {};
         this._newSyntax = [];
 
-        this.newDefinedNames = []; //Field to keep track of which function names are newly defined so that we big-step it during reduction.
-        this.mode = "hybrid"; //Field to keep track of the mode.
+        // Track of which function names are newly defined so that we
+        // big-step it during reduction.
+        this.newDefinedNames = [];
+        // Keep track of the reduction mode.
+        this.mode = "hybrid";
     }
 
     get touchRecordClass() {
@@ -816,7 +820,7 @@ export default class Stage extends BaseStage {
     /**
      * Helper that handles animation and updating the store for a small-step.
      */
-    step(state, selectedNode, override_mode = null) {
+    step(state, selectedNode, overrideMode=null) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
@@ -849,12 +853,9 @@ export default class Stage extends BaseStage {
             }
         };
 
-        var modee = this.mode;
-        if (override_mode){
-            modee = override_mode
-        }
+        const mode = overrideMode || this.mode;
         // const mode = document.querySelector("#evaluation-mode").value;
-        this.semantics.interpreter.reduce(this, state, node, modee, {
+        this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
@@ -1071,16 +1072,16 @@ export default class Stage extends BaseStage {
         step();
     }
 
-
     referenceClicked(state, referenceID, mousePos) {
-        const referenceNameNode = state.getIn(["nodes", referenceID]);
+        const referenceNameNode = state.getIn([ "nodes", referenceID ]);
         const name = referenceNameNode.get("name");
         const functionNodeID = state.get("globals").get(name);
         const type = state.get("nodes").get(functionNodeID).get("type");
-        if (type == "define") {
+        if (type === "define") {
             const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
             this.functionDef = new FunctionDef(this, state, name, functionBodyID, referenceID, mousePos);
-        } else {
+        }
+        else {
             this.functionDef = new FunctionDef(this, state, name, functionNodeID, referenceID, mousePos);
         }
     }
