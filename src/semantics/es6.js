@@ -712,15 +712,23 @@ export default transform({
                     return "default";
                 },
                 default: {
-                    type: "default",
-                    shape: "()",
-                    radius: 0,
+                    type: "hbox",
                     color: "OrangeRed",
+                    radius: 0,
+                    shape: "()",
                     strokeWhenChild: true,
-                    fields: [{
-                        field: "name",
-                        color: "gray",
-                    }],
+                    children: [
+                        {
+                            type: "text",
+                            text: "{name}",
+                            color: "gray",
+                        },
+                        {
+                            type: "generic",
+                            view: [ "custom", "argumentBar" ],
+                            options: {},
+                        },
+                    ],
                 },
                 cases: {
                     enabled: {

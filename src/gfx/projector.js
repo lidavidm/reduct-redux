@@ -85,13 +85,21 @@ function defaultProjector(definition) {
 }
 
 function textProjector(definition) {
+    const options = {};
+
+    for (const field of optionFields) {
+        if (typeof definition.projection[field] !== "undefined") {
+            options[field] = definition.projection[field];
+        }
+    }
+
     return function textProjectorFactory(stage, nodes, expr) {
         const textDefn = definition.projection.text;
         const text = typeof textDefn === "function" ? textDefn : textDefn.replace(
             /\{([a-zA-Z0-9]+)\}/,
             (match, field) => expr.get(field)
         );
-        return gfx.text(text);
+        return gfx.text(text, options);
     };
 }
 
