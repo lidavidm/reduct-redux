@@ -95,6 +95,26 @@ export function reduct(semantics, views) {
                 .set("nodes", newNodes)
                 .set("board", newBoard);
         }
+        case action.UNFOLD: {
+            const nodes = state.get("nodes");
+            const ref = nodes.get(act.nodeId);
+
+            return state
+                .set("nodes", nodes.withMutations((n) => {
+                    for (const node of act.addedNodes) {
+                        n.set(node.get("id"), node);
+                    }
+
+                    if (ref.has("parent")) {
+                        console.log(act.newNodeId);
+                        const parentId = ref.get("parent");
+                        n.set(
+                            parentId,
+                            n.get(parentId).set(ref.get("parentField"), act.newNodeId)
+                        );
+                    }
+                }));
+        }
         case action.BETA_REDUCE: {
             const queue = [ act.topNodeId, act.argNodeId ];
             const removedNodes = {};

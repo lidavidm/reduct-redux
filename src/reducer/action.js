@@ -7,6 +7,7 @@ export const DETACH = "detach";
 export const FILL_HOLE = "fill-hole";
 export const ATTACH_NOTCH = "attach-notch";
 export const SMALL_STEP = "small-step";
+export const UNFOLD = "unfold";
 export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
 export const VICTORY = "victory";
@@ -92,6 +93,18 @@ export function smallStep(nodeId, newNodeIds, newNodes) {
         topNodeId: nodeId,
         newNodeIds: newNodeIds,
         addedNodes: newNodes,
+    };
+}
+
+/**
+ * Unfold the definition of ``nodeId``.
+ */
+export function unfold(nodeId, newNodeId, addedNodes) {
+    return {
+        type: UNFOLD,
+        nodeId,
+        newNodeId,
+        addedNodes,
     };
 }
 

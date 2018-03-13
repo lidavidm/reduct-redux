@@ -1103,9 +1103,27 @@ export default class Stage extends BaseStage {
      */
     hideReferenceDefinition(mousePos) {
         if (this.functionDef && mousePos) {
-            const contains = this.functionDef.containsPoint(this.getState(), mousePos);
+            const state = this.getState();
+            const contains = this.functionDef.containsPoint(state, mousePos);
             if (contains) {
-                this.step(this.getState(), this.functionDef.referenceId, "small");
+                const [ clonedNode, addedNodes ] = this.semantics.clone(
+                    this.functionDef.id,
+                    state.get("nodes")
+                );
+                const tempNodes = state.get("nodes").withMutations((n) => {
+                    for (const node of addedNodes) {
+                        n.set(node.get("id"), node);
+                    }
+                    n.set(clonedNode.get("id"), clonedNode);
+                });
+                for (const node of addedNodes.concat([ clonedNode ])) {
+                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                }
+                this.store.dispatch(action.unfold(
+                    this.functionDef.referenceId,
+                    clonedNode.get("id"),
+                    addedNodes.concat([ clonedNode ])
+                ));
             }
             this.functionDef = null;
             return true;
