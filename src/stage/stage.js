@@ -1119,10 +1119,14 @@ export default class Stage extends BaseStage {
                 for (const node of addedNodes.concat([ clonedNode ])) {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
+
+                this.views[clonedNode.get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
+                this.views[clonedNode.get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
+
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
                     clonedNode.get("id"),
-                    addedNodes.concat([ clonedNode ])
+                    addedNodes.concat([ clonedNode.delete("parent").delete("parentField").set("locked", false) ])
                 ));
             }
             this.functionDef = null;

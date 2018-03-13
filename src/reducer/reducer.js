@@ -99,7 +99,7 @@ export function reduct(semantics, views) {
             const nodes = state.get("nodes");
             const ref = nodes.get(act.nodeId);
 
-            return state
+            let newState = state
                 .set("nodes", nodes.withMutations((n) => {
                     for (const node of act.addedNodes) {
                         n.set(node.get("id"), node);
@@ -114,6 +114,13 @@ export function reduct(semantics, views) {
                         );
                     }
                 }));
+
+            if (!ref.has("parent")) {
+                newState = newState
+                    .set("board", state.get("board").map(id => (id === act.nodeId ? act.newNodeId : id)));
+            }
+
+            return newState;
         }
         case action.BETA_REDUCE: {
             const queue = [ act.topNodeId, act.argNodeId ];
