@@ -34,6 +34,7 @@ class TouchRecord extends BaseTouchRecord {
         this.dropTweens = [];
     }
 
+    // TODO: refactor this onto the stage
     stopHighlight() {
         for (const id of this.dropTargets) {
             this.stage.getView(id).stroke = null;
@@ -104,7 +105,7 @@ class TouchRecord extends BaseTouchRecord {
 
         const referenceId = this.stage.getReferenceNameAtPos(mousePos);
         if (referenceId) {
-            this.stage.referenceClicked(this.stage.getState(), referenceId, mousePos);
+            this.stage.showReferenceDefinition(this.stage.getState(), referenceId);
         }
     }
 
@@ -1079,7 +1080,10 @@ export default class Stage extends BaseStage {
         step();
     }
 
-    referenceClicked(state, referenceId, mousePos) {
+    /**
+     * Show the definition of the given reference under its view.
+     */
+    showReferenceDefinition(state, referenceId) {
         const referenceNameNode = state.getIn([ "nodes", referenceId ]);
         const name = referenceNameNode.get("name");
         const functionNodeId = state.get("globals").get(name);
@@ -1091,6 +1095,23 @@ export default class Stage extends BaseStage {
         else {
             this.functionDef = new FunctionDef(this, name, functionNodeId, referenceId);
         }
+    }
+
+    // TODO: refactor these methods onto the touchrecord
+    /**
+     * @returns {Boolean} ``true`` if the click was intercepted
+     */
+    hideReferenceDefinition(mousePos) {
+        if (this.functionDef && mousePos) {
+            const contains = this.functionDef.containsPoint(this.getState(), mousePos);
+            if (contains) {
+                this.step(this.getState(), this.functionDef.referenceId, "small");
+            }
+            this.functionDef = null;
+            return true;
+        }
+        this.functionDef = null;
+        return false;
     }
 
     togglePause() {
@@ -1121,12 +1142,7 @@ export default class Stage extends BaseStage {
             }
         }
 
-        if (this.functionDef) {
-            const contains = this.functionDef.containsPoint(this.getState(), pos);
-            if (contains) {
-                this.step(this.getState(), this.functionDef.referenceId, "small");
-            }
-            this.functionDef = null;
+        if (this.hideReferenceDefinition(pos)) {
             return null;
         }
 
@@ -1157,15 +1173,6 @@ export default class Stage extends BaseStage {
             this.syntaxJournal.close();
         }
 
-        if (this.functionDef) {
-            const contains = this.functionDef.containsPoint(this.getState(), this.getMousePos(e));
-            if (contains) {
-                this.step(this.getState(), this.functionDef.referenceId, "small");
-            }
-            this.functionDef = null;
-            return;
-        }
-
         super._touchstart(e);
     }
 
@@ -1182,6 +1189,10 @@ export default class Stage extends BaseStage {
             return;
         }
 
-        super._touchstart(e);
+        if (this.hideReferenceDefinition(this.getMousePos(e))) {
+            return;
+        }
+
+        super._touchend(e);
     }
 }

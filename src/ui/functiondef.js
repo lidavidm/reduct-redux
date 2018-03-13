@@ -2,12 +2,11 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 
 export default class FunctionDef {
-    constructor(stage, name, nodeId, referenceId, pos) {
+    constructor(stage, name, nodeId, referenceId) {
         this.stage = stage;
         this.name = name;
         this.id = nodeId;
         this.referenceId = referenceId;
-        this.pos = pos;
         this.view = this.project();
         animate.tween(this.view, { opacity: 0.8 }, {
             duration: 10,
