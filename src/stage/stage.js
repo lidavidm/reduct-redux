@@ -90,14 +90,21 @@ class TouchRecord extends BaseTouchRecord {
     }
 
     onstart(mousePos) {
+        super.onstart(mousePos);
+
+        this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
+        if (this.isExpr && this.topNode) {
+            this.stage.store.dispatch(action.raise(this.topNode));
+        }
+
         const view = this.stage.getView(this.topNode);
         if (view && view.onmousedown) {
             view.onmousedown();
         }
-        this.currTime = Date.now();
+
         const referenceID = this.stage.getReferenceNameAtPos(mousePos);
         if (referenceID) {
-            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);;
+            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);
         }
     }
 
