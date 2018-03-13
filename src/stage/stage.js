@@ -48,7 +48,7 @@ class TouchRecord extends BaseTouchRecord {
         }
     }
 
-    onstart() {
+    onstart(mousePos) {
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
@@ -96,6 +96,11 @@ class TouchRecord extends BaseTouchRecord {
             view.onmousedown();
         }
         this.currTime = Date.now();
+        const referenceID = this.stage.getReferenceNameAtPos(mousePos);
+        if (referenceID) {
+            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);
+            this.stage.step(this.stage.getState(), referenceID, "small"); //this.stage.getState().getIn(["nodes", referenceID])
+        }
     }
 
     onmove(mouseDown, mousePos) {
@@ -192,13 +197,13 @@ class TouchRecord extends BaseTouchRecord {
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
             if (Date.now() - this.currTime > 500) {
-                const referenceID = this.stage.getReferenceNameAtPos(mousePos)
-                if (referenceID) {
-                    this.stage.referenceClicked(state, referenceID, mousePos);
-                }
+                //TODO
             } else {
                 // Click on object to reduce; always targets toplevel node
-                this.stage.step(state, this.topNode);
+                if (self.functionDef) {
+                    self.functionDef = null;
+                }
+                // this.stage.step(state, this.topNode);
             }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
@@ -802,7 +807,7 @@ export default class Stage extends BaseStage {
     /**
      * Helper that handles animation and updating the store for a small-step.
      */
-    step(state, selectedNode) {
+    step(state, selectedNode, override_mode = null) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
@@ -835,8 +840,12 @@ export default class Stage extends BaseStage {
             }
         };
 
+        var modee = this.mode;
+        if (override_mode){
+            modee = override_mode
+        }
         // const mode = document.querySelector("#evaluation-mode").value;
-        this.semantics.interpreter.reduce(this, state, node, this.mode, {
+        this.semantics.interpreter.reduce(this, state, node, modee, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
@@ -1064,7 +1073,7 @@ export default class Stage extends BaseStage {
             this.functionDef = new FunctionDef(this, state, name, functionBodyID, mousePos);
         } else {
             this.functionDef = new FunctionDef(this, state, name, functionNodeID, mousePos);
-        }
+        } 
     }
 
     togglePause() {

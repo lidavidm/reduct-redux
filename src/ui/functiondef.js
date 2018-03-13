@@ -12,26 +12,38 @@ export default class FunctionDef {
         this.name = name;
         this.id = nodeId;
         this.pos = pos;
-        this.viewId = this.project();
+        this.view = this.project();
+        animate.tween(this.view, { opacity: 0.8 }, {
+            duration: 10,
+            easing: animate.Easing.Cubic.In,
+        }).delay(1000);
+        animate.tween(this.view, { scale: { x: 1.0, y: 1.0 } }, {
+            duration: 1000,
+            easing: animate.Easing.Cubic.In,
+        }).delay(1000);
+
     }
 
     project() {
         const nodes = this.state.get("nodes");
-        this.stage.views[this.id] = this.stage.semantics.project(this.stage, nodes, nodes.get(this.id))
-        this.stage.views[this.id].shadow = false;
-        this.stage.views[this.id].stroke = { lineWidth: 1, color: "gray" };
-
-        return this.stage.views[this.id];
+        console.log(this.stage.views[this.id]);
+        const view = Object.assign({}, this.stage.views[this.id]);
+        // this.stage.views[this.id] = this.stage.semantics.project(this.stage, nodes, nodes.get(this.nodeID))
+        view.shadow = false;
+        view.stroke = { lineWidth: 1, color: "gray" };
+        view.opacity = 0;
+        view.scale = {x: 0.1, y: 0.1}
+        return view;
     }
 
     drawImpl(state) {
         const offset = {
             x: this.pos.x - 100,
             y: this.pos.y + 20,
-            sx: 1,
-            sy: 1,
+            sx: this.stage.views[this.id].scale.x,
+            sy: this.stage.views[this.id].scale.y,
             opacity: 0.8,
         };
-        this.stage.drawProjection(this.state, this.id, offset);
+        this.view.draw(this.id, this.id, this.state, this.stage, offset);
     }
 }

@@ -21,7 +21,7 @@ export default class BaseTouchRecord {
         this.stage.draw();
     }
 
-    onstart() {
+    onstart(mousePos) {
         this.currTime = Date.now();
     }
 

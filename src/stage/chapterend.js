@@ -264,7 +264,7 @@ export default class ChapterEndStage extends BaseStage {
 }
 
 class TouchRecord extends BaseTouchRecord {
-    onstart() {
+    onstart(mousePos) {
         if (this.topNode && this.stage.internalViews[this.topNode]) {
             const view = this.stage.internalViews[this.topNode];
             if (view.onmousedown) {
