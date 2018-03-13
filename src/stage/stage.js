@@ -98,8 +98,7 @@ class TouchRecord extends BaseTouchRecord {
         this.currTime = Date.now();
         const referenceID = this.stage.getReferenceNameAtPos(mousePos);
         if (referenceID) {
-            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);
-            this.stage.step(this.stage.getState(), referenceID, "small"); //this.stage.getState().getIn(["nodes", referenceID])
+            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);;
         }
     }
 
@@ -196,14 +195,13 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
-            if (Date.now() - this.currTime > 500) {
-                //TODO
-            } else {
+            if (Date.now() - this.currTime < 1000) {
                 // Click on object to reduce; always targets toplevel node
-                if (self.functionDef) {
-                    self.functionDef = null;
+                if (this.stage.functionDef) {
+                    this.stage.functionDef = null;
                 }
-                // this.stage.step(state, this.topNode);
+                this.stage.step(state, this.topNode);
+
             }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
@@ -1070,9 +1068,9 @@ export default class Stage extends BaseStage {
         const type = state.get("nodes").get(functionNodeID).get("type");
         if (type == "define") {
             const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
-            this.functionDef = new FunctionDef(this, state, name, functionBodyID, mousePos);
+            this.functionDef = new FunctionDef(this, state, name, functionBodyID, referenceID, mousePos);
         } else {
-            this.functionDef = new FunctionDef(this, state, name, functionNodeID, mousePos);
+            this.functionDef = new FunctionDef(this, state, name, functionNodeID, referenceID, mousePos);
         } 
     }
 
@@ -1105,7 +1103,12 @@ export default class Stage extends BaseStage {
         }
 
         if (this.functionDef) {
+            const contains = this.functionDef.containsPoint(this.getState(), pos);
+            if (contains) {
+                this.step(this.getState(), this.functionDef.referenceID, "small");
+            }
             this.functionDef = null;
+            return null;
         }
 
         return super._mousedown(e);
@@ -1133,6 +1136,15 @@ export default class Stage extends BaseStage {
 
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
+        }
+
+        if (this.functionDef) {
+            const contains = this.functionDef.containsPoint(this.getState(), this.getMousePos(e));
+            if (contains) {
+                this.step(this.getState(), this.functionDef.referenceID, "small");
+            }
+            this.functionDef = null;
+            return null;
         }
 
         super._touchstart(e);
