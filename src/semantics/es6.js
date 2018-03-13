@@ -21,7 +21,6 @@ export default transform({
             if (addParams && expr.params) {
                 const params = expr.params;
                 thunk = (...args) => {
-                    console.log(expr.name, args);
                     const missing = params.map((_, idx) => {
                         if (args[idx]) {
                             return args[idx];

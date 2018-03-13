@@ -71,7 +71,16 @@ export function notchProjection(options) {
     const projection = baseProjection(options);
     projection.type = "notch";
 
-    projection.prepare = function(id, exprId, state, stage) {};
+    projection.prepare = function(id, exprId, state, stage) {
+        if (this.notches) {
+            const node = state.getIn([ "nodes", exprId ]);
+            // TODO: don't hardcode this
+            if (node.has("notch0")) {
+                const childId = node.get("notch0");
+                stage.views[childId].prepare(childId, childId, state, stage);
+            }
+        }
+    };
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.notches) {
             const { x, y } = util.topLeftPos(this, offset);

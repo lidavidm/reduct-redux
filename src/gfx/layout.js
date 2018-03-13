@@ -71,10 +71,13 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
+    const basePrepare = projection.prepare;
+
     projection.baseType = projection.type;
     projection.type = "hbox";
 
     projection.prepare = function(id, exprId, state, stage) {
+        basePrepare.call(this, id, exprId, state, stage);
         let x = this.padding.left;
 
         let maxY = 40;
@@ -143,6 +146,7 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         ellipsize: false,
     }, options));
     const baseDraw = projection.draw;
+    const basePrepare = projection.prepare;
     projection.type = "vbox";
 
     projection.isEllipsized = function(id, exprId, state) {
@@ -161,6 +165,8 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             this.size.h = 50;
             return;
         }
+
+        basePrepare.call(id, exprId, state, stage);
 
         let maxX = 50;
         let y = this.padding.top;
