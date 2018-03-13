@@ -102,9 +102,9 @@ class TouchRecord extends BaseTouchRecord {
             view.onmousedown();
         }
 
-        const referenceID = this.stage.getReferenceNameAtPos(mousePos);
-        if (referenceID) {
-            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);
+        const referenceId = this.stage.getReferenceNameAtPos(mousePos);
+        if (referenceId) {
+            this.stage.referenceClicked(this.stage.getState(), referenceId, mousePos);
         }
     }
 
@@ -1079,17 +1079,17 @@ export default class Stage extends BaseStage {
         step();
     }
 
-    referenceClicked(state, referenceID, mousePos) {
-        const referenceNameNode = state.getIn([ "nodes", referenceID ]);
+    referenceClicked(state, referenceId, mousePos) {
+        const referenceNameNode = state.getIn([ "nodes", referenceId ]);
         const name = referenceNameNode.get("name");
-        const functionNodeID = state.get("globals").get(name);
-        const type = state.get("nodes").get(functionNodeID).get("type");
+        const functionNodeId = state.get("globals").get(name);
+        const type = state.get("nodes").get(functionNodeId).get("type");
         if (type === "define") {
-            const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
-            this.functionDef = new FunctionDef(this, name, functionBodyID, referenceID, mousePos);
+            const functionBodyId = state.get("nodes").get(functionNodeId).get("body");
+            this.functionDef = new FunctionDef(this, name, functionBodyId, referenceId);
         }
         else {
-            this.functionDef = new FunctionDef(this, name, functionNodeID, referenceID, mousePos);
+            this.functionDef = new FunctionDef(this, name, functionNodeId, referenceId);
         }
     }
 
@@ -1124,7 +1124,7 @@ export default class Stage extends BaseStage {
         if (this.functionDef) {
             const contains = this.functionDef.containsPoint(this.getState(), pos);
             if (contains) {
-                this.step(this.getState(), this.functionDef.referenceID, "small");
+                this.step(this.getState(), this.functionDef.referenceId, "small");
             }
             this.functionDef = null;
             return null;
@@ -1160,10 +1160,10 @@ export default class Stage extends BaseStage {
         if (this.functionDef) {
             const contains = this.functionDef.containsPoint(this.getState(), this.getMousePos(e));
             if (contains) {
-                this.step(this.getState(), this.functionDef.referenceID, "small");
+                this.step(this.getState(), this.functionDef.referenceId, "small");
             }
             this.functionDef = null;
-            return null;
+            return;
         }
 
         super._touchstart(e);

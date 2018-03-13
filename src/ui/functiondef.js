@@ -2,11 +2,11 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 
 export default class FunctionDef {
-    constructor(stage, name, nodeId, referenceID, pos) {
+    constructor(stage, name, nodeId, referenceId, pos) {
         this.stage = stage;
         this.name = name;
         this.id = nodeId;
-        this.referenceID = referenceID;
+        this.referenceId = referenceId;
         this.pos = pos;
         this.view = this.project();
         animate.tween(this.view, { opacity: 0.8 }, {
@@ -25,28 +25,29 @@ export default class FunctionDef {
         view.stroke = { lineWidth: 1, color: "gray" };
         view.opacity = 0;
         view.scale = { x: 0, y: 0 };
+        view.pos = { x: 0, y: 0 };
+        view.anchor = { x: 0.5, y: 0 };
         return view;
     }
 
-    drawImpl(state) {
-        const offset = {
-            x: this.pos.x - 100,
-            y: this.pos.y + 20,
-            sx: this.stage.views[this.id].scale.x,
-            sy: this.stage.views[this.id].scale.y,
+    makeOffset() {
+        const referenceView = this.stage.getView(this.referenceId);
+        const centerPos = gfx.centerPos(referenceView);
+        const absSize = gfx.absoluteSize(referenceView);
+        return {
+            x: centerPos.x,
+            y: centerPos.y + (absSize.h / 2) + 5,
+            sx: 1,
+            sy: 1,
             opacity: 1,
         };
-        this.view.draw(this.id, this.id, state, this.stage, offset);
+    }
+
+    drawImpl(state) {
+        this.view.draw(this.id, this.id, state, this.stage, this.makeOffset());
     }
 
     containsPoint(state, pos) {
-        const offset = {
-            x: this.pos.x - 100,
-            y: this.pos.y + 20,
-            sx: this.stage.views[this.id].scale.x,
-            sy: this.stage.views[this.id].scale.y,
-            opacity: 1,
-        };
-        return this.view.containsPoint(pos, offset);
+        return this.view.containsPoint(pos, this.makeOffset());
     }
 }
