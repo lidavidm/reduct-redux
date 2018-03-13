@@ -147,7 +147,7 @@ export function makeParser(jssemant) {
                 node.callee.type === "Identifier" &&
                 macros[node.callee.name] &&
                 macros[node.callee.name].takesArgs) {
-                return macros[node.callee.name](parseNode(node.arguments[0], macros));
+                return macros[node.callee.name](...node.arguments.map(n => parseNode(n, macros)));
             }
 
             let result = jssemant.apply(
