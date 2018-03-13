@@ -125,9 +125,48 @@ export function genericBetaReduce(semant, state, config) {
     }
 
     if (argIds.length !== 1) {
-        console.warn("Can't reduce multiple args");
-        // TODO: will we ever have multi-argument application?
-        return null;
+        let curState = state;
+        let curTopNode = topNode;
+        let curTargetNode = targetNode;
+
+        let curResult = [];
+        const allAddedNodes = [];
+
+        for (const argId of argIds) {
+            const result = genericBetaReduce(semant, curState, Object.assign({}, config, {
+                topNode: curTopNode,
+                targetNode: curTargetNode,
+                argIds: [ argId ],
+            }));
+            if (!result) {
+                // TODO: return partial result
+                console.warn("No result");
+                return null;
+            }
+
+            const [ newTopNode, resultNodeIds, newNodes ] = result;
+            if (resultNodeIds.length !== 1) {
+                console.warn("Can't handle multi-argument beta reduce with spilling");
+                return null;
+            }
+
+            curResult = resultNodeIds;
+
+            curState = curState.withMutations((cs) => {
+                cs.set("nodes", cs.get("nodes").withMutations((nds) => {
+                    for (const node of newNodes) {
+                        allAddedNodes.push(node);
+                        nds.set(node.get("id"), node);
+                    }
+                }));
+            });
+
+            // TODO: check if result is actually a lambda
+            curTopNode = curState.getIn([ "nodes", resultNodeIds[0] ]);
+            curTargetNode = curState.getIn([ "nodes", curTopNode.get("arg") ]);
+        }
+
+        return [ topNode, curResult, allAddedNodes ];
     }
 
     // Check that arguments are complete
