@@ -292,7 +292,7 @@ export default class BaseStage {
                 dragOffset,
                 pos
             );
-            touchRecord.onstart();
+            touchRecord.onstart(pos);
             this._touches.set(touch.identifier, touchRecord);
         }
     }
@@ -333,7 +333,7 @@ export default class BaseStage {
         touch.dragOffset = dragOffset;
         touch.dragStart = pos;
         this.updateCursor(touch);
-        touch.onstart();
+        touch.onstart(pos);
 
         this.draw();
 

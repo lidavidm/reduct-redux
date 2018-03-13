@@ -9,6 +9,7 @@ import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
 import Sidebar from "../ui/sidebar";
 import SyntaxJournal from "../ui/syntaxjournal";
+import FunctionDef from "../ui/functiondef";
 
 import Loader from "../loader";
 import Logging from "../logging/logging";
@@ -88,15 +89,15 @@ class TouchRecord extends BaseTouchRecord {
         });
     }
 
-    onstart() {
-        this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
-        if (this.isExpr && this.topNode) {
-            this.stage.store.dispatch(action.raise(this.topNode));
-        }
-
+    onstart(mousePos) {
         const view = this.stage.getView(this.topNode);
         if (view && view.onmousedown) {
             view.onmousedown();
+        }
+        this.currTime = Date.now();
+        const referenceID = this.stage.getReferenceNameAtPos(mousePos);
+        if (referenceID) {
+            this.stage.referenceClicked(this.stage.getState(), referenceID, mousePos);;
         }
     }
 
@@ -200,8 +201,14 @@ class TouchRecord extends BaseTouchRecord {
         }
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {
-            // Click on object to reduce; always targets toplevel node
-            this.stage.step(state, this.topNode);
+            if (Date.now() - this.currTime < 1000) {
+                // Click on object to reduce; always targets toplevel node
+                if (this.stage.functionDef) {
+                    this.stage.functionDef = null;
+                }
+                this.stage.step(state, this.topNode);
+
+            }
         }
         else if (this.isExpr && this.dragged && this.hoverNode &&
                  this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
@@ -281,6 +288,7 @@ export default class Stage extends BaseStage {
         this.goal = new Goal(this);
         this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
+        this.functionDef = null;
 
         this._currentlyReducing = {};
         this._newSyntax = [];
@@ -387,6 +395,65 @@ export default class Stage extends BaseStage {
         return [ root, result, false ];
     }
 
+    getReferenceNameAtPos(pos) {
+        const state = this.getState();
+        const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
+            const curNode = state.getIn([ "nodes", curExprId ]);
+            const projection = this.views[curProjId];
+            let res = null;
+
+            const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
+            if (projection.containsPoint(curPos, curOffset)) {
+                if (curNode && curNode.get("type") == "reference") {
+                    res = curExprId;
+                }
+
+                const subpos = {
+                    x: curPos.x - topLeft.x,
+                    y: curPos.y - topLeft.y,
+                };
+                for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
+                    const subresult = check(
+                        subpos,
+                        childId,
+                        subexprId,
+                        curRoot,
+                        {
+                            x: 0,
+                            y: 0,
+                            sx: curOffset.sx * projection.scale.x,
+                            sy: curOffset.sy * projection.scale.y,
+                        }
+                    );
+                    if (subresult) {
+                        return subresult;
+                    }
+                }
+                if (res) {
+                    return res;
+                }
+            }
+            return null;
+        };
+
+        let result = null;
+
+        for (const nodeId of state.get("board").toArray().reverse()) {
+            const res = check(pos, nodeId, nodeId, null, {
+                x: 0,
+                y: 0,
+                sx: 1,
+                sy: 1,
+            });
+            if (res) {
+                result = res;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Log the current game state.
      *
@@ -487,6 +554,9 @@ export default class Stage extends BaseStage {
 
         for (const id of this._newSyntax) {
             this.drawInternalProjection(state, id);
+        }
+        if (this.functionDef) {
+            this.functionDef.drawImpl(state);
         }
 
         for (const fx of Object.values(this.effects)) {
@@ -746,7 +816,7 @@ export default class Stage extends BaseStage {
     /**
      * Helper that handles animation and updating the store for a small-step.
      */
-    step(state, selectedNode) {
+    step(state, selectedNode, override_mode = null) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
@@ -779,8 +849,12 @@ export default class Stage extends BaseStage {
             }
         };
 
+        var modee = this.mode;
+        if (override_mode){
+            modee = override_mode
+        }
         // const mode = document.querySelector("#evaluation-mode").value;
-        this.semantics.interpreter.reduce(this, state, node, this.mode, {
+        this.semantics.interpreter.reduce(this, state, node, modee, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
                 const origPos = gfxCore.centerPos(topView);
@@ -997,6 +1071,20 @@ export default class Stage extends BaseStage {
         step();
     }
 
+
+    referenceClicked(state, referenceID, mousePos) {
+        const referenceNameNode = state.getIn(["nodes", referenceID]);
+        const name = referenceNameNode.get("name");
+        const functionNodeID = state.get("globals").get(name);
+        const type = state.get("nodes").get(functionNodeID).get("type");
+        if (type == "define") {
+            const functionBodyID = state.get("nodes").get(functionNodeID).get("body");
+            this.functionDef = new FunctionDef(this, state, name, functionBodyID, referenceID, mousePos);
+        } else {
+            this.functionDef = new FunctionDef(this, state, name, functionNodeID, referenceID, mousePos);
+        }
+    }
+
     togglePause() {
         if (this.mode === "hybrid") {
             this.mode = "over";
@@ -1025,6 +1113,15 @@ export default class Stage extends BaseStage {
             }
         }
 
+        if (this.functionDef) {
+            const contains = this.functionDef.containsPoint(this.getState(), pos);
+            if (contains) {
+                this.step(this.getState(), this.functionDef.referenceID, "small");
+            }
+            this.functionDef = null;
+            return null;
+        }
+
         return super._mousedown(e);
     }
 
@@ -1050,6 +1147,15 @@ export default class Stage extends BaseStage {
 
         if (this.syntaxJournal.isOpen) {
             this.syntaxJournal.close();
+        }
+
+        if (this.functionDef) {
+            const contains = this.functionDef.containsPoint(this.getState(), this.getMousePos(e));
+            if (contains) {
+                this.step(this.getState(), this.functionDef.referenceID, "small");
+            }
+            this.functionDef = null;
+            return null;
         }
 
         super._touchstart(e);
