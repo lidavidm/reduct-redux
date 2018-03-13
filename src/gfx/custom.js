@@ -35,7 +35,7 @@ export function argumentBar() {
         }
         else {
             this.names = [];
-            const params = define.has("params") ?
+            const params = Array.isArray(define.get("params")) ?
                   define.get("params") :
                   state.getIn([ "nodes", state.getIn([ "globals", define.get("name") ]), "params" ]);
 

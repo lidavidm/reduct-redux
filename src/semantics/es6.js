@@ -10,7 +10,7 @@ export default transform({
         parse: makeParser,
         unparse: makeUnparser,
 
-        extractDefines: (semant, expr, addParams) => {
+        extractDefines: (semant, expr) => {
             if (expr.type !== "define") {
                 return null;
             }
@@ -18,7 +18,7 @@ export default transform({
             let thunk = null;
             // we have access to expr.params, so generate a thunk that
             // can take arguments
-            if (addParams && expr.params) {
+            if (expr.params) {
                 const params = expr.params;
                 thunk = (...args) => {
                     const missing = params.map((_, idx) => {
@@ -30,7 +30,7 @@ export default transform({
                         a.locked = false;
                         return a;
                     });
-                    return semant.reference(expr.name, expr.params, ...missing);
+                    return semant.reference(expr.name, params, ...missing);
                 };
                 // Flag to the parser that this thunk can take arguments
                 thunk.takesArgs = true;
@@ -51,6 +51,24 @@ export default transform({
 
         extractGlobalNames: (semant, name, expr) => {
             // We have access to expr.params
+            if (expr.params) {
+                const params = expr.params;
+                const thunk = (...args) => {
+                    const missing = params.map((_, idx) => {
+                        if (args[idx]) {
+                            return args[idx];
+                        }
+                        // TODO: why is locked not respected?
+                        const a = semant.missing();
+                        a.locked = false;
+                        return a;
+                    });
+                    return semant.reference(expr.name, params, ...missing);
+                };
+                // Flag to the parser that this thunk can take arguments
+                thunk.takesArgs = true;
+                return [ name, thunk ];
+            }
             return [ name, () => semant.reference(name) ];
         },
 
