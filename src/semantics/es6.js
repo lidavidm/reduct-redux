@@ -689,9 +689,17 @@ export default transform({
                 }
                 return null;
             },
-            // If expr is nested, don't care about subexpressions
-            substepFilter: (semant, stage, expr, _field) =>
-                !(expr.has ? expr.has("parent") : typeof expr.parent !== "undefined"),
+            // If expr is nested in apply, don't care about subexpressions
+            // TODO: needs to be more sophisticated - what if it's partially filled?
+            substepFilter: (semant, state, expr, _field) => {
+                const parentId = expr.get ? expr.get("parent") : expr.parent;
+                if (!parentId) {
+                    return true;
+                }
+
+                const parent = state.getIn([ "nodes", parentId ]);
+                return (parent.get ? parent.get("type") : parent.type) !== "apply";
+            },
             projection: {
                 type: "dynamic",
                 field: (state, exprId) => {
@@ -706,7 +714,7 @@ export default transform({
                     shape: "()",
                     radius: 0,
                     color: "OrangeRed",
-                    strokeWhenChild: false,
+                    strokeWhenChild: true,
                     fields: [{
                         field: "name",
                         color: "gray",
@@ -718,7 +726,7 @@ export default transform({
                         color: "OrangeRed",
                         radius: 0,
                         shape: "()",
-                        strokeWhenChild: false,
+                        strokeWhenChild: true,
                         children: [
                             {
                                 type: "text",
