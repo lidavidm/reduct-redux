@@ -139,12 +139,11 @@ export function genericBetaReduce(semant, state, config) {
                 argIds: [ argId ],
             }));
             if (!result) {
-                // TODO: return partial result
-                console.warn("No result");
-                return null;
+                // Return partial result
+                break;
             }
 
-            const [ newTopNode, resultNodeIds, newNodes ] = result;
+            const [ _, resultNodeIds, newNodes ] = result;
             if (resultNodeIds.length !== 1) {
                 console.warn("Can't handle multi-argument beta reduce with spilling");
                 return null;
