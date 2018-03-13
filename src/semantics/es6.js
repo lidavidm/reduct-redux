@@ -323,10 +323,6 @@ export default transform({
                 });
 
                 return tween
-                    // .then(() => animate.tween(branch, { stroke: { lineWidth: 4 } }, {
-                    //     duration: animate.scaleDuration(700, "expr-conditional"),
-                    //     easing: animate.Easing.Cubic.In,
-                    // }))
                     .then(() => animate.fx.blink(stage, branch, {
                         times: 3,
                         color,
@@ -398,12 +394,15 @@ export default transform({
                 });
 
                 if (!isCalleeLambda) {
-                    return jumpTween.then(() => {
-                        return animate.fx.shatter(stage, stage.getView(expr.get("id")), {
+                    return jumpTween
+                        .then(() => animate.fx.shatter(stage, stage.getView(expr.get("id")), {
                             introDuration,
                             outroDuration,
+                        }))
+                        .then(() => {
+                            reset.forEach(tween => tween.undo());
+                            argView.opacity = 1;
                         });
-                    });
                 }
 
                 return jumpTween.then(() => {
@@ -503,8 +502,6 @@ export default transform({
                                 view.preview = null;
                                 delete view.previewOptions;
                             });
-                        })
-                        .then(() => {
                             argView.opacity = 1;
                         });
                 });
