@@ -201,6 +201,10 @@ class TouchRecord extends BaseTouchRecord {
     onend(state, mousePos) {
         this.stopHighlight();
 
+        if (this.stage.functionDef && Date.now() - this.currTime < 300) {
+            this.stage.hideReferenceDefinition();
+        }
+
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
             if (view && view.onclick) {
