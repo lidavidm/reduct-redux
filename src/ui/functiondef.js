@@ -1,14 +1,9 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
-import * as progression from "../game/progression";
-import projector from "../gfx/projector";
-
-import Loader from "../loader";
 
 export default class FunctionDef {
-    constructor(stage, state, name, nodeId, referenceID, pos) {
+    constructor(stage, name, nodeId, referenceID, pos) {
         this.stage = stage;
-        this.state = state;
         this.name = name;
         this.id = nodeId;
         this.referenceID = referenceID;
@@ -22,16 +17,14 @@ export default class FunctionDef {
             duration: 2000,
             easing: animate.Easing.Cubic.In,
         }).delay(50);
-
     }
 
     project() {
-        const nodes = this.state.get("nodes");
         const view = Object.assign({}, this.stage.views[this.id]);
         view.shadow = false;
         view.stroke = { lineWidth: 1, color: "gray" };
-        view.opacity = 0.1;
-        view.scale = {x: 0.1, y: 0.1}
+        view.opacity = 0;
+        view.scale = { x: 0, y: 0 };
         return view;
     }
 
@@ -43,7 +36,7 @@ export default class FunctionDef {
             sy: this.stage.views[this.id].scale.y,
             opacity: 1,
         };
-        this.view.draw(this.id, this.id, this.state, this.stage, offset);
+        this.view.draw(this.id, this.id, state, this.stage, offset);
     }
 
     containsPoint(state, pos) {
