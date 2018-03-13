@@ -142,6 +142,14 @@ export function makeParser(jssemant) {
                 return fail("Call expressions with zero arguments are currently unsupported", node);
             }
 
+            // If the thunk can take arguments (i.e. it's a reference-with-holes), use that
+            if (macros &&
+                node.callee.type === "Identifier" &&
+                macros[node.callee.name] &&
+                macros[node.callee.name].takesArgs) {
+                return macros[node.callee.name](parseNode(node.arguments[0], macros));
+            }
+
             let result = jssemant.apply(
                 parseNode(node.callee, macros),
                 parseNode(node.arguments[0], macros)

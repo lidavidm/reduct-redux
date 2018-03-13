@@ -17,7 +17,7 @@ export function startLevel(description, parse, store, stage) {
     const prevDefinedNames = description.extraDefines
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
-          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr, true))
           .filter(name => name !== null);
     const globalDefinedNames = Object.entries(description.globals)
           .map(([ name, expr ]) =>
@@ -25,7 +25,7 @@ export function startLevel(description, parse, store, stage) {
     const newDefinedNames = description.board
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
-          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+          .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr, false))
           .filter(name => name !== null);
 
     // Turn these defines into "macros", so that the name resolution

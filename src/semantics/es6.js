@@ -10,17 +10,22 @@ export default transform({
         parse: makeParser,
         unparse: makeUnparser,
 
-        extractDefines: (semant, expr) => {
+        extractDefines: (semant, expr, addParams) => {
             if (expr.type !== "define") {
                 return null;
             }
-            // we have access to expr.params
             // needs to be a thunk
             let thunk = null;
-            if (expr.params) {
+            // we have access to expr.params, so generate a thunk that
+            // can take arguments
+            if (addParams && expr.params) {
                 const params = expr.params;
-                thunk = () => {
-                    const missing = params.map(_ => {
+                thunk = (...args) => {
+                    console.log(expr.name, args);
+                    const missing = params.map((_, idx) => {
+                        if (args[idx]) {
+                            return args[idx];
+                        }
                         // TODO: why is locked not respected?
                         const a = semant.missing();
                         a.locked = false;
@@ -28,6 +33,8 @@ export default transform({
                     });
                     return semant.reference(expr.name, expr.params, ...missing);
                 };
+                // Flag to the parser that this thunk can take arguments
+                thunk.takesArgs = true;
             }
             else {
                 thunk = () => semant.reference(expr.name, []);
