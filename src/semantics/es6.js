@@ -666,7 +666,9 @@ export default transform({
                     res = resNode.get("body");
                 }
 
-                if (!expr.has("parent") && expr.get("params") && expr.get("params").length > 0) {
+                if (!(expr.has("parent") && state.getIn([ "nodes", expr.get("parent"), "type"]) === "define") &&
+                    expr.get("params") &&
+                    expr.get("params").length > 0) {
                     const params = expr.get("params");
                     const [ _, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
                         stage,
