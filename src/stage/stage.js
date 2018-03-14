@@ -113,6 +113,10 @@ class TouchRecord extends BaseTouchRecord {
         if (mouseDown && this.topNode !== null) {
             // 5-pixel tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
+                if (this.stage.functionDef) {
+                    this.stage.functionDef = null;
+                }
+                
                 if (this.isExpr && !this.dragged && this.fromToolbox) {
                     Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
                 }
