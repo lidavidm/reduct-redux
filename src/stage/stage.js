@@ -38,6 +38,7 @@ class TouchRecord extends BaseTouchRecord {
     stopHighlight() {
         for (const id of this.dropTargets) {
             this.stage.getView(id).stroke = null;
+            this.stage.getView(id).outerStroke = null;
         }
 
         for (const tween of this.dropTweens) {
@@ -79,13 +80,22 @@ class TouchRecord extends BaseTouchRecord {
 
         let time = 0;
         this.highlightAnimation = animate.infinite((dt) => {
+            const state = this.stage.getState();
             time += dt;
 
             for (const targetId of this.dropTargets) {
-                this.stage.getView(targetId).stroke = {
-                    color: targetId === this.hoverNode ? "gold" : "lightblue",
+                const view = this.stage.getView(targetId);
+                const stroke = {
+                    color: targetId === this.hoverNode ? "gold" : "#02d8f9",
                     lineWidth: 3 + (1.5 * Math.cos(time / 750)),
                 };
+
+                if (state.getIn([ "nodes", targetId, "type" ]) === "lambdaArg") {
+                    view.outerStroke = stroke;
+                }
+                else {
+                    view.stroke = stroke;
+                }
             }
         });
     }
@@ -116,7 +126,7 @@ class TouchRecord extends BaseTouchRecord {
                 if (this.stage.functionDef) {
                     this.stage.functionDef = null;
                 }
-                
+
                 if (this.isExpr && !this.dragged && this.fromToolbox) {
                     Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
                 }
