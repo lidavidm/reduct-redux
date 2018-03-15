@@ -1143,12 +1143,8 @@ export default class Stage extends BaseStage {
                         result = this.semantics.apply(result, hydrated);
                     }
                 }
-                else {
-
-                }
 
                 const fullNodes = this.semantics.flatten(result).map(immutable.Map);
-
                 const tempNodes = state.get("nodes").withMutations((n) => {
                     for (const node of fullNodes) {
                         n.set(node.get("id"), node);
