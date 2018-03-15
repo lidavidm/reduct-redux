@@ -1121,52 +1121,33 @@ export default class Stage extends BaseStage {
     hideReferenceDefinition(mousePos) {
         if (this.functionDef && mousePos) {
             const state = this.getState();
+            const nodes = state.get("nodes");
             const contains = this.functionDef.containsPoint(state, mousePos);
             if (contains) {
-                const [ clonedNode, addedNodes ] = this.semantics.clone(
-                    this.functionDef.id,
-                    state.get("nodes")
-                );
+                const body = this.semantics.hydrate(nodes, nodes.get(this.functionDef.id));
+                if (body.parent) delete body.parent;
+                if (body.parentField) delete body.parentField;
 
-                let additionalNodes = [];
-                let topNode = clonedNode.get("id");
-
-                const origRef = state.get("nodes").get(this.functionDef.referenceId);
+                const origRef = nodes.get(this.functionDef.referenceId);
                 const subexprs = this.semantics.subexpressions(origRef);
-                const hasArgs = subexprs.some(field => state.getIn([ "nodes", origRef.get(field), "type" ]) !== "missing");
+                const hasArgs = subexprs.some(field => nodes.getIn([ origRef.get(field), "type" ]) !== "missing");
+
+                let result = body;
+
                 if (hasArgs) {
-                    // Has arguments
-                    let wrapper = clonedNode.get("id");
                     for (const field of subexprs) {
-                        const firstRun = typeof wrapper === "number";
-                        wrapper = this.semantics.apply(wrapper, origRef.get(field));
-                        wrapper.id = reducer.nextId();
-                        if (firstRun) {
-                            additionalNodes.push(clonedNode.withMutations((n) => {
-                                n.set("parent", wrapper.id);
-                                n.set("parentField", "callee");
-                                n.set("locked", true);
-                            }));
-                        }
-                        additionalNodes.push(state.get("nodes").get(origRef.get(field)).withMutations((n) => {
-                            n.set("parent", wrapper.id);
-                            n.set("parentField", "arg");
-                        }));
+                        const hydrated = this.semantics.hydrate(
+                            nodes,
+                            nodes.get(origRef.get(field))
+                        );
+                        result = this.semantics.apply(result, hydrated);
                     }
-                    const flattened = this.semantics.flatten(wrapper);
-                    additionalNodes = additionalNodes.concat(flattened.map(e => immutable.Map(e)));
-                    topNode = flattened[0].id;
                 }
                 else {
-                    additionalNodes.push(
-                        clonedNode
-                            .delete("parent")
-                            .delete("parentField")
-                            .set("locked", false)
-                    );
+
                 }
 
-                const fullNodes = addedNodes.concat(additionalNodes);
+                const fullNodes = this.semantics.flatten(result).map(immutable.Map);
 
                 const tempNodes = state.get("nodes").withMutations((n) => {
                     for (const node of fullNodes) {
@@ -1177,12 +1158,12 @@ export default class Stage extends BaseStage {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
-                this.views[topNode].pos.x = this.views[this.functionDef.referenceId].pos.x;
-                this.views[topNode].pos.y = this.views[this.functionDef.referenceId].pos.y;
+                this.views[fullNodes[0].get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
+                this.views[fullNodes[0].get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
 
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
-                    topNode,
+                    fullNodes[0].get("id"),
                     fullNodes
                 ));
             }

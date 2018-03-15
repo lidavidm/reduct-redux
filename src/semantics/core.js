@@ -1,17 +1,11 @@
 export function genericFlatten(nextId, subexpressions) {
     return function flatten(expr) {
-        if (typeof expr === "number") return [];
-
-        if (typeof expr.id !== "number") expr.id = nextId();
+        expr.id = nextId();
         let result = [expr];
 
         for (const field of subexpressions(expr)) {
             // Record the ID of the parent, as well as which field of
             // the parent we are stored in.
-
-            // If child is already an ID, don't modify, but the caller
-            // needs to handle this case appropriately.
-            if (typeof expr[field] === "number") continue;
 
             expr[field].parent = expr.id;
             expr[field].parentField = field;
