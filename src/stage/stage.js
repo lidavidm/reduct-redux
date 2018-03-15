@@ -1,4 +1,7 @@
+import * as immutable from "immutable";
+
 import * as action from "../reducer/action";
+import * as reducer from "../reducer/reducer";
 import * as level from "../game/level";
 import * as animate from "../gfx/animate";
 import Audio from "../resource/audio";
@@ -1124,23 +1127,63 @@ export default class Stage extends BaseStage {
                     this.functionDef.id,
                     state.get("nodes")
                 );
+
+                let additionalNodes = [];
+                let topNode = clonedNode.get("id");
+
+                const origRef = state.get("nodes").get(this.functionDef.referenceId);
+                const subexprs = this.semantics.subexpressions(origRef);
+                const hasArgs = subexprs.some(field => state.getIn([ "nodes", origRef.get(field), "type" ]) !== "missing");
+                if (hasArgs) {
+                    // Has arguments
+                    let wrapper = clonedNode.get("id");
+                    for (const field of subexprs) {
+                        const firstRun = typeof wrapper === "number";
+                        wrapper = this.semantics.apply(wrapper, origRef.get(field));
+                        wrapper.id = reducer.nextId();
+                        if (firstRun) {
+                            additionalNodes.push(clonedNode.withMutations((n) => {
+                                n.set("parent", wrapper.id);
+                                n.set("parentField", "callee");
+                                n.set("locked", true);
+                            }));
+                        }
+                        additionalNodes.push(state.get("nodes").get(origRef.get(field)).withMutations((n) => {
+                            n.set("parent", wrapper.id);
+                            n.set("parentField", "arg");
+                        }));
+                    }
+                    const flattened = this.semantics.flatten(wrapper);
+                    additionalNodes = additionalNodes.concat(flattened.map(e => immutable.Map(e)));
+                    topNode = flattened[0].id;
+                }
+                else {
+                    additionalNodes.push(
+                        clonedNode
+                            .delete("parent")
+                            .delete("parentField")
+                            .set("locked", false)
+                    );
+                }
+
+                const fullNodes = addedNodes.concat(additionalNodes);
+
                 const tempNodes = state.get("nodes").withMutations((n) => {
-                    for (const node of addedNodes) {
+                    for (const node of fullNodes) {
                         n.set(node.get("id"), node);
                     }
-                    n.set(clonedNode.get("id"), clonedNode);
                 });
-                for (const node of addedNodes.concat([ clonedNode ])) {
+                for (const node of fullNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
-                this.views[clonedNode.get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
-                this.views[clonedNode.get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
+                this.views[topNode].pos.x = this.views[this.functionDef.referenceId].pos.x;
+                this.views[topNode].pos.y = this.views[this.functionDef.referenceId].pos.y;
 
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
-                    clonedNode.get("id"),
-                    addedNodes.concat([ clonedNode.delete("parent").delete("parentField").set("locked", false) ])
+                    topNode,
+                    fullNodes
                 ));
             }
             this.functionDef = null;
