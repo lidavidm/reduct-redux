@@ -8,6 +8,9 @@ export default class FunctionDef {
         this.id = nodeId;
         this.referenceId = referenceId;
         this.view = this.project();
+        const referenceView = this.stage.getView(this.referenceId)
+        const centerPos = gfx.centerPos(referenceView);
+        const absSize = gfx.absoluteSize(referenceView)
         animate.tween(this.view, { opacity: 0.8 }, {
             duration: 10,
             easing: animate.Easing.Cubic.In,
@@ -16,10 +19,20 @@ export default class FunctionDef {
             duration: 2000,
             easing: animate.Easing.Quadratic.In,
         }).delay(100);
+        animate.tween(this.view, { 
+            pos: { 
+                x: centerPos.x, 
+                y: centerPos.y + (absSize.h / 2) + 5
+                } 
+            }, {
+            duration: 2000,
+            easing: animate.Easing.Quadratic.In,
+        }).delay(100);
     }
 
     project() {
         const view = Object.assign({}, this.stage.views[this.id]);
+        console.log(this.stage.views[this.id].pos)
         view.shadow = false;
         view.stroke = { lineWidth: 1, color: "gray" };
         view.opacity = 0;
@@ -30,12 +43,12 @@ export default class FunctionDef {
     }
 
     makeOffset() {
-        const referenceView = this.stage.getView(this.referenceId);
-        const centerPos = gfx.centerPos(referenceView);
-        const absSize = gfx.absoluteSize(referenceView);
+        // const referenceView = this.stage.getView(this.referenceId);
+        // const centerPos = gfx.centerPos(referenceView);
+        // const absSize = gfx.absoluteSize(referenceView);
         return {
-            x: centerPos.x,
-            y: centerPos.y + (absSize.h / 2) + 5,
+            x: 0,//centerPos.x,
+            y: 0,//centerPos.y + (absSize.h / 2) + 5,
             sx: 1,
             sy: 1,
             opacity: 1,
