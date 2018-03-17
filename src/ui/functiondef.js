@@ -11,11 +11,11 @@ export default class FunctionDef {
         animate.tween(this.view, { opacity: 0.8 }, {
             duration: 10,
             easing: animate.Easing.Cubic.In,
-        }).delay(50);
+        }).delay(100);
         animate.tween(this.view, { scale: { x: 1.0, y: 1.0 } }, {
             duration: 2000,
-            easing: animate.Easing.Cubic.In,
-        }).delay(50);
+            easing: animate.Easing.Quadratic.In,
+        }).delay(100);
     }
 
     project() {
