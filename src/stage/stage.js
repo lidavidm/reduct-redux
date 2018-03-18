@@ -1144,7 +1144,10 @@ export default class Stage extends BaseStage {
                     }
                 }
 
-                const fullNodes = this.semantics.flatten(result).map(immutable.Map);
+                const fullNodes = this.semantics.flatten(result).map((n) => {
+                    n.locked = true;
+                    return immutable.Map(n);
+                });
                 const tempNodes = state.get("nodes").withMutations((n) => {
                     for (const node of fullNodes) {
                         n.set(node.get("id"), node);
