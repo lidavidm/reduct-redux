@@ -79,21 +79,26 @@ export default class Sidebar {
         ctx.fillRect(0, 0, sidebarWidth, this.stage.height);
 
         const offset = {
-            x: 10,
-            y: 10,
+            x: 0,
+            y: 0,
             sx: 1,
             sy: 1,
             opacity: 1,
         };
+
+        let curY = 10;
 
         for (const [ key ] of state.get("globals")) {
             if (!this.viewMap.has(key)) {
                 continue;
             }
             const viewId = this.viewMap.get(key);
+            const view = this.stage.views[viewId];
+            view.pos.x = 10;
+            view.pos.y = curY;
             this.stage.drawProjection(state, viewId, offset);
-            const size = gfx.absoluteSize(this.stage.views[viewId]);
-            offset.y += size.h + 10;
+            const size = gfx.absoluteSize(view);
+            curY += size.h + 10;
             this.fullWidth = Math.max(this.fullWidth, size.w + 20);
         }
 
