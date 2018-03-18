@@ -115,7 +115,7 @@ export default transform({
             projection: {
                 type: "default",
                 shape: "()",
-                color: "purple",
+                color: "cornsilk",
                 fields: ["value"],
             },
         },
