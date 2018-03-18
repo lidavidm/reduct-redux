@@ -106,12 +106,12 @@ export function reduct(semantics, views) {
                     }
 
                     if (ref.has("parent")) {
-                        console.log(act.newNodeId);
                         const parentId = ref.get("parent");
                         n.set(
                             parentId,
                             n.get(parentId).set(ref.get("parentField"), act.newNodeId)
                         );
+                        n.set("locked", true);
                     }
                 }));
 

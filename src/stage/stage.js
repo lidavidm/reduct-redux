@@ -1144,6 +1144,10 @@ export default class Stage extends BaseStage {
                     }
                 }
 
+                // Add parent field so that when projected, the
+                // unfolded reference isn't hoverable
+                result.parent = origRef.get("parent");
+
                 const fullNodes = this.semantics.flatten(result).map((n) => {
                     n.locked = true;
                     return immutable.Map(n);
