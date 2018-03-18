@@ -176,9 +176,11 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.parent = this;
 
-            childProjection.pos.y = y;
-            childProjection.scale.x = this.subexpScale;
-            childProjection.scale.y = this.subexpScale;
+            if (!childProjection.animating) {
+                childProjection.pos.y = y;
+                childProjection.scale.x = this.subexpScale;
+                childProjection.scale.y = this.subexpScale;
+            }
 
             childProjection.prepare(childId, subexprId, state, stage);
             y += childProjection.size.h * childProjection.scale.y + this.padding.inner;
@@ -188,6 +190,8 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
         this.size.h = y - this.padding.inner + this.padding.bottom;
         for (const [ childId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
+            if (childProjection.animating) continue;
+
             childProjection.pos.x =
                 this.scale.x * this.padding.left +
                 this.horizontalAlign * (this.size.w * this.scale.x -
