@@ -335,24 +335,67 @@ export default transform({
                 const nodes = state.get("nodes");
                 const cond = nodes.get(expr.get("condition")).get("value");
                 const color = cond ? "#00F" : "#F00";
-                const branch = stage.getView(cond ? expr.get("positive") : expr.get("negative"));
+                const branchId = cond ? expr.get("positive") : expr.get("negative");
+                const branch = stage.getView(branchId);
 
                 const view = stage.getView(expr.get("condition"));
 
                 view.stroke = { lineWidth: 0, color };
                 branch.stroke = { lineWidth: 0, color };
-                const tween = animate.tween(view, { stroke: { lineWidth: 4 } }, {
-                    duration: animate.scaleDuration(700, "expr-conditional"),
-                    easing: animate.Easing.Cubic.In,
-                });
+                const tweens = [
+                    animate.tween(view, { stroke: { lineWidth: 4 } }, {
+                        duration: animate.scaleDuration(700, "expr-conditional"),
+                        easing: animate.Easing.Cubic.In,
+                    }),
+                    animate.tween(branch, { stroke: { lineWidth: 4 } }, {
+                        duration: animate.scaleDuration(700, "expr-conditional"),
+                        easing: animate.Easing.Cubic.In,
+                    }),
+                ];
 
-                return tween
-                    .then(() => animate.fx.blink(stage, branch, {
-                        times: 3,
-                        color,
-                        speed: animate.scaleDuration(300, "expr-conditional"),
-                    }))
-                    .then(() => animate.after(animate.scaleDuration(700, "expr-conditional")))
+                const reset = [];
+                const speed = animate.scaleDuration(300, "expr-conditional");
+                const pauseTime = animate.scaleDuration(700, "expr-conditional");
+                const totalDuration = speed * 3;
+                const restTime = totalDuration + pauseTime;
+
+                return Promise.all(tweens)
+                    .then(() => animate.after(pauseTime))
+                    .then(() => {
+                        const condView = stage.getView(expr.get("id"));
+
+                        // Animate away the parts that are not the chosen branch
+                        let ctr = 0;
+                        const safe = cond ? 1 : 3;
+                        for (const [ childId ] of condView.children(expr.get("id"), state)) {
+                            if (ctr !== safe) {
+                                reset.push(animate.tween(stage.getView(childId), {
+                                    scale: { y: 0 },
+                                    opacity: 0,
+                                }, {
+                                    duration: totalDuration,
+                                    restTime,
+                                    easing: animate.Easing.Cubic.InOut,
+                                }));
+                            }
+                            ctr += 1;
+                        }
+                        reset.push(animate.tween(condView, {
+                            padding: {
+                                inner: 0,
+                                right: 0,
+                                left: 0,
+                            },
+                            backgroundOpacity: 0,
+                        }, {
+                            duration: totalDuration,
+                            restTime,
+                            easing: animate.Easing.Cubic.InOut,
+                        }));
+
+                        return Promise.all(reset);
+                    })
+                    .then(() => animate.after(pauseTime))
                     .then(() => {
                         view.stroke = null;
                         branch.stroke = null;
