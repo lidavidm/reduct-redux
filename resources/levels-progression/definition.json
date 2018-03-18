@@ -18,7 +18,7 @@
         {
             "board": ["function star() { return A; }", "function rect() { return B; }"],
             "goal": ["B", "B", "A"],
-            "textgoal": "Make me two stars and a rectangle!",
+            "textgoal": "Make me two rectangles and a star!",
             "showConcreteGoal": false,
             "toolbox": ["__unlimited;star", "__unlimited;rect"]
         },

@@ -1,4 +1,7 @@
+import * as immutable from "immutable";
+
 import * as action from "../reducer/action";
+import * as reducer from "../reducer/reducer";
 import * as level from "../game/level";
 import * as animate from "../gfx/animate";
 import Audio from "../resource/audio";
@@ -38,6 +41,7 @@ class TouchRecord extends BaseTouchRecord {
     stopHighlight() {
         for (const id of this.dropTargets) {
             this.stage.getView(id).stroke = null;
+            this.stage.getView(id).outerStroke = null;
         }
 
         for (const tween of this.dropTweens) {
@@ -79,13 +83,22 @@ class TouchRecord extends BaseTouchRecord {
 
         let time = 0;
         this.highlightAnimation = animate.infinite((dt) => {
+            const state = this.stage.getState();
             time += dt;
 
             for (const targetId of this.dropTargets) {
-                this.stage.getView(targetId).stroke = {
-                    color: targetId === this.hoverNode ? "gold" : "lightblue",
+                const view = this.stage.getView(targetId);
+                const stroke = {
+                    color: targetId === this.hoverNode ? "gold" : "#02d8f9",
                     lineWidth: 3 + (1.5 * Math.cos(time / 750)),
                 };
+
+                if (state.getIn([ "nodes", targetId, "type" ]) === "lambdaArg") {
+                    view.outerStroke = stroke;
+                }
+                else {
+                    view.stroke = stroke;
+                }
             }
         });
     }
@@ -1108,29 +1121,46 @@ export default class Stage extends BaseStage {
     hideReferenceDefinition(mousePos) {
         if (this.functionDef && mousePos) {
             const state = this.getState();
+            const nodes = state.get("nodes");
             const contains = this.functionDef.containsPoint(state, mousePos);
             if (contains) {
-                const [ clonedNode, addedNodes ] = this.semantics.clone(
-                    this.functionDef.id,
-                    state.get("nodes")
-                );
+                const body = this.semantics.hydrate(nodes, nodes.get(this.functionDef.id));
+                if (body.parent) delete body.parent;
+                if (body.parentField) delete body.parentField;
+
+                const origRef = nodes.get(this.functionDef.referenceId);
+                const subexprs = this.semantics.subexpressions(origRef);
+                const hasArgs = subexprs.some(field => nodes.getIn([ origRef.get(field), "type" ]) !== "missing");
+
+                let result = body;
+
+                if (hasArgs) {
+                    for (const field of subexprs) {
+                        const hydrated = this.semantics.hydrate(
+                            nodes,
+                            nodes.get(origRef.get(field))
+                        );
+                        result = this.semantics.apply(result, hydrated);
+                    }
+                }
+
+                const fullNodes = this.semantics.flatten(result).map(immutable.Map);
                 const tempNodes = state.get("nodes").withMutations((n) => {
-                    for (const node of addedNodes) {
+                    for (const node of fullNodes) {
                         n.set(node.get("id"), node);
                     }
-                    n.set(clonedNode.get("id"), clonedNode);
                 });
-                for (const node of addedNodes.concat([ clonedNode ])) {
+                for (const node of fullNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
-                this.views[clonedNode.get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
-                this.views[clonedNode.get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
+                this.views[fullNodes[0].get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
+                this.views[fullNodes[0].get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
 
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
-                    clonedNode.get("id"),
-                    addedNodes.concat([ clonedNode.delete("parent").delete("parentField").set("locked", false) ])
+                    fullNodes[0].get("id"),
+                    fullNodes
                 ));
             }
             this.functionDef = null;

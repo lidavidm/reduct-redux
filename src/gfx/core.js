@@ -431,9 +431,32 @@ export function text(txt, options) {
         }
         ctx.restore();
 
-        ctx.save();
-        hoverOutline(id, this, stage, offset);
-        ctx.restore();
+        if (stage.isHovered(id) || this.outerStroke) {
+            ctx.save();
+            const { x, y } = util.topLeftPos(this, offset);
+
+            if (this.outerStroke) {
+                primitive.setStroke(ctx, this.outerStroke);
+            }
+            else {
+                primitive.setStroke(ctx, {
+                    lineWidth: 2,
+                    color: this.highlightColor || "yellow",
+                });
+            }
+
+            primitive.roundRect(
+                ctx,
+                x, y,
+                offset.sx * this.scale.x * this.size.w,
+                offset.sy * this.scale.y * this.size.h,
+                this.scale.x * offset.sx * (this.radius || 15),
+                false,
+                true,
+                this.stroke
+            );
+            ctx.restore();
+        }
     };
     return projection;
 }

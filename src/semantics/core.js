@@ -6,6 +6,7 @@ export function genericFlatten(nextId, subexpressions) {
         for (const field of subexpressions(expr)) {
             // Record the ID of the parent, as well as which field of
             // the parent we are stored in.
+
             expr[field].parent = expr.id;
             expr[field].parentField = field;
             result = result.concat(flatten(expr[field]));
