@@ -116,7 +116,7 @@ class TouchRecord extends BaseTouchRecord {
                 if (this.stage.functionDef) {
                     this.stage.functionDef = null;
                 }
-                
+
                 if (this.isExpr && !this.dragged && this.fromToolbox) {
                     Logging.log("toolbox-dragout", this.stage.saveNode(this.topNode));
                 }
@@ -310,7 +310,7 @@ export default class Stage extends BaseStage {
         // big-step it during reduction.
         this.newDefinedNames = [];
         // Keep track of the reduction mode.
-        this.mode = "hybrid";
+        this.mode = "over";
     }
 
     get touchRecordClass() {

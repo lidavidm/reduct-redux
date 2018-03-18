@@ -182,8 +182,8 @@ function start() {
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
     //reset buttons
-    document.querySelector("#pause").innerText = "||";
-    document.querySelector("#ffwd").style.display='none';
+    document.querySelector("#pause").innerText = ">";
+    document.querySelector("#ffwd").style.display='block';
 }
 
 function showChapterEnd() {
