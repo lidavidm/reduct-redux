@@ -123,7 +123,8 @@ class TouchRecord extends BaseTouchRecord {
     }
 
     onmove(mouseDown, mousePos) {
-        if (mouseDown && this.topNode !== null) {
+        if (mouseDown && this.topNode !== null &&
+            (!this.targetNode || !this.stage.isDetachable(this.targetNode))) {
             // Tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 10) {
                 if (this.stage.functionDef) {
@@ -635,16 +636,20 @@ export default class Stage extends BaseStage {
         return null;
     }
 
+    isDetachable(targetNode) {
+        const state = this.getState();
+        const target = state.getIn([ "nodes", targetNode ]);
+        if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
+            return this.semantics.detachable(state, target.get("parent"), targetNode);
+        }
+        return false;
+    }
+
     /**
      * Helper that detaches an item from its parent.
      */
     detachFromHole(selectedNode, targetNode) {
-        const state = this.getState();
-        const target = state.getIn([ "nodes", targetNode ]);
-        if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
-            if (!this.semantics.detachable(state, target.get("parent"), targetNode)) {
-                return null;
-            }
+        if (this.isDetachable(targetNode)) {
             const pos = gfxCore.absolutePos(this.views[targetNode]);
             this.store.dispatch(action.detach(targetNode));
             this.views[targetNode].pos = pos;
