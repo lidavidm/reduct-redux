@@ -731,12 +731,16 @@ export default transform({
                     expr.get("params") &&
                     expr.get("params").length > 0) {
                     const params = expr.get("params");
-                    const [ _, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
+                    const result = semant.interpreter.betaReduce(
                         stage,
                         state, res,
                         params.map(name => expr.get(`arg_${name}`)),
                     );
-                    return [ expr.get("id"), newNodeIds, addedNodes ];
+                    if (result) {
+                        const [ _, newNodeIds, addedNodes ] = result;
+                        return [ expr.get("id"), newNodeIds, addedNodes ];
+                    }
+                    return null;
                 }
 
                 const result = semant.clone(res, state.get("nodes"));

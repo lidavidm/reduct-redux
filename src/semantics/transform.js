@@ -174,6 +174,9 @@ export default function transform(definition) {
         const stepper = definition.expressions[type].smallStep;
         if (stepper) {
             const result = stepper(module, stage, state, expr);
+
+            if (!result) return null;
+
             if (Array.isArray(result)) return result;
 
             if (immutable.Map.isMap(result)) {
@@ -274,6 +277,16 @@ export default function transform(definition) {
         return [ "success", expr.get("id") ];
     };
 
+    function nullToError(exprId, callback) {
+        return (result) => {
+            if (result === null) {
+                callback(exprId);
+                return Promise.reject(exprId);
+            }
+            return result;
+        };
+    }
+
     /**
      * A submodule containing evaluation strategies.
      */
@@ -295,6 +308,7 @@ export default function transform(definition) {
         return module
             .interpreter.animateStep(stage, state, exp)
             .then(() => module.interpreter.smallStep(stage, state, exp))
+            .then(nullToError(exprId, callbacks.error))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
                 // TODO: handle multiple new nodes
@@ -311,12 +325,30 @@ export default function transform(definition) {
         // Return true if we are at an apply expression where the
         // callee is a previously defined function
         const shouldStepOver = (state, expr) => {
+            if (expr.get("type") === "reference" && expr.get("params").length > 0) {
+                // If reference with holes, step over so long as all
+                // args are not references or applications
+                for (const subexprField of module.subexpressions(expr)) {
+                    const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
+                    const subtype = subexpr.get("type");
+                    if (subtype === "apply" || (subtype === "reference" && subexpr.get("params").length > 0)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             if (expr.get("type") !== "apply") {
                 return false;
             }
             const callee = state.getIn([ "nodes", expr.get("callee") ]);
-            return callee.get("type") === "reference" &&
-                !stage.newDefinedNames.includes(callee.get("name"));
+            if (!callee.get("type") === "reference") {
+                return false;
+            }
+            if (stage.newDefinedNames.includes(callee.get("name"))) {
+                return false;
+            }
+            return true;
         };
 
         const [ result, exprId ] = module.interpreter.singleStep(state, exp, shouldStepOver);
@@ -343,6 +375,7 @@ export default function transform(definition) {
         return module
             .interpreter.animateStep(stage, state, exp)
             .then(() => module.interpreter.smallStep(stage, state, exp))
+            .then(nullToError(exprId, callbacks.error))
             .then(([ topNodeId, newNodeIds, addedNodes ]) => {
                 callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo);
                 // TODO: handle multiple new nodes
@@ -365,8 +398,12 @@ export default function transform(definition) {
 
             const innerExpr = innerState.get("nodes").get(exprId);
             const nextStep = () => {
-                const [ topNodeId, newNodeIds, addedNodes ] =
-                      module.interpreter.smallStep(stage, innerState, innerExpr);
+                const result = module.interpreter.smallStep(stage, innerState, innerExpr);
+                if (result === null) {
+                    callbacks.error(exprId);
+                    return Promise.reject(topExpr.get("id"));
+                }
+                const [ topNodeId, newNodeIds, addedNodes ] = result;
 
                 return callbacks.update(topNodeId, newNodeIds, addedNodes, recordUndo || firstStep)
                     .then((newState) => {
