@@ -399,6 +399,7 @@ export default transform({
                     .then(() => {
                         view.stroke = null;
                         branch.stroke = null;
+                        reset.forEach(tween => tween.undo());
                     });
             },
         },
