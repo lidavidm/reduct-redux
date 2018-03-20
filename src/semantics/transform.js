@@ -325,28 +325,33 @@ export default function transform(definition) {
         // Return true if we are at an apply expression where the
         // callee is a previously defined function
         const shouldStepOver = (state, expr) => {
-            if (expr.get("type") === "reference" && expr.get("params").length > 0) {
+            if (expr.get("type") === "reference" && expr.get("params") && expr.get("params").length > 0) {
                 // If reference with holes, step over so long as all
                 // args are not references or applications
                 for (const subexprField of module.subexpressions(expr)) {
                     const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
-                    const subtype = subexpr.get("type");
-                    if (subtype === "apply" || (subtype === "reference" && subexpr.get("params").length > 0)) {
-                        return true;
+                    if (module.kind(subexpr) === "expression") {
+                        return false;
                     }
                 }
-                return false;
+                return true;
             }
 
             if (expr.get("type") !== "apply") {
                 return false;
             }
             const callee = state.getIn([ "nodes", expr.get("callee") ]);
-            if (!callee.get("type") === "reference") {
+            if (callee.get("type") !== "reference") {
                 return false;
             }
             if (stage.newDefinedNames.includes(callee.get("name"))) {
                 return false;
+            }
+            for (const subexprField of module.subexpressions(expr)) {
+                const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
+                if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
+                    return false;
+                }
             }
             return true;
         };
@@ -362,7 +367,8 @@ export default function transform(definition) {
         exp = nodes.get(exprId);
 
         if (shouldStepOver(state, exp)) {
-            const name = nodes.get(exp.get("callee")).get("name");
+            const name = exp.get("type") === "reference" ? exp.get("name") :
+                  nodes.get(exp.get("callee")).get("name");
             console.debug(`semant.interpreter.reducers.over: stepping over call to ${name}`);
             // Step over the highest direct apply ancestor
             while (exp.has("parent")) {
