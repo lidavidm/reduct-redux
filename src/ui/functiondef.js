@@ -31,7 +31,12 @@ export default class FunctionDef {
         view.opacity = 0.5;
         view.scale = { x: 0.5, y: 0.5 };
         view.pos = gfx.centerPos(this.stage.getView(this.id));
-        view.pos.x -= this.stage.sidebarWidth;
+
+        const defnName = this.stage.getState().getIn([ "nodes", this.referenceId, "name" ]);
+        if (!this.stage.newDefinedNames.includes(defnName)) {
+            // Adjust for sidebar position
+            view.pos.x -= this.stage.sidebarWidth;
+        }
         view.anchor = { x: 0.5, y: 0 };
         return view;
     }
