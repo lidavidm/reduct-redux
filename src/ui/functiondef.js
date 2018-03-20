@@ -11,24 +11,30 @@ export default class FunctionDef {
         const referenceView = this.stage.getView(this.referenceId);
         const centerPos = gfx.centerPos(referenceView);
         const absSize = gfx.absoluteSize(referenceView);
-        animate.tween(this.view, {
-            pos: {
-                x: centerPos.x,
-                y: centerPos.y + (absSize.h / 2) + 5,
-            },
-            scale: { x: 1.0, y: 1.0 },
-            opacity: 0.8,
-        }, {
-            duration: 2000,
-            easing: animate.Easing.Cubic.InOut,
-        }).delay(100);
+
+        animate.after(500)
+            .then(() => animate.tween(this.view, { opacity: 0.5 }, {
+                duration: 350,
+                easing: animate.Easing.Cubic.In,
+            }))
+            .then(() => animate.tween(this.view, {
+                pos: {
+                    x: centerPos.x,
+                    y: centerPos.y + (absSize.h / 2) + 5,
+                },
+                scale: { x: 1.0, y: 1.0 },
+                opacity: 0.8,
+            }, {
+                duration: 2000,
+                easing: animate.Easing.Cubic.InOut,
+            }).delay(100));
     }
 
     project() {
         const view = Object.assign({}, this.stage.views[this.id]);
         view.shadow = false;
         view.stroke = { lineWidth: 1, color: "gray" };
-        view.opacity = 0.5;
+        view.opacity = 0;
         view.scale = { x: 0.5, y: 0.5 };
         view.pos = gfx.centerPos(this.stage.getView(this.id));
 
