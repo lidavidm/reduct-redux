@@ -124,8 +124,8 @@ class TouchRecord extends BaseTouchRecord {
 
     onmove(mouseDown, mousePos) {
         if (mouseDown && this.topNode !== null) {
-            // 5-pixel tolerance before a click becomes a drag
-            if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 5) {
+            // Tolerance before a click becomes a drag
+            if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 10) {
                 if (this.stage.functionDef) {
                     this.stage.functionDef = null;
                 }
@@ -163,8 +163,8 @@ class TouchRecord extends BaseTouchRecord {
             }
         }
 
-        // TODO: add tolerance here as well
-        if (this.isExpr && mouseDown && this.targetNode) {
+        if (this.isExpr && mouseDown && this.targetNode &&
+            gfxCore.distance(this.dragStart, mousePos) > 10) {
             const newSelected = this.stage.detachFromHole(this.topNode, this.targetNode);
             if (newSelected !== null) {
                 // Highlight droppable holes
