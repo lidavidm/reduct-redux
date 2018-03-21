@@ -208,10 +208,11 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             const { ctx } = stage;
 
             ctx.save();
+            ctx.globalAlpha = offset.opacity * this.opacity;
             ctx.fillStyle = "gray";
             const r = 5 * Math.min(sx, sy);
-            const w = offset.sx * this.scale.x * (this.size.w - (4 * r));
-            const h = offset.sy * this.scale.y * this.size.h;
+            const w = sx * (this.size.w - (4 * r));
+            const h = sy * this.size.h;
             ctx.beginPath();
             ctx.arc(x + (2 * r), y + (h / 2), r, 0, 2 * Math.PI, false);
             ctx.arc(x + (2 * r) + (w / 2), y + (h / 2), r, 0, 2 * Math.PI, false);
