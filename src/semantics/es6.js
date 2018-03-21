@@ -687,7 +687,6 @@ export default transform({
                             shape: "()",
                             radius: 0,
                             fields: ["name"],
-                            color: "orangered",
                         },
                     },
                 },
