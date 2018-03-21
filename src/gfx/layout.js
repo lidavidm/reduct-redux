@@ -86,7 +86,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
 
             childProjection.parent = this;
 
-            if (!childProjection.animating) {
+            if (typeof childProjection.animating !== "number" || childProjection.animating === 0) {
                 childProjection.pos.x = x;
                 childProjection.anchor.x = 0;
                 childProjection.anchor.y = 0;
@@ -102,7 +102,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
         this.size.h = maxY + this.padding.top + this.padding.bottom;
         for (const [ childId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
-            if (childProjection.animating) continue;
+            if (typeof childProjection.animating === "number" && childProjection.animating > 0) continue;
 
             childProjection.pos.y = (this.size.h * this.scale.y - childProjection.size.h * childProjection.scale.y * this.scale.y) / 2;
         }

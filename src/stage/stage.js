@@ -27,6 +27,7 @@ class TouchRecord extends BaseTouchRecord {
         this.dropTargets = [];
         this.dropTweens = [];
         this.highlightAnimation = null;
+        this.scaleAnimation = null;
     }
 
     reset() {
@@ -170,7 +171,7 @@ class TouchRecord extends BaseTouchRecord {
             view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
 
             if (this.isExpr && this.targetNode !== null) {
-                this.stage.views[this.topNode].opacity = 0.6;
+                this.stage.views[this.topNode].opacity = 0.7;
             }
         }
 
@@ -210,6 +211,30 @@ class TouchRecord extends BaseTouchRecord {
             this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
         }
 
+        if (this.topNode && this.isExpr) {
+            // Scale things down when they're over a hole
+            if (this.hoverNode) {
+                if (this.scaleAnimation) this.scaleAnimation.cancel();
+                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
+                    scale: { x: 0.6, y: 0.6 },
+                }, {
+                    easing: animate.Easing.Cubic.Out,
+                    setAnimatingFlag: false,
+                    duration: 300,
+                });
+            }
+            else if (this.stage.getView(this.topNode).scale.x < 1) {
+                if (this.scaleAnimation) this.scaleAnimation.cancel();
+                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
+                    scale: { x: 1, y: 1 },
+                }, {
+                    easing: animate.Easing.Cubic.Out,
+                    setAnimatingFlag: false,
+                    duration: 300,
+                });
+            }
+        }
+
         // onmouseenter/onmouseexit for views (e.g. buttons)
         if (this.hoverNode !== this.prevHoverNode) {
             const view = this.stage.getView(this.hoverNode);
@@ -228,6 +253,10 @@ class TouchRecord extends BaseTouchRecord {
 
     onend(state, mousePos) {
         this.stopHighlight();
+        if (this.scaleAnimation) this.scaleAnimation.cancel();
+        if (this.isExpr && this.topNode) {
+            this.stage.getView(this.topNode).scale = { x: 1, y: 1 };
+        }
 
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
