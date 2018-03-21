@@ -331,6 +331,14 @@ export default transform({
             // Filter to determine which subexpressions to evaluate
             // before stepping the overall expression.
             substepFilter: (semant, state, expr, field) => field === "condition",
+            stepPosition: (semant, stage, state, expr) => {
+                const nodes = state.get("nodes");
+                const cond = nodes.get(expr.get("condition")).get("value");
+                if (cond) {
+                    return gfx.absolutePos(stage.getView(expr.get("positive")));
+                }
+                return gfx.absolutePos(stage.getView(expr.get("negative")));
+            },
             stepAnimation: (semant, stage, state, expr) => {
                 const nodes = state.get("nodes");
                 const cond = nodes.get(expr.get("condition")).get("value");

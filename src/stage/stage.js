@@ -888,7 +888,6 @@ export default class Stage extends BaseStage {
         this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 const topView = this.views[topNodeId];
-                const origPos = gfxCore.centerPos(topView);
 
                 if (newNodeIds.length !== 1) {
                     throw "Stepping to produce multiple expressions is currently unsupported.";
@@ -903,6 +902,15 @@ export default class Stage extends BaseStage {
 
                 for (const node of addedNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                }
+
+                let origPos = gfxCore.centerPos(topView);
+                const origNode = state.getIn([ "nodes", topNodeId ]);
+                const origNodeDefn = this.semantics.definition.expressions[origNode.get("type")];
+                if (origNodeDefn && origNodeDefn.stepPosition) {
+                    console.log(origPos);
+                    origPos = origNodeDefn.stepPosition(this.semantics, this, state, origNode);
+                    console.log(origPos);
                 }
 
                 // Preserve position
