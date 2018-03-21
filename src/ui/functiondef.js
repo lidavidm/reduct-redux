@@ -13,7 +13,7 @@ export default class FunctionDef {
         const absSize = gfx.absoluteSize(referenceView);
 
         animate.after(500)
-            .then(() => animate.tween(this.view, { opacity: 0.5 }, {
+            .then(() => animate.tween(this.view, { opacity: 0.8 }, {
                 duration: 350,
                 easing: animate.Easing.Cubic.In,
             }))
@@ -23,7 +23,6 @@ export default class FunctionDef {
                     y: centerPos.y + (absSize.h / 2) + 5,
                 },
                 scale: { x: 1.0, y: 1.0 },
-                opacity: 0.8,
             }, {
                 duration: 2000,
                 easing: animate.Easing.Cubic.InOut,
