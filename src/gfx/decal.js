@@ -70,14 +70,14 @@ export default function decal(projection) {
         else if (state.get("nodes").get(exprId).has("parent")) ctx.globalAlpha = 0.5 * offset.opacity;
 
         const cx = x + (sx * ((lastChild.x - firstChild.x) / 2));
-        const arrowBase = 5;
-        const arrowWidth = arrowBase + 5;
+        const arrowBase = 3;
+        const arrowWidth = arrowBase + 3;
         firstChild.x += 2 * arrowWidth;
         firstChild.y -= 2 * arrowWidth;
         ctx.moveTo(x + (sx * lastChild.x), y + (sy * lastChild.y));
         ctx.quadraticCurveTo(
             cx - 10,
-            y - 40,
+            y - 20,
             x + (sx * (firstChild.x + arrowBase)),
             y + (sy * (firstChild.y + arrowBase))
         );
@@ -101,7 +101,7 @@ export default function decal(projection) {
         );
         ctx.quadraticCurveTo(
             cx + 10,
-            y - 50,
+            y - 30,
             x + (sx * lastChild.x),
             y + (sy * lastChild.y)
         );
