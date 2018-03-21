@@ -509,8 +509,11 @@ export default transform({
 
                         for (const [ childId, exprId ] of lambdaView.children(callee.get("id"), state)) {
                             if (exprId !== callee.get("body")) {
-                                reset.push(animate.tween(stage.views[childId], { scale: { x: 0 } }, {
-                                    duration,
+                                reset.push(animate.tween(stage.views[childId], {
+                                    scale: { x: 0 },
+                                    opacity: 0,
+                                }, {
+                                    duration: duration / 4,
                                     restTime,
                                     easing: animate.Easing.Cubic.InOut,
                                 }));
@@ -549,8 +552,11 @@ export default transform({
 
                     for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
                         if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
-                            reset.push(animate.tween(stage.views[childId], { scale: { x: 0 } }, {
-                                duration,
+                            reset.push(animate.tween(stage.views[childId], {
+                                scale: { x: 0 },
+                                opacity: 0,
+                            }, {
+                                duration: duration / 4,
                                 restTime,
                                 easing: animate.Easing.Cubic.InOut,
                             }));
@@ -558,7 +564,7 @@ export default transform({
                     }
 
                     reset.push(animate.tween(argView, { x: 0 }, {
-                        duration,
+                        duration: duration / 4,
                         restTime,
                         easing: animate.Easing.Cubic.InOut,
                     }));
