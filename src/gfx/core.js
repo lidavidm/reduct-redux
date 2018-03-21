@@ -14,6 +14,7 @@ const DEBUG_COLORS = {
     "hbox": "blue",
     "vbox": "blue",
     "text": "green",
+    "custom/argumentBar": "purple",
 };
 
 document.body.addEventListener("keyup", (e) => {

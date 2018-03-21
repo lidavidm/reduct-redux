@@ -8,6 +8,7 @@ import * as util from "./util";
 
 export function argumentBar() {
     const projection = gfx.baseProjection();
+    projection.type = "custom/argumentBar";
 
     const txt = gfx.text("", {
         color: "#888",
@@ -39,6 +40,7 @@ export function argumentBar() {
                   define.get("params") :
                   state.getIn([ "nodes", state.getIn([ "globals", define.get("name") ]), "params" ]);
 
+            let maxY = 50;
             for (const name of params) {
                 const subexprField = `arg_${name}`;
                 if (define.get(subexprField)) {
@@ -46,6 +48,7 @@ export function argumentBar() {
                     const childProjection = stage.getView(subexprId);
                     childProjection.parent = this;
                     childProjection.pos.x = this.size.w;
+                    childProjection.pos.y = 0;
                     childProjection.anchor.x = 0;
                     childProjection.anchor.y = 0;
                     // TODO: use subexpScale
@@ -55,6 +58,7 @@ export function argumentBar() {
                     childProjection.prepare(subexprId, subexprId, state, stage);
                     // TODO: use padding
                     this.size.w += (childProjection.size.w * childProjection.scale.x) + 20;
+                    maxY = Math.max(maxY, childProjection.size.h * childProjection.scale.y);
                     this.names.push([ null, subexprId ]);
                     childProjection.pos.y = (this.size.h - childProjection.size.h * childProjection.scale.y) / 2;
                 }
@@ -66,6 +70,7 @@ export function argumentBar() {
                     this.size.w += Math.max(size, 40) + 20;
                 }
             }
+            this.size.h = maxY;
         }
 
         this.size.w = Math.max(0, this.size.w - 20);
@@ -132,6 +137,7 @@ export function argumentBar() {
             }
         }
 
+        gfx.debugDraw(ctx, this, offset);
         ctx.restore();
     };
 
