@@ -36,7 +36,9 @@ export default class FunctionDef {
         view.stroke = { lineWidth: 1, color: "gray" };
         view.opacity = 0;
         view.scale = { x: 0.5, y: 0.5 };
-        view.pos = gfx.centerPos(this.stage.getView(this.id));
+        view.pos = { x: 0, y: 0 };
+        view.pos.x = gfx.centerPos(this.stage.getView(this.id)).x;
+        view.pos.y = gfx.absolutePos(this.stage.getView(this.id)).y;
 
         const defnName = this.stage.getState().getIn([ "nodes", this.referenceId, "name" ]);
         if (!this.stage.newDefinedNames.includes(defnName)) {
