@@ -340,9 +340,7 @@ export default transform({
 
                 const view = stage.getView(expr.get("condition"));
 
-                view.stroke = { lineWidth: 0, color };
-                branch.stroke = { lineWidth: 0, color };
-
+                view.stroke = { lineWidth: 1, color };
                 const reset = [];
                 const speed = animate.scaleDuration(300, "expr-conditional");
                 const pauseTime = animate.scaleDuration(700, "expr-conditional");
@@ -353,10 +351,13 @@ export default transform({
                     duration: animate.scaleDuration(700, "expr-conditional"),
                     easing: animate.Easing.Cubic.In,
                 })
-                    .then(() => animate.tween(branch, { stroke: { lineWidth: 4 } }, {
-                        duration: animate.scaleDuration(700, "expr-conditional"),
-                        easing: animate.Easing.Cubic.In,
-                    }))
+                    .then(() => {
+                        branch.stroke = { lineWidth: 1, color };
+                        return animate.tween(branch, { stroke: { lineWidth: 4 } }, {
+                            duration: animate.scaleDuration(700, "expr-conditional"),
+                            easing: animate.Easing.Cubic.In,
+                        });
+                    })
                     .then(() => animate.after(pauseTime))
                     .then(() => {
                         const condView = stage.getView(expr.get("id"));
