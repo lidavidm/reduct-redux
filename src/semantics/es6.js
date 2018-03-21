@@ -342,16 +342,6 @@ export default transform({
 
                 view.stroke = { lineWidth: 0, color };
                 branch.stroke = { lineWidth: 0, color };
-                const tweens = [
-                    animate.tween(view, { stroke: { lineWidth: 4 } }, {
-                        duration: animate.scaleDuration(700, "expr-conditional"),
-                        easing: animate.Easing.Cubic.In,
-                    }),
-                    animate.tween(branch, { stroke: { lineWidth: 4 } }, {
-                        duration: animate.scaleDuration(700, "expr-conditional"),
-                        easing: animate.Easing.Cubic.In,
-                    }),
-                ];
 
                 const reset = [];
                 const speed = animate.scaleDuration(300, "expr-conditional");
@@ -359,7 +349,14 @@ export default transform({
                 const totalDuration = speed * 3;
                 const restTime = totalDuration + pauseTime;
 
-                return Promise.all(tweens)
+                return animate.tween(view, { stroke: { lineWidth: 4 } }, {
+                    duration: animate.scaleDuration(700, "expr-conditional"),
+                    easing: animate.Easing.Cubic.In,
+                })
+                    .then(() => animate.tween(branch, { stroke: { lineWidth: 4 } }, {
+                        duration: animate.scaleDuration(700, "expr-conditional"),
+                        easing: animate.Easing.Cubic.In,
+                    }))
                     .then(() => animate.after(pauseTime))
                     .then(() => {
                         const condView = stage.getView(expr.get("id"));
@@ -371,11 +368,16 @@ export default transform({
                             if (ctr !== safe) {
                                 reset.push(animate.tween(stage.getView(childId), {
                                     scale: { y: 0 },
-                                    opacity: 0,
                                 }, {
                                     duration: totalDuration,
                                     restTime,
                                     easing: animate.Easing.Cubic.InOut,
+                                }));
+                                reset.push(animate.tween(stage.getView(childId), {
+                                    opacity: 0,
+                                }, {
+                                    duration: totalDuration / 8,
+                                    easing: animate.Easing.Cubic.In,
                                 }));
                             }
                             ctr += 1;
