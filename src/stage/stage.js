@@ -67,12 +67,22 @@ class TouchRecord extends BaseTouchRecord {
             ));
         });
 
+        const targetSize = gfxCore.absoluteSize(this.stage.getView(this.topNode));
         for (const targetId of this.dropTargets) {
             const view = this.stage.getView(targetId);
             if (view.type === "text") continue;
 
+            const curSize = gfxCore.absoluteSize(view);
+            const lr = Math.min(Math.max((targetSize.w - curSize.w) / 1.5, 35), 80);
+            const tb = Math.min(Math.max((targetSize.h - curSize.h) / 1.5, 10), 30);
+
             this.dropTweens.push(animate.tween(view, {
-                padding: { left: 40, right: 40 },
+                padding: {
+                    left: lr,
+                    right: lr,
+                    top: tb,
+                    bottom: tb,
+                },
             }, {
                 duration: 600,
                 easing: animate.Easing.Cubic.Out,

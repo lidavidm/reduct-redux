@@ -62,12 +62,12 @@ export function sticky(projection, direction, options) {
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     if (options && options.padding) {
         options.padding = Object.assign({
-            left: 10, inner: 5, right: 10,
+            left: 10, inner: 5, right: 10, top: 0, bottom: 0,
         }, options.padding);
     }
 
     const projection = baseProjection(Object.assign({}, {
-        padding: { left: 10, inner: 5, right: 10 },
+        padding: { left: 10, inner: 5, right: 10, top: 0, bottom: 0 },
         subexpScale: 0.85,
     }, options));
     const baseDraw = projection.draw;
@@ -99,7 +99,7 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
             maxY = Math.max(maxY, childProjection.size.h * childProjection.scale.y);
         }
         this.size.w = x - this.padding.inner + this.padding.right;
-        this.size.h = maxY;
+        this.size.h = maxY + this.padding.top + this.padding.bottom;
         for (const [ childId ] of this.children(exprId, state)) {
             const childProjection = stage.views[childId];
             if (childProjection.animating) continue;
@@ -208,11 +208,10 @@ export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
             const { ctx } = stage;
 
             ctx.save();
-            ctx.globalAlpha = offset.opacity * this.opacity;
             ctx.fillStyle = "gray";
             const r = 5 * Math.min(sx, sy);
-            const w = sx * (this.size.w - (4 * r));
-            const h = sy * this.size.h;
+            const w = offset.sx * this.scale.x * (this.size.w - (4 * r));
+            const h = offset.sy * this.scale.y * this.size.h;
             ctx.beginPath();
             ctx.arc(x + (2 * r), y + (h / 2), r, 0, 2 * Math.PI, false);
             ctx.arc(x + (2 * r) + (w / 2), y + (h / 2), r, 0, 2 * Math.PI, false);
