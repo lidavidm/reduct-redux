@@ -253,9 +253,9 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             if (this.color) ctx.fillStyle = this.color;
 
             let shouldStroke = false;
-            if (this.stroke) {
+            if (this.stroke || this.outerStroke) {
                 shouldStroke = true;
-                primitive.setStroke(ctx, this);
+                primitive.setStroke(ctx, this.stroke || this.outerStroke);
             }
             else if (stage.isHovered(id)) {
                 primitive.setStroke(ctx, {
