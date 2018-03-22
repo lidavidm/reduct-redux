@@ -994,10 +994,14 @@ export default class Stage extends BaseStage {
             },
             error: (errorNodeId) => {
                 animate.fx.error(this, this.views[errorNodeId]);
+                Logging.log("reduction-error", {
+                    clicked: this.saveNode(selectedNode),
+                    cause: this.saveNode(errorNodeId),
+                });
             },
         }).finally(finishReducing);
 
-        if (this.mode == "big") {
+        if (this.mode === "big") {
             this.mode = "over";
             document.querySelector("#ffwd").style.background = "#add8e6";
         }
