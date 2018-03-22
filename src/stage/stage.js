@@ -1016,7 +1016,7 @@ export default class Stage extends BaseStage {
             const [ topNode, resultNodeIds, newNodes ] = result;
             const origExp = this.saveNode(topNode);
             const origArg = this.saveNode(arg);
-            const tempNodes = state.get("nodes").withMutations(nodes => {
+            const tempNodes = state.get("nodes").withMutations((nodes) => {
                 for (const node of newNodes) {
                     nodes.set(node.get("id"), node);
                 }
@@ -1061,6 +1061,17 @@ export default class Stage extends BaseStage {
                 before: origExp,
                 applied: origArg,
                 after: resultNodeIds.map(id => this.saveNode(id, tempNodes)),
+            });
+        }
+        else {
+            let applyTarget = target;
+            const targetNode = state.get("nodes").get(target);
+            if (targetNode.has("parent")) {
+                applyTarget = targetNode.get("parent");
+            }
+            Logging.log("reduction-lambda-failed", {
+                target: this.saveNode(applyTarget),
+                arg: this.saveNode(arg),
             });
         }
     }
