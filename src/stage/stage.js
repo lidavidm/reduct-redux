@@ -1032,22 +1032,29 @@ export default class Stage extends BaseStage {
                 const body = topNodeRecord.get("body");
                 Audio.play("pop");
                 let fxId = null;
-                animate.fx.emerge(this, tempState, this.views[body], resultNodeIds)
-                    .then((id) => {
-                        fxId = id;
-                    })
-                    .then(() => animate.tween(this.views[topNode], {
+
+                Promise.all([
+                    animate.fx.emerge(this, tempState, this.views[body], resultNodeIds)
+                        .then((id) => {
+                            fxId = id;
+                        }),
+                    animate.tween(this.views[topNode], {
                         opacity: 0,
                         pos: { y: this.views[topNode].pos.y + 50 },
                         scale: { x: 0, y: 0 },
                     }, {
-                        duration: 500,
+                        duration: 1000,
                         easing: animate.Easing.Cubic.Out,
-                    }).then(() => {
-                        this.views[topNode].opacity = 1;
-                    }))
+                    }).delay(350),
+                ])
                     .then(() => {
-                        this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
+                        this.views[topNode].opacity = 1;
+                    })
+                    .then(() => {
+                        this.store.dispatch(action.betaReduce(
+                            topNode, arg,
+                            resultNodeIds, newNodes
+                        ));
                         this.views[arg].opacity = 1;
                         this.removeEffect(fxId);
                     });
