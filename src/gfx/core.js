@@ -398,7 +398,7 @@ export function text(txt, options) {
             stage.ctx.font = `${this.fontSize}px ${this.font}`;
             TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(curText).width;
         }
-        this.size.h = this.fontSize * 1.1;
+        this.size.h = this.fontSize * 1.35;
         this.size.w = TEXT_SIZE_CACHE[cacheKey];
     };
     projection.draw = function(id, exprId, state, stage, offset) {
