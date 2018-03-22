@@ -1033,8 +1033,14 @@ export default class Stage extends BaseStage {
                 Audio.play("pop");
                 let fxId = null;
                 animate.fx.emerge(this, tempState, this.views[body], resultNodeIds)
-                    .then(id => (fxId = id))
-                    .then(() => animate.tween(this.views[topNode], { opacity: 0 }, {
+                    .then((id) => {
+                        fxId = id;
+                    })
+                    .then(() => animate.tween(this.views[topNode], {
+                        opacity: 0,
+                        pos: { y: this.views[topNode].pos.y + 50 },
+                        scale: { x: 0, y: 0 },
+                    }, {
                         duration: 500,
                         easing: animate.Easing.Cubic.Out,
                     }).then(() => {
