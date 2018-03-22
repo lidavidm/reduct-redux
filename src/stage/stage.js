@@ -114,6 +114,12 @@ class TouchRecord extends BaseTouchRecord {
         });
     }
 
+    useToolboxItem() {
+        Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
+        this.stage.store.dispatch(action.useToolbox(this.topNode));
+        animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
+    }
+
     onstart(mousePos) {
         super.onstart(mousePos);
 
@@ -277,6 +283,9 @@ class TouchRecord extends BaseTouchRecord {
         else if (this.isExpr && this.dragged && this.hoverNode &&
                  this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
             // Drag something into hole
+
+            if (this.fromToolbox) this.useToolboxItem();
+
             Audio.play("pop");
             this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
             animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
@@ -305,9 +314,7 @@ class TouchRecord extends BaseTouchRecord {
             }
             if (useItem) {
                 // Take item out of toolbox
-                Logging.log("toolbox-remove", this.stage.saveNode(this.topNode));
-                this.stage.store.dispatch(action.useToolbox(this.topNode));
-                animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
+                this.useToolboxItem();
             }
             else {
                 Logging.log("toolbox-addback", this.stage.saveNode(this.topNode));
