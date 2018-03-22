@@ -238,9 +238,9 @@ export function error(stage, projection) {
     });
 }
 
-export function emerge(stage, state, bodyView, resultIds) {
+export function emerge(stage, state, bodyView, resultIds, options={}) {
     const spacing = 10;
-    const emergeDistance = 50;
+    const emergeDistance = 100;
     let totalHeight = 0;
     let maxWidth = 50;
 
@@ -274,19 +274,22 @@ export function emerge(stage, state, bodyView, resultIds) {
         resultView.pos.y = y + (sz.h / 2);
         resultView.anchor.x = 0.5;
         resultView.anchor.y = 0.5;
-        animate.tween(resultView.pos, {
-            y: resultView.pos.y - emergeDistance,
-        }, {
-            duration: 250,
-            easing: animate.Easing.Cubic.In,
-        });
-        y += sz.h + spacing;
         resultView.scale.x = 0.0;
         resultView.scale.y = 0.0;
-        tweens.push(animate.tween(resultView.scale, { x: 1, y: 1 }, {
-            duration: 250,
-            easing: animate.Easing.Cubic.In,
+
+        tweens.push(animate.tween(resultView, {
+            pos: {
+                y: resultView.pos.y - emergeDistance,
+            },
+            scale: {
+                x: 1,
+                y: 1,
+            },
+        }, {
+            duration: 1000,
+            easing: animate.Easing.Cubic.Out,
         }));
+        y += sz.h + spacing;
     }
 
     const id = stage.addEffect({
@@ -307,7 +310,11 @@ export function emerge(stage, state, bodyView, resultIds) {
     });
 
     return Promise.all(tweens).then(() => {
-        stage.removeEffect(id);
+        if (options.autoremove) {
+            stage.removeEffect(id);
+            return null;
+        }
+        return id;
     });
 }
 
