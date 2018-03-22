@@ -232,7 +232,9 @@ export function genericBetaReduce(semant, state, config) {
         return [
             topNode.get("id"),
             semant.subexpressions(newTop).map(field => newTop.get(field)),
-            newNodes.slice(1),
+            newNodes.slice(1).map(node => (node.get("parent") === newTop.get("id") ?
+                                           node.delete("parent").delete("parentField") :
+                                           node)),
         ];
     }
     else {
