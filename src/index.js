@@ -128,10 +128,10 @@ function initialize() {
         document.querySelector("#ffwd").style.background = "#6d8891";
         stg.setFfwd();
     });
-    // document.querySelector("#toggle-graph").addEventListener("click", () => {
-    //     Logging.toggleStateGraph();
-    //     window.updateStateGraph();
-    // });
+    document.querySelector("#toggle-graph").addEventListener("click", () => {
+        Logging.toggleStateGraph();
+        window.updateStateGraph();
+    });
     window.toggleStateGraph = function() {
         Logging.toggleStateGraph();
         window.updateStateGraph();
@@ -181,9 +181,11 @@ function start() {
         }
         document.querySelector("#chapter").value = prevOption.getAttribute("value");
     });
-    //reset buttons
+
+    // Reset buttons
     document.querySelector("#pause").innerText = ">";
-    document.querySelector("#ffwd").style.display='block';
+    document.querySelector("#ffwd").style.display = "block";
+    window.updateStateGraph();
 }
 
 function showChapterEnd() {

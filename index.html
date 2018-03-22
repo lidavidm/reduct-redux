@@ -43,17 +43,23 @@
          #nav > select {
              flex: 0.5;
          }
+
+         #nav button.dev {
+             width: 4em;
+         }
+
          #current-level, #animation-speed {
              flex: 1 0 5em;
              color: #FFF;
              vertical-align: middle;
              text-align: center;
          }
+
          #state-graph {
              padding: 0;
              position: absolute;
-             right: 0;
-             top: 0;
+             left: 0;
+             top: 2.5em;
              width:400px;
              height:400px;
              background: #111;
@@ -147,7 +153,8 @@
             <!--     <option value="big">Big Step</option> -->
             <!--     <option value="medium">Medium Step (big step + but may terminate early)</option> -->
             <!-- </select> -->
-            <button id="download-log">Download Log JSON</button>
+            <button class="dev" id="download-log">Download Log JSON</button>
+            <button class="dev" id="toggle-graph">Toggle State Graph</button>
         </div>
         <script src="./src/index.js"></script>
     </body>
