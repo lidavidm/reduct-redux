@@ -260,6 +260,8 @@ export function previewer(projection) {
         }
         if (this.preview) {
             stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            this.size = { w: this.prevPreview.x * stage.views[this.preview].size.w,
+                          h: this.prevPreview.y * stage.views[this.preview].size.h, };
             return;
         }
 
@@ -275,11 +277,13 @@ export function previewer(projection) {
                     x: this.pos.x + (0.5 * this.size.w),
                     y: this.pos.y,
                 },
+                size: this.size,
                 shadow: false,
-                scale: {
-                    x: this.prevPreview.x * subexpScale,
-                    y: this.prevPreview.y * subexpScale,
-                },
+                scale: this.scale,
+                // scale: {
+                //     x: this.prevPreview.x * subexpScale,
+                //     y: this.prevPreview.y * subexpScale,
+                // },
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,
             });
