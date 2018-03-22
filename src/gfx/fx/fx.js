@@ -240,9 +240,10 @@ export function error(stage, projection) {
 
 export function emerge(stage, state, bodyView, resultIds, options={}) {
     const spacing = 10;
-    const emergeDistance = 50;
+    let emergeDistance = 50;
     let totalHeight = 0;
     let maxWidth = 50;
+    let maxHeight = 50;
 
     for (const resultId of resultIds) {
         const resultView = stage.views[resultId];
@@ -250,23 +251,23 @@ export function emerge(stage, state, bodyView, resultIds, options={}) {
         const sz = gfx.absoluteSize(resultView);
         totalHeight += sz.h + spacing;
         maxWidth = Math.max(sz.w, maxWidth);
+        maxHeight = Math.max(sz.h, maxHeight);
     }
     totalHeight -= spacing;
 
     const ap = gfx.absolutePos(bodyView);
     const as = gfx.absoluteSize(bodyView);
-    let y = (ap.y + (as.h / 2)) - (totalHeight / 2);
+    let y = (ap.y + (as.h / 2));
 
     // Compute using bounding box of the end position
-    // TODO: this is janky, could be improved
     const { x: safeX, y: safeY } = stage.findSafePosition(
         (ap.x + (as.w / 2)) - (maxWidth / 2),
-        y - emergeDistance,
+        y - emergeDistance - (maxHeight / 2),
         maxWidth,
         totalHeight
     );
 
-    y = safeY + emergeDistance;
+    emergeDistance = y - (maxHeight / 2) - safeY;
 
     const tweens = [];
     for (const resultId of resultIds) {
