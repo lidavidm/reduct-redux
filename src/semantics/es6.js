@@ -334,10 +334,11 @@ export default transform({
             stepPosition: (semant, stage, state, expr) => {
                 const nodes = state.get("nodes");
                 const cond = nodes.get(expr.get("condition")).get("value");
-                if (cond) {
-                    return gfx.absolutePos(stage.getView(expr.get("positive")));
-                }
-                return gfx.absolutePos(stage.getView(expr.get("negative")));
+                const view = stage.getView(expr.get(cond ? "positive" : "negative"));
+                return {
+                    x: gfx.absolutePos(view).x,
+                    y: gfx.centerPos(view).y,
+                };
             },
             stepAnimation: (semant, stage, state, expr) => {
                 const nodes = state.get("nodes");
@@ -393,11 +394,14 @@ export default transform({
                         }
                         reset.push(animate.tween(condView, {
                             padding: {
+                                top: 0,
+                                bottom: 0,
                                 inner: 0,
                                 right: 0,
                                 left: 0,
                             },
                             backgroundOpacity: 0,
+                            subexpScale: 1,
                         }, {
                             duration: totalDuration,
                             restTime,

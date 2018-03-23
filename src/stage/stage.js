@@ -946,22 +946,24 @@ export default class Stage extends BaseStage {
                     }
                 });
 
+                let origPos = gfxCore.absolutePos(topView);
+                const origNode = state.getIn([ "nodes", topNodeId ]);
+                const origNodeDefn = this.semantics.definition.expressions[origNode.get("type")];
+                if (origNodeDefn && origNodeDefn.stepPosition) {
+                    origPos = origNodeDefn.stepPosition(this.semantics, this, state, origNode);
+                }
+
+                // Project after getting position so that projecting
+                // doesn't recreate existing view and thus mess up
+                // view hierarchy. (We also can't run prepare() since
+                // that might relayout things.)
                 for (const node of addedNodes) {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
-                let origPos = gfxCore.centerPos(topView);
-                const origNode = state.getIn([ "nodes", topNodeId ]);
-                const origNodeDefn = this.semantics.definition.expressions[origNode.get("type")];
-                if (origNodeDefn && origNodeDefn.stepPosition) {
-                    console.log(origPos);
-                    origPos = origNodeDefn.stepPosition(this.semantics, this, state, origNode);
-                    console.log(origPos);
-                }
-
                 // Preserve position
-                this.views[newNodeIds[0]].anchor.x = 0.5;
-                this.views[newNodeIds[0]].anchor.y = 0.5;
+                this.views[newNodeIds[0]].anchor.x = topView.anchor.x;
+                this.views[newNodeIds[0]].anchor.y = topView.anchor.y;
                 this.views[newNodeIds[0]].pos.x = origPos.x;
                 this.views[newNodeIds[0]].pos.y = origPos.y;
 
@@ -1059,7 +1061,7 @@ export default class Stage extends BaseStage {
                         ));
                         this.views[arg].opacity = 1;
                         this.removeEffect(fxId);
-                        this.views[topNode].anchor = { x: 0, y: 0 };
+                        this.views[topNode].anchor = { x: 0, y: 0.5 };
                     });
 
                 animate.tween(this.views[arg], { opacity: 0 }, {
