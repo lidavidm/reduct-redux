@@ -28,6 +28,7 @@ class TouchRecord extends BaseTouchRecord {
         this.dropTweens = [];
         this.highlightAnimation = null;
         this.scaleAnimation = null;
+        this.hoverStartPos = null;
     }
 
     reset() {
@@ -36,6 +37,7 @@ class TouchRecord extends BaseTouchRecord {
         this.highlightAnimation = null;
         this.dropTargets = [];
         this.dropTweens = [];
+        this.hoverStartPos = null;
     }
 
     // TODO: refactor this onto the stage
@@ -198,7 +200,24 @@ class TouchRecord extends BaseTouchRecord {
             }
         }
 
+        // Previewing application can cause holes to jump around a
+        // lot, making it frustrating to use. This makes holes
+        // "sticky".
+        const oldHover = this.hoverNode;
         this.findHoverNode(mousePos);
+        if (this.topNode !== null && (this.hoverNode === null || !this.stage.semantics.droppable(
+            this.stage.getState(),
+            this.topNode,
+            this.hoverNode
+        )) &&
+            oldHover !== null && this.hoverStartPos &&
+            gfxCore.distance(mousePos, this.hoverStartPos) < 100) {
+            this.hoverNode = oldHover;
+        }
+        else if (this.topNode !== null && this.hoverNode !== null) {
+            this.hoverStartPos = Object.assign({}, mousePos);
+        }
+
         if (this.isExpr && this.topNode && this.hoverNode) {
             const state = this.stage.getState();
             const holeExprType = state.getIn([ "nodes", this.hoverNode, "type" ]);
