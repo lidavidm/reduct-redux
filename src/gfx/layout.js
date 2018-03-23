@@ -272,12 +272,10 @@ export function previewer(projection) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.preview) {
-            const subexpScale = (this.previewOptions && this.previewOptions.maxScale) ?
-                  this.previewOptions.maxScale : this.subexpScale;
             const temp = Object.assign({}, stage.views[this.preview], {
                 pos: {
                     x: this.pos.x + (0.5 * this.size.w),
-                    y: this.pos.y,
+                    y: this.pos.y + (0.5 * this.size.h),
                 },
                 size: {
                     w: this.scale.x * this.prevPreview.x * stage.views[this.preview].size.w,
@@ -285,7 +283,7 @@ export function previewer(projection) {
                 },
                 shadow: false,
                 scale: this.scale,
-                anchor: { x: 0.5, y: 0 },
+                anchor: { x: 0.5, y: 0.5 },
                 opacity: 1,
             });
             temp.draw(this.preview, this.preview, state, stage, offset);
