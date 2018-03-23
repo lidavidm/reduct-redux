@@ -232,6 +232,15 @@ export default function transform(definition) {
         });
     };
 
+    const __substepFilter = () => true;
+    module.interpreter.substepFilter = function getSubstepFilter(type) {
+        const defn = definition.expressions[type];
+        if (defn && defn.substepFilter) {
+            return defn.substepFilter;
+        }
+        return __substepFilter;
+    };
+
     /**
      * Given an expression, find the first child that needs to have a
      * step taken, or the first child that is blocking evaluation.
@@ -244,13 +253,8 @@ export default function transform(definition) {
             return [ "error", expr.get("id") ];
         }
 
-        let substepFilter = () => true;
         if (exprFilter === null) exprFilter = () => false;
-
-        const defn = definition.expressions[expr.get("type")];
-        if (defn && defn.substepFilter) {
-            substepFilter = defn.substepFilter;
-        }
+        const substepFilter = module.interpreter.substepFilter(expr.get("type"));
 
         if (!exprFilter(state, expr)) {
             for (const field of module.subexpressions(expr)) {

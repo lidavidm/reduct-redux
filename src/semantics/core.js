@@ -116,7 +116,13 @@ export function genericBetaReduce(semant, state, config) {
         nodes,
         topNode.get("id"),
         (nodes, id) => nodes.get(id).get("type") === "missing"
-    );
+    ).filter((id) => {
+        const node = nodes.get(id);
+        if (!node.get("parent")) return true;
+        const parent = nodes.get(node.get("parent"));
+        const substepFilter = semant.interpreter.substepFilter(parent.get("type"));
+        return substepFilter(semant, state, parent, node.get("parentField"));
+    });
     if (missingNodes.length > 0) {
         console.warn("Can't reduce missing");
         if (config.animateInvalidArg) {
@@ -134,6 +140,14 @@ export function genericBetaReduce(semant, state, config) {
         const allAddedNodes = [];
 
         for (const argId of argIds) {
+            // Ignore "missing" args. This allows us to evaluate
+            // something like `apply(repeat(2, _), addOne)`, where the
+            // stepper will try to apply 2 and _ to repeat first. This
+            // would be obviated if the stepFilter of a reference were
+            // sophisticated enough to recognize when it is partially
+            // applied.
+            if (nodes.get(argId).get("type") === "missing") continue;
+
             const result = genericBetaReduce(semant, curState, Object.assign({}, config, {
                 topNode: curTopNode,
                 targetNode: curTargetNode,
@@ -181,7 +195,13 @@ export function genericBetaReduce(semant, state, config) {
             nodes,
             argId,
             (nodes, id) => nodes.get(id).get("type") === "missing"
-        );
+        ).filter((id) => {
+            const node = nodes.get(id);
+            if (!node.get("parent")) return true;
+            const parent = nodes.get(node.get("parent"));
+            const substepFilter = semant.interpreter.substepFilter(parent.get("type"));
+            return substepFilter(semant, state, parent, node.get("parentField"));
+        });
         if (missingArgNodes.length > 0) {
             if (config.animateInvalidArg) {
                 missingArgNodes.forEach(config.animateInvalidArg);
