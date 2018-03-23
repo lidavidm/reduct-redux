@@ -929,6 +929,12 @@ export default class Stage extends BaseStage {
             }
         };
 
+        // Assumes clicks always dispatched to top-level node
+        let origPos = {
+            x: gfxCore.absolutePos(this.getView(selectedNode)).x,
+            y: gfxCore.centerPos(this.getView(selectedNode)).y,
+        };
+
         const mode = overrideMode || this.mode;
         // const mode = document.querySelector("#evaluation-mode").value;
         this.semantics.interpreter.reduce(this, state, node, mode, {
@@ -946,8 +952,7 @@ export default class Stage extends BaseStage {
                     }
                 });
 
-                let origPos = gfxCore.absolutePos(topView);
-                const origNode = state.getIn([ "nodes", topNodeId ]);
+                const origNode = state.getIn([ "nodes", selectedNode ]);
                 const origNodeDefn = this.semantics.definition.expressions[origNode.get("type")];
                 if (origNodeDefn && origNodeDefn.stepPosition) {
                     origPos = origNodeDefn.stepPosition(this.semantics, this, state, origNode);
