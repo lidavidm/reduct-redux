@@ -750,7 +750,12 @@ export default transform({
 
                 if (!(expr.has("parent") && state.getIn([ "nodes", expr.get("parent"), "type"]) === "define") &&
                     expr.get("params") &&
-                    expr.get("params").length > 0) {
+                    expr.get("params").length > 0 &&
+                    expr.get("params").some(field => state.getIn([
+                        "nodes",
+                        expr.get(`arg_${field}`),
+                        "type",
+                    ]) !== "missing")) {
                     const params = expr.get("params");
                     const result = semant.interpreter.betaReduce(
                         stage,
@@ -786,7 +791,8 @@ export default transform({
                 }
 
                 const parent = state.getIn([ "nodes", parentId ]);
-                return (parent.get ? parent.get("type") : parent.type) !== "apply";
+                const type = (parent.get ? parent.get("type") : parent.type);
+                return type !== "apply" && type !== "reference";
             },
             projection: {
                 type: "dynamic",
