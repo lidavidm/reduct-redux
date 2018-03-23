@@ -60,7 +60,6 @@ export function argumentBar() {
                     this.size.w += (childProjection.size.w * childProjection.scale.x) + 20;
                     maxY = Math.max(maxY, childProjection.size.h * childProjection.scale.y);
                     this.names.push([ null, subexprId ]);
-                    childProjection.pos.y = (this.size.h - childProjection.size.h * childProjection.scale.y) / 2;
                 }
                 else {
                     txt.text = name;
@@ -70,7 +69,17 @@ export function argumentBar() {
                     this.size.w += Math.max(size, 40) + 20;
                 }
             }
+
             this.size.h = maxY;
+
+            for (const name of params) {
+                const subexprField = `arg_${name}`;
+                if (define.get(subexprField)) {
+                    const subexprId = define.get(subexprField);
+                    const childProjection = stage.getView(subexprId);
+                    childProjection.pos.y = (this.size.h - (childProjection.size.h * childProjection.scale.y)) / 2;
+                }
+            }
         }
 
         this.size.w = Math.max(0, this.size.w - 20);
