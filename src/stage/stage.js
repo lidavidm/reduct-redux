@@ -1033,6 +1033,8 @@ export default class Stage extends BaseStage {
                 Audio.play("pop");
                 let fxId = null;
 
+                this.views[topNode].pos = gfxCore.centerPos(this.views[topNode]);
+                this.views[topNode].anchor = { x: 0.5, y: 0.5 };
                 Promise.all([
                     animate.fx.emerge(this, tempState, this.views[body], resultNodeIds)
                         .then((id) => {
@@ -1057,6 +1059,7 @@ export default class Stage extends BaseStage {
                         ));
                         this.views[arg].opacity = 1;
                         this.removeEffect(fxId);
+                        this.views[topNode].anchor = { x: 0, y: 0 };
                     });
 
                 animate.tween(this.views[arg], { opacity: 0 }, {

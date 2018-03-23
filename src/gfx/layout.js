@@ -244,7 +244,7 @@ export function previewer(projection) {
 
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview && !this.prevPreview) {
-            this.prevPreview = { x: 0.2, y: 0.2 };
+            this.prevPreview = { x: 0.5, y: 0.5 };
 
             const duration = (this.previewOptions ? this.previewOptions.duration : 250) || 250;
             animate.tween(this.prevPreview, {
@@ -260,8 +260,10 @@ export function previewer(projection) {
         }
         if (this.preview) {
             stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
-            this.size = { w: this.prevPreview.x * stage.views[this.preview].size.w,
-                          h: this.prevPreview.y * stage.views[this.preview].size.h, };
+            this.size = {
+                w: this.scale.x * stage.views[this.preview].size.w,
+                h: this.scale.y * stage.views[this.preview].size.h,
+            };
             return;
         }
 
@@ -277,13 +279,12 @@ export function previewer(projection) {
                     x: this.pos.x + (0.5 * this.size.w),
                     y: this.pos.y,
                 },
-                size: this.size,
+                size: {
+                    w: this.scale.x * this.prevPreview.x * stage.views[this.preview].size.w,
+                    h: this.scale.y * this.prevPreview.y * stage.views[this.preview].size.h,
+                },
                 shadow: false,
                 scale: this.scale,
-                // scale: {
-                //     x: this.prevPreview.x * subexpScale,
-                //     y: this.prevPreview.y * subexpScale,
-                // },
                 anchor: { x: 0.5, y: 0 },
                 opacity: 1,
             });
