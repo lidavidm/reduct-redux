@@ -74,15 +74,15 @@ class TouchRecord extends BaseTouchRecord {
             if (view.type === "text") continue;
 
             const curSize = gfxCore.absoluteSize(view);
-            const lr = Math.min(Math.max((targetSize.w - curSize.w) / 1.5, 35), 80);
+            const lr = Math.min(Math.max((targetSize.w - curSize.w) / 1.5, 15), 60);
             const tb = Math.min(Math.max((targetSize.h - curSize.h) / 1.5, 10), 30);
 
             this.dropTweens.push(animate.tween(view, {
                 padding: {
-                    left: lr,
-                    right: lr,
-                    top: tb,
-                    bottom: tb,
+                    left: view.padding.left + lr,
+                    right: view.padding.right + lr,
+                    top: view.padding.top + tb,
+                    bottom: view.padding.bottom + tb,
                 },
             }, {
                 duration: 600,
