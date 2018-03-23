@@ -244,22 +244,25 @@ export function previewer(projection) {
 
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview && !this.prevPreview) {
-            this.prevPreview = { x: 0.5, y: 0.5 };
-
-            const duration = (this.previewOptions ? this.previewOptions.duration : 250) || 250;
-            animate.tween(this.prevPreview, {
-                x: 1.0,
-                y: 1.0,
-            }, {
-                duration,
-                easing: animate.Easing.Cubic.Out,
+            this.prevPreview = Object.assign({}, stage.getView(this.preview), {
+                pos: {
+                    x: this.pos.x,
+                    y: this.pos.y,
+                },
+                scale: {
+                    x: this.scale.x,
+                    y: this.scale.y,
+                },
+                shadow: false,
+                anchor: { x: 0, y: 0 },
+                opacity: 1,
             });
         }
         else if (!this.preview) {
             delete this.prevPreview;
         }
         if (this.preview) {
-            stage.views[this.preview].prepare(this.preview, this.preview, state, stage);
+            this.prevPreview.prepare(this.preview, this.preview, state, stage);
             this.size = {
                 w: this.scale.x * stage.views[this.preview].size.w,
                 h: this.scale.y * stage.views[this.preview].size.h,
@@ -272,21 +275,10 @@ export function previewer(projection) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.preview) {
-            const temp = Object.assign({}, stage.views[this.preview], {
-                pos: {
-                    x: this.pos.x + (0.5 * this.size.w),
-                    y: this.pos.y + (0.5 * this.size.h),
-                },
-                size: {
-                    w: this.scale.x * this.prevPreview.x * stage.views[this.preview].size.w,
-                    h: this.scale.y * this.prevPreview.y * stage.views[this.preview].size.h,
-                },
-                shadow: false,
-                scale: this.scale,
-                anchor: { x: 0.5, y: 0.5 },
-                opacity: 1,
-            });
-            temp.draw(this.preview, this.preview, state, stage, offset);
+            this.prevPreview.draw(this.preview, this.preview, state, stage, Object.assign({}, offset, {
+                sx: offset.sx * this.scale.x,
+                sy: offset.sy * this.scale.y,
+            }));
             return;
         }
 
