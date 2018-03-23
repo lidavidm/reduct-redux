@@ -216,7 +216,7 @@ export function centerPos(projection) {
     };
 }
 
-export function baseShape(name, defaults, draw, notchOffset=null) {
+export function baseShape(name, defaults, draw, baseShapeOptions={}) {
     return function(options) {
         const projection = Object.assign(baseProjection(), defaults, options);
         projection.size.w = projection.size.h = 40;
@@ -227,6 +227,13 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
         }
 
         projection.prepare = function(id, exprId, state, stage) {};
+
+        if (baseShapeOptions.prepare) {
+            projection.prepare = function(...args) {
+                baseShapeOptions.prepare(...args);
+            };
+        }
+
         projection.draw = function(id, exprId, state, stage, offset) {
             const ctx = stage.ctx;
             ctx.save();
@@ -298,7 +305,9 @@ export function baseShape(name, defaults, draw, notchOffset=null) {
             ctx.restore();
         };
 
-        if (notchOffset) projection.notchOffset = notchOffset;
+        if (baseShapeOptions.notchOffset) {
+            projection.notchOffset = baseShapeOptions.notchOffset;
+        }
 
         return projection;
     };
@@ -335,32 +344,34 @@ export const roundedRect = baseShape("roundedRect", {
         projection.stroke ? projection.stroke.opacity : null,
         notches
     );
-}, function(id, exprId, notchIdx) {
-    const notch = this.notches.get(notchIdx);
-    switch (notch.side) {
-    case "left":
-        return {
-            x: 0,
-            y: this.radius + ((this.size.h - this.radius) * (1 - notch.relpos) * this.scale.y),
-        };
-    case "right":
-        return {
-            x: (this.size.w * this.scale.x),
-            y: ((this.radius + ((this.size.h - (this.radius * 2)) * notch.relpos)) * this.scale.y),
-        };
-    case "top":
-        return {
-            x: this.radius + ((this.size.w - (this.radius * 2)) * notch.relpos),
-            y: 0,
-        };
-    case "bottom":
-        return {
-            x: this.radius + ((this.size.w - (this.radius * 2)) * (1 - notch.relpos)),
-            y: this.size.h,
-        };
-    default:
-        throw `roundedRect#notchOffset: unrecognized side ${notch.side}`;
-    }
+}, {
+    notchOffset(id, exprId, notchIdx) {
+        const notch = this.notches.get(notchIdx);
+        switch (notch.side) {
+        case "left":
+            return {
+                x: 0,
+                y: this.radius + ((this.size.h - this.radius) * (1 - notch.relpos) * this.scale.y),
+            };
+        case "right":
+            return {
+                x: (this.size.w * this.scale.x),
+                y: ((this.radius + ((this.size.h - (this.radius * 2)) * notch.relpos)) * this.scale.y),
+            };
+        case "top":
+            return {
+                x: this.radius + ((this.size.w - (this.radius * 2)) * notch.relpos),
+                y: 0,
+            };
+        case "bottom":
+            return {
+                x: this.radius + ((this.size.w - (this.radius * 2)) * (1 - notch.relpos)),
+                y: this.size.h,
+            };
+        default:
+            throw `roundedRect#notchOffset: unrecognized side ${notch.side}`;
+        }
+    },
 });
 
 export const hexaRect = baseShape("hexaRect", {
@@ -372,7 +383,7 @@ export const hexaRect = baseShape("hexaRect", {
 }, (ctx, projection, x, y, w, h, sx, sy, shouldStroke) => {
     primitive.hexaRect(
         ctx,
-        x, y, w, h,
+        x, y, w, h, Math.min(25, w / 2), h / 2,
         projection.color ? true : false,
         shouldStroke,
         projection.stroke ? projection.stroke.opacity : null);

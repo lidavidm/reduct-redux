@@ -113,14 +113,13 @@ export function strokeWithOpacity(ctx, opacity) {
     }
 }
 
-export function hexaRect(ctx, x, y, width, height, fill, stroke, strokeOpacity) {
-    var h2 = height / 2.0;
+export function hexaRect(ctx, x, y, width, height, w2, h2, fill, stroke, strokeOpacity) {
     ctx.beginPath();
-    ctx.moveTo(x + h2, y);
-    ctx.lineTo(x + width - h2, y);
+    ctx.moveTo(x + w2, y);
+    ctx.lineTo(x + width - w2, y);
     ctx.lineTo(x + width, y + h2);
-    ctx.lineTo(x + width - h2, y + height);
-    ctx.lineTo(x + h2, y + height);
+    ctx.lineTo(x + width - w2, y + height);
+    ctx.lineTo(x + w2, y + height);
     ctx.lineTo(x, y + h2);
     ctx.closePath();
     if (fill) ctx.fill();

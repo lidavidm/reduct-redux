@@ -6,14 +6,14 @@ import * as gfx from "./core";
 const optionFields = [
     "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
     "notches", "subexpScale", "shadow", "shadowColor", "horizontalAlign",
-    "stroke", "highlightColor", "ellipsize"
+    "stroke", "highlightColor", "ellipsize",
 ];
 
 function shapeToProjection(shape, options) {
     let baseProjection = gfx.roundedRect;
     if (shape === "<>") {
         baseProjection = gfx.hexaRect;
-        options.padding = { left: 18, right: 18, inner: 10 };
+        options.padding = { left: 25, right: 25, inner: 10, top: 5, bottom: 5, };
     }
     else if (shape === "none") {
         baseProjection = gfx.baseProjection;
