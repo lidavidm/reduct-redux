@@ -246,16 +246,14 @@ export function previewer(projection) {
     projection.prepare = function(id, exprId, state, stage) {
         if (this.preview && !this.prevPreview) {
             this.prevPreview = Object.assign({}, stage.getView(this.preview), {
-                pos: {
-                    x: this.pos.x,
-                    y: this.pos.y,
-                },
+                pos: this.pos,
+                size: this.size,
                 scale: {
                     x: this.scale.x,
                     y: this.scale.y,
                 },
                 shadow: false,
-                anchor: { x: 0, y: 0 },
+                anchor: this.anchor,
                 opacity: 1,
             });
         }
@@ -264,10 +262,6 @@ export function previewer(projection) {
         }
         if (this.preview) {
             this.prevPreview.prepare(this.preview, this.preview, state, stage);
-            this.size = {
-                w: this.scale.x * stage.views[this.preview].size.w,
-                h: this.scale.y * stage.views[this.preview].size.h,
-            };
             return;
         }
 
@@ -276,10 +270,7 @@ export function previewer(projection) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         if (this.preview) {
-            this.prevPreview.draw(this.preview, this.preview, state, stage, Object.assign({}, offset, {
-                sx: offset.sx * this.scale.x,
-                sy: offset.sy * this.scale.y,
-            }));
+            this.prevPreview.draw(this.preview, this.preview, state, stage, Object.assign({}, offset));
             return;
         }
 
