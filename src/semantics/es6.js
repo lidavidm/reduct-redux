@@ -620,7 +620,20 @@ export default transform({
                 return [ expr.get("id"), newNodeIds, addedNodes ];
             },
             substepFilter: (semant, state, expr, field) => {
-                if (field === "argument" && state.getIn([ "nodes", expr.get(field), "type" ]) === "reference") {
+                // Don't force evaluation of reference-with-holes that
+                // has unfilled holes, so that it can be used in
+                // argument position. However, force evaluation if it
+                // doesn't have holes or has filled holes.
+                if (field === "argument" &&
+                    state.getIn([ "nodes", expr.get(field), "type" ]) === "reference") {
+                    const ref = state.getIn([ "nodes", expr.get(field) ]);
+
+                    if (!ref.has("params") || ref.get("params").length === 0) return true;
+
+                    if (ref.get("params").some(p => state.getIn([ "nodes", ref.get(`arg_${p}`), "type" ]) !== "missing")) {
+                        return true;
+                    }
+
                     return false;
                 }
                 return true;

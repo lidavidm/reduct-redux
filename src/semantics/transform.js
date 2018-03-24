@@ -353,7 +353,12 @@ export default function transform(definition) {
             }
             for (const subexprField of module.subexpressions(expr)) {
                 const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
-                if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
+                if (subexpr.get("type") === "reference" &&
+                    subexpr.get("params") &&
+                    subexpr.get("params").some(p => state.getIn([ "nodes", expr.get(`arg_${p}`), "type" ]) !== "missing")) {
+                    return false;
+                }
+                else if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
                     return false;
                 }
             }
