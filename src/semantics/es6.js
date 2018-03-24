@@ -985,6 +985,7 @@ export default transform({
             kind: "syntax",
             fields: [],
             subexpressions: [],
+            targetable: () => false,
             notches: [
                 {
                     side: "right",

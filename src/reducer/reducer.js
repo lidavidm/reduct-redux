@@ -228,6 +228,11 @@ export function reduct(semantics, views) {
                     }
                 }
 
+                if (s.get("board").contains(act.childId)) {
+                    // Actually remove from the board
+                    s.set("board", s.get("board").filter(n => n !== act.childId));
+                }
+
                 const nodes = state.get("nodes");
                 for (const id of state.get("board").concat(state.get("toolbox"))) {
                     markDirty(nodes, id);
