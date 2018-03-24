@@ -817,13 +817,6 @@ export default class Stage extends BaseStage {
 
         const lambdaBody = nodes.get(targetNode.get("parent")).get("body");
 
-        if (this.semantics.search(
-            nodes, lambdaBody,
-            (_, id) => nodes.get(id).get("type") === "missing"
-        ).length > 0) {
-            return;
-        }
-
         const targetName = targetNode.get("name");
         this.semantics.searchNoncapturing(nodes, targetName, lambdaBody).forEach((id) => {
             if (this.views[id]) {
