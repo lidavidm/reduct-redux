@@ -353,10 +353,14 @@ export default function transform(definition) {
             }
             for (const subexprField of module.subexpressions(expr)) {
                 const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
-                if (subexpr.get("type") === "reference" &&
-                    subexpr.get("params") &&
-                    subexpr.get("params").some(p => state.getIn([ "nodes", expr.get(`arg_${p}`), "type" ]) !== "missing")) {
-                    return false;
+                if (subexpr.get("type") === "reference") {
+                    return !(
+                        subexpr
+                            .get("params") &&
+                            subexpr
+                                .get("params")
+                                .some(p => state.getIn([ "nodes", subexpr.get(`arg_${p}`), "type" ]) !== "missing")
+                    );
                 }
                 else if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
                     return false;
@@ -377,7 +381,7 @@ export default function transform(definition) {
 
         if (shouldStepOver(state, exp)) {
             const name = exp.get("type") === "reference" ? exp.get("name") :
-                  nodes.get(exp.get("callee")).get("name");
+                  `subcall ${nodes.get(exp.get("callee")).get("name")}`;
             console.debug(`semant.interpreter.reducers.over: stepping over call to ${name}`);
             return module.interpreter.reducers.big(stage, state, exp, callbacks);
         }
