@@ -15,14 +15,25 @@ export function startLevel(description, parse, store, stage) {
 
     // Parse the defined names carried over from previous levels, the
     // globals added for this level, and any definitions on the board.
+
+    // Lots of messiness because parse returns either an expression or
+    // an array of expressions.
     const prevDefinedNames = description.extraDefines
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
     const globalDefinedNames = Object.entries(description.globals)
-          .map(([ name, expr ]) =>
-               stage.semantics.parser.extractGlobalNames(stage.semantics, name, expr));
+          .map(([ name, str ]) => {
+              let parsed = parse(str, macros);
+              if (!Array.isArray(parsed)) {
+                  return [ name, parsed ];
+              }
+              [ parsed ] = parsed
+                  .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+                  .filter(expr => expr !== null);
+              return [ name, parsed[1] ];
+          });
     const newDefinedNames = description.board
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
