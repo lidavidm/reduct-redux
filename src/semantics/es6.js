@@ -152,6 +152,13 @@ export default transform({
                         type: "default",
                         shape: "<>",
                         color: "hotpink",
+                        padding: {
+                            left: 25,
+                            right: 25,
+                            inner: 10,
+                            top: 0,
+                            bottom: 0,
+                        },
                     },
                 },
             },
@@ -630,6 +637,13 @@ export default transform({
                 shape: "<>",
                 color: "hotpink",
                 fields: ["value"],
+                padding: {
+                    left: 25,
+                    right: 25,
+                    inner: 10,
+                    top: 0,
+                    bottom: 0,
+                },
             },
         },
 
