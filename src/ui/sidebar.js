@@ -36,6 +36,29 @@ export default class Sidebar {
             });
         }
 
+        // Recursively add referenced names
+
+        let newNames = names;
+        let count = 0;
+        while (newNames.size > 0 && count < 5) {
+            const nextNames = new Set();
+            for (const name of newNames) {
+                const id = state.get("globals").get(name);
+                this.stage.semantics.search(nodes, id, (_, nid) => {
+                    const expr = nodes.get(nid);
+                    if (expr.get("type") === "reference" && globals.has(expr.get("name"))) {
+                        const name = expr.get("name");
+                        if (!names.has(name)) {
+                            names.add(name);
+                            nextNames.add(name);
+                        }
+                    }
+                });
+            }
+            newNames = nextNames;
+            count += 1;
+        }
+
         for (const name of names) {
             const viewId = this.project(state, name, globals.get(name));
             this.viewMap.set(name, viewId);
