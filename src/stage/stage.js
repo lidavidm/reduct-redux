@@ -299,6 +299,9 @@ class TouchRecord extends BaseTouchRecord {
                 this.stage.step(state, this.topNode);
             }
         }
+        else if (this.isExpr && this.stage.snapNotches(this.topNode)) {
+            // Prioritize snapping over filling
+        }
         else if (this.isExpr && this.dragged && this.hoverNode &&
                  this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
             // Drag something into hole
@@ -352,8 +355,6 @@ class TouchRecord extends BaseTouchRecord {
             this.stage.bumpAwayFromEdges(this.topNode);
             this.stage.views[this.topNode].opacity = 1.0;
         }
-
-        if (this.isExpr) this.stage.snapNotches(this.topNode);
 
         this.findHoverNode(mousePos);
     }
@@ -884,7 +885,7 @@ export default class Stage extends BaseStage {
                 // Don't reattach to the same notch
                 this.views[parent].highlighted = false;
                 if (selected.get("parent") === parent) {
-                    return;
+                    return false;
                 }
 
                 if (this.semantics.notchesAttachable(
@@ -907,9 +908,11 @@ export default class Stage extends BaseStage {
                         lineWidth: 5,
                     });
                     this.store.dispatch(action.attachNotch(parent, 0, selectedNode, 0));
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /**
