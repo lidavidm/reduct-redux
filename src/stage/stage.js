@@ -419,7 +419,7 @@ export default class Stage extends BaseStage {
 
             const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
             if (projection.containsPoint(curPos, curOffset)) {
-                if (curRoot === null && this.semantics.targetable(state, curNode)) {
+                if (curRoot === null) {
                     curRoot = curExprId;
                     res = curExprId;
                 }
@@ -429,7 +429,7 @@ export default class Stage extends BaseStage {
 
                 if (curRoot === curExprId && curNode &&
                     !this.semantics.targetable(state, curNode)) {
-                    return [ curRoot, res ];
+                    return null;
                 }
 
                 const subpos = {
