@@ -336,7 +336,7 @@ export default transform({
                 const cond = nodes.get(expr.get("condition")).get("value");
                 const view = stage.getView(expr.get(cond ? "positive" : "negative"));
                 return {
-                    x: gfx.absolutePos(view).x,
+                    x: gfx.centerPos(view).x,
                     y: gfx.centerPos(view).y,
                 };
             },

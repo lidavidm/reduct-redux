@@ -106,10 +106,6 @@ export function startLevel(description, parse, store, stage) {
         animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
             duration: 250,
             easing: animate.Easing.Cubic.In,
-        }).then(() => {
-            const ap = gfx.absolutePos(stage.views[nodeId]);
-            stage.views[nodeId].anchor = { x: 0, y: 0.5 };
-            stage.views[nodeId].pos = ap;
         });
     }
 

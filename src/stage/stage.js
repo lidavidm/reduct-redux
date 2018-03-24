@@ -953,7 +953,7 @@ export default class Stage extends BaseStage {
 
         // Assumes clicks always dispatched to top-level node
         let origPos = {
-            x: gfxCore.absolutePos(this.getView(selectedNode)).x,
+            x: gfxCore.centerPos(this.getView(selectedNode)).x,
             y: gfxCore.centerPos(this.getView(selectedNode)).y,
         };
 
@@ -989,8 +989,8 @@ export default class Stage extends BaseStage {
                 }
 
                 // Preserve position
-                this.views[newNodeIds[0]].anchor.x = topView.anchor.x;
-                this.views[newNodeIds[0]].anchor.y = topView.anchor.y;
+                this.views[newNodeIds[0]].anchor.x = 0.5;
+                this.views[newNodeIds[0]].anchor.y = 0.5;
                 this.views[newNodeIds[0]].pos.x = origPos.x;
                 this.views[newNodeIds[0]].pos.y = origPos.y;
 
