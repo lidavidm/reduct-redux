@@ -132,6 +132,8 @@ export class LoaderClass {
                 if (!lvl.syntax) lvl.syntax = [];
                 else if (typeof lvl.syntax === "string") lvl.syntax = [lvl.syntax];
 
+                if (!lvl.fade) lvl.fade = {};
+
                 if (!lvl.animationScales) lvl.animationScales = {};
 
                 if (typeof lvl.showConcreteGoal === "undefined") lvl.showConcreteGoal = true;
@@ -157,6 +159,7 @@ export class LoaderClass {
 
         let extraDefines = [];
         let animationScales = {};
+        let fade = {};
 
         Promise.all(filenames.map(
             (filename) => this.loadChapter(
@@ -200,6 +203,11 @@ export class LoaderClass {
                                     level.animationScales
                                 );
                                 animationScales = newScales;
+
+                                const newFade = Object.assign({}, fade, level.fade);
+                                level.fade = Object.assign({}, fade, level.fade);
+                                fade = newFade;
+
                                 level.extraDefines = extraDefines;
                                 extraDefines = extraDefines.concat(level.defines);
 

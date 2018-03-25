@@ -137,6 +137,14 @@ export function getSyntaxDefinition(name) {
     return ACTIVE_PROGRESSION_DEFINITION.progression.syntax[name];
 }
 
+export function getFadeLevel(exprType) {
+    const fadeLevels = ACTIVE_PROGRESSION_DEFINITION.progression.levels[currentLevel()].fade;
+    if (typeof fadeLevels[exprType] === "number") {
+        return fadeLevels[exprType];
+    }
+    return 0;
+}
+
 export function save() {
     window.localStorage["currentLevelIdx"] = currentLevelIdx;
     window.localStorage["learnedSyntaxes"] = JSON.stringify(learnedSyntaxes);

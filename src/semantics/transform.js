@@ -1,9 +1,12 @@
 import * as immutable from "immutable";
 
+import * as progression from "../game/progression";
 import Audio from "../resource/audio";
+
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import projector from "../gfx/projector";
+
 import * as core from "./core";
 import * as meta from "./meta";
 
@@ -29,8 +32,7 @@ export default function transform(definition) {
         const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
         const result = module.definition.expressions[type];
         if (Array.isArray(result)) {
-            // TODO: actually check progression/fading
-            return result[0];
+            return result[progression.getFadeLevel(type)];
         }
         return result;
     };
@@ -163,8 +165,7 @@ export default function transform(definition) {
     module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");
         if (!module.projections[type]) throw `semantics.project: Unrecognized expression type ${type}`;
-        // TODO: look up fade level
-        return module.projections[type][0](stage, nodes, expr);
+        return module.projections[type][progression.getFadeLevel(type)](stage, nodes, expr);
     };
 
     module.searchNoncapturing = function(nodes, targetName, exprId) {

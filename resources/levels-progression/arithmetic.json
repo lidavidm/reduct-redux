@@ -7,10 +7,6 @@
             "board": ["1 + 1"],
             "goal": ["2"],
             "toolbox": [],
-            "fade": {
-                "number": 1
-            },
-            "showFade": false,
             "animationScales": {
                 "expr-binop": 1.2
             }
@@ -54,11 +50,7 @@
         {
             "board": ["(x) => x + 3", "(y) => y + 1"],
             "goal": ["8"],
-            "toolbox": ["2", "3", "4", "5", "6"],
-            "fade": {
-                "lambda": 7
-            },
-            "showFade": false
+            "toolbox": ["2", "3", "4", "5", "6"]
         },
         {
             "board": ["2", "7", "x => xxx"],

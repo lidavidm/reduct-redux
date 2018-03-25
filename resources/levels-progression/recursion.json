@@ -26,11 +26,7 @@
         {
             "board": ["function broken(x) { return broken(x); }", "broken(2)"],
             "goal": [],
-            "toolbox": [],
-            "fade": {
-                "lambda": 7
-            },
-            "showFade": false
+            "toolbox": []
         },
         {
             "board": ["function infinite(x) { return infinite(x + 1); }", "infinite(0)"],
