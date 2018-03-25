@@ -76,7 +76,10 @@
         {
             "board": ["3", "7"],
             "goal": ["6", "9"],
-            "toolbox": "__unlimited;addOne;"
+            "toolbox": "__unlimited;addOne;",
+            "fade": {
+                "reference": 1
+            }
         },
         {
             "board": ["addOne(7)", "addOne(_)"],
