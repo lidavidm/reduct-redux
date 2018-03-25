@@ -122,7 +122,6 @@ export function startLevel(description, parse, store, stage) {
         ).length > 0) {
             const descr = description[source][idx];
 
-            console.log("Fade!", descr);
             progression.overrideFadeLevel(() => {
                 const flattened = stage.semantics.flatten(parse(descr, macros));
                 const topNode = flattened[0].id;
@@ -148,7 +147,6 @@ export function startLevel(description, parse, store, stage) {
                     flattened.map(e => immutable.Map(e))
                 ));
             });
-            // TODO: tell stage to fade
         }
     };
     state.get("board").forEach(checkFade("board"));
