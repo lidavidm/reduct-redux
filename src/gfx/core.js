@@ -123,8 +123,7 @@ export function notchProjection(options) {
                 stage.views[childId].anchor.x = 0.0;
                 stage.views[childId].anchor.y = 0.0;
                 stage.views[childId].pos.x = this.pos.x - (delta.x / 2);
-                // TODO: figure out how this is ACTUALLY supposed to work
-                stage.views[childId].pos.y = this.pos.y + 65 - (delta.y / 2);
+                stage.views[childId].pos.y = (this.pos.y + (this.size.h / 2)) - delta.y;
 
                 stage.views[childId].draw(childId, childId, state, stage, offset);
             }
