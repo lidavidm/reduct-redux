@@ -115,8 +115,7 @@ export default function transform(definition) {
 
         module[exprName] = function(...params) {
             const ctors = module.constructors[exprName];
-            // TODO: look up fade level
-            return ctors[0](...params);
+            return ctors[progression.getFadeLevel(exprName)](...params);
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
     }
