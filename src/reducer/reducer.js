@@ -331,6 +331,14 @@ export function reduct(semantics, views) {
                 );
             });
         }
+        case action.FADE: {
+            return state.withMutations((s) => {
+                s.set(
+                    act.source,
+                    s.get(act.source).map(n => (n === act.unfadedId ? act.fadedId : n))
+                );
+            });
+        }
         default: return state;
         }
     }

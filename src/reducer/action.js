@@ -217,3 +217,12 @@ export function unfade(source, nodeId, newNodeId, addedNodes) {
         addedNodes,
     };
 }
+
+export function fade(source, unfadedId, fadedId) {
+    return {
+        type: FADE,
+        source,
+        unfadedId,
+        fadedId,
+    };
+}

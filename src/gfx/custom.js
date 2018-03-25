@@ -169,3 +169,18 @@ export function argumentBar() {
     };
     return projection;
 }
+
+export function fadeMe(projection, onfade) {
+    const origDraw = projection.draw;
+
+    projection.onmouseenter = function() {
+        console.log("ENTER");
+        onfade();
+    };
+
+    projection.draw = function(id, exprId, state, stage, offset) {
+        origDraw.call(this, id, exprId, state, stage, offset);
+    };
+
+    return projection;
+}

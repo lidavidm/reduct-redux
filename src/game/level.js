@@ -138,7 +138,10 @@ export function startLevel(description, parse, store, stage) {
                     stage.views[e.id] = stage.semantics.project(stage, tempNodes, node);
                 });
                 stage.views[topNode].pos = stage.views[nodeId].pos;
-                stage.views[topNode].anchor = stage.views[nodeId].anchor;
+
+                stage.views[topNode] = gfx.custom.fadeMe(stage.views[topNode], () => {
+                    stage.fade(source, topNode, nodeId);
+                });
 
                 store.dispatch(action.unfade(
                     source, nodeId, topNode,

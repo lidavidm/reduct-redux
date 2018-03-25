@@ -1295,6 +1295,47 @@ export default class Stage extends BaseStage {
         return false;
     }
 
+    /**
+     * Replace an unfaded expression with its faded equivalent.
+     */
+    fade(source, unfadedId, fadedId) {
+        const fxId = this.addEffect({
+            prepare: () => {
+                this.getView(fadedId).prepare(fadedId, fadedId, this.getState(), this);
+            },
+            draw: () => {
+                this.getView(fadedId).draw(fadedId, fadedId, this.getState(), this, {
+                    x: 0,
+                    y: 0,
+                    sx: 1,
+                    sy: 1,
+                    opacity: 1,
+                });
+            },
+        });
+
+        this.getView(fadedId).opacity = 0;
+        this.getView(fadedId).anchor = this.getView(unfadedId).anchor;
+
+        Promise.all([
+            animate.tween(this.getView(unfadedId), {
+                opacity: 0,
+            }, {
+                duration: 1500,
+                easing: animate.Easing.Cubic.InOut,
+            }),
+            animate.tween(this.getView(fadedId), {
+                opacity: 1,
+            }, {
+                duration: 1500,
+                easing: animate.Easing.Cubic.InOut,
+            }),
+        ]).then(() => {
+            this.removeEffect(fxId);
+            this.store.dispatch(action.fade(source, unfadedId, fadedId));
+        });
+    }
+
     togglePause() {
         if (this.mode === "hybrid") {
             this.mode = "over";
