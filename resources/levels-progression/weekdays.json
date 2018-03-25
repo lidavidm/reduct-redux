@@ -3,13 +3,13 @@
     "description": "Introduction to days of the week",
     "language": "JavaScript",
     "macros": {
-        "mon": "__variant_weekday_mon",
-        "tue": "__variant_weekday_tue",
-        "wed": "__variant_weekday_wed",
-        "thu": "__variant_weekday_thu",
-        "fri": "__variant_weekday_fri",
-        "sat": "__variant_weekday_sat",
-        "sun": "__variant_weekday_sun"
+        "mon": "__variant_weekday_Monday",
+        "tue": "__variant_weekday_Tuesday",
+        "wed": "__variant_weekday_Wednesday",
+        "thu": "__variant_weekday_Thursday",
+        "fri": "__variant_weekday_Friday",
+        "sat": "__variant_weekday_Saturday",
+        "sun": "__variant_weekday_Sunday"
     },
     "levels": [
         {
