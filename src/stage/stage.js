@@ -1209,7 +1209,10 @@ export default class Stage extends BaseStage {
         const referenceNameNode = state.getIn([ "nodes", referenceId ]);
         const name = referenceNameNode.get("name");
         const functionNodeId = state.get("globals").get(name);
-        const type = state.get("nodes").get(functionNodeId).get("type");
+        const functionNode = state.get("nodes").get(functionNodeId);
+        if (!functionNode) return;
+
+        const type = functionNode.get("type");
         if (type === "define") {
             const functionBodyId = state.get("nodes").get(functionNodeId).get("body");
             this.functionDef = new FunctionDef(this, name, functionBodyId, referenceId);

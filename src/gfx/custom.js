@@ -161,6 +161,8 @@ export function argumentBar() {
             "params",
         ]);
 
+        if (!params) return;
+
         for (const name of params) {
             const subexprField = `arg_${name}`;
             if (expr.get(subexprField)) {
