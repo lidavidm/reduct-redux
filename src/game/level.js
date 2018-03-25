@@ -1,3 +1,5 @@
+import * as immutable from "immutable";
+
 import * as progression from "../game/progression";
 import * as action from "../reducer/action";
 import * as gfx from "../gfx/core";
@@ -113,23 +115,41 @@ export function startLevel(description, parse, store, stage) {
 
     // For anything that is fading, spawn the old node on top
     const state = stage.getState();
-    const checkFade = (source) => (nodeId, idx) => {
+    const checkFade = source => (nodeId, idx) => {
         if (stage.semantics.search(
             state.get("nodes"), nodeId,
             (_, id) => progression.isFadeBorder(state.getIn([ "nodes", id, "type" ]))
         ).length > 0) {
-            const descr = source[idx];
+            const descr = description[source][idx];
 
             console.log("Fade!", descr);
             progression.overrideFadeLevel(() => {
-                console.log(parse(descr, macros));
+                const flattened = stage.semantics.flatten(parse(descr, macros));
+                const topNode = flattened[0].id;
+
+                const tempNodes = state.get("nodes").withMutations((n) => {
+                    for (const node of flattened) {
+                        n.set(node.id, immutable.Map(node));
+                    }
+                });
+
+                flattened.forEach((e) => {
+                    const node = tempNodes.get(e.id);
+                    stage.views[e.id] = stage.semantics.project(stage, tempNodes, node);
+                });
+                stage.views[topNode].pos = stage.views[nodeId].pos;
+                stage.views[topNode].anchor = stage.views[nodeId].anchor;
+
+                store.dispatch(action.unfade(
+                    source, nodeId, topNode,
+                    flattened.map(e => immutable.Map(e))
+                ));
             });
-            // TODO: dispatch action
             // TODO: tell stage to fade
         }
     };
-    state.get("board").forEach(checkFade(description.board));
-    state.get("toolbox").forEach(checkFade(description.toolbox));
+    state.get("board").forEach(checkFade("board"));
+    state.get("toolbox").forEach(checkFade("toolbox"));
 
     // "Inflate" animation.
     for (const nodeId of stage.getState().get("board")) {

@@ -318,6 +318,19 @@ export function reduct(semantics, views) {
                 map.set("goal", immutable.List());
             });
         }
+        case action.UNFADE: {
+            return state.withMutations((s) => {
+                s.set("nodes", s.get("nodes").withMutations((n) => {
+                    for (const newNode of act.addedNodes) {
+                        n.set(newNode.get("id"), newNode);
+                    }
+                }));
+                s.set(
+                    act.source,
+                    s.get(act.source).map(n => (n === act.nodeId ? act.newNodeId : n))
+                );
+            });
+        }
         default: return state;
         }
     }
