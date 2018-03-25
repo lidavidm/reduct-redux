@@ -151,6 +151,7 @@ export default class Toolbox {
                 y: 0,
                 sx: 1,
                 sy: 1,
+                opacity: 1,
             });
 
             const node = state.get("nodes").get(nodeId);

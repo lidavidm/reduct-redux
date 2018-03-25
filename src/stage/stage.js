@@ -1299,12 +1299,14 @@ export default class Stage extends BaseStage {
      * Replace an unfaded expression with its faded equivalent.
      */
     fade(source, unfadedId, fadedId) {
+        this.store.dispatch(action.fade(source, unfadedId, fadedId));
+
         const fxId = this.addEffect({
             prepare: () => {
-                this.getView(fadedId).prepare(fadedId, fadedId, this.getState(), this);
+                this.getView(unfadedId).prepare(unfadedId, unfadedId, this.getState(), this);
             },
             draw: () => {
-                this.getView(fadedId).draw(fadedId, fadedId, this.getState(), this, {
+                this.getView(unfadedId).draw(unfadedId, unfadedId, this.getState(), this, {
                     x: 0,
                     y: 0,
                     sx: 1,
@@ -1321,18 +1323,17 @@ export default class Stage extends BaseStage {
             animate.tween(this.getView(unfadedId), {
                 opacity: 0,
             }, {
-                duration: 1500,
+                duration: 3000,
                 easing: animate.Easing.Cubic.InOut,
             }),
             animate.tween(this.getView(fadedId), {
                 opacity: 1,
             }, {
-                duration: 1500,
+                duration: 3000,
                 easing: animate.Easing.Cubic.InOut,
             }),
         ]).then(() => {
             this.removeEffect(fxId);
-            this.store.dispatch(action.fade(source, unfadedId, fadedId));
         });
     }
 
