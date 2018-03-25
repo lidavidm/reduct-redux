@@ -25,6 +25,11 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
+    module.definitionOf = function getDefinition(exprOrType) {
+        const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
+        return module.definition.expressions[type];
+    };
+
     // Add default definitions for vtuple
     /**
      * A "virtual tuple" which kind of bleeds presentation into the
@@ -40,6 +45,7 @@ export default function transform(definition) {
         }
         return result;
     };
+
     module.projections.vtuple = function(_stage, _expr) {
         return gfx.layout.vbox((id, state) => {
             const node = state.getIn([ "nodes", id ]);
@@ -61,7 +67,9 @@ export default function transform(definition) {
         });
     };
 
-    for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
+    for (const exprName of Object.keys(definition.expressions)) {
+        const exprDefinition = module.definitionOf(exprName);
+
         module[exprName] = function(...params) {
             const result = { type: exprName, locked: true };
             if (typeof exprDefinition.locked !== "undefined") {
@@ -91,11 +99,6 @@ export default function transform(definition) {
         }
         module.projections[exprName] = projector(exprDefinition);
     }
-
-    module.definitionOf = function getDefinition(exprOrType) {
-        const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
-        return module.definition[type];
-    };
 
     /**
      * Return a list of field names containing subexpressions of an expression.
