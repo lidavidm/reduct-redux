@@ -92,7 +92,7 @@ export default function transform(definition) {
         module.projections[exprName] = projector(exprDefinition);
     }
 
-    module.definition.get = function getDefinition(exprOrType) {
+    module.definitionOf = function getDefinition(exprOrType) {
         const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
         return module.definition[type];
     };
@@ -111,7 +111,7 @@ export default function transform(definition) {
             return result;
         }
 
-        const defn = module.definition.get(type);
+        const defn = module.definitionOf(type);
         if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
 
         const subexprBase = defn.reductionOrder || defn.subexpressions;
@@ -176,7 +176,7 @@ export default function transform(definition) {
      */
     module.interpreter.smallStep = function smallStep(stage, state, expr) {
         const type = expr.type || expr.get("type");
-        const stepper = module.definition.get(type).smallStep;
+        const stepper = module.definitionOf(type).smallStep;
         if (stepper) {
             const result = stepper(module, stage, state, expr);
 
@@ -202,7 +202,7 @@ export default function transform(definition) {
      */
     module.interpreter.betaReduce = function(stage, state, exprId, argIds) {
         const target = state.get("nodes").get(exprId);
-        const reducer = module.definition.get(target).betaReduce;
+        const reducer = module.definitionOf(target).betaReduce;
         if (!reducer) {
             console.warn(`Expression type ${target.get("type")} was beta-reduced, but has no reducer.`);
             return null;
@@ -216,7 +216,7 @@ export default function transform(definition) {
      * expression would take.
      */
     module.interpreter.animateStep = function animateStep(stage, state, exp) {
-        const defn = module.definition.get(exp.get("type"));
+        const defn = module.definitionOf(exp.get("type"));
         if (defn && defn.stepSound) {
             if (typeof defn.stepSound === "function") {
                 const sequence = defn.stepSound(module, state, exp);
@@ -239,7 +239,7 @@ export default function transform(definition) {
 
     const __substepFilter = () => true;
     module.interpreter.substepFilter = function getSubstepFilter(type) {
-        const defn = module.definition.get(type);
+        const defn = module.definitionOf(type);
         if (defn && defn.substepFilter) {
             return defn.substepFilter;
         }
@@ -646,7 +646,7 @@ export default function transform(definition) {
      * Validate that the given expression can take a single step.
      */
     module.interpreter.validateStep = function(state, expr) {
-        const defn = module.definition.get(expr);
+        const defn = module.definitionOf(expr);
         if (!defn) return null;
 
         const validator = defn.validateStep;
@@ -658,7 +658,7 @@ export default function transform(definition) {
     module.shallowEqual = function shallowEqual(n1, n2) {
         if (n1.get("type") !== n2.get("type")) return false;
 
-        for (const field of module.definition.get(n1).fields) {
+        for (const field of module.definitionOf(n1).fields) {
             if (n1.get(field) !== n2.get(field)) return false;
         }
 
@@ -692,7 +692,7 @@ export default function transform(definition) {
      * Is an expression selectable/hoverable by the mouse?
      */
     module.targetable = function(state, expr) {
-        const defn = module.definition.get(expr);
+        const defn = module.definitionOf(expr);
         if (defn && defn.targetable && typeof defn.targetable === "function") {
             return defn.targetable(module, state, expr);
         }
@@ -705,7 +705,7 @@ export default function transform(definition) {
             // TODO: This isn't quite right - depends on the children
             return "expression";
         default:
-            return module.definition.get(expr).kind;
+            return module.definitionOf(expr).kind;
         }
     };
 
@@ -748,7 +748,7 @@ export default function transform(definition) {
             }
 
             const type = expr.get("type");
-            const exprDefn = module.definition.get(type);
+            const exprDefn = module.definitionOf(type);
             if (!exprDefn) {
                 console.warn(`No expression definition for ${type}`);
             }
@@ -821,7 +821,7 @@ export default function transform(definition) {
 
     module.notchesAttachable = function(stage, state, parentId, childId, notchPair) {
         const nodes = state.get("nodes");
-        const defn = module.definition.get(nodes.get(parentId));
+        const defn = module.definitionOf(nodes.get(parentId));
         if (defn && defn.notches && defn.notches[notchPair[0]]) {
             const notchDefn = defn.notches[notchPair[0]];
             if (notchDefn.canAttach) {
@@ -845,7 +845,7 @@ export default function transform(definition) {
 
     module.detachable = function(state, parentId, childId) {
         const nodes = state.get("nodes");
-        const defn = module.definition.get(nodes.get(parentId));
+        const defn = module.definitionOf(nodes.get(parentId));
         const parentField = nodes.get(childId).get("parentField");
         if (parentField.slice(0, 5) !== "notch") {
             return true;
@@ -870,7 +870,7 @@ export default function transform(definition) {
      * nodes to determine victory.
      */
     module.ignoreForVictory = function(node) {
-        const defn = module.definition.get(node);
+        const defn = module.definitionOf(node);
         return module.kind(node) === "syntax" || (defn && defn.ignoreForVictory);
     };
 

@@ -968,7 +968,7 @@ export default class Stage extends BaseStage {
                 });
 
                 const origNode = state.getIn([ "nodes", selectedNode ]);
-                const origNodeDefn = this.semantics.module.definition.get(origNode);
+                const origNodeDefn = this.semantics.module.definitionOf(origNode);
                 if (origNodeDefn && origNodeDefn.stepPosition) {
                     origPos = origNodeDefn.stepPosition(this.semantics, this, state, origNode);
                 }
