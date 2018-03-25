@@ -1,91 +1,69 @@
-export default {
-    reference: {
-        kind: "expression",
-        fields: ["name", "params"],
-        subexpressions: (semant, expr) => {
-            const params = (expr.get ? expr.get("params") : expr.params) || [];
-            return params.map(name => `arg_${name}`);
-        },
-        stepSound: "heatup",
-        type: (semant, state, types, expr) => ({
-            types: new Map(),
-            complete: state.get("globals").has(expr.get("name")),
-        }),
-        targetable: (semant, state, expr) => {
-            if (expr.has("__meta") && expr.get("__meta").toolbox.targetable) {
-                return true;
-            }
-            if (state.get("toolbox").includes(expr.get("id"))) {
-                // If in toolbox, only targetable if defined
-                return state.get("globals").has(expr.get("name"));
-            }
-            return !expr.get("parent") || !expr.get("locked");
-        },
-        smallStep: (semant, stage, state, expr) => {
-            let res = state.get("globals").get(expr.get("name"));
-            if (!res) return null;
+const baseReference = {
+    kind: "expression",
+    fields: ["name"],
+    subexpressions: [],
+    stepSound: "heatup",
+    type: (semant, state, types, expr) => ({
+        types: new Map(),
+        complete: state.get("globals").has(expr.get("name")),
+    }),
+    targetable: (semant, state, expr) => {
+        if (expr.has("__meta") && expr.get("__meta").toolbox.targetable) {
+            return true;
+        }
+        if (state.get("toolbox").includes(expr.get("id"))) {
+            // If in toolbox, only targetable if defined
+            return state.get("globals").has(expr.get("name"));
+        }
+        return !expr.get("parent") || !expr.get("locked");
+    },
+    smallStep: (semant, stage, state, expr) => {
+        let res = state.get("globals").get(expr.get("name"));
+        if (!res) return null;
 
-            const resNode = state.get("nodes").get(res);
-            if (resNode.get("type") === "define") {
-                res = resNode.get("body");
-            }
+        const resNode = state.get("nodes").get(res);
+        if (resNode.get("type") === "define") {
+            res = resNode.get("body");
+        }
 
-            if (!(expr.has("parent") && state.getIn([ "nodes", expr.get("parent"), "type"]) === "define") &&
-                expr.get("params") &&
-                expr.get("params").length > 0 &&
-                expr.get("params").some(field => state.getIn([
-                    "nodes",
-                    expr.get(`arg_${field}`),
-                    "type",
-                ]) !== "missing")) {
-                const params = expr.get("params");
-                const result = semant.interpreter.betaReduce(
-                    stage,
-                    state, res,
-                    params.map(name => expr.get(`arg_${name}`)),
-                );
-                if (result) {
-                    const [ _, newNodeIds, addedNodes ] = result;
-                    return [ expr.get("id"), newNodeIds, addedNodes ];
-                }
-                return null;
+        const result = semant.clone(res, state.get("nodes"));
+        return [
+            expr.get("id"),
+            [ result[0].get("id") ],
+            [ result[0].delete("parent").delete("parentField") ].concat(result[1]),
+        ];
+    },
+    validateStep: (semant, state, expr) => {
+        if (!state.get("globals").has(expr.get("name"))) {
+            return expr.get("id");
+        }
+        return null;
+    },
+    projection: {
+        type: "dynamic",
+        field: (state, exprId) => {
+            const name = state.getIn([ "nodes", exprId, "name" ]);
+            if (state.get("globals").has(name)) {
+                return "enabled";
             }
-
-            const result = semant.clone(res, state.get("nodes"));
-            return [
-                expr.get("id"),
-                [ result[0].get("id") ],
-                [ result[0].delete("parent").delete("parentField") ].concat(result[1]),
-            ];
+            return "default";
         },
-        validateStep: (semant, state, expr) => {
-            if (!state.get("globals").has(expr.get("name"))) {
-                return expr.get("id");
-            }
-            return null;
+        default: {
+            type: "hbox",
+            color: "OrangeRed",
+            radius: 0,
+            shape: "()",
+            strokeWhenChild: true,
+            children: [
+                {
+                    type: "text",
+                    text: "{name}",
+                    color: "gray",
+                },
+            ],
         },
-        // If expr is nested in apply, don't care about subexpressions
-        // TODO: needs to be more sophisticated - what if it's partially filled?
-        substepFilter: (semant, state, expr, _field) => {
-            const parentId = expr.get ? expr.get("parent") : expr.parent;
-            if (!parentId) {
-                return true;
-            }
-
-            const parent = state.getIn([ "nodes", parentId ]);
-            const type = (parent.get ? parent.get("type") : parent.type);
-            return type !== "apply" && type !== "reference";
-        },
-        projection: {
-            type: "dynamic",
-            field: (state, exprId) => {
-                const name = state.getIn([ "nodes", exprId, "name" ]);
-                if (state.get("globals").has(name)) {
-                    return "enabled";
-                }
-                return "default";
-            },
-            default: {
+        cases: {
+            enabled: {
                 type: "hbox",
                 color: "OrangeRed",
                 radius: 0,
@@ -95,17 +73,82 @@ export default {
                     {
                         type: "text",
                         text: "{name}",
-                        color: "gray",
-                    },
-                    {
-                        type: "generic",
-                        view: [ "custom", "argumentBar" ],
-                        options: {},
                     },
                 ],
             },
-            cases: {
-                enabled: {
+        },
+    },
+};
+
+export default {
+    reference: [
+        baseReference,
+        Object.assign({}, baseReference, {
+            fields: ["name", "params"],
+            subexpressions: (semant, expr) => {
+                const params = (expr.get ? expr.get("params") : expr.params) || [];
+                return params.map(name => `arg_${name}`);
+            },
+            smallStep: (semant, stage, state, expr) => {
+                // TODO: reuse orig smallStep somehow
+                let res = state.get("globals").get(expr.get("name"));
+                if (!res) return null;
+
+                const resNode = state.get("nodes").get(res);
+                if (resNode.get("type") === "define") {
+                    res = resNode.get("body");
+                }
+
+                if (!(expr.has("parent") && state.getIn([ "nodes", expr.get("parent"), "type"]) === "define") &&
+                    expr.get("params") &&
+                    expr.get("params").length > 0 &&
+                    expr.get("params").some(field => state.getIn([
+                        "nodes",
+                        expr.get(`arg_${field}`),
+                        "type",
+                    ]) !== "missing")) {
+                    const params = expr.get("params");
+                    const result = semant.interpreter.betaReduce(
+                        stage,
+                        state, res,
+                        params.map(name => expr.get(`arg_${name}`)),
+                    );
+                    if (result) {
+                        const [ _, newNodeIds, addedNodes ] = result;
+                        return [ expr.get("id"), newNodeIds, addedNodes ];
+                    }
+                    return null;
+                }
+
+                const result = semant.clone(res, state.get("nodes"));
+                return [
+                    expr.get("id"),
+                    [ result[0].get("id") ],
+                    [ result[0].delete("parent").delete("parentField") ].concat(result[1]),
+                ];
+            },
+            // If expr is nested in apply, don't care about subexpressions
+            // TODO: needs to be more sophisticated - what if it's partially filled?
+            substepFilter: (semant, state, expr, _field) => {
+                const parentId = expr.get ? expr.get("parent") : expr.parent;
+                if (!parentId) {
+                    return true;
+                }
+
+                const parent = state.getIn([ "nodes", parentId ]);
+                const type = (parent.get ? parent.get("type") : parent.type);
+                return type !== "apply" && type !== "reference";
+            },
+            projection: {
+                type: "dynamic",
+                field: (state, exprId) => {
+                    const name = state.getIn([ "nodes", exprId, "name" ]);
+                    if (state.get("globals").has(name)) {
+                        return "enabled";
+                    }
+                    return "default";
+                },
+                default: {
                     type: "hbox",
                     color: "OrangeRed",
                     radius: 0,
@@ -115,6 +158,7 @@ export default {
                         {
                             type: "text",
                             text: "{name}",
+                            color: "gray",
                         },
                         {
                             type: "generic",
@@ -123,7 +167,27 @@ export default {
                         },
                     ],
                 },
+                cases: {
+                    enabled: {
+                        type: "hbox",
+                        color: "OrangeRed",
+                        radius: 0,
+                        shape: "()",
+                        strokeWhenChild: true,
+                        children: [
+                            {
+                                type: "text",
+                                text: "{name}",
+                            },
+                            {
+                                type: "generic",
+                                view: [ "custom", "argumentBar" ],
+                                options: {},
+                            },
+                        ],
+                    },
+                },
             },
-        },
-    },
+        })
+    ],
 };
