@@ -1,5 +1,4 @@
 import * as immutable from "immutable";
-import * as animate from "../gfx/animate";
 
 export const USE_TOOLBOX = "use-toolbox";
 export const RAISE = "raise";
@@ -11,6 +10,8 @@ export const UNFOLD = "unfold";
 export const BETA_REDUCE = "beta-reduce";
 export const START_LEVEL = "start-level";
 export const VICTORY = "victory";
+export const FADE = "fade";
+export const UNFADE = "unfade";
 
 /**
  * Redux action to start a new level.
@@ -205,4 +206,23 @@ export function victory() {
 export function skipUndo(action) {
     action.skipUndo = true;
     return action;
+}
+
+export function unfade(source, nodeId, newNodeId, addedNodes) {
+    return {
+        type: UNFADE,
+        source,
+        nodeId,
+        newNodeId,
+        addedNodes,
+    };
+}
+
+export function fade(source, unfadedId, fadedId) {
+    return {
+        type: FADE,
+        source,
+        unfadedId,
+        fadedId,
+    };
 }

@@ -1,3 +1,6 @@
+import * as immutable from "immutable";
+
+import * as progression from "../game/progression";
 import * as action from "../reducer/action";
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
@@ -15,14 +18,25 @@ export function startLevel(description, parse, store, stage) {
 
     // Parse the defined names carried over from previous levels, the
     // globals added for this level, and any definitions on the board.
+
+    // Lots of messiness because parse returns either an expression or
+    // an array of expressions.
     const prevDefinedNames = description.extraDefines
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
           .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
           .filter(name => name !== null);
     const globalDefinedNames = Object.entries(description.globals)
-          .map(([ name, expr ]) =>
-               stage.semantics.parser.extractGlobalNames(stage.semantics, name, expr));
+          .map(([ name, str ]) => {
+              let parsed = parse(str, macros);
+              if (!Array.isArray(parsed)) {
+                  return [ name, parsed ];
+              }
+              [ parsed ] = parsed
+                  .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
+                  .filter(expr => expr !== null);
+              return [ name, parsed[1] ];
+          });
     const newDefinedNames = description.board
           .map(str => parse(str, macros))
           .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
@@ -98,6 +112,47 @@ export function startLevel(description, parse, store, stage) {
             notchY += 160;
         }
     }
+
+    // For anything that is fading, spawn the old node on top
+    const state = stage.getState();
+    const checkFade = source => (nodeId, idx) => {
+        if (stage.semantics.search(
+            state.get("nodes"), nodeId,
+            (_, id) => progression.isFadeBorder(state.getIn([ "nodes", id, "type" ]))
+        ).length > 0) {
+            const descr = description[source][idx];
+
+            console.log("Fade!", descr);
+            progression.overrideFadeLevel(() => {
+                const flattened = stage.semantics.flatten(parse(descr, macros));
+                const topNode = flattened[0].id;
+
+                const tempNodes = state.get("nodes").withMutations((n) => {
+                    for (const node of flattened) {
+                        n.set(node.id, immutable.Map(node));
+                    }
+                });
+
+                flattened.forEach((e) => {
+                    const node = tempNodes.get(e.id);
+                    stage.views[e.id] = stage.semantics.project(stage, tempNodes, node);
+                });
+                stage.views[topNode].pos = stage.views[nodeId].pos;
+
+                stage.views[topNode] = gfx.custom.fadeMe(stage.views[topNode], () => {
+                    stage.fade(source, topNode, nodeId);
+                });
+
+                store.dispatch(action.unfade(
+                    source, nodeId, topNode,
+                    flattened.map(e => immutable.Map(e))
+                ));
+            });
+            // TODO: tell stage to fade
+        }
+    };
+    state.get("board").forEach(checkFade("board"));
+    state.get("toolbox").forEach(checkFade("toolbox"));
 
     // "Inflate" animation.
     for (const nodeId of stage.getState().get("board")) {

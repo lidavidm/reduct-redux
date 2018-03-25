@@ -1,9 +1,12 @@
 import * as immutable from "immutable";
 
+import * as progression from "../game/progression";
 import Audio from "../resource/audio";
+
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import projector from "../gfx/projector";
+
 import * as core from "./core";
 import * as meta from "./meta";
 
@@ -25,6 +28,15 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
+    module.definitionOf = function getDefinition(exprOrType) {
+        const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
+        const result = module.definition.expressions[type];
+        if (Array.isArray(result)) {
+            return result[progression.getFadeLevel(type)];
+        }
+        return result;
+    };
+
     // Add default definitions for vtuple
     /**
      * A "virtual tuple" which kind of bleeds presentation into the
@@ -40,7 +52,8 @@ export default function transform(definition) {
         }
         return result;
     };
-    module.projections.vtuple = function(_stage, _expr) {
+
+    module.projections.vtuple = [ function(_stage, _expr) {
         return gfx.layout.vbox((id, state) => {
             const node = state.getIn([ "nodes", id ]);
             const result = [];
@@ -59,37 +72,53 @@ export default function transform(definition) {
             strokeWhenChild: false,
             subexpScale: 1,
         });
-    };
+    } ];
 
-    for (const [ exprName, exprDefinition ] of Object.entries(definition.expressions)) {
-        module[exprName] = function(...params) {
-            const result = { type: exprName, locked: true };
-            if (typeof exprDefinition.locked !== "undefined") {
-                result.locked = exprDefinition.locked;
-            }
+    module.constructors = {};
+    for (const [ exprName, exprDefinitions ] of Object.entries(definition.expressions)) {
+        module.constructors[exprName] = [];
+        module.projections[exprName] = [];
+
+        const defns = Array.isArray(exprDefinitions) ? exprDefinitions : [ exprDefinitions ];
+
+        for (const exprDefinition of defns) {
+            const ctor = function(...params) {
+                const result = { type: exprName, locked: true };
+                if (typeof exprDefinition.locked !== "undefined") {
+                    result.locked = exprDefinition.locked;
+                }
+                if (typeof exprDefinition.notches !== "undefined") {
+                    result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
+                }
+
+                let argPointer = 0;
+                for (const fieldName of exprDefinition.fields) {
+                    result[fieldName] = params[argPointer++];
+                }
+                const subexprs = typeof exprDefinition.subexpressions === "function" ?
+                      exprDefinition.subexpressions(module, immutable.Map(result))
+                      : exprDefinition.subexpressions;
+                for (const fieldName of subexprs) {
+                    result[fieldName] = params[argPointer++];
+                }
+                return result;
+            };
+            Object.defineProperty(ctor, "name", { value: exprName });
+            module.constructors[exprName].push(ctor);
+
             if (typeof exprDefinition.notches !== "undefined") {
-                result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
+                exprDefinition.projection.notches = exprDefinition.notches;
             }
 
-            let argPointer = 0;
-            for (const fieldName of exprDefinition.fields) {
-                result[fieldName] = params[argPointer++];
-            }
-            const subexprs = typeof exprDefinition.subexpressions === "function" ?
-                  exprDefinition.subexpressions(module, immutable.Map(result))
-                  : exprDefinition.subexpressions;
-            for (const fieldName of subexprs) {
-                result[fieldName] = params[argPointer++];
-            }
-            return result;
+            module.projections[exprName].push(projector(exprDefinition));
+        }
+
+        module[exprName] = function(...params) {
+            const ctors = module.constructors[exprName];
+            // TODO: look up fade level
+            return ctors[0](...params);
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
-
-
-        if (typeof exprDefinition.notches !== "undefined") {
-            exprDefinition.projection.notches = exprDefinition.notches;
-        }
-        module.projections[exprName] = projector(exprDefinition);
     }
 
     /**
@@ -106,7 +135,7 @@ export default function transform(definition) {
             return result;
         }
 
-        const defn = definition.expressions[type];
+        const defn = module.definitionOf(type);
         if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
 
         const subexprBase = defn.reductionOrder || defn.subexpressions;
@@ -136,7 +165,7 @@ export default function transform(definition) {
     module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");
         if (!module.projections[type]) throw `semantics.project: Unrecognized expression type ${type}`;
-        return module.projections[type](stage, nodes, expr);
+        return module.projections[type][progression.getFadeLevel(type)](stage, nodes, expr);
     };
 
     module.searchNoncapturing = function(nodes, targetName, exprId) {
@@ -171,7 +200,7 @@ export default function transform(definition) {
      */
     module.interpreter.smallStep = function smallStep(stage, state, expr) {
         const type = expr.type || expr.get("type");
-        const stepper = definition.expressions[type].smallStep;
+        const stepper = module.definitionOf(type).smallStep;
         if (stepper) {
             const result = stepper(module, stage, state, expr);
 
@@ -197,7 +226,7 @@ export default function transform(definition) {
      */
     module.interpreter.betaReduce = function(stage, state, exprId, argIds) {
         const target = state.get("nodes").get(exprId);
-        const reducer = definition.expressions[target.get("type")].betaReduce;
+        const reducer = module.definitionOf(target).betaReduce;
         if (!reducer) {
             console.warn(`Expression type ${target.get("type")} was beta-reduced, but has no reducer.`);
             return null;
@@ -211,7 +240,7 @@ export default function transform(definition) {
      * expression would take.
      */
     module.interpreter.animateStep = function animateStep(stage, state, exp) {
-        const defn = definition.expressions[exp.get("type")];
+        const defn = module.definitionOf(exp.get("type"));
         if (defn && defn.stepSound) {
             if (typeof defn.stepSound === "function") {
                 const sequence = defn.stepSound(module, state, exp);
@@ -234,7 +263,7 @@ export default function transform(definition) {
 
     const __substepFilter = () => true;
     module.interpreter.substepFilter = function getSubstepFilter(type) {
-        const defn = definition.expressions[type];
+        const defn = module.definitionOf(type);
         if (defn && defn.substepFilter) {
             return defn.substepFilter;
         }
@@ -353,7 +382,16 @@ export default function transform(definition) {
             }
             for (const subexprField of module.subexpressions(expr)) {
                 const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
-                if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
+                if (subexpr.get("type") === "reference") {
+                    return !(
+                        subexpr
+                            .get("params") &&
+                            subexpr
+                                .get("params")
+                                .some(p => state.getIn([ "nodes", subexpr.get(`arg_${p}`), "type" ]) !== "missing")
+                    );
+                }
+                else if (module.kind(subexpr) === "expression" && subexpr.get("type") !== "reference") {
                     return false;
                 }
             }
@@ -372,7 +410,7 @@ export default function transform(definition) {
 
         if (shouldStepOver(state, exp)) {
             const name = exp.get("type") === "reference" ? exp.get("name") :
-                  nodes.get(exp.get("callee")).get("name");
+                  `subcall ${nodes.get(exp.get("callee")).get("name")}`;
             console.debug(`semant.interpreter.reducers.over: stepping over call to ${name}`);
             return module.interpreter.reducers.big(stage, state, exp, callbacks);
         }
@@ -632,7 +670,7 @@ export default function transform(definition) {
      * Validate that the given expression can take a single step.
      */
     module.interpreter.validateStep = function(state, expr) {
-        const defn = definition.expressions[expr.get("type")];
+        const defn = module.definitionOf(expr);
         if (!defn) return null;
 
         const validator = defn.validateStep;
@@ -644,7 +682,7 @@ export default function transform(definition) {
     module.shallowEqual = function shallowEqual(n1, n2) {
         if (n1.get("type") !== n2.get("type")) return false;
 
-        for (const field of definition.expressions[n1.get("type")].fields) {
+        for (const field of module.definitionOf(n1).fields) {
             if (n1.get(field) !== n2.get(field)) return false;
         }
 
@@ -678,7 +716,7 @@ export default function transform(definition) {
      * Is an expression selectable/hoverable by the mouse?
      */
     module.targetable = function(state, expr) {
-        const defn = definition.expressions[expr.get("type")];
+        const defn = module.definitionOf(expr);
         if (defn && defn.targetable && typeof defn.targetable === "function") {
             return defn.targetable(module, state, expr);
         }
@@ -691,7 +729,7 @@ export default function transform(definition) {
             // TODO: This isn't quite right - depends on the children
             return "expression";
         default:
-            return definition.expressions[expr.get("type")].kind;
+            return module.definitionOf(expr).kind;
         }
     };
 
@@ -734,7 +772,7 @@ export default function transform(definition) {
             }
 
             const type = expr.get("type");
-            const exprDefn = definition.expressions[type];
+            const exprDefn = module.definitionOf(type);
             if (!exprDefn) {
                 console.warn(`No expression definition for ${type}`);
             }
@@ -807,7 +845,7 @@ export default function transform(definition) {
 
     module.notchesAttachable = function(stage, state, parentId, childId, notchPair) {
         const nodes = state.get("nodes");
-        const defn = definition.expressions[nodes.get(parentId).get("type")];
+        const defn = module.definitionOf(nodes.get(parentId));
         if (defn && defn.notches && defn.notches[notchPair[0]]) {
             const notchDefn = defn.notches[notchPair[0]];
             if (notchDefn.canAttach) {
@@ -831,7 +869,7 @@ export default function transform(definition) {
 
     module.detachable = function(state, parentId, childId) {
         const nodes = state.get("nodes");
-        const defn = definition.expressions[nodes.get(parentId).get("type")];
+        const defn = module.definitionOf(nodes.get(parentId));
         const parentField = nodes.get(childId).get("parentField");
         if (parentField.slice(0, 5) !== "notch") {
             return true;
@@ -856,7 +894,7 @@ export default function transform(definition) {
      * nodes to determine victory.
      */
     module.ignoreForVictory = function(node) {
-        const defn = definition.expressions[node.get("type")];
+        const defn = module.definitionOf(node);
         return module.kind(node) === "syntax" || (defn && defn.ignoreForVictory);
     };
 
