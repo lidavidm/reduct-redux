@@ -27,7 +27,12 @@ export default function transform(definition) {
 
     module.definitionOf = function getDefinition(exprOrType) {
         const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
-        return module.definition.expressions[type];
+        const result = module.definition.expressions[type];
+        if (Array.isArray(result)) {
+            // TODO: actually check progression/fading
+            return result[0];
+        }
+        return result;
     };
 
     // Add default definitions for vtuple
@@ -46,7 +51,7 @@ export default function transform(definition) {
         return result;
     };
 
-    module.projections.vtuple = function(_stage, _expr) {
+    module.projections.vtuple = [ function(_stage, _expr) {
         return gfx.layout.vbox((id, state) => {
             const node = state.getIn([ "nodes", id ]);
             const result = [];
@@ -65,39 +70,53 @@ export default function transform(definition) {
             strokeWhenChild: false,
             subexpScale: 1,
         });
-    };
+    } ];
 
-    for (const exprName of Object.keys(definition.expressions)) {
-        const exprDefinition = module.definitionOf(exprName);
+    module.constructors = {};
+    for (const [ exprName, exprDefinitions ] of Object.entries(definition.expressions)) {
+        module.constructors[exprName] = [];
+        module.projections[exprName] = [];
+
+        const defns = Array.isArray(exprDefinitions) ? exprDefinitions : [ exprDefinitions ];
+
+        for (const exprDefinition of defns) {
+            const ctor = function(...params) {
+                const result = { type: exprName, locked: true };
+                if (typeof exprDefinition.locked !== "undefined") {
+                    result.locked = exprDefinition.locked;
+                }
+                if (typeof exprDefinition.notches !== "undefined") {
+                    result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
+                }
+
+                let argPointer = 0;
+                for (const fieldName of exprDefinition.fields) {
+                    result[fieldName] = params[argPointer++];
+                }
+                const subexprs = typeof exprDefinition.subexpressions === "function" ?
+                      exprDefinition.subexpressions(module, immutable.Map(result))
+                      : exprDefinition.subexpressions;
+                for (const fieldName of subexprs) {
+                    result[fieldName] = params[argPointer++];
+                }
+                return result;
+            };
+            Object.defineProperty(ctor, "name", { value: exprName });
+            module.constructors[exprName].push(ctor);
+
+            if (typeof exprDefinition.notches !== "undefined") {
+                exprDefinition.projection.notches = exprDefinition.notches;
+            }
+
+            module.projections[exprName].push(projector(exprDefinition));
+        }
 
         module[exprName] = function(...params) {
-            const result = { type: exprName, locked: true };
-            if (typeof exprDefinition.locked !== "undefined") {
-                result.locked = exprDefinition.locked;
-            }
-            if (typeof exprDefinition.notches !== "undefined") {
-                result.notches = immutable.List(exprDefinition.notches.map(n => new NotchRecord(n)));
-            }
-
-            let argPointer = 0;
-            for (const fieldName of exprDefinition.fields) {
-                result[fieldName] = params[argPointer++];
-            }
-            const subexprs = typeof exprDefinition.subexpressions === "function" ?
-                  exprDefinition.subexpressions(module, immutable.Map(result))
-                  : exprDefinition.subexpressions;
-            for (const fieldName of subexprs) {
-                result[fieldName] = params[argPointer++];
-            }
-            return result;
+            const ctors = module.constructors[exprName];
+            // TODO: look up fade level
+            return ctors[0](...params);
         };
         Object.defineProperty(module[exprName], "name", { value: exprName });
-
-
-        if (typeof exprDefinition.notches !== "undefined") {
-            exprDefinition.projection.notches = exprDefinition.notches;
-        }
-        module.projections[exprName] = projector(exprDefinition);
     }
 
     /**
@@ -144,7 +163,8 @@ export default function transform(definition) {
     module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");
         if (!module.projections[type]) throw `semantics.project: Unrecognized expression type ${type}`;
-        return module.projections[type](stage, nodes, expr);
+        // TODO: look up fade level
+        return module.projections[type][0](stage, nodes, expr);
     };
 
     module.searchNoncapturing = function(nodes, targetName, exprId) {
