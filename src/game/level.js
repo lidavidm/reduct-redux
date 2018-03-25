@@ -1,3 +1,4 @@
+import * as progression from "../game/progression";
 import * as action from "../reducer/action";
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
@@ -109,6 +110,26 @@ export function startLevel(description, parse, store, stage) {
             notchY += 160;
         }
     }
+
+    // For anything that is fading, spawn the old node on top
+    const state = stage.getState();
+    const checkFade = (source) => (nodeId, idx) => {
+        if (stage.semantics.search(
+            state.get("nodes"), nodeId,
+            (_, id) => progression.isFadeBorder(state.getIn([ "nodes", id, "type" ]))
+        ).length > 0) {
+            const descr = source[idx];
+
+            console.log("Fade!", descr);
+            progression.overrideFadeLevel(() => {
+                console.log(parse(descr, macros));
+            });
+            // TODO: dispatch action
+            // TODO: tell stage to fade
+        }
+    };
+    state.get("board").forEach(checkFade(description.board));
+    state.get("toolbox").forEach(checkFade(description.toolbox));
 
     // "Inflate" animation.
     for (const nodeId of stage.getState().get("board")) {

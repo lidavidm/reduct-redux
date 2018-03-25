@@ -137,12 +137,29 @@ export function getSyntaxDefinition(name) {
     return ACTIVE_PROGRESSION_DEFINITION.progression.syntax[name];
 }
 
-export function getFadeLevel(exprType) {
-    const fadeLevels = ACTIVE_PROGRESSION_DEFINITION.progression.levels[currentLevel()].fade;
+export function getFadeLevel(exprType, level=null) {
+    level = level === null ? currentLevel() : level;
+    const fadeLevels = ACTIVE_PROGRESSION_DEFINITION.progression.levels[level].fade;
     if (typeof fadeLevels[exprType] === "number") {
         return fadeLevels[exprType];
     }
     return 0;
+}
+
+export function isFadeBorder(exprType) {
+    return currentLevel() !== 0 &&
+        (getFadeLevel(exprType, currentLevel()) !==
+         getFadeLevel(exprType, currentLevel() - 1));
+}
+
+export function overrideFadeLevel(cb) {
+    currentLevelIdx -= 1;
+    try {
+        cb();
+    }
+    finally {
+        currentLevelIdx += 1;
+    }
 }
 
 export function save() {
