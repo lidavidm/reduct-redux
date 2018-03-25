@@ -123,14 +123,14 @@ export function notchProjection(options) {
                 stage.views[childId].anchor.x = 0.0;
                 stage.views[childId].anchor.y = 0.0;
                 stage.views[childId].pos.x = this.pos.x - (delta.x / 2);
-                stage.views[childId].pos.y = (this.pos.y + (this.size.h / 2)) - delta.y;
+                stage.views[childId].pos.y = (this.pos.y + this.notchOffset(id, exprId, 0).y) - delta.y;
 
                 stage.views[childId].draw(childId, childId, state, stage, offset);
             }
         }
     };
     projection.notchOffset = function(id, exprId, notch) {
-        return { x: 0, y: 80 };
+        return { x: 0, y: this.size.h / 2 };
     };
     return projection;
 }
