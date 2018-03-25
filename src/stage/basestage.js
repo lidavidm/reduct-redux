@@ -142,31 +142,29 @@ export default class BaseStage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
-    drawProjection(state, nodeId, offset=null) {
-        const projection = this.views[nodeId];
-        // TODO: autoresizing
-        projection.parent = null;
-        projection.prepare(nodeId, nodeId, state, this);
-        projection.draw(nodeId, nodeId, state, this, offset || {
+    makeBaseOffset(opt={}) {
+        return Object.assign({
             x: 0,
             y: 0,
             sx: 1,
             sy: 1,
             opacity: 1,
-        });
+        }, opt);
+    }
+
+    drawProjection(state, nodeId, offset=null) {
+        const projection = this.views[nodeId];
+        // TODO: autoresizing
+        projection.parent = null;
+        projection.prepare(nodeId, nodeId, state, this);
+        projection.draw(nodeId, nodeId, state, this, offset || this.makeBaseOffset());
     }
 
     drawInternalProjection(state, nodeId, exprId=null, offset=null) {
         const projection = this.internalViews[nodeId];
         projection.parent = null;
         projection.prepare(nodeId, exprId, state, this);
-        projection.draw(nodeId, exprId, state, this, offset || {
-            x: 0,
-            y: 0,
-            sx: 1,
-            sy: 1,
-            opacity: 1,
-        });
+        projection.draw(nodeId, exprId, state, this, offset || this.makeBaseOffset());
     }
 
     drawContents() {

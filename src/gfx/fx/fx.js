@@ -305,9 +305,7 @@ export function emerge(stage, state, bodyView, resultIds, options={}) {
         draw: () => {
             for (const resultId of resultIds) {
                 const resultView = stage.views[resultId];
-                resultView.draw(resultId, resultId, state, stage, {
-                    x: 0, y: 0, sx: 1, sy: 1,
-                });
+                resultView.draw(resultId, resultId, state, stage, stage.makeBaseOffset());
             }
         },
     });

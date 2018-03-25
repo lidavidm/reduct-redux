@@ -52,7 +52,7 @@ export default class Toolbox {
             }
             const projection = this.stage.views[nodeId];
 
-            if (projection.containsPoint(pos, { x: 0, y: 0, sx: 1, sy: 1 })) {
+            if (projection.containsPoint(pos, this.stage.makeBaseOffset())) {
                 return [ nodeId, nodeId ];
             }
         }
@@ -146,28 +146,18 @@ export default class Toolbox {
 
             x += projection.size.w + TOOLBOX_INNER_MARGIN;
             projection.prepare(nodeId, nodeId, state, this.stage);
-            projection.draw(nodeId, nodeId, state, this.stage, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-                opacity: 1,
-            });
+            projection.draw(nodeId, nodeId, state, this.stage, this.stage.makeBaseOffset());
 
             const node = state.get("nodes").get(nodeId);
             if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
-                this.stage.internalViews[this.infBg].draw(-1, nodeId, state, this.stage, {
+                this.stage.internalViews[this.infBg].draw(-1, nodeId, state, this.stage, this.stage.makeBaseOffset({
                     x: projection.pos.x + projection.size.w - 33,
                     y: projection.pos.y - 20,
-                    sx: 1,
-                    sy: 1,
-                });
-                this.stage.internalViews[this.inf].draw(null, null, state, this.stage, {
+                }));
+                this.stage.internalViews[this.inf].draw(null, null, state, this.stage, this.stage.makeBaseOffset({
                     x: projection.pos.x + projection.size.w - 25,
                     y: projection.pos.y - 5,
-                    sx: 1,
-                    sy: 1,
-                });
+                }));
             }
 
             i++;

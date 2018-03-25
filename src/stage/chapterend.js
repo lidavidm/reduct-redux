@@ -211,32 +211,32 @@ export default class ChapterEndStage extends BaseStage {
 
         if (this.continueButtonId) {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
-            this.continueButton.draw(this.continueButtonId, this.continueButtonId, state, this, {
-                x: this.width / 2,
-                y: this.height / 2,
-                sx: 1,
-                sy: 1,
-                opacity: 1,
-            });
+            this.continueButton.draw(
+                this.continueButtonId, this.continueButtonId, state, this,
+                this.makeBaseOffset({
+                    x: this.width / 2,
+                    y: this.height / 2,
+                })
+            );
         }
         if (this.challengeButtonId) {
             const view = this.internalViews[this.challengeButtonId];
             view.prepare(this.challengeButtonId, this.challengeButtonId, state, this);
-            view.draw(this.challengeButtonId, this.challengeButtonId, state, this, {
-                x: this.width / 2,
-                y: (this.height / 2) + 150,
-                sx: 1,
-                sy: 1,
-                opacity: 1,
-            });
+            view.draw(
+                this.challengeButtonId, this.challengeButtonId, state, this,
+                this.makeBaseOffset({
+                    x: this.width / 2,
+                    y: (this.height / 2) + 150,
+                })
+            );
         }
     }
 
     getNodeAtPos(pos, selectedId=null) {
         const projection = this.continueButton;
-        const offset = {
-            x: this.width / 2, y: this.height / 2, sx: 1, sy: 1
-        };
+        const offset = this.makeBaseOffset({
+            x: this.width / 2, y: this.height / 2,
+        });
 
         if (this.continueButtonId) {
             if (projection.containsPoint(pos, offset)) {

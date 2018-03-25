@@ -94,15 +94,13 @@ export default class Goal {
         ctx.fill();
         ctx.restore();
 
-        alien.draw(null, null, state, this.stage, {
-            x: 0, y: 0, sx: 1, sy: 1,
-        });
+        alien.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
 
         const view = this.stage.views[this.container];
         view.prepare(null, null, state, this.stage);
-        view.draw(null, null, state, this.stage, {
-            x: alien.size.w, y: 5, sx: 1, sy: 1,
-        });
+        view.draw(null, null, state, this.stage, this.stage.makeBaseOffset({
+            x: alien.size.w, y: 5,
+        }));
     }
 
     animatedNodes() {

@@ -466,12 +466,7 @@ export default class Stage extends BaseStage {
         for (const nodeId of state.get("board").toArray().reverse()) {
             if (nodeId === selectedId) continue;
 
-            const res = check(pos, nodeId, nodeId, null, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-            });
+            const res = check(pos, nodeId, nodeId, null, this.makeBaseOffset());
             if (res) {
                 [ root, result ] = res;
                 break;
@@ -535,12 +530,7 @@ export default class Stage extends BaseStage {
         let result = null;
 
         for (const nodeId of state.get("board").toArray().reverse()) {
-            const res = check(pos, nodeId, nodeId, null, {
-                x: 0,
-                y: 0,
-                sx: 1,
-                sy: 1,
-            });
+            const res = check(pos, nodeId, nodeId, null, this.makeBaseOffset());
             if (res) {
                 result = res;
                 break;
@@ -1306,13 +1296,8 @@ export default class Stage extends BaseStage {
                 this.getView(unfadedId).prepare(unfadedId, unfadedId, this.getState(), this);
             },
             draw: () => {
-                this.getView(unfadedId).draw(unfadedId, unfadedId, this.getState(), this, {
-                    x: 0,
-                    y: 0,
-                    sx: 1,
-                    sy: 1,
-                    opacity: 1,
-                });
+                this.getView(unfadedId)
+                    .draw(unfadedId, unfadedId, this.getState(), this, this.makeBaseOffset());
             },
         });
 

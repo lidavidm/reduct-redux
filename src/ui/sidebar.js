@@ -101,13 +101,7 @@ export default class Sidebar {
         ctx.fillStyle = "#594764";
         ctx.fillRect(0, 0, sidebarWidth, this.stage.height);
 
-        const offset = {
-            x: 0,
-            y: 0,
-            sx: 1,
-            sy: 1,
-            opacity: 1,
-        };
+        const offset = this.stage.makeBaseOffset();
 
         let curY = 10;
 

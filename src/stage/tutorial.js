@@ -233,13 +233,11 @@ class GoalTutorial {
             for (const id of state.get("goal")) {
                 const goalText = this.stage.getView(this.goalText);
                 this.stage.getView(id).pos.x = 0;
-                this.stage.drawProjection(state, id, {
+                this.stage.drawProjection(state, id, this.stage.makeBaseOffset({
                     x: goalText.pos.x + goalText.size.w + 10,
                     y: goalText.pos.y,
-                    sx: 1,
-                    sy: 1,
                     opacity: goalText.opacity,
-                });
+                }));
             }
         }
         else if (this.state === "board") {
