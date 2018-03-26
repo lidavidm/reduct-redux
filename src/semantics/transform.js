@@ -358,6 +358,10 @@ export default function transform(definition) {
         // callee is a previously defined function
         const shouldStepOver = (state, expr) => {
             if (expr.get("type") === "reference" && expr.get("params") && expr.get("params").length > 0) {
+                if (stage.newDefinedNames.includes(expr.get("name"))) {
+                    return false;
+                }
+
                 // If reference with holes, step over so long as all
                 // args are not references or applications
                 for (const subexprField of module.subexpressions(expr)) {
@@ -618,7 +622,6 @@ export default function transform(definition) {
 
         let fuel = 50;
         const loop = (innerState, topExpr) => {
-            if (stage.mode != "hybrid") return Promise.resolve(topExpr.get("id"));
             if (fuel <= 0) return Promise.resolve(topExpr.get("id"));
             fuel -= 1;
 
