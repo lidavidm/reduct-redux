@@ -583,10 +583,15 @@ export default function transform(definition) {
             const innerExpr = innerState.get("nodes").get(exprId);
             if (innerExpr.get("type") === "reference" && !stage.newDefinedNames.includes(innerExpr.get("name"))) {
                 return module.interpreter.reducers
-                    .medium(stage, innerState, topExpr, callbacks)
+                    .over(stage, innerState, topExpr, callbacks)
                     .then((topId) => {
                         const newState = stage.getState();
-                        const node = newState.getIn([ "nodes", topId ]);
+
+                        let node = newState.getIn([ "nodes", topId ]);
+                        while (node.has("parent")) {
+                            node = newState.getIn([ "nodes", node.get("parent") ]);
+                        }
+
                         if (module.kind(node) !== "expression") {
                             return Promise.reject(topId);
                         }
