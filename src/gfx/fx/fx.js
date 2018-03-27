@@ -238,7 +238,7 @@ export function error(stage, projection) {
     });
 }
 
-export function emerge(stage, state, bodyView, resultIds, options={}) {
+export function emerge(stage, state, bodyPos, bodySize, resultIds, options={}) {
     const spacing = 10;
     let emergeDistance = 100;
     let totalHeight = 0;
@@ -255,8 +255,8 @@ export function emerge(stage, state, bodyView, resultIds, options={}) {
     }
     totalHeight -= spacing;
 
-    const ap = gfx.absolutePos(bodyView);
-    const as = gfx.absoluteSize(bodyView);
+    const ap = bodyPos;
+    const as = bodySize;
     let y = (ap.y + (as.h / 2));
 
     // Compute using bounding box of the end position

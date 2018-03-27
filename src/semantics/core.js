@@ -218,12 +218,14 @@ export function genericBetaReduce(semant, state, config) {
     }
 
     const name = config.targetName(targetNode);
-    let newNodes = [];
-    let [ newTop ] = semant.map(nodes, topNode.get("body"), (nodes, id) => {
+    let [ bodyClone, newNodes, curNodes ] = semant.clone(topNode.get("body"), nodes);
+    newNodes.push(bodyClone);
+
+    let [ newTop ] = semant.map(curNodes, bodyClone.get("id"), (nodes, id) => {
         const node = nodes.get(id);
         if (config.isVar(node) && config.varName(node) === name) {
             const [ cloned, resultNewNodes, nodesStore ] = semant.clone(argIds[0], nodes);
-            const result = cloned.withMutations(n => {
+            const result = cloned.withMutations((n) => {
                 n.set("parent", node.get("parent"));
                 n.set("parentField", node.get("parentField"));
                 n.set("locked", true);
@@ -232,12 +234,11 @@ export function genericBetaReduce(semant, state, config) {
             newNodes = newNodes.concat(resultNewNodes);
             return [ result, nodesStore.set(result.get("id"), result) ];
         }
-        else {
-            const [ result, resultNewNodes, nodesStore ] = semant.clone(id, nodes);
-            newNodes.push(result);
-            newNodes = newNodes.concat(resultNewNodes);
-            return [ result, nodesStore.set(result.get("id", result)) ];
-        }
+
+        const [ result, resultNewNodes, nodesStore ] = semant.clone(id, nodes);
+        newNodes.push(result);
+        newNodes = newNodes.concat(resultNewNodes);
+        return [ result, nodesStore.set(result.get("id", result)) ];
     }, (nodes, node) => {
         if (config.isCapturing(node)) {
             return config.captureName(nodes, node) !== name;
@@ -261,7 +262,7 @@ export function genericBetaReduce(semant, state, config) {
         return [
             topNode.get("id"),
             [ newTop.get("id") ],
-            newNodes.slice(1).concat([newTop]),
+            newNodes.concat([newTop]),
         ];
     }
 }

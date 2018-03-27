@@ -1034,10 +1034,6 @@ export default class Stage extends BaseStage {
                 }
             });
 
-            for (const node of newNodes) {
-                this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
-            }
-
             const topNodeRecord = state.getIn([ "nodes", topNode ]);
             if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
                 const tempState = state.set("nodes", tempNodes);
@@ -1047,8 +1043,16 @@ export default class Stage extends BaseStage {
 
                 this.views[topNode].pos = gfxCore.centerPos(this.views[topNode]);
                 this.views[topNode].anchor = { x: 0.5, y: 0.5 };
+
+                const bodyPos = gfxCore.absolutePos(this.views[body]);
+                const bodySize = gfxCore.absoluteSize(this.views[body]);
+                // Project after measuring sizes
+                for (const node of newNodes) {
+                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                }
+
                 Promise.all([
-                    animate.fx.emerge(this, tempState, this.views[body], resultNodeIds)
+                    animate.fx.emerge(this, tempState, bodyPos, bodySize, resultNodeIds)
                         .then((id) => {
                             fxId = id;
                         }),
@@ -1085,6 +1089,12 @@ export default class Stage extends BaseStage {
                     this.views[newNodeId].pos.y = this.views[topNode].pos.y;
                 }
                 Audio.play("pop");
+
+                // Project after measuring sizes
+                for (const node of newNodes) {
+                    this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
+                }
+
                 this.store.dispatch(action.betaReduce(topNode, arg, resultNodeIds, newNodes));
             }
 
