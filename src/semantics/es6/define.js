@@ -5,7 +5,6 @@ import * as animate from "../../gfx/animate";
 export default {
     define: {
         kind: "statement",
-        ignoreForVictory: true,
         fields: ["name", "params"],
         subexpressions: ["body"],
         targetable: (semant, state, expr) => {
