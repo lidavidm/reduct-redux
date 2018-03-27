@@ -129,7 +129,7 @@ export default {
             },
             // If expr is nested in apply, don't care about subexpressions
             // TODO: needs to be more sophisticated - what if it's partially filled?
-            substepFilter: (semant, state, expr, _field) => {
+            substepFilter: (semant, state, expr, field) => {
                 const parentId = expr.get ? expr.get("parent") : expr.parent;
                 if (!parentId) {
                     return true;
@@ -137,7 +137,18 @@ export default {
 
                 const parent = state.getIn([ "nodes", parentId ]);
                 const type = (parent.get ? parent.get("type") : parent.type);
-                return type !== "apply" && type !== "reference";
+                if (type !== "apply" && type !== "reference") {
+                    return true;
+                }
+
+                const params = expr.get("params");
+                if (!params || params.length === 0) {
+                    // wait, wtf?
+                    console.warn(`es6.reference#substepFilter: No params, but asked about field ${field}?`);
+                    return true;
+                }
+
+                return !params.every(p => state.getIn([ "nodes", expr.get(`arg_${p}`), "type" ]) === "missing");
             },
             projection: {
                 type: "dynamic",
