@@ -215,7 +215,7 @@ class TouchRecord extends BaseTouchRecord {
             this.hoverNode
         )) &&
             oldHover !== null && this.hoverStartPos &&
-            gfxCore.distance(mousePos, this.hoverStartPos) < 100) {
+            gfxCore.distance(mousePos, this.hoverStartPos) < 25) {
             this.hoverNode = oldHover;
         }
         else if (this.topNode !== null && this.hoverNode !== null) {
