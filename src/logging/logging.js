@@ -77,6 +77,11 @@ class Logger {
     }
 
     startSession() {
+        if (!this.enabled) {
+            this.info("Starting session with no logging.");
+            return Promise.resolve();
+        }
+
         if (this.currentUserId === null) {
             this.currentUserId = random.getRandString(40);
         }
@@ -107,10 +112,16 @@ class Logger {
     }
 
     get isSessionStarted() {
-        return this.currentUserId !== null && this.currentSessionId !== null;
+        return !enabled ||
+            (this.currentUserId !== null &&
+             this.currentSessionId !== null);
     }
 
     startTask(taskId, data=null) {
+        if (!this.enabled) {
+            return Promise.resolve();
+        }
+
         if (!this.isSessionStarted) {
             this.warn("@ Logging#startTask: unknown user ID or session ID!");
             return Promise.reject();
@@ -137,10 +148,16 @@ class Logger {
     }
 
     get isTaskStarted() {
-        return this.currentTaskId !== null && this.dynamicTaskId !== null;
+        return !this.enabled ||
+            (this.currentTaskId !== null &&
+             this.dynamicTaskId !== null);
     }
 
     endTask(taskId) {
+        if (!this.enabled) {
+            return Promise.resolve();
+        }
+
         if (!this.isTaskStarted) {
             this.warn("@ Logging#endTask: no task was begun.");
             return Promise.reject();
@@ -171,6 +188,10 @@ class Logger {
     }
 
     log(actionId, data) {
+        if (!this.enabled) {
+            return Promise.resolve();
+        }
+
         data = JSON.stringify(data);
 
         const params = this.makeActionParams();
