@@ -269,6 +269,14 @@ export class InterpolateTween extends Tween {
     cancel() {
         this.status = "completed";
     }
+
+    completed() {
+        for (const attr of this.properties) {
+            const { target, property, end } = attr;
+            target[property] = end;
+        }
+        super.completed();
+    }
 }
 
 /**
