@@ -206,7 +206,7 @@ export function genericBetaReduce(semant, state, config) {
             if (config.animateInvalidArg) {
                 missingArgNodes.forEach(config.animateInvalidArg);
             }
-            console.warn("Can't reduce missing");
+            console.warn("Can't apply argument with missing nodes");
             return null;
         }
 

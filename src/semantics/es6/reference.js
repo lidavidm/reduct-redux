@@ -127,20 +127,8 @@ export default {
                     [ result[0].delete("parent").delete("parentField") ].concat(result[1]),
                 ];
             },
-            // If expr is nested in apply, don't care about subexpressions
-            // TODO: needs to be more sophisticated - what if it's partially filled?
+            // Only care about arguments if partially filled
             substepFilter: (semant, state, expr, field) => {
-                const parentId = expr.get ? expr.get("parent") : expr.parent;
-                if (!parentId) {
-                    return true;
-                }
-
-                const parent = state.getIn([ "nodes", parentId ]);
-                const type = (parent.get ? parent.get("type") : parent.type);
-                if (type !== "apply" && type !== "reference") {
-                    return true;
-                }
-
                 const params = expr.get("params");
                 if (!params || params.length === 0) {
                     // wait, wtf?
