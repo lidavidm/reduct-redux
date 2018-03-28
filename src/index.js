@@ -29,7 +29,12 @@ Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
 Promise.all([ Loader.finished, consent() ])
-    .then((consented) => (consented ? Logging.startSession() : Promise.resolve()))
+    .then(([ _, consented ]) => {
+        console.log(`User consented to logging: ${consented}`);
+        if (!consented) Logging.clearStaticLog();
+        Logging.config("enabled", consented);
+    })
+    .then(() => Logging.startSession())
     .then(initialize);
 
 const views = {};
