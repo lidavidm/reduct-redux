@@ -29,6 +29,7 @@ class TouchRecord extends BaseTouchRecord {
         this.highlightAnimation = null;
         this.scaleAnimation = null;
         this.hoverStartPos = null;
+        this.clonable = false;
     }
 
     reset() {
@@ -38,6 +39,7 @@ class TouchRecord extends BaseTouchRecord {
         this.dropTargets = [];
         this.dropTweens = new Map();
         this.hoverStartPos = null;
+        this.clonable = false;
     }
 
     // TODO: refactor this onto the stage
@@ -106,6 +108,10 @@ class TouchRecord extends BaseTouchRecord {
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
+
+            const state = this.stage.getState();
+            const selected = state.getIn([ "nodes", this.topNode ]);
+            this.clonable = selected.has("__meta") && selected.get("__meta").toolbox.unlimited;
         }
 
         const view = this.stage.getView(this.topNode);
@@ -147,21 +153,23 @@ class TouchRecord extends BaseTouchRecord {
                         this.topNode = resultNode;
                         this.targetNode = resultNode;
                         this.fromToolbox = false;
+                        this.clonable = false;
                     }
                 }
             }
 
-            const view = this.stage.getView(this.topNode);
-            const absSize = gfxCore.absoluteSize(view);
-            this.stage.views[this.topNode].anchor = {
-                x: this.dragAnchor.x,
-                y: this.dragAnchor.y
-            };
-            view.pos.x = mousePos.x;
-            view.pos.y = mousePos.y;
+            if (!this.clonable) {
+                const view = this.stage.getView(this.topNode);
+                this.stage.views[this.topNode].anchor = {
+                    x: this.dragAnchor.x,
+                    y: this.dragAnchor.y,
+                };
+                view.pos.x = mousePos.x;
+                view.pos.y = mousePos.y;
 
-            if (this.isExpr && this.targetNode !== null) {
-                this.stage.views[this.topNode].opacity = 0.7;
+                if (this.isExpr && this.targetNode !== null) {
+                    this.stage.views[this.topNode].opacity = 0.7;
+                }
             }
         }
 
