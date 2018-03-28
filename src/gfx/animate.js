@@ -241,11 +241,29 @@ export class InterpolateTween extends Tween {
     }
 
     /** Resets properties affected back to their initial value. */
-    undo() {
+    undo(animated=false) {
+        if (animated) {
+            const tween = this.makeUndo();
+            this.clock.addTween(tween);
+            return tween;
+        }
+
         for (const attr of this.properties) {
             const { target, property, start } = attr;
             target[property] = start;
         }
+    }
+
+    makeUndo() {
+        const properties = [];
+        for (const attr of this.properties) {
+            properties.push({
+                ...attr,
+                start: attr.end,
+                end: attr.start,
+            });
+        }
+        return new InterpolateTween(this.clock, properties, this.duration, this.options);
     }
 
     cancel() {
