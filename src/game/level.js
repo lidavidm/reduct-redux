@@ -138,8 +138,9 @@ export function startLevel(description, parse, store, stage) {
                 });
                 stage.views[topNode].pos = stage.views[nodeId].pos;
 
-                stage.views[topNode] = gfx.custom.fadeMe(stage.views[topNode], () => {
-                    stage.fade(source, topNode, nodeId);
+                stage.views[topNode] = gfx.custom.fadeMe(stage.views[topNode], (tween) => {
+                    stage.fade(source, topNode, nodeId)
+                        .then(() => tween.stop());
                 });
 
                 store.dispatch(action.unfade(

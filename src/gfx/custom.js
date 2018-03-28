@@ -178,26 +178,24 @@ export function fadeMe(projection, onfade) {
     const origDraw = projection.draw;
 
     const stars = [];
-    for (let i = 0; i < 10; i++) {
+    const size = gfx.absoluteSize(projection);
+    const count = Math.min(100, 30 * (size.w / 50));
+    for (let i = 0; i < count; i++) {
         stars.push({
             dx: Math.random() - 0.5,
             dy: Math.random() - 0.5,
-            r: random.getRandInt(2, 12),
-            opacity: Math.random(),
-            deltaOpacity: Math.random() > 0.5 ? -1 : 1,
+            r: random.getRandInt(2, 8),
+            opacity: 1.0,
+            deltaOpacity: -Math.max(3 * Math.random(), 0.8),
         });
     }
 
     const tween = animate.infinite((dt) => {
         for (const star of stars) {
-            star.opacity += star.deltaOpacity * dt * 0.0005;
-            if (star.opacity >= 1) {
-                star.opacity = 1;
-                star.deltaOpacity = -1;
-            }
-            else if (star.opacity <= 0) {
-                star.opacity = 0;
-                star.deltaOpacity = 1;
+            star.opacity += star.deltaOpacity * (dt / 1000);
+            if (star.opacity <= 0) {
+                star.opacity = 1.0;
+                star.deltaOpacity = -Math.max(3 * Math.random(), 0.8);
                 star.dx = Math.random() - 0.5;
                 star.dy = Math.random() - 0.5;
             }
@@ -205,8 +203,7 @@ export function fadeMe(projection, onfade) {
     });
 
     projection.onmouseenter = function() {
-        tween.stop();
-        onfade();
+        onfade(tween);
     };
 
     projection.draw = function(id, exprId, state, stage, offset) {
@@ -217,16 +214,26 @@ export function fadeMe(projection, onfade) {
 
         const { ctx } = stage;
         ctx.save();
-        ctx.fillStyle = "#0F0";
-        const dim = Math.max(this.size.w * sx, this.size.h * sy);
+
         for (const star of stars) {
             ctx.globalAlpha = offset.opacity * star.opacity * this.opacity;
+            ctx.fillStyle = "#000";
             primitive.drawStar(
                 ctx,
-                x + (sx * (this.size.w / 2)) + (dim * star.dx),
-                y + (sy * (this.size.h / 2)) + (dim * star.dy),
+                x + (sx * (this.size.w / 2)) + (this.size.w * sx * 1.2 * star.dx),
+                y + (sy * (this.size.h / 2)) + (this.size.h * sy * 1.2 * star.dy),
                 5,
-                Math.max(1, star.r / 3),
+                star.r / 2,
+                star.r,
+                true
+            );
+            ctx.fillStyle = "#0F0";
+            primitive.drawStar(
+                ctx,
+                x + (sx * (this.size.w / 2)) + (this.size.w * sx * 1.2 * star.dx),
+                y + (sy * (this.size.h / 2)) + (this.size.h * sy * 1.2 * star.dy),
+                5,
+                star.r / 2,
                 star.r,
                 true
             );

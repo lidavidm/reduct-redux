@@ -1325,17 +1325,17 @@ export default class Stage extends BaseStage {
         this.getView(fadedId).opacity = 0;
         this.getView(fadedId).anchor = this.getView(unfadedId).anchor;
 
-        Promise.all([
+        return Promise.all([
             animate.tween(this.getView(unfadedId), {
                 opacity: 0,
             }, {
-                duration: 3000,
+                duration: 2000,
                 easing: animate.Easing.Cubic.InOut,
             }),
             animate.tween(this.getView(fadedId), {
                 opacity: 1,
             }, {
-                duration: 3000,
+                duration: 2000,
                 easing: animate.Easing.Cubic.InOut,
             }),
         ]).then(() => {
