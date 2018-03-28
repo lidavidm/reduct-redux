@@ -72,7 +72,7 @@ class Logger {
 
     clearStaticLog() {
         delete window.localStorage["static_log"];
-        this.static_log = [];
+        this.staticLog = [];
         console.log("Cleared prior play data from localStorage.");
     }
 
