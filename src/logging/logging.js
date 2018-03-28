@@ -112,7 +112,7 @@ class Logger {
     }
 
     get isSessionStarted() {
-        return !enabled ||
+        return !this.enabled ||
             (this.currentUserId !== null &&
              this.currentSessionId !== null);
     }
