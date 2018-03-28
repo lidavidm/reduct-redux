@@ -136,10 +136,17 @@
          #consent-inner {
              display: none;
              background: #FFF;
-             width: 60em;
+             width: 40em;
              margin: 0 auto;
              margin-top: 10em;
              padding: 1em;
+         }
+
+         #consent-inner button {
+             font-size: 1.25em;
+             padding: 0.5em;
+             border-radius: 0;
+             border: 1px solid #000;
          }
         </style>
     </head>
@@ -191,6 +198,12 @@
                 <h1>Research Consent Form</h1>
 
                 <p>This explains what we do.</p>
+
+                <p>
+                    You may still play the game if you do not agree. We
+                    will not collect or retain any information from your
+                    play session.
+                </p>
 
                 <button id="consent-agree">I Agree</button>
                 <button id="consent-disagree">I Disagree</button>
