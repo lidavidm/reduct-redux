@@ -1015,7 +1015,7 @@ export default class Stage extends BaseStage {
 
         if (this.mode === "big") {
             this.mode = "over";
-            document.querySelector("#ffwd").style.background = "#add8e6";
+            document.querySelector("#ffwd").classList.remove("active");
         }
     }
 

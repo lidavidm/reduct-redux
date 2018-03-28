@@ -48,6 +48,22 @@
              width: 4em;
          }
 
+         #pause i:nth-child(2) {
+             display: none;
+         }
+
+         #pause.paused i:nth-child(1) {
+             display: none;
+         }
+
+         #pause.paused i:nth-child(2) {
+             display: inline-block;
+         }
+
+         #ffwd.active {
+             background: #6d8891;
+         }
+
          #current-level, #animation-speed {
              flex: 1 0 5em;
              color: #FFF;
@@ -164,8 +180,11 @@
             </div>
         </nav>
         <div id="nav">
-            <button id="pause">></button>
-            <button id="ffwd">>>|</button>
+            <button id="pause">
+                <i class="material-icons">play_arrow</i>
+                <i class="material-icons">pause</i>
+            </button>
+            <button id="ffwd"><i class="material-icons">skip_next</i></button>
             <select id="chapter"></select>
             <div id="current-level">
                 <span>Current Level: </span>
@@ -181,14 +200,6 @@
                 </datalist>
             </div>
 
-            <!-- <select id="evaluation-mode"> -->
-            <!--     <option value="hybrid">Hybrid Step (multi step + may use medium step)</option> -->
-            <!--     <option value="over">Small Step Over</option> -->
-            <!--     <option value="small">Small Step</option> -->
-            <!--     <option value="multi">Multi Step</option> -->
-            <!--     <option value="big">Big Step</option> -->
-            <!--     <option value="medium">Medium Step (big step + but may terminate early)</option> -->
-            <!-- </select> -->
             <button class="dev" id="download-log">Download Log JSON</button>
             <button class="dev" id="toggle-graph">Toggle State Graph</button>
         </div>

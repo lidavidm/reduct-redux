@@ -103,6 +103,9 @@ function initialize() {
 
     window.stage = stg;
 
+    const pauseButton = document.querySelector("#pause");
+    const ffwdButton = document.querySelector("#ffwd");
+
     document.querySelector("#undo").addEventListener("click", () => {
         store.dispatch(undo.undo());
     });
@@ -121,19 +124,19 @@ function initialize() {
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
-    document.querySelector("#pause").addEventListener("click", (b) => {
+    pauseButton.addEventListener("click", (b) => {
         stg.togglePause();
         const button = document.querySelector("#pause");
-        if (button.innerText == "||") {
-            button.innerText = ">";
-            document.querySelector("#ffwd").style.display='block';
+        if (stg.mode === "over") {
+            button.classList.remove("paused");
+            ffwdButton.style.display = "block";
         } else {
-            button.innerText = "||";
-            document.querySelector("#ffwd").style.display='none';
+            button.classList.add("paused");
+            ffwdButton.style.display = "none";
         }
     });
-    document.querySelector("#ffwd").addEventListener("click", (b) => {
-        document.querySelector("#ffwd").style.background = "#6d8891";
+    ffwdButton.addEventListener("click", (b) => {
+        ffwdButton.classList.add("active");
         stg.setFfwd();
     });
     document.querySelector("#toggle-graph").addEventListener("click", () => {
@@ -191,8 +194,10 @@ function start() {
     });
 
     // Reset buttons
-    document.querySelector("#pause").innerText = ">";
+    const pauseButton = document.querySelector("#pause");
+    pauseButton.classList.forEach(x => pauseButton.classList.remove(x));
     document.querySelector("#ffwd").style.display = "block";
+    document.querySelector("#ffwd").classList.remove("active");
     window.updateStateGraph();
 }
 
