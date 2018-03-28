@@ -25,7 +25,7 @@ class TouchRecord extends BaseTouchRecord {
     constructor(...args) {
         super(...args);
         this.dropTargets = [];
-        this.dropTweens = [];
+        this.dropTweens = new Map();
         this.highlightAnimation = null;
         this.scaleAnimation = null;
         this.hoverStartPos = null;
@@ -36,7 +36,7 @@ class TouchRecord extends BaseTouchRecord {
         this.stopHighlight();
         this.highlightAnimation = null;
         this.dropTargets = [];
-        this.dropTweens = [];
+        this.dropTweens = new Map();
         this.hoverStartPos = null;
     }
 
@@ -47,9 +47,11 @@ class TouchRecord extends BaseTouchRecord {
             this.stage.getView(id).outerStroke = null;
         }
 
-        for (const tween of this.dropTweens) {
-            tween.completed();
-            tween.undo();
+        for (const [ tween, isExpand ] of this.dropTweens.values()) {
+            if (isExpand) {
+                tween.completed();
+                tween.undo();
+            }
         }
 
         if (this.highlightAnimation) {
@@ -69,30 +71,6 @@ class TouchRecord extends BaseTouchRecord {
                 (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
             ));
         });
-
-        const targetSize = gfxCore.absoluteSize(this.stage.getView(this.topNode));
-        for (const targetId of this.dropTargets) {
-            const view = this.stage.getView(targetId);
-            if (view.type === "text") continue;
-
-            const curSize = gfxCore.absoluteSize(view);
-            const lr = Math.min(Math.max((targetSize.w - curSize.w) / 1.5, 15), 60);
-            const tb = Math.min(Math.max((targetSize.h - curSize.h) / 1.5, 10), 30);
-
-            this.dropTweens.push(animate.tween(view, {
-                padding: {
-                    left: view.padding.left + lr,
-                    right: view.padding.right + lr,
-                    top: view.padding.top + tb,
-                    bottom: view.padding.bottom + tb,
-                },
-            }, {
-                duration: 600,
-                easing: animate.Easing.Cubic.Out,
-                // Don't override layout
-                setAnimatingFlag: false,
-            }));
-        }
 
         let time = 0;
         this.highlightAnimation = animate.infinite((dt) => {
@@ -273,6 +251,52 @@ class TouchRecord extends BaseTouchRecord {
             }
             if (prevView && prevView.onmouseexit) {
                 prevView.onmouseexit();
+            }
+
+            if (this.topNode !== null && this.isExpr && this.hoverNode !== null) {
+                // Scale holes up when something is dragged over them
+                const targetSize = gfxCore.absoluteSize(this.stage.getView(this.topNode));
+
+                const state = this.stage.getState();
+                if (this.stage.semantics.droppable(state, this.topNode, this.hoverNode)) {
+                    const view = this.stage.getView(this.hoverNode);
+                    if (view.padding) {
+                        const curSize = gfxCore.absoluteSize(view);
+                        const lr = Math.min(Math.max((targetSize.w - curSize.w) / 1.5, 15), 60);
+                        const tb = Math.min(Math.max((targetSize.h - curSize.h) / 1.5, 10), 30);
+
+                        if (this.dropTweens.has(this.hoverNode)) {
+                            const [ tween, isExpand ] = this.dropTweens.get(this.hoverNode);
+                            tween.completed();
+                            if (isExpand) {
+                                tween.undo();
+                            }
+                        }
+                        const tween = animate.tween(view, {
+                            padding: {
+                                left: view.padding.left + lr,
+                                right: view.padding.right + lr,
+                                top: view.padding.top + tb,
+                                bottom: view.padding.bottom + tb,
+                            },
+                        }, {
+                            duration: 600,
+                            easing: animate.Easing.Cubic.Out,
+                            // Don't override layout
+                            setAnimatingFlag: false,
+                        });
+                        this.dropTweens.set(this.hoverNode, [ tween, true ]);
+                    }
+                }
+            }
+
+            if (this.prevHoverNode !== null && this.dropTweens.has(this.prevHoverNode)) {
+                const record = this.dropTweens.get(this.prevHoverNode);
+                if (record[1]) {
+                    record[0].completed();
+                    record[0] = record[0].undo(true);
+                    record[1] = false;
+                }
             }
         }
 

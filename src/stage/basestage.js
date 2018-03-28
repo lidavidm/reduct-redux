@@ -327,6 +327,7 @@ export default class BaseStage {
         const dragAnchor = this.computeDragAnchor(pos, topNode, targetNode);
 
         const touch = this._touches.get("mouse");
+        touch.reset();
         touch.topNode = topNode;
         touch.targetNode = targetNode;
         touch.fromToolbox = fromToolbox;
