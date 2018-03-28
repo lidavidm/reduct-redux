@@ -16,6 +16,13 @@ export default {
             shape: "()",
             fields: ["arg", "'=>'", "body"],
             subexpScale: 1.0,
+            padding: {
+                top: 3.5,
+                bottom: 3.5,
+                left: 10,
+                right: 10,
+                inner: 5,
+            },
         },
         betaReduce: (semant, stage, state, expr, argIds) =>
             core.genericBetaReduce(semant, state, {
