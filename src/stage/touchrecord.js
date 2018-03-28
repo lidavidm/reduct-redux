@@ -1,10 +1,10 @@
 export default class BaseTouchRecord {
-    constructor(stage, topNode, targetNode, fromToolbox, dragOffset, dragStart) {
+    constructor(stage, topNode, targetNode, fromToolbox, dragAnchor, dragStart) {
         this.stage = stage;
         this.topNode = topNode;
         this.targetNode = targetNode;
         this.fromToolbox = fromToolbox;
-        this.dragOffset = dragOffset;
+        this.dragAnchor = dragAnchor;
         this.dragStart = dragStart;
         this.dragged = false;
         this.hoverNode = null;

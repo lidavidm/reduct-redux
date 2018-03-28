@@ -193,14 +193,16 @@ export default class BaseStage {
         return [ null, null ];
     }
 
-    computeDragOffset(pos, topNode, targetNode) {
-        const dragOffset = { dx: 0, dy: 0 };
+    computeDragAnchor(pos, topNode, targetNode) {
+        const dragAnchor = { x: 0, y: 0 };
         if (targetNode !== null) {
-            const absPos = gfxCore.absolutePos(this.views[topNode] || this.internalViews[topNode]);
-            dragOffset.dx = pos.x - absPos.x;
-            dragOffset.dy = pos.y - absPos.y;
+            const view = this.getView(topNode);
+            const absPos = gfxCore.absolutePos(view);
+            const absSize = gfxCore.absoluteSize(view);
+            dragAnchor.x = (pos.x - absPos.x) / absSize.w;
+            dragAnchor.y = (pos.y - absPos.y) / absSize.h;
         }
-        return dragOffset;
+        return dragAnchor;
     }
 
     addEffect(fx) {
@@ -280,14 +282,14 @@ export default class BaseStage {
             const [ topNode, targetNode, fromToolbox ] = this.getNodeAtPos(pos);
             if (topNode === null) continue;
 
-            const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
+            const dragAnchor = this.computeDragAnchor(pos, topNode, targetNode);
 
             const touchRecord = new (this.touchRecordClass)(
                 this,
                 topNode,
                 targetNode,
                 fromToolbox,
-                dragOffset,
+                dragAnchor,
                 pos
             );
             touchRecord.onstart(pos);
@@ -322,13 +324,13 @@ export default class BaseStage {
         const [ topNode, targetNode, fromToolbox ] = this.getNodeAtPos(pos);
         if (topNode === null) return null;
 
-        const dragOffset = this.computeDragOffset(pos, topNode, targetNode);
+        const dragAnchor = this.computeDragAnchor(pos, topNode, targetNode);
 
         const touch = this._touches.get("mouse");
         touch.topNode = topNode;
         touch.targetNode = targetNode;
         touch.fromToolbox = fromToolbox;
-        touch.dragOffset = dragOffset;
+        touch.dragAnchor = dragAnchor;
         touch.dragStart = pos;
         this.updateCursor(touch);
         touch.onstart(pos);

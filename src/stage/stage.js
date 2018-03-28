@@ -175,8 +175,12 @@ class TouchRecord extends BaseTouchRecord {
 
             const view = this.stage.getView(this.topNode);
             const absSize = gfxCore.absoluteSize(view);
-            view.pos.x = (mousePos.x - this.dragOffset.dx) + (view.anchor.x * absSize.w);
-            view.pos.y = (mousePos.y - this.dragOffset.dy) + (view.anchor.y * absSize.h);
+            this.stage.views[this.topNode].anchor = {
+                x: this.dragAnchor.x,
+                y: this.dragAnchor.y
+            };
+            view.pos.x = mousePos.x;
+            view.pos.y = mousePos.y;
 
             if (this.isExpr && this.targetNode !== null) {
                 this.stage.views[this.topNode].opacity = 0.7;
@@ -192,7 +196,7 @@ class TouchRecord extends BaseTouchRecord {
 
                 this.stage.views[this.topNode].opacity = 1.0;
                 this.topNode = newSelected;
-                this.dragOffset = this.stage.computeDragOffset(
+                this.dragAnchor = this.stage.computeDragAnchor(
                     this.dragStart,
                     newSelected,
                     newSelected
@@ -280,7 +284,11 @@ class TouchRecord extends BaseTouchRecord {
         this.stopHighlight();
         if (this.scaleAnimation) this.scaleAnimation.cancel();
         if (this.isExpr && this.topNode) {
-            this.stage.getView(this.topNode).scale = { x: 1, y: 1 };
+            const view = this.stage.getView(this.topNode);
+            view.scale = { x: 1, y: 1 };
+            const cp = gfxCore.centerPos(view);
+            view.anchor = { x: 0.5, y: 0.5 };
+            view.pos = cp;
         }
 
         if (!this.dragged) {
