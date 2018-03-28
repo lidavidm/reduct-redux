@@ -111,7 +111,9 @@ class TouchRecord extends BaseTouchRecord {
 
             const state = this.stage.getState();
             const selected = state.getIn([ "nodes", this.topNode ]);
-            this.clonable = selected.has("__meta") && selected.get("__meta").toolbox.unlimited;
+            this.clonable = this.fromToolbox &&
+                selected.has("__meta") &&
+                selected.get("__meta").toolbox.unlimited;
         }
 
         const view = this.stage.getView(this.topNode);
