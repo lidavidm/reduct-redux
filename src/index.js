@@ -2,6 +2,7 @@ import "babel-polyfill";
 import vis from "vis";
 import { createStore, applyMiddleware } from "redux";
 
+import consent from "./consent";
 import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
@@ -27,7 +28,9 @@ Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "res
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
-Promise.all([ Loader.finished, Logging.startSession() ]).then(initialize);
+Promise.all([ Loader.finished, consent() ])
+    .then((consented) => (consented ? Logging.startSession() : Promise.resolve()))
+    .then(initialize);
 
 const views = {};
 let store;

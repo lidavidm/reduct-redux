@@ -112,6 +112,35 @@
              opacity: 1;
              background: rgba(0,0,0,0.8);
          }
+
+         #consent {
+             position: fixed;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 100%;
+             background: rgba(0, 0, 0, 0.7);
+             opacity: 0;
+             transition: all 1s ease-in-out;
+         }
+
+         #consent.visible {
+             bottom: 0;
+             opacity: 1;
+         }
+
+         #consent.visible #consent-inner {
+             display: block;
+         }
+
+         #consent-inner {
+             display: none;
+             background: #FFF;
+             width: 60em;
+             margin: 0 auto;
+             margin-top: 10em;
+             padding: 1em;
+         }
         </style>
     </head>
     <body>
@@ -155,6 +184,17 @@
             <!-- </select> -->
             <button class="dev" id="download-log">Download Log JSON</button>
             <button class="dev" id="toggle-graph">Toggle State Graph</button>
+        </div>
+
+        <div id="consent">
+            <div id="consent-inner">
+                <h1>Research Consent Form</h1>
+
+                <p>This explains what we do.</p>
+
+                <button id="consent-agree">I Agree</button>
+                <button id="consent-disagree">I Disagree</button>
+            </div>
         </div>
         <script src="./src/index.js"></script>
     </body>
