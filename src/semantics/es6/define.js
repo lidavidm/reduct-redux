@@ -30,7 +30,7 @@ export default {
             fields: {
                 default: {
                     color: projection => animate.tween(projection, {
-                        color: "#594764",
+                        color: "OrangeRed",
                     }, {
                         duration: 500,
                         easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "OrangeRed"),
@@ -38,7 +38,7 @@ export default {
                 },
                 attached: {
                     color: projection => animate.tween(projection, {
-                        color: "OrangeRed",
+                        color: "#594764",
                     }, {
                         duration: 500,
                         easing: animate.Easing.Color(animate.Easing.Cubic.Out, projection.color, "#594764"),
