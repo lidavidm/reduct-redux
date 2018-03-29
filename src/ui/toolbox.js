@@ -134,7 +134,7 @@ export default class Toolbox {
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
                 animate
-                    .tween(projection, { pos: { x, y: nodeY } }, {
+                    .tween(projection, { pos: { x, y: nodeY }, anchor: { x: 0, y: 0 } }, {
                         duration: 250,
                         easing: animate.Easing.Cubic.Out,
                     });
