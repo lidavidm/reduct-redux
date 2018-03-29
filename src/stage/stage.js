@@ -404,6 +404,87 @@ class TouchRecord extends BaseTouchRecord {
     }
 }
 
+class DoubleClickLayer {
+    constructor(mousedown, mousemove, mouseup) {
+        this._mousedownInner = mousedown;
+        this._mousemoveInner = mousemove;
+        this._mouseupInner = mouseup;
+
+        // Keep track of click times for double-click.
+        this.clickTimer = null;
+        this.clickStartTime = null;
+        this.clickState = "reset";
+        this.clickPos = null;
+    }
+
+    _resetmouse() {
+        if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
+        this.clickState = "reset";
+        this.clickStartTime = null;
+        this.clickTimer = null;
+        this.clickPos = null;
+    }
+
+    onmousedown(e) {
+        if (this.clickState === "reset") {
+            this.clickState = "down";
+            this.clickStartTime = Date.now();
+            this.clickPos = e;
+            this.clickTimer = window.setTimeout(() => {
+                this._mousedownInner(e);
+                this._resetmouse();
+            }, DOUBLE_CLICK_THRESHOLD_MS);
+        }
+        else if (this.clickState === "down") {
+            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
+            this.clickState = "down2";
+            const cp = this.clickPos;
+            this.clickPos = e;
+
+            this.clickTimer = window.setTimeout(() => {
+                this._mousedownInner(cp);
+                this._mouseupInner(cp);
+                this._mousedownInner(e);
+                this._resetmouse();
+            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
+        }
+    }
+
+    onmousemove(e) {
+        if (this.clickState === "down" || this.clickState === "down2") {
+            this._mousedownInner(this.clickPos || e);
+            this._mousemoveInner(e);
+            if (this.clickState === "down2") {
+                this._mouseupInner(e);
+            }
+            this._resetmouse();
+            this.clickState = "reset";
+        }
+        else {
+            this._mousemoveInner(e);
+        }
+    }
+
+    onmouseup(e) {
+        if (this.clickState === "down") {
+            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
+            this.clickTimer = window.setTimeout(() => {
+                this._mousedownInner(this.clickPos);
+                this._mouseupInner(e);
+                this._resetmouse();
+            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
+        }
+        else if (this.clickState === "down2") {
+            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
+            this._resetmouse();
+        }
+        else {
+            this._mouseupInner(e);
+            this._resetmouse();
+        }
+    }
+}
+
 /**
  * Handle drawing responsibilites for Reduct.
  */
@@ -436,11 +517,11 @@ export default class Stage extends BaseStage {
         // Keep track of the reduction mode.
         this.mode = "over";
 
-        // Keep track of click times for double-click.
-        this.clickTimer = null;
-        this.clickStartTime = null;
-        this.clickState = "reset";
-        this.clickPos = null;
+        this.clickWrapper = new DoubleClickLayer(
+            this._mousedownInner.bind(this),
+            this._mousemoveInner.bind(this),
+            this._mouseupInner.bind(this)
+        );
     }
 
     get touchRecordClass() {
@@ -1435,74 +1516,35 @@ export default class Stage extends BaseStage {
         super._mouseup(e);
     }
 
-    /* ~~~~ Implement a double-click layer on top of click methods ~~~~ */
+    _doubleclickInner(e) {
+        const pos = this.getMousePos(e);
+        if (pos.sidebar) return;
 
-    _resetmouse() {
-        if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-        this.clickState = "reset";
-        this.clickStartTime = null;
-        this.clickTimer = null;
-        this.clickPos = null;
+        const [ topNode, _, fromToolbox ] = this.getNodeAtPos(pos);
+        if (fromToolbox) {
+            return;
+        }
+
+        if (topNode !== null) {
+            const state = this.getState();
+            const node = state.getIn([ "nodes", topNode ]);
+            if (node.get("type") === "reference") {
+                this.showReferenceDefinition(this.getState(), topNode);
+            }
+        }
     }
 
+    /* ~~~~ Implement a double-click layer on top of click methods ~~~~ */
     _mousedown(e) {
-        if (this.clickState === "reset") {
-            this.clickState = "down";
-            this.clickStartTime = Date.now();
-            this.clickPos = e;
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(e);
-                this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS);
-        }
-        else if (this.clickState === "down") {
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this.clickState = "down2";
-            const cp = this.clickPos;
-            this.clickPos = e;
-
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(cp);
-                this._mouseupInner(cp);
-                this._mousedownInner(e);
-                this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
-        }
+        this.clickWrapper.onmousedown(e);
     }
 
     _mousemove(e) {
-        if (this.clickState === "down" || this.clickState === "down2") {
-            this._mousedownInner(this.clickPos || e);
-            this._mousemoveInner(e);
-            if (this.clickState === "down2") {
-                this._mouseupInner(e);
-            }
-            this._resetmouse();
-            this.clickState = "reset";
-        }
-        else {
-            this._mousemoveInner(e);
-        }
+        this.clickWrapper.onmousemove(e);
     }
 
     _mouseup(e) {
-        if (this.clickState === "down") {
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(this.clickPos);
-                this._mouseupInner(e);
-                this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
-        }
-        else if (this.clickState === "down2") {
-            console.log("DOUBLE CLICK");
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this._resetmouse();
-        }
-        else {
-            this._mouseupInner(e);
-            this._resetmouse();
-        }
+        this.clickWrapper.onmouseup(e);
     }
 
     _touchstart(e) {
