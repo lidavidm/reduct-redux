@@ -436,7 +436,7 @@ class DoubleClickLayer {
                 this._resetmouse();
             }, DOUBLE_CLICK_THRESHOLD_MS);
         }
-        else if (this.clickState === "down") {
+        else if (this.clickState === "up") {
             if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
             this.clickState = "down2";
             const cp = this.clickPos;
@@ -452,12 +452,17 @@ class DoubleClickLayer {
     }
 
     onmousemove(e) {
-        if (this.clickState === "down" || this.clickState === "down2") {
-            this._mousedownInner(this.clickPos || e);
-            this._mousemoveInner(e);
-            if (this.clickState === "down2") {
-                this._mouseupInner(e);
+        if (this.clickState !== "reset") {
+            this._mousedownInner(this.clickPos);
+            if (this.clickState === "up" || this.clickState === "down2") {
+                this._mouseupInner(this.clickPos);
             }
+
+            if (this.clickState === "down2") {
+                this._mousedownInner(this.clickPos);
+            }
+
+            this._mousemoveInner(e);
             this._resetmouse();
             this.clickState = "reset";
         }
@@ -469,11 +474,12 @@ class DoubleClickLayer {
     onmouseup(e) {
         if (this.clickState === "down") {
             if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
+            this.clickState = "up";
             this.clickTimer = window.setTimeout(() => {
                 this._mousedownInner(this.clickPos);
                 this._mouseupInner(e);
                 this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
+            }, Math.max(0, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime)));
         }
         else if (this.clickState === "down2") {
             this._doubleclickInner(e);
