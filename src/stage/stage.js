@@ -1349,7 +1349,7 @@ export default class Stage extends BaseStage {
     /**
      * Show the definition of the given reference under its view.
      */
-    showReferenceDefinition(state, referenceId) {
+    showReferenceDefinition(state, referenceId, immediate=false) {
         const referenceNameNode = state.getIn([ "nodes", referenceId ]);
         const name = referenceNameNode.get("name");
         const functionNodeId = state.get("globals").get(name);
@@ -1359,10 +1359,22 @@ export default class Stage extends BaseStage {
         const type = functionNode.get("type");
         if (type === "define") {
             const functionBodyId = state.get("nodes").get(functionNodeId).get("body");
-            this.functionDef = new FunctionDef(this, name, functionBodyId, referenceId);
+            this.functionDef = new FunctionDef(
+                this,
+                name,
+                functionBodyId,
+                referenceId,
+                immediate ? 0 : 500
+            );
         }
         else {
-            this.functionDef = new FunctionDef(this, name, functionNodeId, referenceId);
+            this.functionDef = new FunctionDef(
+                this,
+                name,
+                functionNodeId,
+                referenceId,
+                immediate ? 0 : 500
+            );
         }
     }
 
@@ -1532,7 +1544,7 @@ export default class Stage extends BaseStage {
             const state = this.getState();
             const node = state.getIn([ "nodes", topNode ]);
             if (node.get("type") === "reference") {
-                this.showReferenceDefinition(this.getState(), topNode);
+                this.showReferenceDefinition(this.getState(), topNode, true);
             }
         }
     }

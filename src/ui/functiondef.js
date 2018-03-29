@@ -2,7 +2,7 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 
 export default class FunctionDef {
-    constructor(stage, name, nodeId, referenceId) {
+    constructor(stage, name, nodeId, referenceId, delay=500) {
         this.stage = stage;
         this.name = name;
         this.id = nodeId;
@@ -12,7 +12,7 @@ export default class FunctionDef {
         const centerPos = gfx.centerPos(referenceView);
         const absSize = gfx.absoluteSize(referenceView);
 
-        animate.after(500)
+        animate.after(delay)
             .then(() => animate.tween(this.view, { opacity: 0.8 }, {
                 duration: 350,
                 easing: animate.Easing.Cubic.In,
