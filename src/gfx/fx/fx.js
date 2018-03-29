@@ -150,6 +150,7 @@ export function shatter(stage, projection, options) {
                 ctx,
                 status.x, status.y + offset,
                 status.w, status.h,
+                Math.min(25, status.w / 2), status.h / 2,
                 true,
                 true
             );
