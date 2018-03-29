@@ -405,10 +405,11 @@ class TouchRecord extends BaseTouchRecord {
 }
 
 class DoubleClickLayer {
-    constructor(mousedown, mousemove, mouseup) {
+    constructor(mousedown, mousemove, mouseup, doubleclick) {
         this._mousedownInner = mousedown;
         this._mousemoveInner = mousemove;
         this._mouseupInner = mouseup;
+        this._doubleclickInner = doubleclick;
 
         // Keep track of click times for double-click.
         this.clickTimer = null;
@@ -475,6 +476,7 @@ class DoubleClickLayer {
             }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
         }
         else if (this.clickState === "down2") {
+            this._doubleclickInner(e);
             if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
             this._resetmouse();
         }
@@ -520,7 +522,8 @@ export default class Stage extends BaseStage {
         this.clickWrapper = new DoubleClickLayer(
             this._mousedownInner.bind(this),
             this._mousemoveInner.bind(this),
-            this._mouseupInner.bind(this)
+            this._mouseupInner.bind(this),
+            this._doubleclickInner.bind(this)
         );
     }
 
