@@ -725,8 +725,6 @@ export default class Stage extends BaseStage {
 
     startLevel(textGoal, showConcreteGoal) {
         const state = this.getState();
-        this.goal.startLevel(textGoal, showConcreteGoal);
-        this.toolbox.startLevel(state);
 
         const numSidebarEntries = this.sidebar.startLevel(state);
         if (numSidebarEntries === 0) {
@@ -735,6 +733,9 @@ export default class Stage extends BaseStage {
         else {
             this.sidebarWidth = 250;
         }
+
+        this.goal.startLevel(textGoal, showConcreteGoal);
+        this.toolbox.startLevel(state);
     }
 
     registerNewDefinedNames(names) {
