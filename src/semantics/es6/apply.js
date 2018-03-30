@@ -22,6 +22,11 @@ export default {
 
             const introDuration = animate.scaleDuration(400, "expr-apply");
             const outroDuration = animate.scaleDuration(400, "expr-apply");
+            const duration = animate.scaleDuration(700, "expr-apply");
+            const totalTime = duration + animate.scaleDuration(50, "expr-apply");
+            // How long to wait before clearing the 'animating' flag
+            const restTime = totalTime + introDuration + outroDuration;
+
             const argView = stage.views[expr.get("argument")];
             const applyView = stage.views[expr.get("id")];
 
@@ -58,6 +63,7 @@ export default {
                 },
             }, {
                 duration: animate.scaleDuration(500, "expr-apply"),
+                restTime,
             });
 
             if (!isCalleeLambda) {
@@ -72,16 +78,10 @@ export default {
                     });
             }
 
-            return jumpTween.then(() => {
-                const clearPreview = [];
-
-                const duration = animate.scaleDuration(700, "expr-apply");
-                const totalTime = duration + animate.scaleDuration(50, "expr-apply");
-                // How long to wait before clearing the 'animating' flag
-                const restTime = totalTime + introDuration + outroDuration;
-
-                // Replace arg hole with preview
-                if (isCalleeLambda) {
+            const clearPreview = [];
+            return jumpTween
+                .then(() => {
+                    // Replace arg hole with preview
                     animate.tween(argView, {
                         scale: { x: 0, y: 0 },
                         opacity: 0,
@@ -112,7 +112,15 @@ export default {
                                 scale: { x: 0 },
                                 opacity: 0,
                             }, {
-                                duration: duration / 4,
+                                duration,
+                                restTime,
+                                easing: animate.Easing.Cubic.InOut,
+                            }));
+
+                            reset.push(animate.tween(stage.views[childId], {
+                                opacity: 0,
+                            }, {
+                                duration: duration / 16,
                                 restTime,
                                 easing: animate.Easing.Cubic.InOut,
                             }));
@@ -130,54 +138,52 @@ export default {
                                 clearPreview.push(stage.views[id]);
                             }
                         });
-                }
-                else {
-                    argView.opacity = 0;
-                }
 
-                reset.push(animate.tween(applyView, {
-                    subexpScale: 1.0,
-                    padding: {
-                        inner: 0,
-                        left: 0,
-                        right: 0,
-                    },
-                    backgroundOpacity: 0,
-                }, {
-                    duration,
-                    restTime,
-                    easing: animate.Easing.Cubic.InOut,
-                }));
 
-                for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
-                    if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
-                        reset.push(animate.tween(stage.views[childId], {
-                            scale: { x: 0 },
-                            opacity: 0,
-                        }, {
-                            duration: duration / 4,
-                            restTime,
-                            easing: animate.Easing.Cubic.InOut,
-                        }));
+                    reset.push(animate.tween(applyView, {
+                        subexpScale: 1.0,
+                        padding: {
+                            inner: 0,
+                            left: 0,
+                            right: 0,
+                        },
+                        backgroundOpacity: 0,
+                    }, {
+                        duration,
+                        restTime,
+                        easing: animate.Easing.Cubic.InOut,
+                    }));
+
+                    for (const [ childId, exprId ] of applyView.children(expr.get("id"), state)) {
+                        if (exprId !== expr.get("callee") && exprId !== expr.get("argument")) {
+                            reset.push(animate.tween(stage.views[childId], {
+                                scale: { x: 0 },
+                                opacity: 0,
+                            }, {
+                                duration: duration / 4,
+                                restTime,
+                                easing: animate.Easing.Cubic.InOut,
+                            }));
+                        }
                     }
-                }
 
-                reset.push(animate.tween(argView, { x: 0 }, {
-                    duration: duration / 4,
-                    restTime,
-                    easing: animate.Easing.Cubic.InOut,
-                }));
+                    reset.push(animate.tween(argView, { x: 0 }, {
+                        duration: duration / 4,
+                        restTime,
+                        easing: animate.Easing.Cubic.InOut,
+                    }));
 
-                return animate.after(totalTime)
-                    .then(() => {
-                        reset.forEach(tween => tween.undo());
-                        clearPreview.forEach((view) => {
-                            view.preview = null;
-                            delete view.previewOptions;
+                    return animate.after(totalTime)
+                        .then(() => {
+                            reset.forEach(tween => tween.undo());
+                            clearPreview.forEach((view) => {
+                                view.preview = null;
+                                delete view.previewOptions;
+                            });
+                            argView.opacity = 1;
+                            lambdaView.strokeWhenChild = true;
                         });
-                        argView.opacity = 1;
-                    });
-            });
+                });
         },
         stepSound: "heatup",
         validateStep: (semant, state, expr) => {
