@@ -121,11 +121,18 @@ export default {
                 shape: "wedge",
                 relpos: 0.5,
                 canAttach: (semant, state, selfId, otherId, notchPair) => {
+                    const nodes = state.get("nodes");
                     const missingNodes = semant.search(
-                        state.get("nodes"),
+                        nodes,
                         otherId,
                         (nodes, id) => nodes.get(id).get("type") === "missing"
-                    );
+                    ).filter((id) => {
+                        const node = nodes.get(id);
+                        if (!node.get("parent")) return true;
+                        const parent = nodes.get(node.get("parent"));
+                        const substepFilter = semant.interpreter.substepFilter(parent.get("type"));
+                        return substepFilter(semant, state, parent, node.get("parentField"));
+                    });
 
                     return [ missingNodes.length === 0, missingNodes ];
                 },
