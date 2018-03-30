@@ -155,11 +155,16 @@ export function argumentBar() {
     projection.children = function* (exprId, state) {
         const expr = state.getIn([ "nodes", exprId ]);
         if (expr.get("type") === "define") return;
-        const params = state.getIn([
-            "nodes",
-            state.getIn([ "globals", expr.get("name") ]),
-            "params",
-        ]);
+
+        let params = expr.get("params");
+
+        if (!params) {
+            params = state.getIn([
+                "nodes",
+                state.getIn([ "globals", expr.get("name") ]),
+                "params",
+            ]);
+        }
 
         if (!params) return;
 
