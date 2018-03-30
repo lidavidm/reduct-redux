@@ -227,7 +227,7 @@ class Logger {
         return ajax.jsonp(URLS.ACTION, remoteParams).catch(() => null);
     }
 
-    logMiddleware(getState, saveState, saveNode, semantics) {
+    logMiddleware(getState, saveState, pushState, saveNode, semantics) {
         return () => next => (act) => {
             if (act.type === action.RAISE) {
                 return next(act);
@@ -255,6 +255,14 @@ class Logger {
                     before,
                     after,
                 });
+            }
+            else if (act.type === action.VICTORY) {
+                this.log("victory", {
+                    before,
+                    after: "victory",
+                });
+                pushState("victory", "victory");
+                return returnValue;
             }
 
             // Put action as edge data

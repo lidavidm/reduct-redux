@@ -705,8 +705,8 @@ export default class Stage extends BaseStage {
     /**
      * Push and save a special state onto the state graph.
      */
-    pushState(label) {
-        this.stateGraph.push(label);
+    pushState(label, edge=null) {
+        this.stateGraph.push(label, edge);
         Logging.log("state-path-save", this.stateGraph.toString());
         if (window.updateStateGraph) {
             window.updateStateGraph(this.stateGraph.toVisJSNetworkData());

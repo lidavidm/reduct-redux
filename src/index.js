@@ -55,6 +55,7 @@ function initialize() {
         applyMiddleware(Logging.logMiddleware(
             () => stg.getState(),
             (...args) => stg.saveState(...args),
+            (...args) => stg.pushState(...args),
             (...args) => stg.saveNode(...args),
             es6
         ))
