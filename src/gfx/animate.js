@@ -272,8 +272,8 @@ export class InterpolateTween extends Tween {
 
     completed() {
         for (const attr of this.properties) {
-            const { target, property, end } = attr;
-            target[property] = end;
+            const { target, property, start, end, easing } = attr;
+            target[property] = easing(start, end, 1);
         }
         super.completed();
     }
