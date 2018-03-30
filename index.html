@@ -154,7 +154,11 @@
              background: #FFF;
              width: 40em;
              margin: 0 auto;
-             margin-top: 10em;
+             position: fixed;
+             top: 1.5em;
+             bottom: 1.5em;
+             left: 50%;
+             transform: translateX(-50%);
              padding: 1em;
          }
 
@@ -163,6 +167,11 @@
              padding: 0.5em;
              border-radius: 0;
              border: 1px solid #000;
+         }
+
+         #consent-body {
+             height: 20em;
+             overflow-y: scroll;
          }
         </style>
     </head>
@@ -208,16 +217,113 @@
             <div id="consent-inner">
                 <h1>Research Consent Form</h1>
 
-                <p>This explains what we do.</p>
+                <section id="consent-body">
+                    <h2>Study Overview</h2>
+                    <p>
+                        We are asking you to participate in a research
+                        study titled “Feedback for a Game to Teach
+                        Programming Concepts”. We will describe this study
+                        to you and answer any of your questions.  This
+                        study is being led by Yiting Wang, Department of
+                        Computer Science and the Faculty Advisor for this
+                        study is Erik Andersen, Department of Computer
+                        Science.
+                    </p>
 
-                <p>
-                    You may still play the game if you do not agree. We
-                    will not collect or retain any information from your
-                    play session.
-                </p>
+                    <h2>What this study is about</h2>
+                    <p>
+                        The purpose of this research is collect
+                        information and feedback about student
+                        interactions with an online game to teach
+                        programming.
+                    </p>
+
+                    <h2>What we are asking you to do</h2>
+                    <p>
+                        If you agree to this study, we will first give a
+                        brief lecture about some programming concepts, and
+                        then you will play an online game for about 60
+                        minutes. After this process, we will ask you to
+                        complete an online survey. The purpose of our work
+                        is to get feedback from students about the
+                        game. By consenting to participate in the study,
+                        you allow us to record your interactions with the
+                        game through an anonymous logging mechanism, as
+                        well as the responses to the survey. All data will
+                        be completely anonymous.
+                    </p>
+
+                    <h2>Eligibility criteria</h2>
+                    <p>
+                        Participants must be over 18 years old and
+                        currently enrolled at Cornell University.
+                    </p>
+
+                    <h2>Risks, Benefits</h2>
+                    <p>We anticipate that your participation in this study
+                        presents minimal risk to you. There are no direct
+                        benefits to you, but we hope this study will improve
+                        programming education for future students.</p>
+
+                    <h2>Compensation</h2>
+                    <p>There is no payment or course credit for taking part
+                        in the study.</p>
+
+                    <h2>Privacy/Confidentiality/Data Security</h2>
+                    <p>Data from your play-through of the game and answers to
+                        the web-based questionnaire will be anonymously
+                        logged. We anticipate that your participation in the
+                        survey presents no greater risk than everyday use of
+                        the Internet. The records of this study will be kept
+                        private. In any sort of report we make public we will
+                        not include any information that will make it possible
+                        to identify you. Research records will be kept in a
+                        locked file only accessible to the researchers
+                        conducting this study.</p>
+
+                    <h2>Taking part is voluntary</h2>
+                    <p>Your participation in this
+                        study is voluntary and you may refuse to participate
+                        before the study begins and discontinue at any
+                        time. Taking part in the study or withdrawing without
+                        completion will in no way affect your academic
+                        standing, record, future/current employment status, or
+                        relationship with Cornell or Computing and Information
+                        Science.</p>
+
+                    <h2>If you have questions</h2>
+                    <p>The researchers conducting this
+                        study are Yiting Wang, David Li, Yishu Zhang,
+                        Prof. Erik Andersen, Prof. Francois Guimbretiere, and
+                        Prof. Andrew Myers. If you have questions, please ask
+                        them now. If you have questions later, you may contact
+                        Yiting Wang at yw428@cs.cornell.edu or at 908-251-3614
+                        or Erik Andersen at eland@cs.cornell.edu or at
+                        607-255-8306. If you have any questions or concerns
+                        regarding your rights as a subject in this study, you
+                        may contact the Institutional Review Board (IRB) for
+                        Human Participants at 607-255-6182 or access their
+                        website at http://www.irb.cornell.edu. You may also
+                        report your concerns or complaints anonymously through
+                        Ethicspoint online at www.hotline.cornell.edu or by
+                        calling toll free at 1-866-293-3077. Ethicspoint is an
+                        independent organization that serves as a liaison
+                        between the University and the person bringing the
+                        complaint so that anonymity can be ensured.</p>
+                </section>
+
+                <p><em>
+                    I have read the above information and have
+                    received answers to any questions I asked. I
+                    consent to take part in the study.
+                </em></p>
 
                 <button id="consent-agree">I Agree</button>
                 <button id="consent-disagree">I Disagree</button>
+
+                <p>You may still play the game if you do not agree. We
+                    will not collect or retain any information from
+                    your play session.</p>
             </div>
         </div>
         <script src="./src/index.js"></script>
