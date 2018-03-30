@@ -772,7 +772,7 @@ export default class Stage extends BaseStage {
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         this.toolbox.drawBase(state);
-        this.syntaxJournal.drawBase(state);
+        // this.syntaxJournal.drawBase(state);
         this.goal.drawImpl(state);
 
         for (const nodeId of state.get("board")) {
@@ -780,7 +780,7 @@ export default class Stage extends BaseStage {
         }
 
         this.toolbox.drawImpl(state);
-        this.syntaxJournal.drawImpl(state);
+        // this.syntaxJournal.drawImpl(state);
 
         for (const id of this._newSyntax) {
             this.drawInternalProjection(state, id);
@@ -1303,6 +1303,7 @@ export default class Stage extends BaseStage {
      * Add new items to the syntax journal.
      */
     learnSyntax(syntaxes) {
+        return; // Disabled for now
         const journalButton = this.internalViews[this.syntaxJournal.button];
 
         const step = () => {
