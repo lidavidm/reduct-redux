@@ -613,7 +613,8 @@ export default function transform(definition) {
                             topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
                         }
 
-                        if (module.kind(topExpr) !== "expression") {
+                        if (module.kind(topExpr) !== "expression" ||
+                            stage.mode !== "hybrid") {
                             return Promise.reject(topExpr.get("id"));
                         }
                         return [ newState, topExpr ];
