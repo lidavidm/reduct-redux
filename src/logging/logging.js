@@ -15,11 +15,12 @@ import * as ajax from "../util/ajax";
 import * as random from "../util/random";
 
 // TODO: need actual values
-const GAME_ID = 70017017;
-const VERSION_ID = 0.49999999;
+const GAME_ID = 70017019;
+const VERSION_ID = 0.1;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
-const LOCAL_LOGGER_URL = "http://localhost:3333";
+const REMOTE_LOGGER_URL = "//gdiac.cs.cornell.edu/research_games/";
+const LOCAL_LOGGER_URL = "//localhost:3333";
 const URLS = {
     PAGE_LOAD: "",
 };
