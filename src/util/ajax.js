@@ -21,7 +21,7 @@ export function postJSON(path, data) {
 export function jsonp(path, params) {
     params = params || {};
     return new Promise((resolve, reject) => {
-        const callback = `jsonpCallback${Date.now()}`;
+        const callback = `jpc${Date.now()}`;
         let completed = false;
         window[callback] = (data) => {
             completed = true;
@@ -33,7 +33,8 @@ export function jsonp(path, params) {
         // Encode params in query string
         const parts = [];
         params.jsonp = callback;
-        params.__cachebuster = Date.now();
+        // Cachebuster
+        params._ = Date.now();
         for (const [ key, val ] of Object.entries(params)) {
             parts.push(`${key}=${window.encodeURIComponent(val)}`);
         }
@@ -41,14 +42,16 @@ export function jsonp(path, params) {
 
         const scr = document.createElement("script");
         scr.setAttribute("src", path + query);
-        document.body.appendChild(scr);
 
+        // Set timeout first in case appendChild causes a net::ERR_ABORTED
         window.setTimeout(() => {
             if (completed) return;
 
             delete window[callback];
             scr.remove();
             reject();
-        }, 10000);
+        }, 1000);
+
+        document.body.appendChild(scr);
     });
 }
