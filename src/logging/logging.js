@@ -138,6 +138,7 @@ class Logger {
         this.info(`Starting task ${taskId} (sequence ${this.taskSequenceId}).`);
         this.actionSequenceId = 1;
         this.currentTaskId = taskId;
+        // TODO: validate that the server echoes our task ID
         this.dynamicTaskId = Date.now();
 
         const params = this.makeSessionParams();
@@ -148,7 +149,10 @@ class Logger {
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(this.getUrl("QUEST_START"), params).catch(() => null);
+        // Don't wait for server response (especially since we're
+        // generating our own task ID)
+        ajax.jsonp(this.getUrl("QUEST_START"), params).catch(() => null);
+        return Promise.resolve();
     }
 
     get isTaskStarted() {
@@ -181,7 +185,8 @@ class Logger {
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(this.getUrl("QUEST_END"), params).catch(() => null);
+        ajax.jsonp(this.getUrl("QUEST_END"), params).catch(() => null);
+        return Promise.resolve();
     }
 
     transitionToTask(taskId, data=null) {
@@ -228,7 +233,8 @@ class Logger {
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(this.getUrl("ACTION"), remoteParams).catch(() => null);
+        ajax.jsonp(this.getUrl("ACTION"), remoteParams).catch(() => null);
+        return Promise.resolve();
     }
 
     logMiddleware(getState, saveState, pushState, saveNode, semantics) {
