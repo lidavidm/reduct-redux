@@ -1180,7 +1180,6 @@ export default class Stage extends BaseStage {
 
             const topNodeRecord = state.getIn([ "nodes", topNode ]);
             if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
-                const tempState = state.set("nodes", tempNodes);
                 const body = topNodeRecord.get("body");
                 Audio.play("pop");
                 let fxId = null;
@@ -1195,28 +1194,29 @@ export default class Stage extends BaseStage {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
+                this.store.dispatch(action.betaReduce(
+                    topNode, arg,
+                    resultNodeIds, newNodes
+                ));
+
                 Promise.all([
-                    animate.fx.emerge(this, tempState, bodyPos, bodySize, resultNodeIds)
+                    animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
                         .then((id) => {
                             fxId = id;
                         }),
-                    animate.tween(this.views[topNode], {
+                    animate.fx.keepAlive(this, topNode, animate.tween(this.views[topNode], {
                         opacity: 0,
                         pos: { y: this.views[topNode].pos.y + 50 },
                         scale: { x: 0, y: 0 },
                     }, {
                         duration: 1000,
                         easing: animate.Easing.Cubic.Out,
-                    }).delay(350),
+                    }).delay(350)),
                 ])
                     .then(() => {
                         this.views[topNode].opacity = 1;
                     })
                     .then(() => {
-                        this.store.dispatch(action.betaReduce(
-                            topNode, arg,
-                            resultNodeIds, newNodes
-                        ));
                         this.views[arg].opacity = 1;
                         this.removeEffect(fxId);
                         this.views[topNode].anchor = { x: 0, y: 0.5 };

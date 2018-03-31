@@ -360,3 +360,23 @@ export function expandingShape(stage, projection, options={}) {
         stage.removeEffect(id);
     });
 }
+
+/**
+ * Render a node that isn't currently part of the board, for as long
+ * as a particular tween is running.
+ */
+export function keepAlive(stage, id, promise) {
+    const fxId = stage.addEffect({
+        prepare: () => {
+            stage.getView(id).prepare(id, id, stage.getState(), stage);
+        },
+        draw: () => {
+            stage.getView(id).draw(id, id, stage.getState(), stage, stage.makeBaseOffset());
+        },
+    });
+
+    return promise.then((args) => {
+        stage.removeEffect(fxId);
+        return args;
+    });
+}
