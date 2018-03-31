@@ -414,6 +414,8 @@ Logger.prototype.ACTIONS = {
     "state-path-save": 99,
     "undo": 100,
     "redo": 101,
+    "reduction-error": 102,
+    "reduction-lambda-failed": 103,
 };
 
 const Logging = new Logger();
