@@ -178,10 +178,11 @@ export function makeParser(jssemant) {
 
             let result = parseNode(node.body, macros);
             const args = [];
-            for (const arg of node.params.reverse()) {
+            for (const arg of node.params.slice().reverse()) {
                 args.push(arg.name);
                 result = jssemant.lambda(jssemant.lambdaArg(arg.name), result);
             }
+            args.reverse();
             return jssemant.define(name, args, result);
         }
 
