@@ -1201,10 +1201,6 @@ export default class Stage extends BaseStage {
                 ));
 
                 Promise.all([
-                    animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
-                        .then((id) => {
-                            fxId = id;
-                        }),
                     animate.fx.keepAlive(this, topNode, animate.tween(this.views[topNode], {
                         opacity: 0,
                         pos: { y: this.views[topNode].pos.y + 50 },
@@ -1213,6 +1209,10 @@ export default class Stage extends BaseStage {
                         duration: 1000,
                         easing: animate.Easing.Cubic.Out,
                     }).delay(350)),
+                    animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
+                        .then((id) => {
+                            fxId = id;
+                        }),
                 ])
                     .then(() => {
                         this.views[topNode].opacity = 1;
