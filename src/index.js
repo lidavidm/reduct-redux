@@ -63,6 +63,8 @@ function initialize() {
     stg = new Stage(canvas, 800, 600, store, views, es6);
     window.stage = stg;
 
+    window.Logging = Logging;
+
     animate.addUpdateListener(() => {
         stg.draw();
     });

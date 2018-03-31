@@ -21,7 +21,6 @@ export function postJSON(path, data) {
 export function jsonp(path, params) {
     params = params || {};
     return new Promise((resolve, reject) => {
-        const scr = document.createElement("script");
         const callback = `jsonpCallback${Date.now()}`;
         let completed = false;
         window[callback] = (data) => {
@@ -40,6 +39,7 @@ export function jsonp(path, params) {
         }
         const query = `?${parts.join("&")}`;
 
+        const scr = document.createElement("script");
         scr.setAttribute("src", path + query);
         document.body.appendChild(scr);
 

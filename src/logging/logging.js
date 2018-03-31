@@ -16,13 +16,16 @@ import * as random from "../util/random";
 
 // TODO: need actual values
 const GAME_ID = 70017019;
-const VERSION_ID = 0.1;
+const VERSION_ID = 1;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 const REMOTE_LOGGER_URL = "//gdiac.cs.cornell.edu/research_games/";
 const LOCAL_LOGGER_URL = "//localhost:3333";
 const URLS = {
-    PAGE_LOAD: "",
+    PAGE_LOAD: "/page_load.php",
+    QUEST_START: "/player_quest.php",
+    QUEST_END: "/player_quest_end.php",
+    ACTION: "/player_action.php",
 };
 
 class Logger {
@@ -31,7 +34,7 @@ class Logger {
             enabled: true, // Is logging even enabled?
             local: false, // Are we logging to a local server?
             static: true, // Are we saving events to the in-browser cache?
-            offline: true, // Are we only saving events offline?
+            offline: false, // Are we only saving events offline?
             stateGraph: false, // Are we displaying a dynamic state graph?
         };
         this.loadConfig();
@@ -42,7 +45,7 @@ class Logger {
         this.currentTaskId = null;
         this.dynamicTaskId = null;
         this.taskSequenceId = 0;
-        this.actionSequenceId = 0;
+        this.actionSequenceId = 1;
         this.isOfflineSession = false;
 
         this.loadState();
@@ -99,7 +102,7 @@ class Logger {
             return offline;
         }
 
-        return ajax.jsonp(URLS.PAGE_LOAD, params).then((response) => {
+        return ajax.jsonp(this.getUrl("PAGE_LOAD"), params).then((response) => {
             // TODO: also accept server UID?
             this.currentSessionId = response.session_id || this.currentSessionId;
             this.info(`Starting offline session with user ID ${this.currentUserId}.`);
@@ -133,9 +136,9 @@ class Logger {
         }
 
         this.info(`Starting task ${taskId} (sequence ${this.taskSequenceId}).`);
+        this.actionSequenceId = 1;
         this.currentTaskId = taskId;
         this.dynamicTaskId = Date.now();
-        this.taskSequenceId = 1;
 
         const params = this.makeSessionParams();
         params.quest_id = taskId;
@@ -145,7 +148,7 @@ class Logger {
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(URLS.QUEST_START, params).catch(() => null);
+        return ajax.jsonp(this.getUrl("QUEST_START"), params).catch(() => null);
     }
 
     get isTaskStarted() {
@@ -171,14 +174,14 @@ class Logger {
 
         this.currentTaskId = null;
         this.dynamicTaskId = null;
-        this.taskSequenceId = 1;
+        this.actionSequenceId = 1;
         this.taskSequenceId++;
 
         this.logStatic("endTask", params, false);
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(URLS.QUEST_END, params).catch(() => null);
+        return ajax.jsonp(this.getUrl("QUEST_END"), params).catch(() => null);
     }
 
     transitionToTask(taskId, data=null) {
@@ -225,7 +228,7 @@ class Logger {
         if (this.config("offline")) {
             return Promise.resolve();
         }
-        return ajax.jsonp(URLS.ACTION, remoteParams).catch(() => null);
+        return ajax.jsonp(this.getUrl("ACTION"), remoteParams).catch(() => null);
     }
 
     logMiddleware(getState, saveState, pushState, saveNode, semantics) {
@@ -289,6 +292,13 @@ class Logger {
     }
 
     /* ~~~~~~~~~ PRIVATE METHODS ~~~~~~~~~ */
+
+    getUrl(key) {
+        if (this.config("local")) {
+            return `${LOCAL_LOGGER_URL}/${URLS[key]}`;
+        }
+        return `${REMOTE_LOGGER_URL}/${URLS[key]}`;
+    }
 
     startOfflineSession(params) {
         this.isOfflineSession = true;
