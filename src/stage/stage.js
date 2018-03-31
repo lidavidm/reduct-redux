@@ -357,6 +357,7 @@ class TouchRecord extends BaseTouchRecord {
             animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
         }
         else if (this.isExpr && this.dragged && this.hoverNode && this.topNode) {
+            if (this.fromToolbox) this.useToolboxItem();
             // Clear application previews (otherwise they stick around
             // if beta-reduction is undone)
             this.stage.previewApplication(this.topNode, null, this.hoverNode);
