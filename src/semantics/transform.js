@@ -782,7 +782,7 @@ export default function transform(definition) {
 
             const type = expr.get("type");
             const exprDefn = module.definitionOf(type);
-            if (!exprDefn) {
+            if (!exprDefn && type !== "vtuple") {
                 console.warn(`No expression definition for ${type}`);
             }
             else {
