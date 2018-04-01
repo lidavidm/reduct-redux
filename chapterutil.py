@@ -28,6 +28,7 @@ field_defaults = {
     "globals": {},
     "syntax": [],
     "fade": {},
+    "board": [],
 }
 
 
@@ -73,6 +74,8 @@ def csv2json(infile, outfile):
                     pass
                 elif val:
                     level[field] = val
+                elif field in field_defaults:
+                    level[field] = field_defaults[field]
             levels.append(level)
 
     chapter["levels"] = levels
