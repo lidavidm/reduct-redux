@@ -1445,6 +1445,11 @@ export default class Stage extends BaseStage {
                     fullNodes
                 ));
             }
+            else {
+                Logging.log("unfold-cancel", {
+                    item: this.saveNode(this.functionDef.referenceId),
+                });
+            }
             this.functionDef = null;
             return true;
         }

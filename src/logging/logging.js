@@ -310,6 +310,14 @@ class Logger {
                     toLevel: afterState.getIn([ "nodes", act.fadedId, "fadeLevel" ]),
                 });
             }
+            else if (act.type === action.UNFOLD) {
+                this.log("unfold", {
+                    before,
+                    after,
+                    item: saveNode(act.nodeId),
+                    replacement: saveNode(act.newNodeId),
+                });
+            }
 
             // Put action as edge data
             // TODO: how to deal with all the intermediate states??
@@ -468,6 +476,9 @@ Logger.prototype.ACTIONS = {
     "attached-expr": 105,
     "attached-expr-failed": 106,
     "fade": 107,
+    "unfold": 108,
+    "unfold-start": 109,
+    "unfold-cancel": 110,
 };
 
 const Logging = new Logger();
