@@ -1210,16 +1210,12 @@ export default class Stage extends BaseStage {
                         easing: animate.Easing.Cubic.Out,
                     }).delay(350)),
                     animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
-                        .then((id) => {
-                            fxId = id;
-                        }),
                 ])
                     .then(() => {
                         this.views[topNode].opacity = 1;
                     })
                     .then(() => {
                         this.views[arg].opacity = 1;
-                        this.removeEffect(fxId);
                         this.views[topNode].anchor = { x: 0, y: 0.5 };
                     });
 

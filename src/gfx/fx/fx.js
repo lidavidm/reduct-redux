@@ -239,7 +239,7 @@ export function error(stage, projection) {
     });
 }
 
-export function emerge(stage, state, bodyPos, bodySize, resultIds, options={}) {
+export function emerge(stage, state, bodyPos, bodySize, resultIds) {
     const spacing = 10;
     let emergeDistance = 100;
     let totalHeight = 0;
@@ -296,28 +296,7 @@ export function emerge(stage, state, bodyPos, bodySize, resultIds, options={}) {
         y += sz.h + spacing;
     }
 
-    const id = stage.addEffect({
-        prepare: () => {
-            for (const resultId of resultIds) {
-                const resultView = stage.views[resultId];
-                resultView.prepare(resultId, resultId, state, stage);
-            }
-        },
-        draw: () => {
-            for (const resultId of resultIds) {
-                const resultView = stage.views[resultId];
-                resultView.draw(resultId, resultId, state, stage, stage.makeBaseOffset());
-            }
-        },
-    });
-
-    return Promise.all(tweens).then(() => {
-        if (options.autoremove) {
-            stage.removeEffect(id);
-            return null;
-        }
-        return id;
-    });
+    return Promise.all(tweens);
 }
 
 export function expandingShape(stage, projection, options={}) {
