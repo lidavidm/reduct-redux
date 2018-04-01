@@ -1,5 +1,33 @@
 import vis from "vis";
 
+// Compares arrays like sets.
+function setCompare(arr1, arr2, compareFunc) {
+    if (arr1.length !== arr2.length) return false;
+
+    let a1 = arr1.slice();
+    let a2 = arr2.slice();
+
+    while(a1.length > 0) {
+
+        let e = a1.pop();
+
+        let matching_idx = -1;
+        for (let i = 0; i < a2.length; i++) {
+            if (compareFunc(a2[i], e)) {
+                matching_idx = i;
+                break;
+            }
+        }
+
+        if (matching_idx === -1) return false;
+        else {
+            a2.splice(matching_idx, 1); // remove this element
+            continue;
+        }
+    }
+    return true;
+}
+
 export default class Network {
 
     constructor() {
@@ -217,8 +245,18 @@ export default class Network {
         let nodes = new vis.DataSet(this.nodes.map(n => {
             let v = { id:       n.id,
                       label:     toLabel(n) };
-            if (n.id === lastNodeId && n.data && // Check for victory state.
-                this.compare(n.data.goal, n.data.board)) {
+            if (n.data === 'reset') {        // Mark reset state.
+                v.reset = true;
+                v.color = {
+                    background: '#BDAEC6',
+                    border: '#732C7B',
+                    highlight: {
+                        background: '#BDAEC6',
+                        border: 'Indigo'
+                    }
+                };
+            } else if ((n.id === lastNodeId && n.data && // Check for victory state.
+                        this.compare(n.data.goal, n.data.board)) || n.data === "victory") {
                 v.final = true;
                 v.color = {
                     background: 'Gold',
@@ -236,16 +274,6 @@ export default class Network {
                     highlight: {
                         background: 'Aquamarine',
                         border: 'LightSeaGreen'
-                    }
-                };
-            } else if (n.data === 'reset') {        // Mark reset state.
-                v.reset = true;
-                v.color = {
-                    background: '#BDAEC6',
-                    border: '#732C7B',
-                    highlight: {
-                        background: '#BDAEC6',
-                        border: 'Indigo'
                     }
                 };
             }

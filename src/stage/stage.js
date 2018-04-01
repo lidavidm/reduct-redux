@@ -688,7 +688,7 @@ export default class Stage extends BaseStage {
      */
     saveState(changeData=null) {
         const state = level.serialize(this.getState(), this.semantics);
-        const changed = this.stateGraph.push(JSON.stringify(state), changeData);
+        const changed = this.stateGraph.push(state, changeData);
         Logging.log("state-save", state);
         Logging.log("state-path-save", this.stateGraph.toString());
 
