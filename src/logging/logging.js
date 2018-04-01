@@ -247,32 +247,69 @@ class Logger {
                 return next(act);
             }
 
-            const before = level.serialize(getState(), semantics);
-            const returnValue = next(act);
-            const after = level.serialize(getState(), semantics);
+            const beforeState = getState();
+            const before = level.serialize(beforeState, semantics);
+            let returnValue;
+
+            const after = () => {
+                returnValue = next(act);
+                const afterState = getState();
+                return level.serialize(afterState, semantics);
+            };
 
             if (act.type === action.DETACH) {
                 this.log("detached-expr", {
                     before,
-                    after,
+                    after: after(),
                     item: saveNode(act.nodeId),
                 });
             }
             else if (act.type === action.UNDO) {
                 this.log("undo", {
                     before,
-                    after,
+                    after: after(),
                 });
             }
             else if (act.type === action.REDO) {
                 this.log("redo", {
                     before,
-                    after,
+                    after: after(),
+                });
+            }
+            else if (act.type === action.FILL_HOLE) {
+                let parent = act.holeId;
+                const nodes = beforeState.get("nodes");
+                while (nodes.get(parent).has("parent")) {
+                    parent = nodes.get(parent).get("parent");
+                }
+
+                // I guess Immutable.js isn't quite immutable once you
+                // use withMutations - we have to carefully order our
+                // side effects in order to properly save the
+                // expression before the hole was filled.
+
+                const savedParent = saveNode(parent);
+
+                this.log("placed-expr", {
+                    before,
+                    after: after(),
+                    item: saveNode(act.childId),
+                    target: savedParent,
+                });
+            }
+            else if (act.type === action.UNDO) {
+                this.log("undo", {
+                    before,
+                    after: after(),
                 });
             }
             else if (act.type === action.VICTORY) {
                 pushState("victory", "victory");
+                after();
                 return returnValue;
+            }
+            else {
+                after();
             }
 
             // Put action as edge data
