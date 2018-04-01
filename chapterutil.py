@@ -20,12 +20,14 @@ fieldnames = {
     "globals": ast.literal_eval,
     "syntax": ast.literal_eval,
     "animationScales": ast.literal_eval,
+    "fade": ast.literal_eval,
 }
 singleton_fields = {"textgoal", "globals", "animationScales"}
 field_defaults = {
     "animationScales": {},
     "globals": {},
     "syntax": [],
+    "fade": {},
 }
 
 
@@ -63,6 +65,9 @@ def csv2json(infile, outfile):
         for lvl in reader:
             level = {}
             for field, converter in fieldnames.items():
+                if field not in lvl:
+                    continue
+
                 val = converter(lvl[field])
                 if val and isinstance(val, list) and len(val) == 1 and not val[0]:
                     pass
