@@ -776,6 +776,10 @@ export default class Stage extends BaseStage {
         // this.syntaxJournal.drawBase(state);
         this.goal.drawImpl(state);
 
+        for (const fx of Object.values(this.effects)) {
+            if (fx.under) fx.draw();
+        }
+
         for (const nodeId of state.get("board")) {
             this.drawProjection(state, nodeId);
         }
@@ -791,7 +795,7 @@ export default class Stage extends BaseStage {
         }
 
         for (const fx of Object.values(this.effects)) {
-            fx.draw();
+            if (!fx.under) fx.draw();
         }
 
         this.ctx.restore();
@@ -1208,7 +1212,7 @@ export default class Stage extends BaseStage {
                     }, {
                         duration: 1000,
                         easing: animate.Easing.Cubic.Out,
-                    }).delay(350)),
+                    }).delay(350), true),
                     animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
                 ])
                     .then(() => {

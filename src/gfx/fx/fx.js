@@ -344,8 +344,9 @@ export function expandingShape(stage, projection, options={}) {
  * Render a node that isn't currently part of the board, for as long
  * as a particular tween is running.
  */
-export function keepAlive(stage, id, promise) {
+export function keepAlive(stage, id, promise, under=false) {
     const fxId = stage.addEffect({
+        under,
         prepare: () => {
             stage.getView(id).prepare(id, id, stage.getState(), stage);
         },
