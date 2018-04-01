@@ -124,9 +124,9 @@ function initialize() {
     document.querySelector("#next").addEventListener("click", () => {
         window.next();
     });
-    // document.querySelector("#download-log").addEventListener("click", () => {
-    //     Logging.downloadStaticLog();
-    // });
+    document.querySelector("#download-log").addEventListener("click", () => {
+        Logging.downloadStaticLog();
+    });
     pauseButton.addEventListener("click", (b) => {
         stg.togglePause();
         const button = document.querySelector("#pause");
@@ -142,10 +142,10 @@ function initialize() {
         ffwdButton.classList.add("active");
         stg.setFfwd();
     });
-    // document.querySelector("#toggle-graph").addEventListener("click", () => {
-    //     Logging.toggleStateGraph();
-    //     window.updateStateGraph();
-    // });
+    document.querySelector("#toggle-graph").addEventListener("click", () => {
+        Logging.toggleStateGraph();
+        window.updateStateGraph();
+    });
     window.toggleStateGraph = function() {
         Logging.toggleStateGraph();
         window.updateStateGraph();
