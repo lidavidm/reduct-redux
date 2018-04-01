@@ -25,7 +25,7 @@ export function makeParser(jssemant) {
         }
         else if (mod !== null) {
             const [ modName, node ] = mod;
-            const result = parseNode(node, macros);
+            let result = parseNode(node, macros);
             if (result === null) {
                 return fail("Cannot parse node.", program);
             }
@@ -43,6 +43,10 @@ export function makeParser(jssemant) {
                         targetable: true,
                     }),
                 });
+            }
+            else if (modName === "__argumentAnnotated") {
+                result.body = jssemant.missing();
+                result = [ result, jssemant.defineAttach() ];
             }
             else {
                 return fail(`Unrecognized expression modifier ${modName}`, program);
