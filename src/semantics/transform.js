@@ -374,7 +374,18 @@ export default function transform(definition) {
                 for (const subexprField of module.subexpressions(expr)) {
                     const subexpr = state.getIn([ "nodes", expr.get(subexprField) ]);
                     const kind = module.kind(subexpr);
-                    if (kind === "expression" || kind === "missing") {
+                    if (kind === "expression") {
+                        if (subexpr.get("type") === "reference") {
+                            return (!subexpr.get("params") ||
+                                    subexpr.get("params").length === 0 ||
+                                    module
+                                        .subexpressions(subexpr)
+                                        .every(p => state.getIn([ "nodes", subexpr.get(p) ])
+                                            .get("type") === "missing"));
+                        }
+                        return false;
+                    }
+                    else if (kind === "missing") {
                         return false;
                     }
                 }
