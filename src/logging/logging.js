@@ -40,6 +40,9 @@ class Logger {
         };
         this.loadConfig();
 
+        this.info(`Environment: ${process.env.NODE_ENV}`);
+        this.config("debug", process.env.NODE_ENV !== "production");
+
         // GDIAC server variables
         this.currentUserId = null;
         this.currentSessionId = null;
