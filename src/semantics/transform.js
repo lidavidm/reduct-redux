@@ -28,11 +28,11 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
-    module.definitionOf = function getDefinition(exprOrType) {
+    module.definitionOf = function getDefinition(exprOrType, fadeLevel=null) {
         const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
         const result = module.definition.expressions[type];
         if (Array.isArray(result)) {
-            return result[progression.getFadeLevel(type)];
+            return result[typeof fadeLevel === "number" ? fadeLevel : progression.getFadeLevel(type)];
         }
         return result;
     };
@@ -81,7 +81,10 @@ export default function transform(definition) {
 
         const defns = Array.isArray(exprDefinitions) ? exprDefinitions : [ exprDefinitions ];
 
+        let fadeLevel = 0;
         for (const exprDefinition of defns) {
+            const innerFadeLevel = fadeLevel; // Capture value inside loop body
+            fadeLevel += 1;
             const ctor = function(...params) {
                 const result = { type: exprName, locked: true };
                 if (typeof exprDefinition.locked !== "undefined") {
@@ -101,6 +104,7 @@ export default function transform(definition) {
                 for (const fieldName of subexprs) {
                     result[fieldName] = params[argPointer++];
                 }
+                result.fadeLevel = innerFadeLevel;
                 return result;
             };
             Object.defineProperty(ctor, "name", { value: exprName });
@@ -134,7 +138,9 @@ export default function transform(definition) {
             return result;
         }
 
-        const defn = module.definitionOf(type);
+        const fadeLevel = expr.get ? expr.get("fadeLevel") : expr.fadeLevel;
+
+        const defn = module.definitionOf(type, fadeLevel);
         if (!defn) throw `semantics.subexpressions: Unrecognized expression type ${type}`;
 
         const subexprBase = defn.reductionOrder || defn.subexpressions;
