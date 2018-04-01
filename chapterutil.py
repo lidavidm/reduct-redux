@@ -29,6 +29,7 @@ field_defaults = {
     "syntax": [],
     "fade": {},
     "board": [],
+    "goal": [],
 }
 
 
