@@ -26,14 +26,21 @@
             ],
             "defines": [
                 "function repeatAdd1(x, n) { return x == 0 ? n : addOne(repeatAdd1(x - 1, n)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
                 "function broken(x) { return broken(x); }",
                 "broken(2)"
             ],
-            "textgoal": "Click on the function to evaluate it. Once you have done that and waited for a while, feel free to move on to the next level."
+            "goal": [],
+            "textgoal": "Click on the function to evaluate it. Once you have done that and waited for a while, feel free to move on to the next level.",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -43,7 +50,10 @@
             "goal": [
                 "infinite(5)"
             ],
-            "textgoal": "Click on the function to see it's behavior!"
+            "textgoal": "Click on the function to see it's behavior!",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -58,7 +68,10 @@
                 "3",
                 "5",
                 "10"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -79,7 +92,10 @@
             ],
             "defines": [
                 "function countdown(x) { return isZero(x) ? 0 : countdown(x - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -104,7 +120,10 @@
             ],
             "defines": [
                 "function justOne(x) { return x == 1 ? 1 : justOne(x - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -133,7 +152,10 @@
             ],
             "defines": [
                 "function justTwo(x) { return x == 2 ? x : justTwo(x - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -161,7 +183,10 @@
             ],
             "defines": [
                 "function countToFive(x) { return x == 5 ? x : countToFive(x + 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -188,7 +213,10 @@
             ],
             "defines": [
                 "function howFarFromTen(x) { return x == 10 ? 0 : 1 + howFarFromTen(x + 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -218,7 +246,10 @@
                 "function howFarFromWeekend(x) { return isWeekend(x) ? 0 : 1 + howFarFromWeekend(tomorrow(x)); }",
                 "function addTwo(x) { return twice(addOne, x); }",
                 "function addFour(x) { return twice(addTwo, x); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -243,7 +274,10 @@
             ],
             "defines": [
                 "function twice(f, x) { return f(f(x)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -271,7 +305,10 @@
             ],
             "defines": [
                 "function thrice(f, x) { return f(twice(f, x)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -299,7 +336,10 @@
             ],
             "defines": [
                 "function double(y) { return y == 0 ? 0 : 2 + double(y - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -332,7 +372,10 @@
             ],
             "defines": [
                 "function triple(z) { return z == 0 ? 0 : 3 + triple(z - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -365,7 +408,10 @@
             ],
             "defines": [
                 "function multiplyBy4(x) { return x == 0 ? 0 : 4 + multiplyBy4(x - 1); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -398,7 +444,10 @@
             ],
             "defines": [
                 "function xTimes4PlusY(x, y) { return x == 0 ? y : x + xTimes4PlusY(x - 1, y); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -431,7 +480,10 @@
             ],
             "defines": [
                 "function xTimes5PlusY(x, y) { return x == 0 ? y : x + xTimes5PlusY(x - 1, y); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -457,7 +509,10 @@
             ],
             "defines": [
                 "function repeatAdd1(x, n) { return x == 0 ? n : addOne(repeatAdd1(x - 1, n)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -488,7 +543,10 @@
             ],
             "defines": [
                 "function repeatAdd2(x, n) { return x == 0 ? n : addTwo(repeatAdd2(x - 1, n)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -522,7 +580,10 @@
             ],
             "defines": [
                 "function repeatAdd3(x, n) { return x == 0 ? n : addThree(repeatAdd3(x - 1, n)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -557,7 +618,10 @@
             ],
             "defines": [
                 "function repeatAddA(x, n, a) { return x == 0 ? n : a + repeatAddA(x - 1, n, a); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -593,7 +657,10 @@
             ],
             "defines": [
                 "function repeatFunction(x, n, f) { return x == 0 ? n : f(repeatFunction(x - 1, n, f)); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {

@@ -11,11 +11,14 @@
                 "2"
             ],
             "textgoal": "Evaluate the expression",
+            "globals": {},
+            "syntax": [],
             "animationScales": {
                 "expr-binop": 1.2
             }
         },
         {
+            "board": [],
             "goal": [
                 "5",
                 "8"
@@ -26,9 +29,11 @@
                 "4 + 2",
                 "1 + 4"
             ],
+            "globals": {},
             "syntax": [
                 "syntax-add"
-            ]
+            ],
+            "animationScales": {}
         },
         {
             "board": [
@@ -44,7 +49,10 @@
                 "4",
                 "6",
                 "8"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -60,7 +68,10 @@
                 "5",
                 "6",
                 "7"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -76,7 +87,10 @@
                 "4",
                 "5",
                 "6"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -92,7 +106,10 @@
                 "4",
                 "5",
                 "6"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -109,7 +126,10 @@
                 "1",
                 "2",
                 "3"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -123,7 +143,10 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -139,7 +162,10 @@
                 "4",
                 "5",
                 "6"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -154,7 +180,10 @@
             "toolbox": [
                 "x => x + 1",
                 "x => x - 1"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -168,7 +197,10 @@
             "toolbox": [
                 "x",
                 "y"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -185,7 +217,10 @@
                 "2",
                 "3",
                 "4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -201,7 +236,10 @@
                 "6",
                 "7",
                 "8"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -219,7 +257,10 @@
                 "2",
                 "3",
                 "4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -233,7 +274,10 @@
                 "2",
                 "3",
                 "4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -250,7 +294,10 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -265,7 +312,10 @@
                 "1",
                 "2",
                 "3"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -279,7 +329,10 @@
                 "6",
                 "x",
                 "y"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -294,7 +347,10 @@
                 "x + 2",
                 "y + 3",
                 "x + 4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -309,7 +365,10 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -325,7 +384,10 @@
                 "2",
                 "3",
                 "4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -342,7 +404,10 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -357,7 +422,10 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -375,7 +443,10 @@
                 "5",
                 "a",
                 "b"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -389,7 +460,10 @@
                 "b",
                 "1",
                 "2"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -404,7 +478,10 @@
                 "0",
                 "1",
                 "2"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -422,7 +499,10 @@
                 "3",
                 "5",
                 "7"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -443,7 +523,10 @@
                 "1",
                 "2",
                 "3"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {
