@@ -195,8 +195,7 @@
                 "_ == _",
                 "_ ? 0 : 1 + _",
                 "10",
-                "howFarFromTen",
-                "_(_)"
+                "howFarFromTen"
             ],
             "goal": [
                 "7",
@@ -209,7 +208,8 @@
                 "_ + 1",
                 "_ - 1",
                 "x",
-                "x"
+                "x",
+                "_(_)"
             ],
             "defines": [
                 "function howFarFromTen(x) { return x == 10 ? 0 : 1 + howFarFromTen(x + 1); }"
@@ -223,8 +223,6 @@
                 "function howFarFromWeekend(x) { return _; }",
                 "_(_) ? 0 : _",
                 "howFarFromWeekend",
-                "_(_)",
-                "_(_)",
                 "__tests(f(tue), f(sun), f(fri), f(sat))"
             ],
             "goal": [
@@ -240,7 +238,9 @@
                 "tomorrow",
                 "x",
                 "x",
-                "1 + _"
+                "1 + _",
+                "_(_)",
+                "_(_)"
             ],
             "defines": [
                 "function howFarFromWeekend(x) { return isWeekend(x) ? 0 : 1 + howFarFromWeekend(tomorrow(x)); }",
@@ -381,7 +381,6 @@
             "board": [
                 "function multiplyBy4(x) { return _; }",
                 "_ ? 0 : _",
-                "_(_)",
                 "_ - 1",
                 "_ + _",
                 "multiplyBy4(1)",
@@ -404,7 +403,8 @@
                 "4",
                 "5",
                 "x",
-                "x"
+                "x",
+                "_(_)"
             ],
             "defines": [
                 "function multiplyBy4(x) { return x == 0 ? 0 : 4 + multiplyBy4(x - 1); }"
@@ -419,7 +419,6 @@
                 "_ + _",
                 "_ == _",
                 "_ ? y : _",
-                "_(_, _)",
                 "xTimes4PlusY(1, 1)",
                 "xTimes4PlusY(4, 0)",
                 "xTimes4PlusY(2, 3)"
@@ -440,7 +439,8 @@
                 "3",
                 "4",
                 "_ - 1",
-                "x"
+                "x",
+                "_(_, _)"
             ],
             "defines": [
                 "function xTimes4PlusY(x, y) { return x == 0 ? y : x + xTimes4PlusY(x - 1, y); }"
@@ -455,7 +455,6 @@
                 "_ + _",
                 "_ - 1",
                 "_ ? _ : _",
-                "_(_, _)",
                 "xTimes5PlusY(1, 2)",
                 "xTimes5PlusY(2, 3)",
                 "xTimes5PlusY(1, 0)"
@@ -476,7 +475,8 @@
                 "1",
                 "3",
                 "5",
-                "_ == _"
+                "_ == _",
+                "_(_, _)"
             ],
             "defines": [
                 "function xTimes5PlusY(x, y) { return x == 0 ? y : x + xTimes5PlusY(x - 1, y); }"
@@ -552,7 +552,6 @@
             "board": [
                 "function repeatAdd3(x, n) { return _; }",
                 "_ ? _ : _(_)",
-                "_(_, _)",
                 "addThree",
                 "repeatAdd3(0, 1)",
                 "repeatAdd3(2, 2)",
@@ -576,7 +575,8 @@
                 "x",
                 "x",
                 "n",
-                "n"
+                "n",
+                "_(_, _)"
             ],
             "defines": [
                 "function repeatAdd3(x, n) { return x == 0 ? n : addThree(repeatAdd3(x - 1, n)); }"
