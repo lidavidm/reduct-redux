@@ -303,6 +303,13 @@ class Logger {
                 pushState("victory", "victory");
                 return returnValue;
             }
+            else if (act.type === action.FADE) {
+                this.log("fade", {
+                    item: saveNode(act.fadedId),
+                    fromLevel: beforeState.getIn([ "nodes", act.unfadedId, "fadeLevel" ]),
+                    toLevel: afterState.getIn([ "nodes", act.fadedId, "fadeLevel" ]),
+                });
+            }
 
             // Put action as edge data
             // TODO: how to deal with all the intermediate states??
@@ -460,6 +467,7 @@ Logger.prototype.ACTIONS = {
     "tutorial-state-next": 104,
     "attached-expr": 105,
     "attached-expr-failed": 106,
+    "fade": 107,
 };
 
 const Logging = new Logger();
