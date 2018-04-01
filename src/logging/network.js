@@ -245,7 +245,7 @@ export default class Network {
         let nodes = new vis.DataSet(this.nodes.map(n => {
             let v = { id:       n.id,
                       label:     toLabel(n) };
-            if (n.data === 'reset') {        // Mark reset state.
+            if (n.data === 'reset' || n.data === 'prev' || n.data === 'next') {        // Mark reset state.
                 v.reset = true;
                 v.color = {
                     background: '#BDAEC6',
