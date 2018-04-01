@@ -19,7 +19,11 @@
             "textgoal": "Make me a star!",
             "toolbox": [
                 "star"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -35,7 +39,11 @@
             "toolbox": [
                 "__unlimited;star",
                 "__unlimited;rect"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -51,7 +59,11 @@
             ],
             "toolbox": [
                 "__unlimited;makeStar"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -66,7 +78,11 @@
             "textgoal": "Define a function that outputs a triangle",
             "toolbox": [
                 "__unlimited;triangle"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -82,7 +98,11 @@
             "textgoal": "Define a function that takes an input x and outputs a triangle",
             "toolbox": [
                 "__unlimited;trianglify"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -101,7 +121,11 @@
             "textgoal": "Define a function that outputs a triangle",
             "toolbox": [
                 "__unlimited;squarify"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -109,7 +133,11 @@
             ],
             "goal": [
                 "true"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -120,7 +148,11 @@
             ],
             "toolbox": [
                 "'triangle'"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -135,7 +167,11 @@
                 "'star'",
                 "'triangle'",
                 "'rect'"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -151,7 +187,11 @@
                 "'star'",
                 "'triangle'",
                 "'rect'"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -163,7 +203,11 @@
             "toolbox": [
                 "'rect'",
                 "'star'"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -183,7 +227,11 @@
             ],
             "defines": [
                 "function addOne(x) { return x + 1; }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -197,6 +245,9 @@
             "toolbox": [
                 "__unlimited;addOne;"
             ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
             "fade": {
                 "reference": 1
             }
@@ -219,11 +270,15 @@
                 "6",
                 "7",
                 "8"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
-                "let doNothing = _;",
+                "__argumentAnnotated; function doNothing(x) { return _ }",
                 "_(7)",
                 "_(3)"
             ],
@@ -240,7 +295,11 @@
             ],
             "defines": [
                 "function doNothing(x) { return x; }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -257,7 +316,11 @@
                 "__unlimited;addOne;",
                 "__unlimited;doNothing;",
                 "_(_)"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -272,7 +335,11 @@
             "toolbox": [
                 "__unlimited;addOne;",
                 "__unlimited;doNothing;"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -290,7 +357,11 @@
                 "addOne",
                 "doNothing",
                 "doNothing"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -300,7 +371,11 @@
             "goal": [
                 "C",
                 "C"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -314,7 +389,11 @@
                 "x => A",
                 "x => B",
                 "x => C"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -326,7 +405,11 @@
             ],
             "toolbox": [
                 "__unlimited;addOne;"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -341,11 +424,15 @@
             "toolbox": [
                 "__unlimited; starify",
                 "__unlimited; squarify"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
-                "let threeify = _;",
+                "__argumentAnnotated; function threeify(x) { return _; }",
                 "__tests(f(1), f(2), f(3))"
             ],
             "goal": [
@@ -364,7 +451,11 @@
             ],
             "defines": [
                 "function threeify(x) { return 3; }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -379,7 +470,11 @@
                 "threeify",
                 "addOne",
                 "doNothing"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -401,7 +496,11 @@
             ],
             "defines": [
                 "function addThree(x) { return addOne(addOne(addOne(x))); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -419,7 +518,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -437,7 +539,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -462,7 +567,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -487,7 +595,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -502,7 +613,11 @@
                 "2",
                 "3",
                 "4"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -517,7 +632,11 @@
                 "4",
                 "5",
                 "6"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -537,7 +656,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -565,7 +687,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -586,7 +711,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -604,7 +732,11 @@
             "textgoal": "Use the repeat function to define a function that computes x times 2",
             "toolbox": [
                 "double"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -631,7 +763,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -649,7 +784,11 @@
                 "8",
                 "9",
                 "10"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -670,7 +809,11 @@
                 "3",
                 "4",
                 "5"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -692,7 +835,11 @@
                 "1",
                 "3",
                 "8"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -720,7 +867,10 @@
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }",
                 "triple": "function triple(x) { return (repeat(x, addTwo))(x); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -742,7 +892,10 @@
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         },
         {
             "board": [
@@ -770,7 +923,11 @@
             ],
             "defines": [
                 "function addTogether(a, b) { return repeat(a, addOne)(b); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
         }
     ],
     "resources": {

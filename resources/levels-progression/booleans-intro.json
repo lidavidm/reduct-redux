@@ -254,7 +254,7 @@
         },
         {
             "board": [
-                "let isZero = _",
+                "__argumentAnnotated; function isZero(x) { return _; }",
                 "_ == _",
                 "__tests(f(1), f(0), f(3), f(0))"
             ],
@@ -283,7 +283,7 @@
         },
         {
             "board": [
-                "let equals = _",
+                "__argumentAnnotated; function equals(x, y) { return _; }",
                 "_ == _",
                 "(y) => _",
                 "__tests(f(1, 2), f(2, 2), f(3, 3))"
@@ -348,7 +348,7 @@
         },
         {
             "board": [
-                "let alwaysOne = _",
+                "__argumentAnnotated; function alwaysOne(x) { return _; }",
                 "_ ? x : 1",
                 "(x) => _",
                 "__tests(f(1) == 1, f(2) == 1, f(3) == 1)"
