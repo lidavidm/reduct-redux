@@ -32,6 +32,7 @@ class Logger {
     constructor() {
         this._config = {
             enabled: true, // Is logging even enabled?
+            debug: true, // Print debug messages?
             local: false, // Are we logging to a local server?
             static: true, // Are we saving events to the in-browser cache?
             offline: false, // Are we only saving events offline?
@@ -122,6 +123,8 @@ class Logger {
     }
 
     startTask(taskId, data=null) {
+        this.debug(`Start task: ${taskId}%c ${JSON.stringify(data)}`);
+
         if (!this.enabled) {
             return Promise.resolve();
         }
@@ -197,6 +200,7 @@ class Logger {
     }
 
     log(actionId, data) {
+        this.debug(`Action: ${actionId} (${this.ACTIONS[actionId]})%c ${JSON.stringify(data)}`);
         if (!this.enabled) {
             return Promise.resolve();
         }
@@ -346,11 +350,17 @@ class Logger {
     }
 
     info(text) {
-        console.info(`%c ${text}`, "background: darkgreen; color: #eee");
+        console.info(`%c${text}`, "background: darkgreen; color: #eee");
+    }
+
+    debug(text) {
+        if (!this.config("debug")) return;
+
+        console.debug(`%c${text}`, "background: purple; color: #eee", "background: inherit; color: inherit");
     }
 
     warn(text) {
-        console.warn(`%c ${text}`, "background: #dd6b00; color: #eee");
+        console.warn(`%c${text}`, "background: #dd6b00; color: #eee");
     }
 
     logStatic(funcname, data, uploaded) {
