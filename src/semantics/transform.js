@@ -2,6 +2,7 @@ import * as immutable from "immutable";
 
 import * as progression from "../game/progression";
 import Audio from "../resource/audio";
+import Logging from "../logging/logging";
 
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
@@ -872,6 +873,13 @@ export default function transform(definition) {
                     notchPair
                 );
                 if (!canAttach) {
+                    Logging.log("attached-expr-failed", {
+                        parent: stage.saveNode(parentId),
+                        item: stage.saveNode(childId),
+                        parentNotchIdx: notchPair[0],
+                        childNotchIdx: notchPair[1],
+                        blocking: blockingNodes.map(id => stage.saveNode(id)),
+                    });
                     blockingNodes.forEach((id) => {
                         animate.fx.error(stage, stage.views[id]);
                     });

@@ -459,6 +459,7 @@ Logger.prototype.ACTIONS = {
     "reduction-lambda-failed": 103,
     "tutorial-state-next": 104,
     "attached-expr": 105,
+    "attached-expr-failed": 106,
 };
 
 const Logging = new Logger();
