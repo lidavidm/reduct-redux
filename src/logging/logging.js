@@ -284,6 +284,7 @@ class Logger {
                 this.log("placed-expr", {
                     before,
                     after,
+                    field: nodes.get(act.holeId).get("parentField"),
                     item: saveNode(act.childId),
                     target: savedParent,
                 });
