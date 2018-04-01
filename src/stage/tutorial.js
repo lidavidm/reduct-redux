@@ -1,5 +1,6 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
+import Logging from "../logging/logging";
 
 import Stage from "./stage";
 
@@ -103,6 +104,12 @@ class GoalTutorial {
         return (this.state === "board" || this.state === "done") && this.ready;
     }
 
+    startLevel(...args) {
+        super.startLevel(...args);
+
+        Logging.log("tutorial-state-next", this.state);
+    }
+
     next() {
         if (!this.ready) return true;
 
@@ -153,6 +160,7 @@ class GoalTutorial {
             })
                 .then(() => {
                     this.state = "board";
+                    Logging.log("tutorial-state-next", this.state);
                     animate.tween(boardText, { opacity: 1 }, {
                         duration: 1000,
                         easing: animate.Easing.Cubic.In,
@@ -170,6 +178,7 @@ class GoalTutorial {
                 easing: animate.Easing.Cubic.In,
             }).then(() => {
                 this.state = "done";
+                Logging.log("tutorial-state-next", this.state);
                 this.ready = true;
                 this.stage.draw();
             });

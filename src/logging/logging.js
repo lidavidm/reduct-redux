@@ -428,6 +428,7 @@ Logger.prototype.ACTIONS = {
     "redo": 101,
     "reduction-error": 102,
     "reduction-lambda-failed": 103,
+    "tutorial-state-next": 104,
 };
 
 const Logging = new Logger();
