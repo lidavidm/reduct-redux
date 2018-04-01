@@ -289,10 +289,14 @@ class Logger {
                     target: savedParent,
                 });
             }
-            else if (act.type === action.UNDO) {
-                this.log("undo", {
+            else if (act.type === action.ATTACH_NOTCH) {
+                this.log("attached-expr", {
                     before,
                     after,
+                    parent: saveNode(act.parentId, beforeState.get("nodes")),
+                    item: saveNode(act.childId),
+                    parentNotchIdx: act.notchIdx,
+                    childNotchIdx: act.childNotchIdx,
                 });
             }
             else if (act.type === action.VICTORY) {
@@ -454,6 +458,7 @@ Logger.prototype.ACTIONS = {
     "reduction-error": 102,
     "reduction-lambda-failed": 103,
     "tutorial-state-next": 104,
+    "attached-expr": 105,
 };
 
 const Logging = new Logger();
