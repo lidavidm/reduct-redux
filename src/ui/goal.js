@@ -59,6 +59,11 @@ export default class Goal {
                 right: Loader.images["caption-long-right"],
             }));
         }
+
+        this.stage.getView(this.container).pos = {
+            x: this.stage.getView(this.alien).size.w,
+            y: 5,
+        };
     }
 
     drawImpl(state) {
@@ -98,9 +103,7 @@ export default class Goal {
 
         const view = this.stage.views[this.container];
         view.prepare(null, null, state, this.stage);
-        view.draw(null, null, state, this.stage, this.stage.makeBaseOffset({
-            x: alien.size.w, y: 5,
-        }));
+        view.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
     }
 
     animatedNodes() {
