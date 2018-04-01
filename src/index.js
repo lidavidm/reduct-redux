@@ -90,12 +90,14 @@ function initialize() {
         if (!stg.alreadyWon) {
             const matching = level.checkVictory(stg.getState(), es6);
             if (Object.keys(matching).length > 0) {
-                Logging.log("victory", {
-                    final_state: level.serialize(stg.getState(), es6),
-                    // TODO: track num of moves via undo stack?
-                    // num_of_moves: undefined,
-                });
+                const finalState = level.serialize(stg.getState(), es6);
                 stg.animateVictory(matching).then(() => {
+                    Logging.log("victory", {
+                        final_state: finalState,
+                        // TODO: track num of moves via undo stack?
+                        // num_of_moves: undefined,
+                    });
+
                     nextLevel();
                 });
             }

@@ -271,10 +271,6 @@ class Logger {
                 });
             }
             else if (act.type === action.VICTORY) {
-                this.log("victory", {
-                    before,
-                    after: "victory",
-                });
                 pushState("victory", "victory");
                 return returnValue;
             }
