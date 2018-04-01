@@ -211,6 +211,8 @@ export function checkVictory(state, semantics) {
  */
 export function serialize(state, semantics) {
     const board = [];
+    const goal = [];
+    const toolbox = [];
     const nodes = state.get("nodes");
     for (const id of state.get("board")) {
         const result = semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id)));
@@ -218,5 +220,18 @@ export function serialize(state, semantics) {
             board.push(result);
         }
     }
-    return { board };
+    for (const id of state.get("goal")) {
+        const result = semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id)));
+        if (result !== null) {
+            goal.push(result);
+        }
+    }
+    for (const id of state.get("toolbox")) {
+        const result = semantics.parser.unparse(semantics.hydrate(nodes, nodes.get(id)));
+        if (result !== null) {
+            toolbox.push(result);
+        }
+    }
+
+    return { board, goal, toolbox };
 }
