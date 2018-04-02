@@ -77,6 +77,8 @@ export function makeParser(jssemant) {
         case "Identifier": {
             if (node.name === "_") return jssemant.missing();
 
+            if (node.name === "__defineAttach") return jssemant.defineAttach();
+
             // Each macro is a thunk
             if (macros && macros[node.name]) return macros[node.name]();
 
@@ -279,7 +281,11 @@ export function makeUnparser(jssemant) {
             return `function ${node.name}(${args}) { return ${unparseES6(body)}; }`;
         }
         case "defineAttach": {
-            return null;
+            // TODO: don't hardcode this
+            if (node.notch0) {
+                return `__defineAttach(${unparseES6(node.notch0)})`;
+            }
+            return "__defineAttach";
         }
         default:
             console.error(`unparsers.es6: Unrecognized ES6 node type ${node.type}`, node);
