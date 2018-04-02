@@ -1093,6 +1093,8 @@ export default class Stage extends BaseStage {
         // const mode = document.querySelector("#evaluation-mode").value;
         this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
+                if (this.alreadyWon) return;
+
                 const topView = this.views[topNodeId];
 
                 if (newNodeIds.length !== 1) {
