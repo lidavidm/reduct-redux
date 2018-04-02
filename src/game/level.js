@@ -86,18 +86,18 @@ export function startLevel(description, parse, store, stage) {
     stage.registerNewDefinedNames(newDefinedNames.map(elem => elem[0]));
 
     // Lay out the board.
-    const scaleFactor = (1 - (1 / 1.4)) / 2.0;
     const positions = layout.ianPacking(stage, {
-        x: stage.width * scaleFactor,
-        y: stage.height * scaleFactor,
-        w: stage.width - (stage.width * scaleFactor),
-        h: (stage.height - (90 * (stage.toolbox.rows - 1))) / 1.4,
+        x: 20,
+        y: 120,
+        w: stage.width - 20,
+        h: (stage.height - (stage.toolbox.size.h * 1.5) - 140),
     }, stage.getState().get("board").toArray());
 
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
-            stage.views[id].pos.x = pos.x;
-            stage.views[id].pos.y = pos.y;
+            const view = stage.views[id];
+            view.pos.x = pos.x + (view.size.w / 2);
+            view.pos.y = pos.y + (view.size.h / 2);
         }
     }
 

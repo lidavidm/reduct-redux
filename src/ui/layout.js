@@ -54,7 +54,7 @@ export function ianPacking(stage, bounds, nodeIds) {
 
     let iterations = 0;
 
-    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 15000) {
+    while (candidates.length < CANDIDATE_THRESHOLD && iterations < 25000) {
         iterations += 1;
 
         const candidate = new Map();
