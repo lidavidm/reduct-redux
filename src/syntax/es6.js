@@ -268,12 +268,14 @@ export function makeUnparser(jssemant) {
             return `(${unparseES6(node.condition)}) ? (${unparseES6(node.positive)}) : (${unparseES6(node.negative)})`;
         }
         case "define": {
-            let args = "";
-            let body = node.body;
-            if (node.body && node.body.type === "lambda") {
-                args = unparseES6(node.body.arg);
-                body = node.body.body;
-            }
+            // Make sure we accurately capture what exactly the user
+            // defined, in a way that can be re-parsed. We don't use
+            // the params, even if present. This avoids situations
+            // like the following: the definition is annotated with
+            // the argument name "x", but has no body. The user
+            // instead places (y) => y.
+            const args = "";
+            const body = node.body;
             return `function ${node.name}(${args}) { return ${unparseES6(body)}; }`;
         }
         case "defineAttach": {
