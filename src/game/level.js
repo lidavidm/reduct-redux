@@ -89,7 +89,7 @@ export function startLevel(description, parse, store, stage) {
     const positions = layout.ianPacking(stage, {
         x: 20,
         y: 120,
-        w: stage.width - 20,
+        w: stage.width - 40,
         h: (stage.height - (stage.toolbox.size.h * 1.5) - 140),
     }, stage.getState().get("board").toArray());
 
