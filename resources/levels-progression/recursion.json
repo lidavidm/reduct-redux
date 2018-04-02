@@ -102,7 +102,7 @@
                 "function justOne(x) { return _ ? _ : justOne(x - 1); }",
                 "justOne(0)",
                 "justOne(1)",
-                "_ == 1",
+                "_ == 0",
                 "justOne(3)"
             ],
             "goal": [
@@ -169,6 +169,7 @@
                 "_ ? 5 : _"
             ],
             "goal": [
+                "5",
                 "5",
                 "5"
             ],
@@ -385,7 +386,8 @@
                 "_ + _",
                 "multiplyBy4(1)",
                 "multiplyBy4(4)",
-                "multiplyBy4(2)"
+                "multiplyBy4(2)",
+                "multiplyBy4"
             ],
             "goal": [
                 "4",
