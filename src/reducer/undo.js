@@ -1,7 +1,7 @@
 import * as immutable from "immutable";
 
-const UNDO = "undo";
-const REDO = "redo";
+export const UNDO = "undo";
+export const REDO = "redo";
 
 export function undo() {
     return {

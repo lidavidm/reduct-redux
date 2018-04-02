@@ -11,6 +11,7 @@ import fileSaver from "file-saver";
 
 import * as level from "../game/level";
 import * as action from "../reducer/action";
+import * as undoAction from "../reducer/undo";
 import * as ajax from "../util/ajax";
 import * as random from "../util/random";
 
@@ -263,13 +264,13 @@ class Logger {
                     item: saveNode(act.nodeId),
                 });
             }
-            else if (act.type === action.UNDO) {
+            else if (act.type === undoAction.UNDO) {
                 this.log("undo", {
                     before,
                     after,
                 });
             }
-            else if (act.type === action.REDO) {
+            else if (act.type === undoAction.REDO) {
                 this.log("redo", {
                     before,
                     after,
