@@ -380,12 +380,16 @@ export function reduct(semantics, views) {
                     const result = {};
                     for (const id of state.get("board")) {
                         if (views[id]) {
-                            result[id] = Object.assign({}, gfx.absolutePos(views[id]));
+                            const pos = Object.assign({}, gfx.absolutePos(views[id]));
+                            if (pos.x === 0 && pos.y === 0) continue;
+                            result[id] = pos;
                         }
                     }
                     for (const id of newState.get("board")) {
                         if (views[id]) {
-                            result[id] = Object.assign({}, gfx.absolutePos(views[id]));
+                            const pos = Object.assign({}, gfx.absolutePos(views[id]));
+                            if (pos.x === 0 && pos.y === 0) continue;
+                            result[id] = pos;
                         }
                     }
                     return result;
