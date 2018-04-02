@@ -3,6 +3,7 @@ import vis from "vis";
 import { createStore, applyMiddleware } from "redux";
 
 import consent from "./consent";
+import * as gfx from "./gfx/core";
 import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
 import * as level from "./game/level";
@@ -15,6 +16,12 @@ import * as undo from "./reducer/undo";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
+
+// Globals to help you debug
+window.gfx = gfx;
+window.animate = animate;
+window.Logging = Logging;
+window.progression = progression;
 
 // Load assets.
 Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
