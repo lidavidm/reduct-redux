@@ -1223,6 +1223,8 @@ export default class Stage extends BaseStage {
                     .then(() => {
                         this.views[arg].opacity = 1;
                         this.views[topNode].anchor = { x: 0, y: 0.5 };
+                        this.views[topNode].scale = { x: 1, y: 1 };
+                        this.views[topNode].pos.y = this.views[topNode].pos.y - 50;
                     });
 
                 animate.tween(this.views[arg], { opacity: 0 }, {
