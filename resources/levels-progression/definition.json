@@ -591,7 +591,7 @@
             ],
             "defines": [
                 "function addFour(x) { return (twice(addTwo))(x); }",
-                "function repeat(n, f) { return (x) => n == 0 ? x : f((repeat(n - 1, f))(x)); }"
+                "function repeat(n, f) { return (x) => n == 0 ? x : repeat(n - 1, f)(f(x)); }"
             ],
             "globals": {
                 "twice": "function twice(f) { return (x) => f(f(x)); }"
