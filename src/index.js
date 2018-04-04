@@ -40,6 +40,7 @@ Promise.all([ Loader.finished, consent() ])
         console.log(`User consented to logging: ${consented}`);
         if (!consented) Logging.clearStaticLog();
         Logging.config("enabled", consented);
+        if (consented) Logging.config("offline", false);
     })
     .then(() => Logging.startSession())
     .then(initialize);
