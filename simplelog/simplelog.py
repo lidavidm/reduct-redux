@@ -87,6 +87,30 @@ def player_quest_end(db):
     return jsonp(params)
 
 
+@app.route("/player_action.php")
+def player_action(db):
+    params = {
+        "game_id": bottle.request.query.game_id,
+        "client_timestamp": bottle.request.query.client_timestamp,
+        "server_timestamp": int(datetime.datetime.now().timestamp() * 1000),
+        "user_id": bottle.request.query.user_id,
+        "session_id": bottle.request.query.session_id,
+        "session_seq_id": bottle.request.query.session_seq_id,
+        "quest_id": bottle.request.query.quest_id,
+        "dynamic_quest_id": bottle.request.query.dynamic_quest_id,
+        "action_id": bottle.request.query.action_id,
+        "quest_seq_id": bottle.request.query.quest_seq_id,
+        "action_detail": bottle.request.query.action_detail,
+    }
+    db.execute("""INSERT INTO player_action VALUES (
+        :game_id, :client_timestamp, :server_timestamp,
+        :user_id, :session_id, :session_seq_id,
+        :quest_id, :dynamic_quest_id,
+        :action_id, :quest_seq_id, :action_detail
+    )""", params)
+    return jsonp(params)
+
+
 def initialize_database(dbname):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
@@ -114,6 +138,21 @@ def initialize_database(dbname):
         client_timestamp_end INTEGER,
         server_timestamp_end INTEGER,
         PRIMARY KEY (game_id, user_id, session_id, quest_id, dynamic_quest_id)
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS player_action (
+        game_id INTEGER NOT NULL,
+        client_timestamp INTEGER,
+        server_timestamp INTEGER NOT NULL,
+        user_id TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        session_seq_id INTEGER,
+        quest_id INTEGER NOT NULL,
+        dynamic_quest_id TEXT NOT NULL,
+        action_id INTEGER NOT NULL,
+        quest_seq_id INTEGER NOT NULL,
+        action_detail TEXT
     )
     """)
     conn.commit()
