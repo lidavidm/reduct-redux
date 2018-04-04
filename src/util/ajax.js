@@ -27,7 +27,7 @@ export function jsonp(path, params) {
             completed = true;
             delete window[callback];
             scr.remove();
-            resolve(JSON.parse(data));
+            resolve(data);
         };
 
         // Encode params in query string
