@@ -23,10 +23,10 @@ const IS_LOCAL = window.location.hostname === "localhost" || window.location.hos
 const REMOTE_LOGGER_URL = "//gdiac.cs.cornell.edu/research_games/";
 const LOCAL_LOGGER_URL = "//localhost:3333";
 const URLS = {
-    PAGE_LOAD: "/page_load.php",
-    QUEST_START: "/player_quest.php",
-    QUEST_END: "/player_quest_end.php",
-    ACTION: "/player_action.php",
+    PAGE_LOAD: "page_load.php",
+    QUEST_START: "player_quest.php",
+    QUEST_END: "player_quest_end.php",
+    ACTION: "player_action.php",
 };
 
 class Logger {
