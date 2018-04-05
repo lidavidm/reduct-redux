@@ -32,7 +32,7 @@ export function jsonp(path, params) {
 
         // Encode params in query string
         const parts = [];
-        params.jsonp = callback;
+        params.callback = callback;
         // Cachebuster
         params._ = Date.now();
         for (const [ key, val ] of Object.entries(params)) {
