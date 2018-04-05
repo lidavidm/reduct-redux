@@ -351,7 +351,7 @@ class Logger {
         if (this.config("local")) {
             return `${LOCAL_LOGGER_URL}/${URLS[key]}`;
         }
-        return `${LOCAL_LOGGER_URL}/${URLS[key]}`;
+        return `${REMOTE_LOGGER_URL}/${URLS[key]}`;
     }
 
     startOfflineSession(params) {
