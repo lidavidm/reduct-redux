@@ -301,6 +301,18 @@ export default function transform(definition) {
                     continue;
                 }
 
+                // Hardcoded: delay expansion of references until
+                // absolutely necessary (when they're being applied)
+                if (subexpr.get("type") === "reference") {
+                    if (expr.get("type") !== "apply" && (
+                        !subexpr.get("params") ||
+                            module.subexpressions(subexpr)
+                                .every(f => nodes.get(subexpr.get(f)).get("type") === "missing")
+                    )) {
+                        continue;
+                    }
+                }
+
                 if (subexprKind !== "value" && subexprKind !== "syntax") {
                     return module.interpreter.singleStep(state, subexpr, exprFilter);
                 }
