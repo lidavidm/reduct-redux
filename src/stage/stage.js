@@ -67,12 +67,18 @@ class TouchRecord extends BaseTouchRecord {
         const state = this.stage.getState();
         const nodes = state.get("nodes");
 
+        const topNode = nodes.get(this.topNode);
         state.get("board").forEach((id) => {
             if (id === this.topNode) return;
 
             this.dropTargets = this.dropTargets.concat(this.stage.semantics.search(
                 nodes, id,
-                (_, subId) => this.stage.semantics.droppable(state, this.topNode, subId)
+                (_, subId) => {
+                    const droppable = this.stage.semantics.droppable(state, this.topNode, subId);
+                    const other = nodes.get(subId);
+                    const compatible = this.stage.semantics.notchesCompatible(topNode, other);
+                    return droppable || (compatible && compatible.length > 0);
+                }
             ));
         });
 
