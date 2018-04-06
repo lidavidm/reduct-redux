@@ -97,6 +97,8 @@ export function notchProjection(options) {
                 if (this.highlighted || this.stroke) ctx.stroke();
             };
             ctx.save();
+            if (this.shadow) ctx.fillStyle = this.shadowColor;
+            draw(this.shadowOffset);
             if (this.highlighted) {
                 primitive.setStroke(ctx, {
                     lineWidth: 4,
@@ -109,8 +111,6 @@ export function notchProjection(options) {
             else {
                 primitive.setStroke(ctx, null);
             }
-            if (this.shadow) ctx.fillStyle = this.shadowColor;
-            draw(this.shadowOffset);
             if (this.color) ctx.fillStyle = this.color;
             draw(0);
             ctx.restore();
