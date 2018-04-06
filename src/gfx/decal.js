@@ -11,6 +11,20 @@ export default function decal(projection) {
     projection.draw = function(id, exprId, state, stage, offset) {
         origDraw.call(this, id, exprId, state, stage, offset);
 
+        const nodes = state.get("nodes");
+        let parent = nodes.get(exprId);
+        let nestedCount = 1;
+        while (parent && parent.get("parent")) {
+            parent = nodes.get(parent.get("parent"));
+            if (parent.get("type") === "apply") {
+                nestedCount += 1;
+            }
+        }
+
+        if (nestedCount > 2) {
+            return;
+        }
+
         const firstChild = { x: 0, y: 0 };
         const lastChild = { x: 0, y: 0 };
         let first = true;
@@ -18,7 +32,6 @@ export default function decal(projection) {
         let firstFilled = false;
         let lastFilled = false;
 
-        const nodes = state.get("nodes");
         for (const [ childId, subexprId ] of this.children(exprId, state)) {
             const view = stage.views[childId];
             const subexpr = nodes.get(subexprId);
@@ -68,6 +81,7 @@ export default function decal(projection) {
         if (typeof this.arrowOpacity !== "undefined") ctx.globalAlpha = this.arrowOpacity * offset.opacity;
         else if (typeof this.opacity !== "undefined") ctx.globalAlpha = this.opacity * 0.7 * offset.opacity;
         else if (state.get("nodes").get(exprId).has("parent")) ctx.globalAlpha = 0.5 * offset.opacity;
+        ctx.globalAlpha /= this.nestedCount;
 
         const cx = x + (sx * ((lastChild.x - firstChild.x) / 2));
         const arrowBase = 3;
@@ -77,7 +91,7 @@ export default function decal(projection) {
         ctx.moveTo(x + (sx * lastChild.x), y + (sy * lastChild.y));
         ctx.quadraticCurveTo(
             cx - 10,
-            y - 20,
+            y - 30,
             x + (sx * (firstChild.x + arrowBase)),
             y + (sy * (firstChild.y + arrowBase))
         );
@@ -101,7 +115,7 @@ export default function decal(projection) {
         );
         ctx.quadraticCurveTo(
             cx + 10,
-            y - 30,
+            y - 40,
             x + (sx * lastChild.x),
             y + (sy * lastChild.y)
         );
