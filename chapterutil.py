@@ -82,6 +82,7 @@ def csv2json(infile, outfile):
     chapter["levels"] = levels
     with open(outfile, "w") as outf:
         json.dump(chapter, outf, indent=4)
+        outf.write("\n")
 
 
 def main():
