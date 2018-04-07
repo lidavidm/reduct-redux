@@ -874,7 +874,7 @@
         },
         {
             "board": [
-                "function apply(func) { return _; }",
+                "__argumentAnnotated(func, num); function apply(func) { return _; }",
                 "__tests(f(doNothing, 3), f(addSix, 3), f(triple, 4))",
                 "_(_)"
             ],
