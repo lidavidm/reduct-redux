@@ -109,9 +109,17 @@ export default {
 
                     let resultExpr = semant.lambdaVar("x");
                     const hydratedFn = semant.hydrate(state.get("nodes"), fn);
-                    // TODO: if hydrated function is a reference-with-holes, apply directly
                     for (let i = 0; i < times.get("value"); i++) {
-                        resultExpr = semant.apply(hydratedFn, resultExpr);
+                        // If hydrated function is a
+                        // reference-with-holes, apply directly
+                        if (Array.isArray(hydratedFn.params) && hydratedFn.params.length > 0) {
+                            const arg = {};
+                            arg[`arg_${hydratedFn.params[0]}`] = resultExpr;
+                            resultExpr = Object.assign({}, hydratedFn, arg);
+                        }
+                        else {
+                            resultExpr = semant.apply(hydratedFn, resultExpr);
+                        }
                     }
                     resultExpr = semant.lambda(semant.lambdaArg("x"), resultExpr);
                     const newNodes = semant.flatten(resultExpr).map(n => immutable.Map(n));
