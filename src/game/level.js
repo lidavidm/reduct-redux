@@ -70,9 +70,9 @@ export function startLevel(description, parse, store, stage) {
         });
     for (const [ name, definition ] of Object.entries(description.globals)) {
         const parsed = parse(definition, macros)
-            .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
-            .map(expr => stage.semantics.parser.extractGlobals(stage.semantics, expr))
-            .filter(name => name !== null);
+              .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
+              .map(expr => stage.semantics.parser.extractGlobals(stage.semantics, expr))
+              .filter(name => name !== null);
         if (parsed.length !== 1) {
             console.error(`level.startLevel: defining global ${name} as ${definition} led to multiple parsed expressions.`);
             continue;
@@ -162,6 +162,12 @@ export function startLevel(description, parse, store, stage) {
             easing: animate.Easing.Cubic.In,
         });
     }
+
+    animate.after(500).then(() => {
+        for (const topViewId of stage.getState().get("board")) {
+            stage.bumpAwayFromEdges(topViewId);
+        }
+    });
 
     if (description.syntax.length > 0) {
         animate.after(500).then(() => {
