@@ -1564,16 +1564,13 @@ export default class Stage extends BaseStage {
         const pos = this.getMousePos(e);
         if (pos.sidebar) return;
 
-        const [ topNode, _, fromToolbox ] = this.getNodeAtPos(pos);
-        if (fromToolbox) {
-            return;
-        }
+        const targetNode = this.getReferenceNameAtPos(pos);
 
-        if (topNode !== null) {
+        if (targetNode !== null) {
             const state = this.getState();
-            const node = state.getIn([ "nodes", topNode ]);
+            const node = state.getIn([ "nodes", targetNode ]);
             if (node.get("type") === "reference") {
-                this.showReferenceDefinition(this.getState(), topNode, true);
+                this.showReferenceDefinition(this.getState(), targetNode, true);
             }
         }
     }
