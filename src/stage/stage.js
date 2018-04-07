@@ -1374,6 +1374,8 @@ export default class Stage extends BaseStage {
     showReferenceDefinition(state, referenceId, immediate=false) {
         const referenceNameNode = state.getIn([ "nodes", referenceId ]);
         const name = referenceNameNode.get("name");
+        // TODO: don't hardcode repeat (also see ui/sidebar.js)
+        if (name === "repeat") return;
         const functionNodeId = state.get("globals").get(name);
         const functionNode = state.get("nodes").get(functionNodeId);
         if (!functionNode) return;

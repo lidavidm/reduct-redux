@@ -59,7 +59,9 @@ export default class Sidebar {
             count += 1;
         }
 
+        // TODO: don't hardcode repeat (also see stage/stage.js)
         for (const name of names) {
+            if (name === "repeat") continue;
             const viewId = this.project(state, name, globals.get(name));
             this.viewMap.set(name, viewId);
         }
