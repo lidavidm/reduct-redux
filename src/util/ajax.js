@@ -18,10 +18,15 @@ export function postJSON(path, data) {
     xhr.send(JSON.stringify(data, null, 2));
 }
 
+const PREFIXES = ["jpa", "jpb", "jpc", "jpd"];
+let prefixCounter = 0;
+
 export function jsonp(path, params) {
     params = params || {};
     return new Promise((resolve, reject) => {
-        const callback = `jpc${Date.now()}`;
+        // Guard against multiple requests made at same millisecond
+        const callback = `${PREFIXES[prefixCounter]}${Date.now()}`;
+        prefixCounter = (prefixCounter + 1) % (PREFIXES.length);
         let completed = false;
         window[callback] = (data) => {
             completed = true;
