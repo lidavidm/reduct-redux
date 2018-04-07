@@ -1,3 +1,5 @@
+import * as numeric from "numeric";
+
 import * as gfx from "../gfx/core";
 import * as progression from "../game/progression";
 
@@ -274,6 +276,55 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         }
 
         force = Math.max(25, force * 0.9);
+    }
+
+    return positions;
+}
+
+export function optimizationPacking(stage, bounds, nodeIds) {
+    const initial = ianPacking(stage, bounds, nodeIds);
+
+    const f = (coords) => {
+        let result = 0;
+
+        for (let i = 0; i < nodeIds.length; i++) {
+            const x1 = coords[(2 * i)];
+            const y1 = coords[(2 * i) + 1];
+            for (let j = i + 1; j < nodeIds.length; j++) {
+                const x2 = coords[(2 * j)];
+                const y2 = coords[(2 * j) + 1];
+                const pairwiseDistance = ((x1 - x2) ** 2) + ((y1 - y2) ** 2);
+
+                result += 1 / pairwiseDistance;
+            }
+
+            result += 1 / ((x1 - bounds.x) ** 2);
+            result += 1 / ((y1 - bounds.y) ** 2);
+            result += 1 / ((x1 - (bounds.x + bounds.w)) ** 2);
+            result += 1 / ((y1 - (bounds.y + bounds.h)) ** 2);
+        }
+
+        return result;
+    };
+
+    const initCoords = [];
+    for (const id of nodeIds) {
+        const { x, y } = initial.get(id);
+        initCoords.push(x);
+        initCoords.push(y);
+    }
+
+    const { solution } = numeric.uncmin(f, initCoords, undefined, undefined, 500);
+    console.log(solution);
+
+    const positions = new Map();
+    let i = 0;
+    for (const id of nodeIds) {
+        positions.set(id, {
+            x: solution[i],
+            y: solution[i + 1],
+        });
+        i += 2;
     }
 
     return positions;
