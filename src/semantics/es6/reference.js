@@ -123,8 +123,10 @@ export default {
                         else {
                             resultExpr = semant.apply(hydratedFn, resultExpr);
                         }
+                        hydratedFn.locked = true;
                         delete resultExpr["parent"];
                         delete resultExpr["parentField"];
+                        resultExpr.locked = true;
                     }
                     resultExpr = semant.lambda(semant.lambdaArg("x"), resultExpr);
                     const newNodes = semant.flatten(resultExpr).map(n => immutable.Map(n));
