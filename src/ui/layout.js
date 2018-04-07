@@ -411,13 +411,13 @@ export function optimizationPacking(stage, bounds, nodeIds) {
                     w: sz2.w,
                     h: sz2.h,
                 });
-                result += pairwiseDistance;
+                result += 1 / (1 + Math.abs(pairwiseDistance));
             }
 
-            result += 1 / ((x1 - bounds.x) ** 2);
-            result += 1 / ((y1 - bounds.y) ** 2);
-            result += 1 / (((x1 + sz1.w) - (bounds.x + bounds.w)) ** 2);
-            result += 1 / (((y1 + sz1.h) - (bounds.y + bounds.h)) ** 2);
+            result += 1 / (((x1 - (sz1.w / 2)) - bounds.x) ** 2);
+            result += 1 / (((y1 - (sz1.h / 2)) - bounds.y) ** 2);
+            result += 1 / (((x1 + (sz1.w / 2)) - (bounds.x + bounds.w)) ** 2);
+            result += 1 / (((y1 + (sz1.h / 2)) - (bounds.y + bounds.h)) ** 2);
         }
 
         return result;
