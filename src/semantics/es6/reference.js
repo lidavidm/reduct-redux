@@ -108,18 +108,23 @@ export default {
                     if (times.get("type") !== "number") return null;
 
                     let resultExpr = semant.lambdaVar("x");
-                    const hydratedFn = semant.hydrate(state.get("nodes"), fn);
                     for (let i = 0; i < times.get("value"); i++) {
+                        // Rehydrate each time to get a new copy
+                        const hydratedFn = semant.hydrate(state.get("nodes"), fn);
+                        delete hydratedFn["parent"];
+                        delete hydratedFn["parentField"];
                         // If hydrated function is a
                         // reference-with-holes, apply directly
                         if (Array.isArray(hydratedFn.params) && hydratedFn.params.length > 0) {
                             const arg = {};
                             arg[`arg_${hydratedFn.params[0]}`] = resultExpr;
-                            resultExpr = Object.assign({}, hydratedFn, arg);
+                            resultExpr = Object.assign(hydratedFn, arg);
                         }
                         else {
                             resultExpr = semant.apply(hydratedFn, resultExpr);
                         }
+                        delete resultExpr["parent"];
+                        delete resultExpr["parentField"];
                     }
                     resultExpr = semant.lambda(semant.lambdaArg("x"), resultExpr);
                     const newNodes = semant.flatten(resultExpr).map(n => immutable.Map(n));
