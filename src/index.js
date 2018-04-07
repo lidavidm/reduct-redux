@@ -38,7 +38,11 @@ Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 Promise.all([ Loader.finished, consent() ])
     .then(([ _, consented ]) => {
         console.log(`User consented to logging: ${consented}`);
-        if (!consented) Logging.clearStaticLog();
+        if (!consented) {
+            Logging.resetState();
+            Logging.clearStaticLog();
+            Logging.saveState();
+        }
         Logging.config("enabled", consented);
         if (consented) Logging.config("offline", false);
     })

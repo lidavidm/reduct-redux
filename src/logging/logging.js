@@ -15,7 +15,6 @@ import * as undoAction from "../reducer/undo";
 import * as ajax from "../util/ajax";
 import * as random from "../util/random";
 
-// TODO: need actual values
 const GAME_ID = 70017019;
 const VERSION_ID = 1;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
@@ -31,14 +30,7 @@ const URLS = {
 
 class Logger {
     constructor() {
-        this._config = {
-            enabled: true, // Is logging even enabled?
-            debug: true, // Print debug messages?
-            local: false, // Are we logging to a local server?
-            static: true, // Are we saving events to the in-browser cache?
-            offline: false, // Are we only saving events offline?
-            stateGraph: false, // Are we displaying a dynamic state graph?
-        };
+        this.resetConfig();
         this.loadConfig();
 
         this.info(`Environment: ${process.env.NODE_ENV}`);
@@ -427,6 +419,17 @@ class Logger {
         return this._config[key];
     }
 
+    resetConfig() {
+         this._config = {
+            enabled: true, // Is logging even enabled?
+            debug: true, // Print debug messages?
+            local: false, // Are we logging to a local server?
+            static: true, // Are we saving events to the in-browser cache?
+            offline: false, // Are we only saving events offline?
+            stateGraph: false, // Are we displaying a dynamic state graph?
+        };
+    }
+
     loadConfig() {
         if (window.localStorage["loggingConfig"]) {
             this._config = Object.assign(
@@ -448,6 +451,10 @@ class Logger {
 
     saveState() {
         window.localStorage["userId"] = JSON.stringify(this.currentUserId);
+    }
+
+    resetState() {
+        this.currentUserId = null;
     }
 }
 
