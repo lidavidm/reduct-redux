@@ -400,7 +400,7 @@ export function optimizationPacking(stage, bounds, nodeIds) {
                 const y2 = coords[(2 * j) + 1];
                 const sz2 = getSize(nodeIds[j]);
                 // const pairwiseDistance = ((x1 - x2) ** 2) + ((y1 - y2) ** 2);
-                // result + 1 / pairwiseDistance;
+                // result += 1 / Math.exp(Math.sqrt(pairwiseDistance) / (Math.max(bounds.w, bounds.h) / 10));
                 const pairwiseDistance = edgeDistance({
                     cx: x1,
                     cy: y1,
@@ -412,19 +412,25 @@ export function optimizationPacking(stage, bounds, nodeIds) {
                     w: sz2.w,
                     h: sz2.h,
                 });
+                result += 1 / Math.exp(Math.sqrt(pairwiseDistance) / (Math.max(bounds.w, bounds.h) / 5));
                 // result += 1 / (1 + Math.abs(pairwiseDistance));
-                result += Math.exp(-pairwiseDistance / (Math.max(bounds.w, bounds.h) / 2));
+                // result += Math.exp(-pairwiseDistance / (Math.max(bounds.w, bounds.h) / 2));
             }
 
             // result += 1 / (((x1 - (sz1.w / 2)) - bounds.x) ** 2);
             // result += 1 / (((y1 - (sz1.h / 2)) - bounds.y) ** 2);
             // result += 1 / (((x1 + (sz1.w / 2)) - (bounds.x + bounds.w)) ** 2);
             // result += 1 / (((y1 + (sz1.h / 2)) - (bounds.y + bounds.h)) ** 2);
+            // result += 1 / (Math.max(2.5, (x1 - (sz1.w / 2)) - bounds.x) ** 2);
+            // result += 1 / (Math.max(2.5, (y1 - (sz1.h / 2)) - bounds.y) ** 2);
+            // result += 1 / (Math.max(2.5, -(x1 + (sz1.w / 2)) + (bounds.x + bounds.w)) ** 2);
+            // result += 1 / (Math.max(2.5, -(y1 + (sz1.h / 2)) + (bounds.y + bounds.h)) ** 2);
 
-            result += Math.exp(((x1 - (sz1.w / 2)) - bounds.x) / (Math.max(bounds.w, bounds.h) / 2));
-            result += Math.exp(((y1 - (sz1.h / 2)) - bounds.y) / (Math.max(bounds.w, bounds.h) / 2));
-            result += 1 / Math.exp(((x1 + (sz1.w / 2)) - (bounds.x + bounds.w)) / (Math.max(bounds.w, bounds.h) / 2));
-            result += 1 / Math.exp(((y1 + (sz1.h / 2)) - (bounds.y + bounds.h)) / (Math.max(bounds.w, bounds.h) / 2));
+
+            result += 1 / Math.exp(((x1 - (sz1.w / 2)) - bounds.x) / (Math.max(bounds.w, bounds.h) / 2));
+            result += 1 / Math.exp(((y1 - (sz1.h / 2)) - bounds.y) / (Math.max(bounds.w, bounds.h) / 2));
+            result += Math.exp(((x1 + (sz1.w / 2)) - (bounds.x + bounds.w)) / (Math.max(bounds.w, bounds.h) / 2));
+            result += Math.exp(((y1 + (sz1.h / 2)) - (bounds.y + bounds.h)) / (Math.max(bounds.w, bounds.h) / 2));
         }
 
         return result;
@@ -437,8 +443,14 @@ export function optimizationPacking(stage, bounds, nodeIds) {
         initCoords.push(y);
     }
 
-    const { solution } = numeric.uncmin(f, initCoords, undefined, undefined, 10);
+    console.log(f(initCoords));
+    console.log(JSON.stringify(initCoords));
 
+    const result = numeric.uncmin(f, initCoords, undefined, undefined, window.iterations || 5);
+    const { solution } = result;
+
+    console.log(f(solution), result);
+    console.log(JSON.stringify(solution));
     const positions = new Map();
     let i = 0;
     for (const id of nodeIds) {
