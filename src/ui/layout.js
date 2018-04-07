@@ -281,8 +281,111 @@ export function repulsorPacking(stage, bounds, nodeIds) {
     return positions;
 }
 
+// Helper functions for edgeDistance. Note that these all use
+// center-origin AABBs!
+function aabbSides(aabb) {
+    const x = aabb.cx - (aabb.w / 2);
+    const y = aabb.cy - (aabb.h / 2);
+    const { w, h } = aabb;
+
+    return [
+        // Top
+        [ { x, y }, { x: w, y: 0 } ],
+        // Left
+        [ { x, y }, { x: 0, y: h } ],
+        // Right
+        [ { x: x + w, y: y + h }, { x: 0, y: -h } ],
+        // Bottom
+        [ { x: x + w, y: y + h }, { x: -w, y: 0 } ],
+    ];
+}
+
+function aabbIntersects(aabb1, aabb2) {
+    const pos1 = { x: aabb1.cx - (aabb1.w / 2), y: aabb1.cy - (aabb1.h / 2) };
+    const sz1 = aabb1;
+    const pos2 = { x: aabb2.cx - (aabb2.w / 2), y: aabb2.cy - (aabb2.h / 2) };
+    const sz2 = aabb2;
+    return !(pos2.x > pos1.x + sz1.w ||
+             pos2.x + sz2.w < pos1.x ||
+             pos2.y > pos1.y + sz1.h ||
+             pos2.y + sz2.h < pos1.y);
+}
+
+function raySegmentIntersect(p, r, q, s) {
+    // https://stackoverflow.com/a/565282
+    const qmp = { x: q.x - p.x, y: q.y - p.y };
+    const rxs = (r.x * s.y) - (r.y * s.x);
+    const qmpxr = (qmp.x * r.y) - (qmp.y * r.x);
+
+    if (Math.abs(rxs) < 1e-5) {
+        if (Math.abs(qmpxr) < 1e-5) {
+            // TODO
+            console.error("Shouldn't happen");
+        }
+        // Parallel and non-intersecting
+        return null;
+    }
+
+    const qmpxs = (qmp.x * s.y) - (qmp.y * s.x);
+    const t = qmpxs / rxs;
+    const u = qmpxr / rxs;
+
+    if (u >= 0 && u <= 1) {
+        // Intersection
+        return {
+            x: p.x + (t * r.x),
+            y: p.y + (t * r.y),
+        };
+    }
+    // Non-parallel and non-intersecting
+    return null;
+}
+
+// Computes edge-to-edge distance between two AABBs.
+function edgeDistance(aabb1, aabb2) {
+    // Take the ray from the center of one box heading towards the
+    // other. Determine the intersection points with the border of the
+    // AABB, then compute distance between those.
+
+    // The ray has origin p and direction r.
+    const p = { x: aabb1.cx, y: aabb1.cy };
+    const r = { x: aabb2.cx - aabb1.cx, y: aabb2.cy - aabb1.cy };
+
+    let point1;
+    let point2;
+    for (const [ q, s ] of aabbSides(aabb1)) {
+        const result = raySegmentIntersect(p, r, q, s);
+        if (result) {
+            point1 = result;
+            break;
+        }
+    }
+
+    for (const [ q, s ] of aabbSides(aabb2)) {
+        const result = raySegmentIntersect(p, r, q, s);
+        if (result) {
+            point2 = result;
+            break;
+        }
+    }
+
+    const d = gfx.distance(point1, point2);
+    // If the AABBs intersect, the distance is negative.
+    if (aabbIntersects(aabb1, aabb2)) {
+        return -d;
+    }
+    return d;
+}
+
 export function optimizationPacking(stage, bounds, nodeIds) {
     const initial = ianPacking(stage, bounds, nodeIds);
+    const sizeCache = {};
+    const getSize = function(id) {
+        if (!sizeCache[id]) {
+            sizeCache[id] = gfx.absoluteSize(stage.views[id]);
+        }
+        return sizeCache[id];
+    };
 
     const f = (coords) => {
         let result = 0;
@@ -290,18 +393,31 @@ export function optimizationPacking(stage, bounds, nodeIds) {
         for (let i = 0; i < nodeIds.length; i++) {
             const x1 = coords[(2 * i)];
             const y1 = coords[(2 * i) + 1];
+            const sz1 = getSize(nodeIds[i]);
             for (let j = i + 1; j < nodeIds.length; j++) {
                 const x2 = coords[(2 * j)];
                 const y2 = coords[(2 * j) + 1];
-                const pairwiseDistance = ((x1 - x2) ** 2) + ((y1 - y2) ** 2);
-
-                result += 1 / pairwiseDistance;
+                const sz2 = getSize(nodeIds[j]);
+                // const pairwiseDistance = ((x1 - x2) ** 2) + ((y1 - y2) ** 2);
+                // result + 1 / pairwiseDistance;
+                const pairwiseDistance = edgeDistance({
+                    cx: x1,
+                    cy: y1,
+                    w: sz1.w,
+                    h: sz1.h,
+                }, {
+                    cx: x2,
+                    cy: y2,
+                    w: sz2.w,
+                    h: sz2.h,
+                });
+                result += pairwiseDistance;
             }
 
             result += 1 / ((x1 - bounds.x) ** 2);
             result += 1 / ((y1 - bounds.y) ** 2);
-            result += 1 / ((x1 - (bounds.x + bounds.w)) ** 2);
-            result += 1 / ((y1 - (bounds.y + bounds.h)) ** 2);
+            result += 1 / (((x1 + sz1.w) - (bounds.x + bounds.w)) ** 2);
+            result += 1 / (((y1 + sz1.h) - (bounds.y + bounds.h)) ** 2);
         }
 
         return result;
