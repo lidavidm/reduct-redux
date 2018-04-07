@@ -28,6 +28,8 @@ const URLS = {
     ACTION: "player_action.php",
 };
 
+export const VICTORY_LEVEL_ID = -1;
+
 class Logger {
     constructor() {
         this.resetConfig();
@@ -61,6 +63,8 @@ class Logger {
                 this.info("Loaded prior play data from localStorage.");
             }
         }
+
+        this.VICTORY_LEVEL_ID = VICTORY_LEVEL_ID;
     }
 
     get enabled() {

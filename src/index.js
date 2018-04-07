@@ -273,6 +273,7 @@ function showChapterEnd() {
     // for (const key in views) delete views[key];
     stg = new ChapterEndStage(canvas, 800, 600, store, views, es6);
     window.stage = stg;
+    Logging.transitionToTask(Logging.VICTORY_LEVEL_ID);
 }
 
 function nextLevel(enableChallenge) {
