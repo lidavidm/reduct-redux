@@ -3,6 +3,18 @@ import * as esprima from "esprima";
 function modifier(ast) {
     if (ast.body.length !== 2) return null;
     if (ast.body[0].type !== "ExpressionStatement") return null;
+
+    if (ast.body[0].expression.type === "CallExpression" &&
+        ast.body[0].expression.callee.type === "Identifier") {
+        return [
+            {
+                name: ast.body[0].expression.callee.name,
+                params: ast.body[0].expression.arguments.map(x => x.name),
+            },
+            ast.body[1],
+        ];
+    }
+
     if (ast.body[0].expression.type !== "Identifier") return null;
     return [ ast.body[0].expression.name, ast.body[1] ];
 }
@@ -46,6 +58,10 @@ export function makeParser(jssemant) {
             }
             else if (modName === "__argumentAnnotated") {
                 result.body = jssemant.missing();
+                result = [ result, jssemant.defineAttach() ];
+            }
+            else if (modName.name === "__argumentAnnotated") {
+                result.params = modName.params;
                 result = [ result, jssemant.defineAttach() ];
             }
             else {
