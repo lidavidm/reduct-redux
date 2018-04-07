@@ -319,8 +319,9 @@ function raySegmentIntersect(p, r, q, s) {
 
     if (Math.abs(rxs) < 1e-5) {
         if (Math.abs(qmpxr) < 1e-5) {
-            // TODO
-            console.error("Shouldn't happen");
+            // Colinear
+            // TODO: this is wrong
+            return { x: q.x, y: q.y };
         }
         // Parallel and non-intersecting
         return null;
@@ -430,8 +431,7 @@ export function optimizationPacking(stage, bounds, nodeIds) {
         initCoords.push(y);
     }
 
-    const { solution } = numeric.uncmin(f, initCoords, undefined, undefined, 500);
-    console.log(solution);
+    const { solution } = numeric.uncmin(f, initCoords, undefined, undefined, 10);
 
     const positions = new Map();
     let i = 0;
