@@ -884,7 +884,13 @@ export default function transform(definition) {
 
     module.notchesAttachable = function(stage, state, parentId, childId, notchPair) {
         const nodes = state.get("nodes");
-        const defn = module.definitionOf(nodes.get(parentId));
+        const parent = nodes.get(parentId);
+
+        // Prevent double-attaching
+        if (parent.has(`notch${notchPair[0]}`)) return false;
+
+        const defn = module.definitionOf(parent);
+
         if (defn && defn.notches && defn.notches[notchPair[0]]) {
             const notchDefn = defn.notches[notchPair[0]];
             if (notchDefn.canAttach) {
