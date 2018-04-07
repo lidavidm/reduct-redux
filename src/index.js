@@ -104,6 +104,8 @@ function initialize() {
             if (Object.keys(matching).length > 0) {
                 const finalState = level.serialize(stg.getState(), es6);
                 stg.animateVictory(matching).then(() => {
+                    persistGraph();
+
                     Logging.log("victory", {
                         final_state: finalState,
                         // TODO: track num of moves via undo stack?
@@ -181,6 +183,52 @@ function initialize() {
     start();
 }
 
+// Log state graph, using multiple requests to avoid problem of too-long URI.
+let __monotonic = 0;
+function persistGraph() {
+    if (!stg || !stg.stateGraph) return;
+
+    try {
+        const graph = stg.stateGraph.serialize();
+
+        // Up to 2000 characters, as per
+        // https://stackoverflow.com/a/417184, minus some for other
+        // parameters
+        const MAX_BLOB_LENGTH = 1500;
+
+        const persistArray = (array, action) => {
+            let serialized = 0;
+            let counter = 0;
+
+            while (serialized < array.length) {
+                const attempt = {
+                    graphSequenceID: __monotonic,
+                    payloadSequenceID: counter,
+                    partialData: [ array[serialized] ],
+                };
+
+                while (JSON.stringify(attempt).length < MAX_BLOB_LENGTH &&
+                       serialized + attempt.partialData.length < array.length) {
+                    attempt.partialData.push(array[serialized + attempt.partialData.length]);
+                }
+                if (attempt.partialData.length > 1 &&
+                    JSON.stringify(attempt).length > MAX_BLOB_LENGTH) {
+                    attempt.partialData.pop();
+                }
+                serialized += attempt.partialData.length;
+                Logging.log(action, attempt);
+
+                counter += 1;
+            }
+        };
+        persistArray(graph.nodes, "state-path-save-nodes");
+        persistArray(graph.edges, "state-path-save-edges");
+    }
+    finally {
+        __monotonic += 1;
+    }
+}
+
 function start() {
     animate.clock.cancelAll();
     if (progression.currentLevel() === 0) {
@@ -192,6 +240,7 @@ function start() {
     window.stage = stg;
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
+
     Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
         level.startLevel(levelDefinition, es6.parser.parse, store, stg);
         stg.drawImpl();
@@ -227,6 +276,7 @@ function showChapterEnd() {
 }
 
 function nextLevel(enableChallenge) {
+    persistGraph();
     if (progression.isChapterEnd() && !(stg instanceof ChapterEndStage)) {
         if (progression.isGameEnd()) {
             Logging.log("game-complete");
@@ -253,6 +303,7 @@ window.next = function next(challenge) {
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
+    persistGraph();
     progression.prevLevel();
     start();
 };

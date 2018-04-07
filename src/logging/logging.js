@@ -490,6 +490,8 @@ Logger.prototype.ACTIONS = {
     "unfold": 108,
     "unfold-start": 109,
     "unfold-cancel": 110,
+    "state-path-save-nodes": 111,
+    "state-path-save-edges": 112,
 };
 
 const Logging = new Logger();
