@@ -1,3 +1,5 @@
+import * as immutable from "immutable";
+
 const baseReference = {
     kind: "expression",
     fields: ["name"],
@@ -97,6 +99,27 @@ export default {
                 const resNode = state.get("nodes").get(res);
                 if (resNode.get("type") === "define") {
                     res = resNode.get("body");
+                }
+
+                if (expr.get("name") === "repeat") {
+                    // Black-box repeat
+                    const times = state.get("nodes").get(expr.get("arg_n"));
+                    const fn = state.get("nodes").get(expr.get("arg_f"));
+                    if (times.get("type") !== "number") return null;
+
+                    let resultExpr = semant.lambdaVar("x");
+                    const hydratedFn = semant.hydrate(state.get("nodes"), fn);
+                    // TODO: if hydrated function is a reference-with-holes, apply directly
+                    for (let i = 0; i < times.get("value"); i++) {
+                        resultExpr = semant.apply(hydratedFn, resultExpr);
+                    }
+                    resultExpr = semant.lambda(semant.lambdaArg("x"), resultExpr);
+                    const newNodes = semant.flatten(resultExpr).map(n => immutable.Map(n));
+                    return [
+                        expr.get("id"),
+                        [ newNodes[0].get("id") ],
+                        newNodes,
+                    ];
                 }
 
                 if (!(expr.has("parent") && state.getIn([ "nodes", expr.get("parent"), "type"]) === "define") &&
