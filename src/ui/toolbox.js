@@ -15,15 +15,6 @@ export default class Toolbox {
             size: { h: TOOLBOX_ROW_HEIGHT },
         })), "bottom"));
 
-        this.infBg = stage.allocateInternal(gfx.shapes.circle({
-            size: { w: 40, h: 40 },
-            color: "#0D0",
-        }));
-        this.inf = stage.allocateInternal(gfx.sprite({
-            image: Loader.images["infinity-symbol"],
-            size: { h: 12, w: 25 },
-        }));
-
         this._firstRender = true;
         this.rows = 1;
     }
@@ -145,18 +136,23 @@ export default class Toolbox {
             }
 
             x += projection.size.w + TOOLBOX_INNER_MARGIN;
+
             projection.prepare(nodeId, nodeId, state, this.stage);
-            projection.draw(nodeId, nodeId, state, this.stage, this.stage.makeBaseOffset());
 
             const node = state.get("nodes").get(nodeId);
             if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
-                this.stage.internalViews[this.infBg].draw(-1, nodeId, state, this.stage, this.stage.makeBaseOffset({
-                    x: projection.pos.x + projection.size.w - 33,
-                    y: projection.pos.y - 20,
+                projection.draw(nodeId, nodeId, state, this.stage, this.stage.makeBaseOffset({
+                    x: 2,
+                    y: 6,
                 }));
-                this.stage.internalViews[this.inf].draw(null, null, state, this.stage, this.stage.makeBaseOffset({
-                    x: projection.pos.x + projection.size.w - 25,
-                    y: projection.pos.y - 5,
+            }
+
+            projection.draw(nodeId, nodeId, state, this.stage, this.stage.makeBaseOffset());
+
+            if (node.has("__meta") && node.get("__meta").toolbox.unlimited) {
+                projection.draw(nodeId, nodeId, state, this.stage, this.stage.makeBaseOffset({
+                    x: -2,
+                    y: -6,
                 }));
             }
 
