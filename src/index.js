@@ -220,9 +220,16 @@ function persistGraph() {
 
                 counter += 1;
             }
+
+            return counter - 1;
         };
-        persistArray(graph.nodes, "state-path-save-nodes");
-        persistArray(graph.edges, "state-path-save-edges");
+        const lastNodeCounter = persistArray(graph.nodes, "state-path-save-nodes");
+        const lastEdgeCounter = persistArray(graph.edges, "state-path-save-edges");
+        Logging.log("state-path-save-graph", {
+            "nodePayloadSequenceIDEnd": lastNodeCounter,
+            "edgePayloadSequenceIDEnd": lastEdgeCounter,
+            "graphSequenceId": __monotonic,
+        });
     }
     finally {
         __monotonic += 1;

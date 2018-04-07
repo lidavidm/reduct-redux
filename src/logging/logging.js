@@ -494,8 +494,11 @@ Logger.prototype.ACTIONS = {
     "unfold": 108,
     "unfold-start": 109,
     "unfold-cancel": 110,
+    // State graph quickly grows beyond what we can store in one
+    // logging call, so we split it up and log a record at the end
     "state-path-save-nodes": 111,
     "state-path-save-edges": 112,
+    "state-path-save-graph": 113,
 };
 
 const Logging = new Logger();
