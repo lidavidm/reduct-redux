@@ -348,11 +348,13 @@ function raySegmentIntersect(p, r, q, s) {
     const t = qmpxs / rxs;
     const u = qmpxr / rxs;
 
-    if (u >= 0 && u <= 1) {
+    if (u >= 0 && u <= 1 && t >= 0) {
         // Intersection
         return {
             x: p.x + (t * r.x),
             y: p.y + (t * r.y),
+            t,
+            u,
         };
     }
     // Non-parallel and non-intersecting
