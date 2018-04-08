@@ -35,7 +35,8 @@ export default class Goal {
 
     startLevel(textGoal, showConcreteGoal=false) {
         if (textGoal) {
-            this.text = this.stage.allocate(gfx.text(textGoal, {
+            const punctuation = textGoal.match(/(\.|!|\?)$/) ? "" : ".";
+            this.text = this.stage.allocate(gfx.text(`${textGoal}${punctuation} Goal:`, {
                 fontSize: 20,
                 font: gfx.text.sans,
             }));
