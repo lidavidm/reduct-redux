@@ -200,6 +200,10 @@ export class InterpolateTween extends Tween {
             return false;
         }
 
+        // Guard against very long time steps (e.g. when paused by a
+        // debugger)
+        dt = dt % this.duration;
+
         if (this.reversing) {
             this.remaining += dt;
         }
