@@ -85,13 +85,16 @@ export function startLevel(description, parse, store, stage) {
     stage.startLevel(description.textgoal, description.showConcreteGoal);
     stage.registerNewDefinedNames(newDefinedNames.map(elem => elem[0]));
 
+    const state = stage.getState();
+    const nodes = state.get("nodes");
+
     // Lay out the board.
     const positions = layout.ianPacking(stage, {
         x: 20,
         y: 120,
         w: stage.width - 40,
         h: (stage.height - (stage.toolbox.size.h * 1.5) - 140),
-    }, stage.getState().get("board").toArray());
+    }, state.get("board").toArray().filter(id => nodes.get(id).get("type") !== "defineAttach"));
 
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
@@ -105,8 +108,8 @@ export function startLevel(description, parse, store, stage) {
     // notches along the side for defines. Eventually we would want
     // this to be customizable as well.
     let notchY = 160;
-    for (const nodeId of stage.getState().get("board")) {
-        const node = stage.getState().get("nodes").get(nodeId);
+    for (const nodeId of state.get("board")) {
+        const node = nodes.get(nodeId);
         if (node.get("type") === "defineAttach") {
             stage.views[nodeId].pos.y = notchY;
             notchY += 160;
@@ -114,7 +117,6 @@ export function startLevel(description, parse, store, stage) {
     }
 
     // For anything that is fading, spawn the old node on top
-    const state = stage.getState();
     const checkFade = source => (nodeId, idx) => {
         if (stage.semantics.search(
             state.get("nodes"), nodeId,
