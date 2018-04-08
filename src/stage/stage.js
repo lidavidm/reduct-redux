@@ -1168,6 +1168,8 @@ export default class Stage extends BaseStage {
                     cause: this.saveNode(errorNodeId),
                 });
             },
+        }).catch((_errorNodeId) => {
+            // Ignore reduction errors, the reducer already handled it
         }).finally(finishReducing);
 
         if (this.mode === "big") {
