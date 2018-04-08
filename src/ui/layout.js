@@ -261,6 +261,32 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         force = Math.max(10, force * 0.95);
     }
 
+    // Recenter? (Compute bounding box and shift things so they are centered)
+    let xmin = 10000;
+    let ymin = 10000;
+    let xmax = 0;
+    let ymax = 0;
+    for (const id of positions.keys()) {
+        const pos = positions.get(id);
+        const sz = getSize(id);
+        console.log(pos, sz, bounds);
+        xmin = Math.min(xmin, pos.x - (sz.w / 2));
+        ymin = Math.min(ymin, pos.y - (sz.h / 2));
+        xmax = Math.max(xmax, pos.x + (sz.w / 2));
+        ymax = Math.max(ymax, pos.y + (sz.h / 2));
+    }
+    let dx = 0;
+    let dy = 0;
+    if (xmax - xmin < bounds.w) {
+        dx = -(bounds.w - (xmax - xmin)) / 2;
+    }
+    console.log(dx, xmax, xmin);
+    for (const id of positions.keys()) {
+        const pos = positions.get(id);
+        pos.x += dx;
+        pos.y += dy;
+    }
+
     return positions;
 }
 
