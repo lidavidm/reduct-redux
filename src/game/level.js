@@ -99,8 +99,8 @@ export function startLevel(description, parse, store, stage) {
     if (positions !== null) {
         for (const [ id, pos ] of positions) {
             const view = stage.views[id];
-            view.pos.x = pos.x + (view.size.w / 2);
-            view.pos.y = pos.y + (view.size.h / 2);
+            view.pos.x = pos.x;
+            view.pos.y = pos.y;
         }
     }
 
