@@ -375,6 +375,8 @@ export function reduct(semantics, views) {
                 actionFilter: act =>
                     act.type === action.RAISE ||
                     act.type === action.HOVER ||
+                    // Prevent people from undoing start of level
+                    act.type === action.START_LEVEL ||
                     act.skipUndo,
                 extraState: (state, newState) => {
                     const result = {};
