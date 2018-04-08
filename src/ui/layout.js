@@ -152,6 +152,7 @@ export function ianPacking(stage, bounds, nodeIds) {
     return null;
 }
 
+window.steps = 30;
 export function repulsorPacking(stage, bounds, nodeIds) {
     nodeIds.sort();
 
@@ -185,41 +186,31 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         const sz1 = getSize(id1);
         const pos2 = positions.get(id2);
         const sz2 = getSize(id2);
+        return Math.exp(edgeDistance({
+            cx: pos1.x,
+            cy: pos1.y,
+            w: sz1.w,
+            h: sz1.h,
+        }, {
+            cx: pos2.x,
+            cy: pos2.y,
+            w: sz2.w,
+            h: sz2.h,
+        }) / 2);
 
-        // TODO: cast ray between origins, find intersecting points
-        // with both their sides and take distances of that
-
-        return Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
+        // return Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
     };
 
     const positions = new Map();
-    let force = 40;
+    let force = 30;
 
-    // if (progression.currentLevel() === 0) {
-        const centerX = bounds.x + (bounds.w / 2);
-        const centerY = bounds.y + (bounds.h / 2);
-        for (const nodeId of nodeIds) {
-            positions.set(nodeId, { x: centerX, y: centerY });
-        }
-    // }
-    // else {
-    //     for (const nodeId of nodeIds) {
-    //         const size = getSize(nodeId);
+    const centerX = bounds.x + (bounds.w / 2);
+    const centerY = bounds.y + (bounds.h / 2);
+    for (const nodeId of nodeIds) {
+        positions.set(nodeId, { x: centerX, y: centerY });
+    }
 
-    //         let y = 0;
-    //         while (y < 50) {
-    //             y = (seededRandom() * (bounds.h - size.h)) + bounds.y;
-    //         }
-
-    //         const x = Math.max((seededRandom() * (bounds.w - size.w)) + bounds.x, bounds.x);
-
-    //         const pos = { x, y };
-    //         positions.set(nodeId, pos);
-    //     }
-    // }
-
-
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < window.steps; i++) {
         const forces = new Map();
 
         for (const id1 of nodeIds) {
@@ -227,55 +218,47 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         }
 
         for (const id1 of nodeIds) {
+            const pos1 = positions.get(id1);
+            const sz1 = getSize(id1);
+
             for (const id2 of nodeIds) {
                 if (id1 <= id2) continue;
 
                 let dx = 0;
                 let dy = 0;
-                // const pos1 = positions.get(id1);
-                // const pos2 = positions.get(id2);
-
-                // if (intersects(positions, id1, id2)) {
-                //     dx = force;
-                //     dy = force;
-
-                //     if (pos1.x < pos2.x) {
-                //         dx *= -1;
-                //     }
-
-                //     if (pos1.y < pos2.y) {
-                //         dy *= -1;
-                //     }
-
-                // }
-                // else {
-                    // Use centerpos
-                    const pos1 = gfx.centerPos(stage.getView(id1));
-                    const pos2 = gfx.centerPos(stage.getView(id2));
-                    const d = Math.max(1, distance(positions, id1, id2)) / 5;
-                    const delx = pos2.x - pos1.x;
-                    const dely = pos2.y - pos1.y;
+                const pos2 = positions.get(id2);
+                const d = Math.max(1, distance(positions, id1, id2)) / 5;
+                const delx = pos2.x - pos1.x;
+                const dely = pos2.y - pos1.y;
                 const angle = i === 0 ? seededRandom(0, 2 * Math.PI) : Math.atan2(dely, delx);
 
-                    dx = -(force / d) * Math.cos(angle);
-                    dy = -(force / d) * Math.sin(angle);
-                // }
+                dx = -(force / d) * Math.cos(angle);
+                dy = -(force / d) * Math.sin(angle);
 
                 forces.get(id1).x += dx;
                 forces.get(id1).y += dy;
                 forces.get(id2).x -= dx;
                 forces.get(id2).y -= dy;
             }
+
+            // forces.get(id1).x += Math.max(100, force) / (((pos1.x - (sz1.w / 2)) - bounds.x) ** 2);
+            // forces.get(id1).y += Math.max(100, force) / (((pos1.y - (sz1.h / 2)) - bounds.y) ** 2);
+            forces.get(id1).x -= Math.max(100, force) / (((pos1.x + (sz1.w / 2)) - (bounds.x + bounds.w)) ** 2);
+            forces.get(id1).y -= Math.max(100, force) / (((pos1.y + (sz1.h / 2)) - (bounds.y + bounds.h)) ** 2);
         }
 
         for (const id1 of nodeIds) {
-            // TODO constrain via bounds
+            // Constrain positions via bounds
             const pos = positions.get(id1);
-            pos.x += forces.get(id1).x;
-            pos.y += forces.get(id1).y;
+            const sz1 = getSize(id1);
+
+            pos.x = Math.max(bounds.x + (sz1.w / 2), pos.x + forces.get(id1).x);
+            pos.y = Math.max(bounds.y + (sz1.h / 2), pos.y + forces.get(id1).y);
+            pos.x = Math.min(pos.x, (bounds.x + bounds.w) - (sz1.w / 2));
+            pos.y = Math.min(pos.y, (bounds.y + bounds.h) - (sz1.h / 2));
         }
 
-        force = Math.max(25, force * 0.9);
+        force = Math.max(10, force * 0.95);
     }
 
     return positions;
