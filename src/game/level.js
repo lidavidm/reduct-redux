@@ -89,7 +89,7 @@ export function startLevel(description, parse, store, stage) {
     const nodes = state.get("nodes");
 
     // Lay out the board.
-    const positions = layout.ianPacking(stage, {
+    const positions = layout.repulsorPacking(stage, {
         x: 20,
         y: 120,
         w: stage.width - 40,
@@ -165,6 +165,7 @@ export function startLevel(description, parse, store, stage) {
         });
     }
 
+    // Bump things away from edges
     animate.after(500).then(() => {
         for (const topViewId of stage.getState().get("board")) {
             stage.bumpAwayFromEdges(topViewId);
