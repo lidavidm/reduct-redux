@@ -371,21 +371,28 @@ function edgeDistance(aabb1, aabb2) {
     const p = { x: aabb1.cx, y: aabb1.cy };
     const r = { x: aabb2.cx - aabb1.cx, y: aabb2.cy - aabb1.cy };
 
+    if (Math.abs(r.x) < 1e-5 && Math.abs(r.y) < 1e-5) {
+        // Boxes have same center
+        return -Math.min(Math.abs(aabb1.w - aabb2.w), Math.abs(aabb1.h - aabb2.h));
+    }
+
     let point1;
+    let t1 = 1000000;
     let point2;
+    let t2 = 1000000;
     for (const [ q, s ] of aabbSides(aabb1)) {
         const result = raySegmentIntersect(p, r, q, s);
-        if (result) {
+        if (result && result.t < t1) {
             point1 = result;
-            break;
+            t1 = result.t;
         }
     }
 
     for (const [ q, s ] of aabbSides(aabb2)) {
         const result = raySegmentIntersect(p, r, q, s);
-        if (result) {
+        if (result && result.t < t2) {
             point2 = result;
-            break;
+            t2 = result.t;
         }
     }
 
