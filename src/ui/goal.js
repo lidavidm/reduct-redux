@@ -35,24 +35,36 @@ export default class Goal {
 
     startLevel(textGoal, showConcreteGoal=false) {
         if (textGoal) {
-            const punctuation = textGoal.match(/(\.|!|\?)$/) ? "" : ".";
-            this.text = this.stage.allocate(gfx.text(`${textGoal}${punctuation} Goal:`, {
+            this.text = this.stage.allocate(gfx.text(textGoal, {
                 fontSize: 20,
                 font: gfx.text.sans,
             }));
-            let contents = null;
+            let container = null;
             if (showConcreteGoal) {
-                contents = (_id, state) => {
-                    const result = [ this.text ];
+                const goalLabel = this.stage.allocate(gfx.text("Goal: ", {
+                    fontSize: 20,
+                    font: gfx.text.sans,
+                }));
+
+                const contents = (_id, state) => {
+                    const result = [ goalLabel ];
                     return result.concat(state.get("goal").toArray());
                 };
+                container = this.stage.allocate(gfx.layout.vbox(gfx.constant(
+                    this.text,
+                    this.stage.allocate(gfx.layout.hbox(contents, {
+                        subexpScale: 1,
+                    }, gfx.baseProjection))
+                ), {
+                    subexpScale: 1,
+                }, gfx.baseProjection));
             }
             else {
-                contents = gfx.constant(this.text);
+                const contents = gfx.constant(this.text);
+                container = this.stage.allocate(gfx.layout.hbox(contents, {
+                    subexpScale: 1,
+                }, gfx.baseProjection));
             }
-            const container = this.stage.allocate(gfx.layout.hbox(contents, {
-                subexpScale: 1,
-            }, gfx.baseProjection));
 
             this.container = this.stage.allocate(gfx.patch3(gfx.constant(container), {
                 left: Loader.images["caption-long-left"],
@@ -65,6 +77,10 @@ export default class Goal {
             x: this.stage.getView(this.alien).size.w,
             y: 5,
         };
+
+        if (textGoal) {
+            this.stage.getView(this.container).pos.x -= 20;
+        }
     }
 
     drawImpl(state) {
