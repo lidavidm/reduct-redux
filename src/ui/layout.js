@@ -186,17 +186,21 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         const sz1 = getSize(id1);
         const pos2 = positions.get(id2);
         const sz2 = getSize(id2);
-        return Math.exp(edgeDistance({
+        const aabb1 = {
             cx: pos1.x,
             cy: pos1.y,
             w: sz1.w,
             h: sz1.h,
-        }, {
+        };
+        const aabb2 = {
             cx: pos2.x,
             cy: pos2.y,
             w: sz2.w,
             h: sz2.h,
-        }) / 2);
+        };
+
+        const d = edgeDistance(aabb1, aabb2);
+        return Math.exp(d / 2);
 
         // return Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
     };
@@ -241,6 +245,7 @@ export function repulsorPacking(stage, bounds, nodeIds) {
                 forces.get(id2).y -= dy;
             }
 
+            // Some forces to keep things away from edges
             // forces.get(id1).x += Math.max(100, force) / (((pos1.x - (sz1.w / 2)) - bounds.x) ** 2);
             // forces.get(id1).y += Math.max(100, force) / (((pos1.y - (sz1.h / 2)) - bounds.y) ** 2);
             forces.get(id1).x -= Math.max(100, force) / (((pos1.x + (sz1.w / 2)) - (bounds.x + bounds.w)) ** 2);
@@ -261,7 +266,7 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         force = Math.max(10, force * 0.95);
     }
 
-    // Recenter? (Compute bounding box and shift things so they are centered)
+    // Recenter (Compute bounding box and shift things so they are centered)
     let xmin = 10000;
     let ymin = 10000;
     let xmax = 0;
@@ -276,15 +281,13 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         ymax = Math.max(ymax, pos.y + (sz.h / 2));
     }
     let dx = 0;
-    let dy = 0;
     if (xmax - xmin < bounds.w) {
-        dx = -(bounds.w - (xmax - xmin)) / 2;
+        dx = (bounds.w - (xmax - xmin)) / 2;
+        dx = dx - xmin;
     }
-    console.log(dx, xmax, xmin);
     for (const id of positions.keys()) {
         const pos = positions.get(id);
         pos.x += dx;
-        pos.y += dy;
     }
 
     return positions;
