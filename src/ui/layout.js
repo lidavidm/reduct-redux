@@ -329,8 +329,16 @@ function raySegmentIntersect(p, r, q, s) {
     if (Math.abs(rxs) < 1e-5) {
         if (Math.abs(qmpxr) < 1e-5) {
             // Colinear
-            // TODO: this is wrong
-            return { x: q.x, y: q.y };
+            const t0 = (qmp.x * r.x + qmp.y * r.y) / (r.x**2 + r.y**2);
+            // const qmpps = { x: q.x + s.x - p.x, y: q.x + s.y - p.y };
+            // const t1 = (qmpps.x * r.x + qpsmp.y * r.y) / (r.x**2 + r.y**2);
+            if (t0 >= 0) {
+                return {
+                    x: p.x + (t0 * r.x),
+                    y: p.y + (t0 * r.y),
+                    t: t0,
+                };
+            }
         }
         // Parallel and non-intersecting
         return null;
