@@ -1,5 +1,4 @@
 export default function consent() {
-    console.log("Showing consent form");
     return new Promise((resolve) => {
         window.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#consent")

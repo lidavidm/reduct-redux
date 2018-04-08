@@ -189,7 +189,6 @@ export class LoaderClass {
                             chapter.endIdx = progression.levels.length - 1;
 
                             remaining--;
-                            console.info("Loader#loadChapters: traversed", chapterName);
 
                             // TODO: patch defines
                             for (const level of chapter.levels) {
@@ -222,7 +221,7 @@ export class LoaderClass {
                         }
                     }
 
-                    console.error("Could not finish digraph.");
+                    console.error("Loader#loadChapters: Could not finish digraph.");
                     break;
                 }
 

@@ -264,7 +264,6 @@ export function repulsorPacking(stage, bounds, nodeIds) {
     for (const id of positions.keys()) {
         const pos = positions.get(id);
         const sz = getSize(id);
-        console.log(pos, sz, bounds);
         xmin = Math.min(xmin, pos.x - (sz.w / 2));
         ymin = Math.min(ymin, pos.y - (sz.h / 2));
         xmax = Math.max(xmax, pos.x + (sz.w / 2));

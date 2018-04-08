@@ -245,7 +245,9 @@ export default class Network {
         let nodes = new vis.DataSet(this.nodes.map(n => {
             let v = { id:       n.id,
                       label:     toLabel(n) };
-            if (n.data === 'reset' || n.data === 'prev' || n.data === 'next') {        // Mark reset state.
+            if (n.data === 'reset' || n.data === 'prev' ||
+                n.data === 'next' || n.data === 'change-chapter') {
+                // Mark reset state.
                 v.reset = true;
                 v.color = {
                     background: '#BDAEC6',
@@ -255,8 +257,9 @@ export default class Network {
                         border: 'Indigo'
                     }
                 };
-            } else if ((n.id === lastNodeId && n.data && // Check for victory state.
-                        this.compare(n.data.goal, n.data.board)) || n.data === "victory") {
+            } else if (n.data === "victory" || // Check for victory state.
+                       (n.id === lastNodeId && n.data &&
+                        this.compare(n.data.goal, n.data.board))) {
                 v.final = true;
                 v.color = {
                     background: 'Gold',
