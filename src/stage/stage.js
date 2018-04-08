@@ -1,7 +1,6 @@
 import * as immutable from "immutable";
 
 import * as action from "../reducer/action";
-import * as reducer from "../reducer/reducer";
 import * as level from "../game/level";
 import * as animate from "../gfx/animate";
 import Audio from "../resource/audio";
@@ -1099,7 +1098,7 @@ export default class Stage extends BaseStage {
         // const mode = document.querySelector("#evaluation-mode").value;
         this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
-                if (this.alreadyWon) return;
+                if (this.alreadyWon) return Promise.resolve(this.getState());
 
                 const topView = this.views[topNodeId];
 
@@ -1108,7 +1107,7 @@ export default class Stage extends BaseStage {
                 }
 
                 const state = this.getState();
-                const tempNodes = state.get("nodes").withMutations(nodes => {
+                const tempNodes = state.get("nodes").withMutations((nodes) => {
                     for (const node of addedNodes) {
                         nodes.set(node.get("id"), node);
                     }
@@ -1197,7 +1196,6 @@ export default class Stage extends BaseStage {
             if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
                 const body = topNodeRecord.get("body");
                 Audio.play("pop");
-                let fxId = null;
 
                 this.views[topNode].pos = gfxCore.centerPos(this.views[topNode]);
                 this.views[topNode].anchor = { x: 0.5, y: 0.5 };
@@ -1223,7 +1221,7 @@ export default class Stage extends BaseStage {
                         duration: 1000,
                         easing: animate.Easing.Cubic.Out,
                     }).delay(350), true),
-                    animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds)
+                    animate.fx.emerge(this, this.getState(), bodyPos, bodySize, resultNodeIds),
                 ])
                     .then(() => {
                         this.views[topNode].opacity = 1;
