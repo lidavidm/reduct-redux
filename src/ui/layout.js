@@ -152,7 +152,8 @@ export function ianPacking(stage, bounds, nodeIds) {
     return null;
 }
 
-window.steps = 30;
+const REPULSOR_STEPS = 30;
+
 export function repulsorPacking(stage, bounds, nodeIds) {
     nodeIds.sort();
 
@@ -168,17 +169,6 @@ export function repulsorPacking(stage, bounds, nodeIds) {
             sizeCache[id] = gfx.absoluteSize(stage.views[id]);
         }
         return sizeCache[id];
-    };
-
-    const intersects = function(positions, id1, id2) {
-        const pos1 = positions.get(id1);
-        const sz1 = getSize(id1);
-        const pos2 = positions.get(id2);
-        const sz2 = getSize(id2);
-        return !(pos2.x > pos1.x + sz1.w ||
-                 pos2.x + sz2.w < pos1.x ||
-                 pos2.y > pos1.y + sz1.h ||
-                 pos2.y + sz2.h < pos1.y);
     };
 
     const distance = function(positions, id1, id2) {
@@ -214,7 +204,7 @@ export function repulsorPacking(stage, bounds, nodeIds) {
         positions.set(nodeId, { x: centerX, y: centerY });
     }
 
-    for (let i = 0; i < window.steps; i++) {
+    for (let i = 0; i < REPULSOR_STEPS; i++) {
         const forces = new Map();
 
         for (const id1 of nodeIds) {
