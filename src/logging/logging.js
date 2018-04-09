@@ -14,9 +14,9 @@ import * as action from "../reducer/action";
 import * as undoAction from "../reducer/undo";
 import * as ajax from "../util/ajax";
 import * as random from "../util/random";
+import { VERSION, VERSION_ID } from "../version";
 
 const GAME_ID = 70017019;
-const VERSION_ID = 1;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 const REMOTE_LOGGER_URL = "//gdiac.cs.cornell.edu/research_games/";
@@ -35,6 +35,7 @@ class Logger {
         this.resetConfig();
         this.loadConfig();
 
+        this.info(`reduct-redux version ${VERSION} (v${VERSION_ID})`);
         this.info(`Environment: ${process.env.NODE_ENV}`);
         this.config("debug", process.env.NODE_ENV !== "production");
 
