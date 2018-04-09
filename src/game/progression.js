@@ -169,7 +169,8 @@ export function save() {
 }
 
 export function restore() {
-    if (window.localStorage["version"] !== VERSION) {
+    if (parseInt(window.localStorage["version"], 10) !== VERSION) {
+        save();
         return;
     }
 
