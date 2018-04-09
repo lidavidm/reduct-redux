@@ -39,19 +39,25 @@ export function patch3(childFunc, options={}) {
     projection.prepare = function(id, exprId, state, stage) {
         const childId = childFunc(id, state);
         const childProjection = stage.views[childId];
+
         childProjection.prepare(childId, exprId, state, stage);
-        this.imageScale = 1.4 * childProjection.size.h / options.middle.naturalHeight;
+
+        this.imageScale = 1.4 * (childProjection.size.h / options.middle.naturalHeight);
         this.middleSegments = Math.ceil(childProjection.size.w /
                                         (options.middle.naturalWidth * this.imageScale));
         const middleWidth = this.middleSegments * this.imageScale * options.middle.naturalWidth;
-        childProjection.pos.x = options.left.naturalWidth * this.imageScale + (middleWidth - childProjection.size.w) / 2;
-        childProjection.pos.y = (options.middle.naturalHeight * this.imageScale - childProjection.size.h) / 2;
+        childProjection.pos.x = (options.left.naturalWidth * this.imageScale) +
+            ((middleWidth - childProjection.size.w) / 2);
+        childProjection.pos.y =
+            ((options.middle.naturalHeight * this.imageScale) - childProjection.size.h) / 2;
         childProjection.parent = this;
 
-        this.size.w = middleWidth + ((options.left.naturalWidth + options.right.naturalWidth) * this.imageScale);
+        this.size.w = middleWidth +
+            ((options.left.naturalWidth + options.right.naturalWidth) * this.imageScale);
     };
+
     projection.draw = function(id, exprId, state, stage, offset) {
-        const ctx = stage.ctx;
+        const { ctx } = stage;
         ctx.save();
 
         let [ sx, sy ] = util.absoluteScale(this, offset);
@@ -60,16 +66,17 @@ export function patch3(childFunc, options={}) {
 
         util.setOpacity(ctx, this.opacity, offset);
 
-        const topY = offset.y + this.pos.y * offset.sy;
+        const topY = offset.y + (this.pos.y * offset.sy);
 
-        options.left.draw(ctx,
-                          offset.x + this.pos.x * offset.sx,
-                          topY,
-                          sx * options.left.naturalWidth,
-                          sy * options.left.naturalHeight);
+        options.left.draw(
+            ctx,
+            offset.x + (this.pos.x * offset.sx),
+            topY,
+            sx * options.left.naturalWidth,
+            sy * options.left.naturalHeight
+        );
 
-        let x = offset.x + this.pos.x * offset.sx + sx * options.left.naturalWidth;
-        let subX = x;
+        let x = offset.x + (this.pos.x * offset.sx) + (sx * options.left.naturalWidth);
 
         for (let i = 0; i < this.middleSegments; i++) {
             const w = sx * options.middle.naturalWidth;
@@ -77,14 +84,16 @@ export function patch3(childFunc, options={}) {
             x += w;
         }
 
-        options.right.draw(ctx, x, topY,
-                           sx * options.right.naturalWidth,
-                           sy * options.right.naturalHeight);
+        options.right.draw(
+            ctx, x, topY,
+            sx * options.right.naturalWidth,
+            sy * options.right.naturalHeight
+        );
 
         const childId = childFunc(id, state);
         const subOffset = Object.assign({}, offset, {
-            x: offset.x + this.pos.x * offset.sx,
-            y: offset.y + this.pos.y * offset.sy,
+            x: offset.x + (this.pos.x * offset.sx),
+            y: offset.y + (this.pos.y * offset.sy),
             sx: offset.sx * this.scale.x,
             sy: offset.sy * this.scale.y,
             opacity: this.opacity,
@@ -99,5 +108,6 @@ export function patch3(childFunc, options={}) {
     projection.children = function(exprId, state) {
         return childFunc(exprId, state);
     };
+
     return projection;
 }
