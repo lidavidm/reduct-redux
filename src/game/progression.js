@@ -4,8 +4,9 @@ export const PROGRESSIONS = {
     "Elementary": {
         dir: "levels-progression/",
         digraph: {
-            "functions": ["functions-challenge"],
-            "functions-challenge": ["arithmetic"],
+            // "functions": ["functions-challenge"],
+            "functions": [],
+            // "functions-challenge": ["arithmetic"],
             "arithmetic": ["application"],
             "application": ["definition"],
             "definition": ["define-challenges"],
