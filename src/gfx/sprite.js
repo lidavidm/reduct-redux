@@ -46,6 +46,7 @@ export function patch3(childFunc, options={}) {
         const middleWidth = this.middleSegments * this.imageScale * options.middle.naturalWidth;
         childProjection.pos.x = options.left.naturalWidth * this.imageScale + (middleWidth - childProjection.size.w) / 2;
         childProjection.pos.y = (options.middle.naturalHeight * this.imageScale - childProjection.size.h) / 2;
+        childProjection.parent = this;
 
         this.size.w = middleWidth + ((options.left.naturalWidth + options.right.naturalWidth) * this.imageScale);
     };
@@ -93,6 +94,10 @@ export function patch3(childFunc, options={}) {
         debugDraw(ctx, this, offset);
 
         ctx.restore();
+    };
+
+    projection.children = function(exprId, state) {
+        return childFunc(exprId, state);
     };
     return projection;
 }
