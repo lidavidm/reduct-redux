@@ -10,6 +10,8 @@
             "goal": [
                 "1"
             ],
+            "globals": {},
+            "syntax": [],
             "animationScales": {
                 "expr-apply": 1.5
             }
@@ -27,6 +29,8 @@
                 "3",
                 "4"
             ],
+            "globals": {},
+            "syntax": [],
             "animationScales": {
                 "expr-binop": 1
             }
@@ -43,7 +47,10 @@
                 "x => x + 1",
                 "x => x + 2",
                 "x => x"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -61,7 +68,10 @@
                 "x => x - 2",
                 "x => x",
                 "x => x + 3"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -77,6 +87,8 @@
                 "3",
                 "4"
             ],
+            "globals": {},
+            "syntax": [],
             "animationScales": {
                 "expr-apply": 1
             }
@@ -99,7 +111,10 @@
                 "x => x + 2",
                 "x => x + 3",
                 "x => x"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {

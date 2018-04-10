@@ -18,7 +18,10 @@
             ],
             "goal": [
                 "true"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -30,7 +33,10 @@
             "toolbox": [
                 "mon",
                 "tue"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -39,7 +45,10 @@
             ],
             "goal": [
                 "true"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -51,7 +60,10 @@
             "toolbox": [
                 "sat",
                 "sun"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -70,7 +82,10 @@
                 "y",
                 "y",
                 "__unlimited; isSameDay;"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -94,7 +109,9 @@
             "globals": {
                 "tomorrow": "function tomorrow(x) { return x == mon ? tue : (x == tue ? wed : (x == wed ? thu : (x == thu ? fri : (x == fri ? sat : (x == sat ? sun : mon))))); }",
                 "yesterday": "function yesterday(x) { return x == mon ? sun : (x == tue ? mon : (x == wed ? tue : (x == thu ? wed : (x == fri ? thu : (x == sat ? fri : sat))))); }"
-            }
+            },
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -107,7 +124,10 @@
                 "tomorrow",
                 "yesterday",
                 "mon"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -119,11 +139,13 @@
             "toolbox": [
                 "sun",
                 "mon"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
-                "_(_)",
                 "_ == _ ? 1 : 2"
             ],
             "goal": [
@@ -133,8 +155,12 @@
                 "mon",
                 "tue",
                 "tomorrow",
-                "yesterday"
-            ]
+                "yesterday",
+                "_(_)"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -154,7 +180,10 @@
             ],
             "defines": [
                 "function isMonday(x) { return x == mon }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -177,7 +206,10 @@
             ],
             "defines": [
                 "function isFriday(x) { return x == fri }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -202,7 +234,10 @@
                 "false",
                 "x",
                 "__unlimited; isMondayOrFriday;"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -231,7 +266,10 @@
             ],
             "defines": [
                 "function isWeekend(x) { return x == sat ? true : x == sun }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -260,7 +298,10 @@
             ],
             "defines": [
                 "function isWeekday(x) { return isWeekend(x) ? false : true }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {

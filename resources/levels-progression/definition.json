@@ -95,7 +95,7 @@
                 "C",
                 "C"
             ],
-            "textgoal": "Define a function that takes an input x and outputs a triangle",
+            "textgoal": "Define a function that takes an input and outputs a triangle",
             "toolbox": [
                 "__unlimited;trianglify"
             ],
@@ -118,91 +118,9 @@
                 "B",
                 "B"
             ],
-            "textgoal": "Define a function that outputs a triangle",
+            "textgoal": "Define a function that outputs a square",
             "toolbox": [
                 "__unlimited;squarify"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "'star' == 'star'"
-            ],
-            "goal": [
-                "true"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "'triangle' == _"
-            ],
-            "goal": [
-                "true"
-            ],
-            "toolbox": [
-                "'triangle'"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "'triangle' == 'star'",
-                "_ == 'star'"
-            ],
-            "goal": [
-                "true",
-                "false"
-            ],
-            "toolbox": [
-                "'star'",
-                "'triangle'",
-                "'rect'"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "_ == _"
-            ],
-            "goal": [
-                "false"
-            ],
-            "toolbox": [
-                "'triangle'",
-                "'star'",
-                "'rect'",
-                "'star'",
-                "'triangle'",
-                "'rect'"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "(x) => 'star' == x"
-            ],
-            "goal": [
-                "true"
-            ],
-            "toolbox": [
-                "'rect'",
-                "'star'"
             ],
             "globals": {},
             "syntax": [],
@@ -673,7 +591,7 @@
                 "11",
                 "15"
             ],
-            "textgoal": "Use the repeat function to define a function that computes x plus 6",
+            "textgoal": "Define a function that computes x plus 6",
             "toolbox": [
                 "addSix",
                 "addThree",
@@ -729,7 +647,7 @@
                 "8",
                 "10"
             ],
-            "textgoal": "Use the repeat function to define a function that computes x times 2",
+            "textgoal": "Define a function that computes x times 2",
             "toolbox": [
                 "double"
             ],
@@ -751,7 +669,7 @@
                 "6",
                 "9"
             ],
-            "textgoal": "Use the repeat function to define a function that computes x times 3",
+            "textgoal": "Define a function that computes x times 3",
             "toolbox": [
                 "addTwo",
                 "addOne",
@@ -826,7 +744,7 @@
                 "6",
                 "7"
             ],
-            "textgoal": "Define a function that computs b plus 1",
+            "textgoal": "Define a function that adds 1 to the second input",
             "toolbox": [
                 "secondPlusOne",
                 "a",
@@ -855,7 +773,7 @@
                 "7",
                 "9"
             ],
-            "textgoal": "Define a function that computs a plus 2",
+            "textgoal": "Define a function that adds 2 to the first input",
             "toolbox": [
                 "firstPlusTwo",
                 "addOne",
@@ -875,13 +793,13 @@
         {
             "board": [
                 "__argumentAnnotated(func, num); function apply(func) { return _; }",
-                "__tests(f(doNothing, 3), f(addSix, 3), f(triple, 4))",
+                "__tests(f(doNothing, 3), f(addSix, 3), f(addOne, 4))",
                 "_(_)"
             ],
             "goal": [
                 "3",
                 "9",
-                "12"
+                "5"
             ],
             "textgoal": "Define a function that applies func to an input",
             "toolbox": [
@@ -890,9 +808,7 @@
                 "func",
                 "num"
             ],
-            "globals": {
-                "twice": "function twice(f) { return (x) => f(f(x)); }"
-            },
+            "globals": {},
             "syntax": [],
             "animationScales": {},
             "fade": {}

@@ -5,6 +5,83 @@
     "levels": [
         {
             "board": [
+                "'star' == 'star'"
+            ],
+            "goal": [
+                "true"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "'triangle' == _"
+            ],
+            "goal": [
+                "true"
+            ],
+            "toolbox": [
+                "'triangle'"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "'triangle' == 'star'",
+                "_ == 'star'"
+            ],
+            "goal": [
+                "true",
+                "false"
+            ],
+            "toolbox": [
+                "'star'",
+                "'triangle'",
+                "'rect'"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "_ == _"
+            ],
+            "goal": [
+                "false"
+            ],
+            "toolbox": [
+                "'triangle'",
+                "'star'",
+                "'rect'",
+                "'star'",
+                "'triangle'",
+                "'rect'"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "(x) => 'star' == x"
+            ],
+            "goal": [
+                "true"
+            ],
+            "toolbox": [
+                "'rect'",
+                "'star'"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
                 "(x) => x == 1",
                 "(y) => 2 == y",
                 "2"
@@ -304,18 +381,6 @@
             ],
             "defines": [
                 "function equals(x, y) { return x == y; }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "_ ? 'star' : 'triangle'",
-                "true"
-            ],
-            "goal": [
-                "'star'"
             ],
             "globals": {},
             "syntax": [],

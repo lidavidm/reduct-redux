@@ -16,7 +16,10 @@
                 "4",
                 "5",
                 "6"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -34,12 +37,14 @@
                 "6",
                 "7",
                 "8"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
                 "function addEight(x) { return _; }",
-                "_(_)",
                 "__tests(f(1), f(4), f(7))"
             ],
             "goal": [
@@ -56,16 +61,19 @@
                 "7",
                 "8",
                 "x",
+                "_(_)",
                 "_(_)"
             ],
             "defines": [
                 "function addEight(x) { return addTogether(8, x); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
                 "function multiplyByTwo(a) { return _; }",
-                "_(_)",
                 "_(_)",
                 "__tests(f(2), f(3), f(5))"
             ],
@@ -79,17 +87,22 @@
                 "multiplyByTwo",
                 "repeat",
                 "a",
-                "addTogether",
+                "addTwo",
+                "addOne",
                 "0",
                 "1",
                 "2",
                 "3",
                 "_(_)",
+                "_(_)",
                 "_(_)"
             ],
             "defines": [
                 "function multiplyByTwo(a) { return repeat(a, addTogether(2), 0); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         },
         {
             "board": [
@@ -116,7 +129,10 @@
             ],
             "defines": [
                 "function multiplyTogether(a, b) { return repeat(a, addTogether(b), 0); }"
-            ]
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {
