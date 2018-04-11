@@ -176,11 +176,10 @@ function initialize() {
     document.querySelector("#chapter").addEventListener("change", () => {
         if (stg.pushState) stg.pushState("change-chapter");
         const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
-        progression.jumpToLevel(lvl);
-        start();
+        start(() => progression.jumpToLevel(lvl));
     });
 
-    start();
+    start(null, { persistGraph: false });
 }
 
 // Log state graph, using multiple requests to avoid problem of too-long URI.
@@ -236,8 +235,14 @@ function persistGraph() {
     }
 }
 
-function start() {
+function start(updateLevel, options={}) {
     animate.clock.cancelAll();
+
+    if (options.persistGraph !== false) persistGraph();
+
+    // Take thunk that updates the level
+    if (updateLevel) updateLevel();
+
     if (progression.currentLevel() === 0) {
         stg = new TutorialStage(canvas, 800, 600, store, views, es6);
     }
@@ -284,7 +289,6 @@ function showChapterEnd() {
 }
 
 function nextLevel(enableChallenge) {
-    persistGraph();
     if (progression.isChapterEnd() && !(stg instanceof ChapterEndStage)) {
         if (progression.isGameEnd()) {
             Logging.log("game-complete");
@@ -292,12 +296,10 @@ function nextLevel(enableChallenge) {
         showChapterEnd();
     }
     else if (enableChallenge) {
-        progression.nextChallengeLevel();
-        start();
+        start(() => progression.nextChallengeLevel());
     }
     else {
-        progression.nextLevel();
-        start();
+        start(() => progression.nextLevel());
     }
 }
 
@@ -311,9 +313,7 @@ window.next = function next(challenge) {
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
-    persistGraph();
-    progression.prevLevel();
-    start();
+    start(() => progression.prevLevel());
 };
 
 window.updateStateGraph = function updateStateGraph(networkData) {
