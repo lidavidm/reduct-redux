@@ -2,7 +2,6 @@ import "babel-polyfill";
 import vis from "vis";
 import { createStore, applyMiddleware } from "redux";
 
-import consent from "./consent";
 import * as gfx from "./gfx/core";
 import * as animate from "./gfx/animate";
 import * as reducer from "./reducer/reducer";
@@ -35,8 +34,9 @@ Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "res
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
-Promise.all([ Loader.finished, consent() ])
-    .then(([ _, consented ]) => {
+Promise.all([ Loader.finished ])
+    .then(([ _ ]) => {
+        const consented = false;
         console.log(`User consented to logging: ${consented}`);
         if (!consented) {
             Logging.resetState();
