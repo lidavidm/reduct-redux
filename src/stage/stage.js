@@ -1321,11 +1321,9 @@ export default class Stage extends BaseStage {
                 return Promise.all(subtweens);
             })
             .then(() => {
-                const title = gfxCore.layout.sticky(gfxCore.text("You Win!", {
-                    fontSize: 56,
+                const title = gfxCore.text("You Win!", {
+                    fontSize: 64,
                     font: gfxCore.text.script,
-                }), "center", {
-                    marginY: -50,
                 });
                 const titleId = this.allocate(title);
 
@@ -1333,32 +1331,42 @@ export default class Stage extends BaseStage {
                 const chapter = progression.currentChapter();
                 for (let i = 0; i < chapter.levels.length; i++) {
                     const star = gfxCore.shapes.star({
-                        color: "gray",
+                        color: (progression.currentLevel() >= chapter.startIdx + i) ? "gold" : "gray",
                     });
                     starList.push(this.allocate(star));
                 }
 
-                const stars = gfxCore.layout.sticky(
-                    gfxCore.layout.hbox(() => starList, {}, gfxCore.baseProjection),
+                const rows = [ titleId ];
+                const layout = gfxCore.layout.sticky(
+                    gfxCore.layout.vbox(() => rows, {
+                        subexpScale: 1,
+                    }, gfxCore.baseProjection),
                     "center",
-                    {
-                        marginY: 50,
-                    }
+                    {}
                 );
-                const starsId = this.allocate(stars);
+                const layoutId = this.allocate(layout);
+
+                let i = 0;
+                while (i < starList.length) {
+                    let j = i;
+                    rows.push(this.allocate(gfxCore.layout.hbox(
+                        () => starList.slice(j, j + 9),
+                        {},
+                        gfxCore.baseProjection
+                    )));
+                    i += 9;
+                }
 
                 this.addEffect({
                     prepare: () => {
                         const state = this.getState();
-                        title.prepare(titleId, null, state, this);
-                        stars.prepare(starsId, null, state, this);
+                        layout.prepare(layoutId, null, state, this);
                     },
 
                     draw: () => {
                         const state = this.getState();
                         const offset = this.makeBaseOffset();
-                        title.draw(titleId, null, state, this, offset);
-                        stars.draw(starsId, null, state, this, offset);
+                        layout.draw(layoutId, null, state, this, offset);
                     },
                 });
 
