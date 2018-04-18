@@ -130,7 +130,7 @@
              background: rgba(0,0,0,0.8);
          }
 
-         #consent {
+         #consent, .fade-container {
              position: fixed;
              top: 0;
              left: 0;
@@ -141,16 +141,16 @@
              transition: all 1s ease-in-out;
          }
 
-         #consent.visible {
+         #consent.visible, .fade-container.visible {
              bottom: 0;
              opacity: 1;
          }
 
-         #consent.visible #consent-inner {
+         #consent.visible #consent-inner, .fade-container.visible > div {
              display: block;
          }
 
-         #consent-inner {
+         #consent-inner, .fade-container > div {
              display: none;
              background: #FFF;
              width: 40em;
@@ -162,7 +162,7 @@
              transform: translateX(-50%);
          }
 
-         #consent-inner button {
+         #consent-inner button, .fade-container.visible button {
              font-size: 1.25em;
              padding: 0.5em;
              border-radius: 0;
@@ -180,6 +180,17 @@
              height: calc(100% - 3rem);
              overflow-y: scroll;
              padding: 0 1rem;
+         }
+
+         .password-prompt {
+             margin: 1rem;
+             text-align: center;
+         }
+
+         .password-prompt input[type="password"] {
+             display: block;
+             margin: 0 auto;
+             font-size: 1.25em;
          }
 
          .dev {

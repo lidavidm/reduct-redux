@@ -12,6 +12,7 @@ import Stage from "./stage/stage";
 import TutorialStage from "./stage/tutorial";
 import ChapterEndStage from "./stage/chapterend";
 import * as undo from "./reducer/undo";
+import passwordPrompt from "./ui/instructor/password";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
@@ -308,8 +309,11 @@ window.reset = function reset() {
     start();
 };
 window.next = function next(challenge) {
-    if (stg.pushState) stg.pushState("next");
-    nextLevel(challenge);
+    passwordPrompt("Ask the teacher to skip this level!", "cornell")
+        .then(() => {
+            if (stg.pushState) stg.pushState("next");
+            nextLevel(challenge);
+        }, () => {});
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
