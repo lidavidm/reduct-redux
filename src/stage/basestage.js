@@ -259,14 +259,12 @@ export default class BaseStage {
             }
         }
         else if (touchRecord.hoverNode !== null) {
-            if (this.getState().getIn([ "nodes", touchRecord.hoverNode, "complete" ])) {
+            const node = this.getState().getIn([ "nodes", touchRecord.hoverNode ]);
+            if (this.semantics.kind(node) === "expression") {
                 this.setCursor("pointer");
-            }
-            else if (touchRecord.isExpr) {
-                this.setCursor("grab");
             }
             else {
-                this.setCursor("pointer");
+                this.setCursor("grab");
             }
         }
         else {
