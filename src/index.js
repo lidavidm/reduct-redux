@@ -309,11 +309,17 @@ window.reset = function reset() {
     start();
 };
 window.next = function next(challenge) {
+    const doNext = () => {
+        if (stg.pushState) stg.pushState("next");
+        nextLevel(challenge);
+    };
+    if (challenge) {
+        doNext();
+        return;
+    }
+
     passwordPrompt("Ask the teacher to skip this level!", "cornell")
-        .then(() => {
-            if (stg.pushState) stg.pushState("next");
-            nextLevel(challenge);
-        }, () => {});
+        .then(() => doNext(), () => {});
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
