@@ -1,3 +1,4 @@
+import * as chroma from "chroma-js";
 import * as immutable from "immutable";
 
 import * as action from "../reducer/action";
@@ -17,7 +18,6 @@ import Loader from "../loader";
 import Logging from "../logging/logging";
 import Network from "../logging/network";
 
-import BaseTouchRecord from "./touchrecord";
 import BaseStage from "./basestage";
 import StageTouchRecord from "./stagetouchrecord";
 
@@ -984,18 +984,37 @@ export default class Stage extends BaseStage {
                 });
 
                 const thisStar = this.getView(starList[progression.currentLevel() - chapter.startIdx]);
-                animate.tween(thisStar, {
-                    color: "#F00",
-                }, {
-                    duration: 2000,
-                    setAnimatingFlag: false,
-                    easing: animate.Easing.Color(animate.Easing.Cubic.In, thisStar.color, "#F00"),
-                }).then(() => {
+                return Promise.all([
+                    animate.tween(thisStar, {
+                        color: "#F00",
+                    }, {
+                        duration: 2000,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Color(animate.Easing.Cubic.In, thisStar.color, "#F00"),
+                    }),
+                    animate.tween(thisStar, {
+                        offset: { x: 0 },
+                    }, {
+                        duration: 2000,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 20),
+                    }),
+                    animate.tween(thisStar, {
+                        offset: { y: 0 },
+                    }, {
+                        duration: 2000,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 22),
+                    }),
+                ]).then(() => {
                     thisStar.color = "gold";
+                    const scale = chroma.scale("Spectral").mode("lab");
                     return animate.fx.splosion(this, gfxCore.centerPos(thisStar), {
                         explosionRadius: 400,
                         numOfParticles: 60,
                         duration: 1500,
+                        color: idx => scale(idx / 60.0),
+                        angle: idx => 2 * Math.PI * (idx / 60.0),
                     });
                 });
             });
