@@ -1060,6 +1060,10 @@ export default class Stage extends BaseStage {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
+        if (this.semantics.kind(node) !== "expression") {
+            return;
+        }
+
         if (this._currentlyReducing[selectedNode]) {
             return;
         }
