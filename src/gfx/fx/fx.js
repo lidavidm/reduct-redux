@@ -35,7 +35,7 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
             r: 0,
         }, {
             duration: 600,
-            easing: animate.Easing.Exponential.Out,
+            easing: animate.Easing.Time(t => Math.pow(t, 0.5)),
         }));
     }
 

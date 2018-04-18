@@ -109,6 +109,14 @@ export const Easing = {
         t = easing(0.0, 1.0, t);
         return start + (-4 * dy * t * t) + (4 * dy * t);
     },
+
+    /**
+     * Apply a user-supplied function to the time value, like Reduct
+     * 1.
+     */
+    Time: (fn) => (start, stop, t) => {
+        return start + ((stop - start) * fn(t));
+    },
 };
 
 /**
