@@ -783,7 +783,10 @@ export default class Stage extends BaseStage {
         this.goal.drawImpl(state);
 
         for (const fx of Object.values(this.effects)) {
-            if (fx.under) fx.draw();
+            if (fx.under) {
+                fx.prepare();
+                fx.draw();
+            }
         }
 
         for (const nodeId of state.get("board")) {
@@ -801,7 +804,10 @@ export default class Stage extends BaseStage {
         }
 
         for (const fx of Object.values(this.effects)) {
-            if (!fx.under) fx.draw();
+            if (!fx.under) {
+                fx.prepare();
+                fx.draw();
+            }
         }
 
         this.ctx.restore();
