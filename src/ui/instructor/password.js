@@ -1,9 +1,16 @@
+import { DEVELOPMENT_BUILD } from "../../logging/logging";
+
 /**
  * Display a dialog prompt and resolve when successful (reject if
  * canceled).
  */
 export default function password(promptText, password) {
     return new Promise((resolve, reject) => {
+        if (DEVELOPMENT_BUILD) {
+            resolve();
+            return;
+        }
+
         const outerContainer = document.createElement("div");
         outerContainer.classList.add("fade-container");
 

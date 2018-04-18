@@ -30,14 +30,19 @@ const URLS = {
 
 export const VICTORY_LEVEL_ID = -1;
 
+const params = new URL(window.location).searchParams;
+export const DEVELOPMENT_BUILD = typeof params.get("nodev") !== "string" && (
+    typeof params.get("dev") === "string" ||
+        process.env.NODE_ENV !== "production");
+
 class Logger {
     constructor() {
         this.resetConfig();
         this.loadConfig();
 
-        this.info(`reduct-redux version v${VERSION_ID}`);
+        this.info(`reduct-redux v${VERSION_ID} (debug: ${DEVELOPMENT_BUILD})`);
         this.info(`Environment: ${process.env.NODE_ENV}`);
-        this.config("debug", process.env.NODE_ENV !== "production");
+        this.config("debug", DEVELOPMENT_BUILD);
 
         // GDIAC server variables
         this.currentUserId = null;
