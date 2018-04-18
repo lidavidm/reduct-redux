@@ -17,6 +17,7 @@ export function splosion(stage, pos, options={}) {
         numOfParticles: 20,
         explosionRadius: 100,
         duration: 600,
+        angle: _idx => Math.random() * Math.PI * 2,
     }, options);
     const parts = [];
     const tweens = [];
@@ -32,7 +33,7 @@ export function splosion(stage, pos, options={}) {
         };
         parts.push(record);
 
-        const theta = Math.random() * Math.PI * 2;
+        const theta = options.angle(i);
         const rad = options.explosionRadius * ((Math.random() / 2.0) + 0.5);
 
         tweens.push(animate.tween(record, {
