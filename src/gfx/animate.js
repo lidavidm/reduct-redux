@@ -117,6 +117,14 @@ export const Easing = {
     Time: (fn) => (start, stop, t) => {
         return start + ((stop - start) * fn(t));
     },
+
+    /**
+     * Tween with a sinusoidal offset value added. The sinusoidal
+     * offset's magnitude is itself tweened.
+     */
+    Sinusoid: (mag0, mag1, magEasing, freq) => (start, stop, t) =>
+        start + (t * (stop - start)) +
+        (magEasing(mag0, mag1, t) * Math.sin(2 * Math.PI * t * freq)),
 };
 
 /**
