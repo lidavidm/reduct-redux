@@ -11,14 +11,20 @@ import * as primitive from "../primitive";
 /**
  * An explosion effect.
  */
-export function splosion(stage, pos, color="gold", numOfParticles=20, explosionRadius=100) {
+export function splosion(stage, pos, options={}) {
+    options = Object.assign({}, {
+        color: "gold",
+        numOfParticles: 20,
+        explosionRadius: 100,
+        duration: 600,
+    }, options);
     const parts = [];
     const tweens = [];
 
     const minRadius = 1;
     const maxRadius = 12;
 
-    for (let i = 0; i < numOfParticles; i++) {
+    for (let i = 0; i < options.numOfParticles; i++) {
         const record = {
             x: pos.x,
             y: pos.y,
@@ -27,14 +33,14 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
         parts.push(record);
 
         const theta = Math.random() * Math.PI * 2;
-        const rad = explosionRadius * ((Math.random() / 2.0) + 0.5);
+        const rad = options.explosionRadius * ((Math.random() / 2.0) + 0.5);
 
         tweens.push(animate.tween(record, {
             x: pos.x + (rad * Math.cos(theta)),
             y: pos.y + (rad * Math.sin(theta)),
             r: 0,
         }, {
-            duration: 600,
+            duration: options.duration,
             easing: animate.Easing.Time(t => Math.pow(t, 0.5)),
         }));
     }
@@ -43,10 +49,12 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
         prepare: () => {},
         draw: () => {
             const { ctx } = stage;
-            ctx.fillStyle = color;
+            if (typeof options.color === "string") ctx.fillStyle = options.color;
             ctx.save();
+            let i = 0;
             for (const record of parts) {
                 ctx.beginPath();
+                if (typeof options.color === "function") ctx.fillStyle = options.color(i);
                 ctx.arc(
                     record.x + record.r,
                     record.y + record.r,
@@ -54,6 +62,7 @@ export function splosion(stage, pos, color="gold", numOfParticles=20, explosionR
                     0, 2 * Math.PI
                 );
                 ctx.fill();
+                i += 1;
             }
             ctx.restore();
         },
