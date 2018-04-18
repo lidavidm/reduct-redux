@@ -29,6 +29,7 @@ export function baseProjection(options) {
         size: { w: 0, h: 0 },
         opacity: 1.0,
         backgroundOpacity: 1.0,
+        offset: { x: 0, y: 0 },
     }, options);
 
     if (options && options.notches) {

@@ -11,8 +11,8 @@ export function topLeftPos(projection, offset) {
     const relX = projection.pos.x - (projection.anchor.x * relW);
     const relY = projection.pos.y - (projection.anchor.y * relH);
     return {
-        x: offset.x + (relX * offset.sx),
-        y: offset.y + (relY * offset.sy),
+        x: offset.x + projection.offset.x + (relX * offset.sx),
+        y: offset.y + projection.offset.y + (relY * offset.sy),
     };
 }
 
