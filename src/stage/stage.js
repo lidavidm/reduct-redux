@@ -944,7 +944,7 @@ export default class Stage extends BaseStage {
                 const chapter = progression.currentChapter();
                 for (let i = 0; i < chapter.levels.length; i++) {
                     const star = gfxCore.shapes.star({
-                        color: (progression.currentLevel() >= chapter.startIdx + i) ? "gold" : "gray",
+                        color: (progression.currentLevel() > chapter.startIdx + i) ? "gold" : "gray",
                     });
                     starList.push(this.allocate(star));
                 }
@@ -983,8 +983,21 @@ export default class Stage extends BaseStage {
                     },
                 });
 
-                this.draw();
-
+                const thisStar = this.getView(starList[progression.currentLevel() - chapter.startIdx]);
+                animate.tween(thisStar, {
+                    color: "#F00",
+                }, {
+                    duration: 2000,
+                    setAnimatingFlag: false,
+                    easing: animate.Easing.Color(animate.Easing.Cubic.In, thisStar.color, "#F00"),
+                }).then(() => {
+                    thisStar.color = "gold";
+                    return animate.fx.splosion(this, gfxCore.centerPos(thisStar), {
+                        explosionRadius: 400,
+                        numOfParticles: 60,
+                        duration: 1500,
+                    });
+                });
             });
     }
 
