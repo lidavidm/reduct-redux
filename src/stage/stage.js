@@ -11,6 +11,7 @@ import * as progression from "../game/progression";
 import Goal from "../ui/goal";
 import Toolbox from "../ui/toolbox";
 import Sidebar from "../ui/sidebar";
+import StuckEffect from "../ui/stuck";
 import SyntaxJournal from "../ui/syntaxjournal";
 import FunctionDef from "../ui/functiondef";
 
@@ -1033,6 +1034,7 @@ export default class Stage extends BaseStage {
     }
 
     animateStuck() {
+        this.addEffect(new StuckEffect(this));
         this.alreadyWon = true;
     }
 
