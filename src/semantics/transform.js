@@ -190,7 +190,7 @@ export default function transform(definition) {
         return result;
     };
 
-    module.mightBeCompleted = function(state) {
+    module.mightBeCompleted = function(state, checkVictory) {
         const nodes = state.get("nodes");
         const board = state.get("board");
         const toolbox = state.get("toolbox");
@@ -200,7 +200,9 @@ export default function transform(definition) {
         const containsReducableExpr = remainingNodes.some((id) => {
             const node = nodes.get(id);
             const kind = module.kind(node);
-            return kind === "expression" || kind === "statement";
+            return kind === "expression" ||
+                kind === "statement" ||
+                node.get("type") === "lambda";
         });
 
         if (containsReducableExpr) {
@@ -211,6 +213,42 @@ export default function transform(definition) {
         // nothing in toolbox -> level can't be completed
         if (toolbox.size === 0) {
             return false;
+        }
+
+        // Only one thing in toolbox - does using it complete the level?
+        if (toolbox.size === 1) {
+            return checkVictory(state.withMutations((s) => {
+                s.set("toolbox", immutable.List());
+                s.set("board", remainingNodes);
+            }));
+        }
+
+        // Try adding any combination of toolbox items to the board -
+        // does using them complete the level?
+
+        // Thanks to Nina Scholz @ SO:
+        // https://stackoverflow.com/a/42774126
+        // Generates all array subsets (its powerset).
+        const powerset = (array) => {
+            const fork = (i, t) => {
+                if (i === array.length) {
+                    result.push(t);
+                    return;
+                }
+                fork(i + 1, t.concat([array[i]]));
+                fork(i + 1, t);
+            };
+
+            const result = [];
+            fork(0, []);
+            return result;
+        };
+
+        for (const subset of powerset(board.toArray())) {
+            checkVictory(state.withMutations((s) => {
+                s.set("toolbox", toolbox.filter(i => subset.indexOf(i) === -1));
+                s.set("board", board.concat(immutable.List(subset)));
+            }));
         }
 
         return true;
