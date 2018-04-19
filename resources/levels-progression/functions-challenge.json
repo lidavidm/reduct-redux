@@ -10,13 +10,53 @@
     },
     "levels": [
         {
-            "board": ["x => x => x", "A", "B"],
-            "goal": "A",
-            "toolbox": ""
+            "board": [
+                "x => xx",
+                "x => C",
+                "A"
+            ],
+            "goal": [
+                "B",
+                "C"
+            ],
+            "textgoal": "Create a square and a triangle",
+            "toolbox": [
+                "B"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => y => _",
+                "y => x => _",
+                "A",
+                "A",
+                "B",
+                "C",
+                "C"
+            ],
+            "goal": [
+                "A",
+                "B"
+            ],
+            "textgoal": "Create a star and a square",
+            "toolbox": [
+                "x",
+                "y"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
-    "resources":{
-        "planet":"planet-functiana",
-        "aliens":["alien-function-1", "alien-function-2", "alien-function-3"]
+    "resources": {
+        "planet": "planet-functiana",
+        "aliens": [
+            "alien-function-1",
+            "alien-function-2",
+            "alien-function-3"
+        ]
     }
 }

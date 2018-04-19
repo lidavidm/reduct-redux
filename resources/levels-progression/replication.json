@@ -10,108 +10,32 @@
     "levels": [
         {
             "board": [
-                "x => x",
-                "A"
+                "x => xx"
             ],
             "goal": [
-                "A"
-            ],
-            "textgoal": "Drop the star onto the function!",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x",
-                "x => x",
-                "x => x",
-                "A"
-            ],
-            "goal": [
-                "A"
-            ],
-            "textgoal": "Use these functions to get a star.",
-            "globals": {},
-            "syntax": [
-                "syntax-lambda"
-            ],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x",
-                "x => x",
-                "x => x"
-            ],
-            "goal": [
-                "x => x"
-            ],
-            "textgoal": "Functions can be dropped into functions.",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "B"
-            ],
-            "goal": [
-                "B",
-                "B"
-            ],
-            "textgoal": "Use the toolbox at the bottomg of the screen to place two square on the board",
-            "toolbox": [
-                "C",
-                "B",
-                "A"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => A",
-                "A",
-                "B"
-            ],
-            "goal": [
-                "A",
-                "A"
-            ],
-            "textgoal": "Creat two stars",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x",
-                "x => A",
-                "x => B",
-                "A",
                 "C",
                 "C"
             ],
-            "goal": [
-                "C",
+            "textgoal": "Create two triangles",
+            "toolbox": [
+                "A",
                 "B",
-                "A"
+                "C"
             ],
-            "textgoal": "Create a star, square, and triangle",
             "globals": {},
             "syntax": [],
             "animationScales": {}
         },
         {
             "board": [
-                "x => _"
+                "x => xx",
+                "x => C"
             ],
             "goal": [
-                "B"
+                "B",
+                "C"
             ],
-            "textgoal": "Build you own function to create a square and use it to create a square",
+            "textgoal": "Create a square and a triangle",
             "toolbox": [
                 "A",
                 "B"
@@ -122,16 +46,32 @@
         },
         {
             "board": [
-                "x => _"
+                "x => xx",
+                "x => x",
+                "A"
             ],
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a function that gives back the input and create a star",
+            "textgoal": "Create a star",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => xx",
+                "B"
+            ],
+            "goal": [
+                "A",
+                "B"
+            ],
+            "textgoal": "Create a star and a square",
             "toolbox": [
                 "A",
                 "x",
-                "y"
+                "x => _"
             ],
             "globals": {},
             "syntax": [],
@@ -139,48 +79,17 @@
         },
         {
             "board": [
-                "x => _",
-                "y => _",
-                "A",
-                "B",
-                "C"
-            ],
-            "goal": [
-                "B"
-            ],
-            "textgoal": "Create a square using functions",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x"
-            ],
-            "goal": [
-                "B"
-            ],
-            "textgoal": "Create a square",
-            "toolbox": [
-                "x => B",
+                "x => xx",
                 "x => C",
                 "A"
             ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x"
-            ],
             "goal": [
-                "B"
+                "B",
+                "C"
             ],
-            "textgoal": "Create a square (again)",
+            "textgoal": "Create a square and a triangle",
             "toolbox": [
-                "x => B",
-                "x => C"
+                "B"
             ],
             "globals": {},
             "syntax": [],
