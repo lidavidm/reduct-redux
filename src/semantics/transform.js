@@ -190,6 +190,32 @@ export default function transform(definition) {
         return result;
     };
 
+    module.mightBeCompleted = function(state) {
+        const nodes = state.get("nodes");
+        const board = state.get("board");
+        const toolbox = state.get("toolbox");
+
+        const remainingNodes = board.concat(toolbox);
+
+        const containsReducableExpr = remainingNodes.some((id) => {
+            const node = nodes.get(id);
+            const kind = module.kind(node);
+            return kind === "expression" || kind === "statement";
+        });
+
+        if (containsReducableExpr) {
+            return true;
+        }
+
+        // Level is not yet completed, no reducible expressions, and
+        // nothing in toolbox -> level can't be completed
+        if (toolbox.size === 0) {
+            return false;
+        }
+
+        return true;
+    };
+
     /**
      * Submodule for evaluating expressions.
      */
