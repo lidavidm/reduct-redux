@@ -1,6 +1,6 @@
 {
-    "chapterName": "Function Challenge Levels",
-    "description": "Challenge levels to anonymous functions",
+    "chapterName": "Functions Challenge Levels",
+    "description": "Challenge levels for functions",
     "challenge": true,
     "language": "JavaScript",
     "macros": {

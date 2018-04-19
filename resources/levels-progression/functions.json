@@ -1,6 +1,6 @@
 {
-    "chapterName": "Anonymous functions",
-    "description": "Introduction to anonymous functions",
+    "chapterName": "Functions",
+    "description": "Introduction to Reduct",
     "language": "JavaScript",
     "macros": {
         "A": "'star'",

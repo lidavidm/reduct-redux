@@ -1,6 +1,6 @@
 {
-    "chapterName": "Anonymous functions",
-    "description": "Introduction to anonymous functions",
+    "chapterName": "Replication",
+    "description": "Functions that make many things.",
     "language": "JavaScript",
     "macros": {
         "A": "'star'",

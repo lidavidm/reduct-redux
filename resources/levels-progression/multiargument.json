@@ -1,6 +1,6 @@
 {
-    "chapterName": "Anonymous functions",
-    "description": "Introduction to anonymous functions",
+    "chapterName": "Multi-Argument Functions",
+    "description": "Functions that take many things!",
     "language": "JavaScript",
     "macros": {
         "A": "'star'",
