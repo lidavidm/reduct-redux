@@ -188,6 +188,12 @@ function initialize() {
         start(() => progression.jumpToLevel(lvl));
     });
 
+    // start(null, { persistGraph: false });
+}
+
+function startGame() {
+    // Un-hide control panel
+    document.querySelector("#overlay-nav").style.display = "block";
     start(null, { persistGraph: false });
 }
 
