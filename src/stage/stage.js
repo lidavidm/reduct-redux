@@ -1032,6 +1032,10 @@ export default class Stage extends BaseStage {
             });
     }
 
+    animateStuck() {
+        this.alreadyWon = true;
+    }
+
     /**
      * Add new items to the syntax journal.
      */

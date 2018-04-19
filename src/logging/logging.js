@@ -505,6 +505,7 @@ Logger.prototype.ACTIONS = {
     "state-path-save-nodes": 111,
     "state-path-save-edges": 112,
     "state-path-save-graph": 113,
+    "stuck": 114,
 };
 
 const Logging = new Logger();

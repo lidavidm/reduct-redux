@@ -101,9 +101,10 @@ function initialize() {
         stg.draw();
 
         if (!stg.alreadyWon) {
-            const matching = level.checkVictory(stg.getState(), es6);
+            const state = stg.getState();
+            const matching = level.checkVictory(state, es6);
             if (Object.keys(matching).length > 0) {
-                const finalState = level.serialize(stg.getState(), es6);
+                const finalState = level.serialize(state, es6);
                 stg.animateVictory(matching).then(() => {
                     persistGraph();
 
@@ -115,6 +116,13 @@ function initialize() {
 
                     nextLevel();
                 });
+            }
+            else if (stg.semantics &&
+                     !stg.semantics.mightBeCompleted(state, s => level.checkVictory(s, es6))) {
+                Logging.log("stuck", {
+                    state: level.serialize(state, es6),
+                });
+                stg.animateStuck();
             }
         }
     });
