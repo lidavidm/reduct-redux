@@ -51,7 +51,7 @@ def json2csv(infile, outfile):
                         row[key] = lvl[key]
                 levels.append(row)
             except Exception as e:
-                print("Could not import", lvl)
+                print("Could not export", lvl)
                 print("Reason:", e)
 
     with open(outfile, "w") as ouf:
@@ -70,18 +70,29 @@ def csv2json(infile, outfile):
         reader = csv.DictReader(inf)
         for lvl in reader:
             level = {}
-            for field, converter in fieldnames.items():
-                if field not in lvl:
-                    continue
+            skip_level = False
 
-                val = converter(lvl[field])
-                if val and isinstance(val, list) and len(val) == 1 and not val[0]:
-                    pass
-                elif val:
-                    level[field] = val
-                elif field in field_defaults:
-                    level[field] = field_defaults[field]
-            levels.append(level)
+            for field, converter in fieldnames.items():
+                try:
+                    if field not in lvl:
+                        continue
+
+                    val = converter(lvl[field])
+                    if val and isinstance(val, list) and len(val) == 1 and not val[0]:
+                        pass
+                    elif val:
+                        level[field] = val
+                    elif field in field_defaults:
+                        level[field] = field_defaults[field]
+                except Exception as e:
+                    print("Could not import", field, lvl.get(field))
+                    print("Full level:", lvl)
+                    print("Reason:", e)
+                    skip_level = True
+
+            if not skip_level:
+                levels.append(level)
+
 
     chapter["levels"] = levels
     with open(outfile, "w") as outf:
