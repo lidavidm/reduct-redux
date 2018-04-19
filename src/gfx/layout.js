@@ -287,3 +287,16 @@ export function previewer(projection) {
 
     return projection;
 }
+
+export function ratioSizer(projection, ratio, percentage) {
+    const { prepare } = projection;
+    projection.prepare = function(id, exprId, state, stage) {
+        const w = percentage * stage.width;
+        const h = ratio * w;
+        this.size.w = w;
+        this.size.h = h;
+        prepare.call(this, id, exprId, state, stage);
+    };
+
+    return projection;
+}
