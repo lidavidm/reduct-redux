@@ -11,6 +11,7 @@ import es6 from "./semantics/es6";
 import Stage from "./stage/stage";
 import TutorialStage from "./stage/tutorial";
 import ChapterEndStage from "./stage/chapterend";
+import TitleStage from "./stage/title";
 import * as undo from "./reducer/undo";
 import passwordPrompt from "./ui/instructor/password";
 
@@ -31,6 +32,7 @@ Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
     "resources/audio/output.wav",
 ]);
 Loader.loadImageAtlas("spritesheet", "resources/graphics/assets.json", "resources/graphics/assets.png");
+Loader.loadImageAtlas("titlesprites", "resources/graphics/title-assets.json", "resources/graphics/title-assets.png");
 Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "resources/graphics/menu-assets.png");
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
@@ -73,7 +75,7 @@ function initialize() {
             es6
         ))
     );
-    stg = new Stage(canvas, 800, 600, store, views, es6);
+    stg = new TitleStage(startGame, canvas, 800, 600, store, views, es6);
     window.stage = stg;
 
     window.Logging = Logging;
