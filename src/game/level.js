@@ -179,11 +179,11 @@ export function startLevel(description, parse, store, stage) {
     }
 }
 
-export function checkVictory(state, semantics) {
+export function checkVictory(state, semantics, partial=false) {
     const board = state.get("board").filter(n => !semantics.ignoreForVictory(state.getIn([ "nodes", n ])));
     const goal = state.get("goal");
 
-    if (board.size !== goal.size) {
+    if (board.size !== goal.size && !partial) {
         return false;
     }
 
@@ -202,14 +202,14 @@ export function checkVictory(state, semantics) {
             }
             return true;
         });
-        if (!found) {
+        if (!found && !partial) {
             success = false;
             return false;
         }
         return true;
     });
 
-    if (success) {
+    if (success || partial) {
         return matching;
     }
     return {};
