@@ -119,8 +119,8 @@ function initialize() {
             }
             else if (stg.semantics &&
                      !stg.semantics.mightBeCompleted(state, s => level.checkVictory(s, es6))) {
-                Logging.log("stuck", {
-                    state: level.serialize(state, es6),
+                Logging.log("dead-end", {
+                    final_state: level.serialize(state, es6),
                 });
                 stg.animateStuck();
             }
