@@ -40,15 +40,19 @@ def json2csv(infile, outfile):
         chapter = json.load(inf)
         # TODO: need to handle macros
         for lvl in chapter["levels"]:
-            row = {}
-            for key in fieldnames:
-                if key not in lvl:
-                    row[key] = field_defaults.get(key, "")
-                elif key not in singleton_fields and not isinstance(lvl[key], list):
-                    row[key] = [lvl[key]]
-                else:
-                    row[key] = lvl[key]
-            levels.append(row)
+            try:
+                row = {}
+                for key in fieldnames:
+                    if key not in lvl:
+                        row[key] = field_defaults.get(key, "")
+                    elif key not in singleton_fields and not isinstance(lvl[key], list):
+                        row[key] = [lvl[key]]
+                    else:
+                        row[key] = lvl[key]
+                levels.append(row)
+            except Exception as e:
+                print("Could not import", lvl)
+                print("Reason:", e)
 
     with open(outfile, "w") as ouf:
         writer = csv.DictWriter(ouf, fieldnames=fieldnames)
