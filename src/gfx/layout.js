@@ -33,8 +33,12 @@ export function sticky(projection, direction, options) {
         origPrepare.call(this, id, exprId, state, stage);
         this.anchor.x = 0;
         this.anchor.y = 0;
+
+        const w = this.size.w * this.scale.x;
+        const h = this.size.h * this.scale.y;
+
         if (direction === "bottom") {
-            this.pos.y = stage.height - this.size.h - this.sticky.margin;
+            this.pos.y = stage.height - h - this.sticky.margin;
         }
         else if (direction === "top") {
             this.pos.y = this.sticky.margin;
@@ -43,16 +47,20 @@ export function sticky(projection, direction, options) {
             this.pos.x = 0;
         }
         else if (direction === "center") {
-            this.pos.x = ((stage.width - this.size.w) / 2) + this.sticky.marginX;
-            this.pos.y = ((stage.height - this.size.h) / 2) + this.sticky.marginY;
+            this.pos.x = ((stage.width - w) / 2) + this.sticky.marginX;
+            let hFactor = 0.5;
+            if (typeof this.sticky.hAlign === "number") {
+                hFactor = this.sticky.hAlign;
+            }
+            this.pos.y = ((stage.height / 2) - (h * hFactor)) + this.sticky.marginY;
         }
 
         if (direction === "top" || direction === "bottom") {
             if (this.sticky.align === "center") {
-                this.pos.x = (stage.width - this.size.w) / 2;
+                this.pos.x = (stage.width - w) / 2;
             }
             else if (this.sticky.align === "right") {
-                this.pos.x = stage.width - this.size.w;
+                this.pos.x = stage.width - w;
             }
         }
     };
