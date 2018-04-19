@@ -946,6 +946,18 @@ export default class Stage extends BaseStage {
                     const star = gfxCore.shapes.star({
                         color: (progression.currentLevel() > chapter.startIdx + i) ? "gold" : "gray",
                     });
+                    star.opacity = 0;
+
+                    let delay = 750;
+                    if (chapter.startIdx + i <= progression.currentLevel()) {
+                        delay = i * (750 / (progression.currentLevel() - chapter.startIdx));
+                    }
+
+                    animate.tween(star, { opacity: 1 }, {
+                        easing: animate.Easing.Cubic.In,
+                        duration: 300,
+                        setAnimatingFlag: false,
+                    }).delay(delay);
                     starList.push(this.allocate(star));
                 }
 
