@@ -116,6 +116,7 @@ export default class TitleStage extends BaseStage {
 
         // ** Startup Animations ** //
 
+        this.state = "initializing";
         animate.tween(this, {
             color: "#FFF",
         }, {
@@ -141,7 +142,29 @@ export default class TitleStage extends BaseStage {
             }, {
                 duration: 1000,
                 easing: animate.Easing.Cubic.Out,
-            }));
+            }))
+            .then(() => {
+                this.state = "initialized";
+            });
+    }
+
+    _mouseup(e) {
+        if (this.state === "initializing") {
+            this.fastForward();
+        }
+
+        super._mouseup(e);
+    }
+
+    fastForward() {
+        animate.clock.cancelAll();
+        this.state = "initialized";
+        this.color = "#FFF";
+        const title = this.getView(this.title);
+        title.opacity = 1.0;
+        title.scale = { x: 0.7, y: 0.7 };
+        title.sticky.marginY = -180;
+        this.getView(this.layout).opacity = 1.0;
     }
 
     animateStart() {
