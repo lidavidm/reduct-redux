@@ -2,6 +2,7 @@
  * Projectors transform a JSON-ish view specification into a gfx view.
  */
 import * as gfx from "./core";
+import Loader from "../loader";
 
 const optionFields = [
     "color", "strokeWhenChild", "shadowOffset", "radius", "padding",
@@ -271,6 +272,36 @@ function genericProjector(definition) {
     };
 }
 
+function spriteProjector(definition) {
+    return function spriteProjectorFactory(stage, nodes, expr) {
+        const image = Loader.images[definition.projection.image];
+        let w = image.naturalWidth;
+        let h = image.naturalHeight;
+
+        if (definition.projection.scale) {
+            w *= definition.projection.scale;
+            h *= definition.projection.scale;
+        }
+        else if (definition.projection.size) {
+            w = definition.projection.size.w;
+            h = definition.projection.size.h;
+            if (typeof h === "undefined") {
+                h = (image.naturalHeight / image.naturalWidth) * w;
+            }
+            else if (typeof w === "undefined") {
+                w = (image.naturalWidth / image.naturalHeight) * h;
+            }
+        }
+
+        const size = { w, h };
+
+        return gfx.sprite({
+            image,
+            size,
+        });
+    };
+}
+
 export default function projector(definition) {
     switch (definition.projection.type) {
     case "default":
@@ -298,6 +329,8 @@ export default function projector(definition) {
         return previewProjector(definition);
     case "generic":
         return genericProjector(definition);
+    case "sprite":
+        return spriteProjector(definition);
     default:
         throw `Unrecognized projection type ${definition.type}`;
     }

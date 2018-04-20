@@ -33,34 +33,68 @@ export default {
         },
     },
 
-    symbol: {
-        kind: "value",
-        type: "symbol",
-        fields: ["name"],
-        subexpressions: [],
-        projection: {
-            type: "case",
-            on: "name",
-            cases: {
-                star: {
-                    type: "symbol",
-                    symbol: "star",
-                },
-                circle: {
-                    type: "symbol",
-                    symbol: "circle",
-                },
-                triangle: {
-                    type: "symbol",
-                    symbol: "triangle",
-                },
-                rect: {
-                    type: "symbol",
-                    symbol: "rect",
+    symbol: [
+        {
+            kind: "value",
+            type: "symbol",
+            fields: ["name"],
+            subexpressions: [],
+            projection: {
+                type: "case",
+                on: "name",
+                cases: {
+                    star: {
+                        type: "symbol",
+                        symbol: "star",
+                    },
+                    circle: {
+                        type: "symbol",
+                        symbol: "circle",
+                    },
+                    triangle: {
+                        type: "symbol",
+                        symbol: "triangle",
+                    },
+                    rect: {
+                        type: "symbol",
+                        symbol: "rect",
+                    },
                 },
             },
         },
-    },
+        {
+            kind: "value",
+            type: "symbol",
+            fields: ["name"],
+            subexpressions: [],
+            projection: {
+                type: "case",
+                on: "name",
+                cases: {
+                    star: {
+                        type: "sprite",
+                        image: "food_1",
+                        size: { w: 50 },
+                    },
+                    circle: {
+                        type: "sprite",
+                        image: "food_2",
+                        size: { w: 50 },
+                    },
+                    triangle: {
+                        type: "sprite",
+                        image: "food_3",
+                        size: { w: 50 },
+                    },
+                    rect: {
+                        type: "sprite",
+                        image: "food_4",
+                        size: { w: 50 },
+                    },
+                },
+            },
+        },
+    ],
 
     bool: {
         kind: "value",
