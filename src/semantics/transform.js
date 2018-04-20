@@ -245,13 +245,16 @@ export default function transform(definition) {
         };
 
         for (const subset of powerset(board.toArray())) {
-            checkVictory(state.withMutations((s) => {
+            const matching = checkVictory(state.withMutations((s) => {
                 s.set("toolbox", toolbox.filter(i => subset.indexOf(i) === -1));
                 s.set("board", board.concat(immutable.List(subset)));
             }));
+            if (matching && Object.keys(matching).length > 0) {
+                return true;
+            }
         }
 
-        return true;
+        return false;
     };
 
     /**
