@@ -935,9 +935,9 @@ export default class Stage extends BaseStage {
                 return Promise.all(subtweens);
             })
             .then(() => {
-                const title = gfxCore.text("You Win!", {
-                    fontSize: 64,
-                    font: gfxCore.text.script,
+                const title = gfxCore.sprite({
+                    image: Loader.images["you_win"],
+                    size: { w: 509, h: 110.0 },
                 });
                 const titleId = this.allocate(title);
 
@@ -1029,7 +1029,22 @@ export default class Stage extends BaseStage {
                         color: idx => scale(idx / 60.0),
                         angle: idx => 2 * Math.PI * (idx / 60.0),
                     });
-                });
+                }).then(() => Promise.all([
+                    animate.tween(title, {
+                        opacity: 0,
+                    }, {
+                        duration: 300,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Cubic.In,
+                    }),
+                    animate.tween(layout, {
+                        opacity: 0,
+                    }, {
+                        duration: 300,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Cubic.In,
+                    }),
+                ]));
             });
     }
 
