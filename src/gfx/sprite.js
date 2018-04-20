@@ -16,8 +16,8 @@ export function sprite(options={}) {
         const [ sx, sy ] = util.absoluteScale(this, offset);
 
         util.setOpacity(ctx, this.opacity, offset);
-        const width = offset.sx * this.scale.x * this.size.w;
-        const height = offset.sy * this.scale.y * this.size.h;
+        const width = sx * this.size.w;
+        const height = sy * this.size.h;
         options.image.draw(
             ctx,
             offset.x + ((this.pos.x * offset.sx) - (this.anchor.x * width)),
@@ -47,18 +47,19 @@ export function exprify(projection) {
         const locked = !node || node.get("locked");
 
         const { x, y } = util.topLeftPos(this, offset);
-        const w = offset.sx * projection.scale.x * projection.size.w;
-        const h = offset.sy * projection.scale.y * projection.size.h;
+        const w = offset.sx * this.scale.x * this.size.w;
+        const h = offset.sy * this.scale.y * this.size.h;
 
         if (this.stroke) {
             glowColor = this.stroke.color;
+            primitive.setStroke(ctx, this);
         }
         else if (hasParent && !locked) {
-            const [ sx, sy ] = util.absoluteScale(projection, offset);
+            const [ sx, sy ] = util.absoluteScale(this, offset);
             ctx.fillStyle = "#000";
             primitive.setStroke(ctx, {
                 lineWidth: 2,
-                color: projection.highlightColor || "yellow",
+                color: this.highlightColor || "yellow",
             });
             primitive.roundRect(
                 ctx,
@@ -78,6 +79,10 @@ export function exprify(projection) {
         }
         else if ((!hasParent || !locked) && stage.isHovered(exprId)) {
             glowColor = this.highlightColor || "yellow";
+            primitive.setStroke(ctx, {
+                lineWidth: 2,
+                color: glowColor,
+            });
         }
 
         if (glowColor) {
@@ -92,19 +97,11 @@ export function exprify(projection) {
             gradient.addColorStop(1, "rgba(255, 255, 255, 0.0)");
             ctx.fillStyle = gradient;
 
-            let tx = x - (0.25 * w);
-            let ty = y - (0.25 * h);
-            if (w > h) {
-                ty -= (tw - th) / 2;
-            }
-            else if (h > w) {
-                tx -= (th - tw) / 2;
-            }
-
             // ctx.fillRect(tx, ty, Math.max(tw, th), Math.max(tw, th));
             ctx.beginPath();
             ctx.arc(cx, cy, Math.max(tw, th) / 2, 0, 2 * Math.PI, false);
             ctx.fill();
+            ctx.stroke();
         }
 
         ctx.restore();
