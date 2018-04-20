@@ -2,6 +2,17 @@ import * as gfx from "../gfx/core";
 import * as progression from "../game/progression";
 import Loader from "../loader";
 
+/**
+ * Replace references to objects like stars with the correct name
+ */
+export function templateText(semantics, text) {
+    return text.replace(/\{([\w\s]+)\}/g, (wholeMatch, groupMatch) => {
+        const defn = semantics.definitionOf("symbol");
+        const matchParts = groupMatch.split(" ");
+        return defn.goalNames[matchParts[matchParts.length - 1]][matchParts.length > 1 ? 1 : 0];
+    });
+}
+
 export default class Goal {
     constructor(stage) {
         this.stage = stage;
@@ -33,20 +44,9 @@ export default class Goal {
         this.textGoal = null;
     }
 
-    /**
-     * Replace references to objects like stars with the correct name
-     */
-    templateTextGoal(text) {
-        return text.replace(/\{([\w\s]+)\}/g, (wholeMatch, groupMatch) => {
-            const defn = this.stage.semantics.definitionOf("symbol");
-            const matchParts = groupMatch.split(" ");
-            return defn.goalNames[matchParts[matchParts.length - 1]][matchParts.length > 1 ? 1 : 0];
-        });
-    }
-
     startLevel(textGoal, showConcreteGoal=false) {
         if (textGoal) {
-            textGoal = this.templateTextGoal(textGoal);
+            textGoal = templateText(this.stage.semantics, textGoal);
 
             this.text = this.stage.allocate(gfx.text(textGoal, {
                 fontSize: 20,

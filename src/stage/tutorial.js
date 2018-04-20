@@ -4,6 +4,8 @@ import Logging from "../logging/logging";
 
 import Stage from "./stage";
 
+import { templateText } from "../ui/goal";
+
 /**
  * The level stage with a tutorial overlay.
  */
@@ -46,7 +48,7 @@ class GoalTutorial {
         this.state = "started";
         this.ready = false;
 
-        const goalText = gfx.text("The alien needs a star!", {
+        const goalText = gfx.text(templateText(stage.semantics, "The alien needs {a star}!"), {
             font: gfx.text.script,
             opacity: 0,
             color: "#FFF",
@@ -54,7 +56,7 @@ class GoalTutorial {
         });
         this.goalText = stage.allocate(goalText);
 
-        this.boardText = stage.allocate(gfx.text("Drag the star into the (x)!", {
+        this.boardText = stage.allocate(gfx.text(templateText(stage.semantics, "Drag the {star} into the (x)!"), {
             font: gfx.text.script,
             opacity: 0,
             color: "#FFF",
@@ -155,7 +157,7 @@ class GoalTutorial {
                     easing: animate.Easing.Cubic.In,
             });
             animate.tween(this, { x: afterX, y: afterY, r: afterR }, {
-                duration: 5000,
+                duration: 3000,
                 easing: animate.Easing.Cubic.InOut,
             })
                 .then(() => {
@@ -203,7 +205,7 @@ class GoalTutorial {
 
             animate.after(1000)
                 .then(() => animate.tween(this, { r: targetR, opacity: 0.7 }, {
-                    duration: 3000,
+                    duration: 2000,
                     easing: animate.Easing.Cubic.InOut,
                 }))
                 .then(() => animate.tween(goalText, { opacity: 1 }, {
