@@ -5,7 +5,8 @@
     "macros": {
         "A": "'star'",
         "B": "'rect'",
-        "C": "'triangle'"
+        "C": "'triangle'",
+        "D": "'circle'"
     },
     "levels": [
         {
