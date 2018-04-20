@@ -38,6 +38,7 @@ export function exprify(projection) {
 
     projection.draw = function(id, exprId, state, stage, offset) {
         let glowColor = null;
+        let glowBreak = 0.7;
 
         const { ctx } = stage;
         ctx.save();
@@ -53,6 +54,7 @@ export function exprify(projection) {
         if (this.stroke) {
             glowColor = this.stroke.color;
             primitive.setStroke(ctx, this);
+            glowBreak = Math.min(0.7 + (0.2 * (this.stroke.lineWidth / 4)), 1.0);
         }
         else if (hasParent && !locked) {
             const [ sx, sy ] = util.absoluteScale(this, offset);
@@ -80,7 +82,7 @@ export function exprify(projection) {
         else if ((!hasParent || !locked) && stage.isHovered(exprId)) {
             glowColor = this.highlightColor || "yellow";
             primitive.setStroke(ctx, {
-                lineWidth: 2,
+                lineWidth: 0.5,
                 color: glowColor,
             });
         }
@@ -94,10 +96,10 @@ export function exprify(projection) {
 
             const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(tw, th) / 2);
             gradient.addColorStop(0, glowColor);
-            gradient.addColorStop(1, "rgba(255, 255, 255, 0.0)");
+            gradient.addColorStop(glowBreak, "rgba(255, 255, 255, 0.7)");
+            gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
             ctx.fillStyle = gradient;
 
-            // ctx.fillRect(tx, ty, Math.max(tw, th), Math.max(tw, th));
             ctx.beginPath();
             ctx.arc(cx, cy, Math.max(tw, th) / 2, 0, 2 * Math.PI, false);
             ctx.fill();
