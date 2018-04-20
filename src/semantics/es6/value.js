@@ -39,6 +39,12 @@ export default {
             type: "symbol",
             fields: ["name"],
             subexpressions: [],
+            goalNames: {
+                "star": [ "star", "a star" ],
+                "circle": [ "circle", "a circle" ],
+                "triangle": [ "triangle", "a triangle" ],
+                "rect": [ "rect", "a square" ],
+            },
             projection: {
                 type: "case",
                 on: "name",
@@ -67,6 +73,12 @@ export default {
             type: "symbol",
             fields: ["name"],
             subexpressions: [],
+            goalNames: {
+                "star": [ "burger", "a burger" ],
+                "circle": [ "lollipop", "a lollipop" ],
+                "triangle": [ "fries", "some fries" ],
+                "rect": [ "candy", "a piece of candy" ],
+            },
             projection: {
                 type: "case",
                 on: "name",
