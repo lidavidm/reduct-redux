@@ -255,7 +255,6 @@ export function previewer(projection) {
         if (this.preview && !this.prevPreview) {
             this.prevPreview = Object.assign({}, stage.getView(this.preview), {
                 pos: this.pos,
-                size: this.size,
                 scale: {
                     x: this.scale.x,
                     y: this.scale.y,
@@ -270,6 +269,7 @@ export function previewer(projection) {
         }
         if (this.preview) {
             this.prevPreview.prepare(this.preview, this.preview, state, stage);
+            this.size = Object.assign({}, this.prevPreview.size);
             return;
         }
 
