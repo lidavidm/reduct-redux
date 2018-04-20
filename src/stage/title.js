@@ -14,7 +14,6 @@ export default class TitleStage extends BaseStage {
 
         this.startGame = startGame;
         this.color = "#594764";
-        this.buttonHighlight = null;
 
         const title = gfx.layout.sticky(
             gfx.layout.ratioSizer(gfx.sprite({
@@ -31,13 +30,10 @@ export default class TitleStage extends BaseStage {
 
         const shapeIds = [
             gfx.shapes.star(), gfx.shapes.triangle(),
-            gfx.shapes.rectangle(), gfx.shapes.circle(),
         ].map(view => this.allocate(view));
         const foodIds = [
             Loader.images["food_1"],
             Loader.images["food_2"],
-            Loader.images["food_3"],
-            Loader.images["food_4"],
         ].map(image => this.allocate(gfx.sprite({
             image,
             size: image.naturalHeight / image.naturalWidth > 1.5 ?
@@ -81,18 +77,25 @@ export default class TitleStage extends BaseStage {
                 () => [ label, theme, label2 ],
                 {
                     subexpScale: 1.0,
-                },
-                gfx.baseProjection
+                    color: "#e95888",
+                    shadow: true,
+                    shadowColor: "black",
+                }
             );
             button.onmouseexit = () => {
-                this.buttonHighlight = null;
+                button.shadow = true;
+                button.offset.y = 0;
             };
-            button.onmouseenter = () => {
-                this.buttonHighlight = button;
+            button.onmouseenter = () => {};
+            button.onmousedown = () => {
+                button.shadow = false;
+                button.offset.y = 5;
             };
             button.onclick = () => {
                 progression.forceFadeLevel("symbol", symbolFadeLevel);
                 this.animateStart();
+                button.shadow = true;
+                button.offset.y = 0;
             };
 
             buttons.push(this.allocate(button));
@@ -102,6 +105,9 @@ export default class TitleStage extends BaseStage {
 
         const layout = gfx.layout.sticky(gfx.layout.vbox(() => buttons, {
             subexpScale: 1.0,
+            padding: {
+                inner: 20,
+            },
         }, gfx.baseProjection), "center", {
             hAlign: 0.0,
         });
@@ -178,48 +184,6 @@ export default class TitleStage extends BaseStage {
 
         this.drawInternalProjection(state, this.title);
         this.drawProjection(state, this.layout);
-
-        if (this.buttonHighlight !== null) {
-            const pos = gfx.absolutePos(this.buttonHighlight);
-            const sz = gfx.absoluteSize(this.buttonHighlight);
-
-            this.ctx.save();
-
-            this.ctx.globalAlpha = this.getView(this.layout).opacity;
-
-            this.ctx.lineWidth = 4;
-            this.ctx.strokeStyle = "#e95888";
-            this.ctx.lineCap = "butt";
-            this.ctx.lineJoin = "miter";
-
-            this.ctx.beginPath();
-            this.ctx.moveTo(pos.x, pos.y + sz.h);
-            const mx = pos.x + (sz.w / 2);
-            const y = pos.y + sz.h;
-            this.ctx.bezierCurveTo(
-                pos.x + 5, y - 20,
-                mx - 25, y - 10,
-                mx, y
-            );
-            this.ctx.bezierCurveTo(
-                mx + 25, y + 10,
-                (pos.x + sz.w) - 5, y + 20,
-                pos.x + sz.w, y
-            );
-            this.ctx.stroke();
-
-            this.ctx.beginPath();
-            this.ctx.moveTo((pos.x + sz.w) - ((3 * sz.w) / 50), y - 5);
-            this.ctx.lineTo((pos.x + sz.w) - ((5 * sz.w) / 50), y + 25);
-            this.ctx.stroke();
-
-            this.ctx.beginPath();
-            this.ctx.moveTo((pos.x + sz.w) - ((7 * sz.w) / 50), y - 5);
-            this.ctx.lineTo((pos.x + sz.w) - ((9 * sz.w) / 50), y + 25);
-            this.ctx.stroke();
-
-            this.ctx.restore();
-        }
     }
 
     getNodeAtPos(pos, selectedId=null) {
