@@ -2,7 +2,6 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import * as progression from "../game/progression";
 import Audio from "../resource/audio";
-import * as random from "../util/random";
 
 import Loader from "../loader";
 
@@ -31,19 +30,44 @@ export default class TitleStage extends BaseStage {
         const buttons = [];
 
         const shapeIds = [
-            gfx.shapes.star(), gfx.shapes.triangle(), gfx.shapes.rectangle(),
+            gfx.shapes.star(), gfx.shapes.triangle(),
+            gfx.shapes.rectangle(), gfx.shapes.circle(),
         ].map(view => this.allocate(view));
+        const foodIds = [
+            Loader.images["food_1"],
+            Loader.images["food_2"],
+            Loader.images["food_3"],
+            Loader.images["food_4"],
+        ].map(image => this.allocate(gfx.sprite({
+            image,
+            size: image.naturalHeight / image.naturalWidth > 1.5 ?
+                {
+                    w: 25,
+                    h: (image.naturalHeight / image.naturalWidth) * 25,
+                } :
+                {
+                    w: 50,
+                    h: (image.naturalHeight / image.naturalWidth) * 50,
+                },
+        })));
         const views = [
-            gfx.layout.hbox(
+            [0, gfx.layout.hbox(
                 () => shapeIds,
                 {
                     subexpScale: 1.0,
                 },
                 gfx.baseProjection
-            ),
+            )],
+            [1, gfx.layout.hbox(
+                () => foodIds,
+                {
+                    subexpScale: 1.0,
+                },
+                gfx.baseProjection
+            )],
         ];
 
-        for (const view of views) {
+        for (const [ symbolFadeLevel, view ] of views) {
             const theme = this.allocate(view);
             const label = this.allocate(gfx.text("I like", {
                 fontSize: 50,
@@ -66,7 +90,10 @@ export default class TitleStage extends BaseStage {
             button.onmouseenter = () => {
                 this.buttonHighlight = button;
             };
-            button.onclick = () => this.animateStart();
+            button.onclick = () => {
+                progression.forceFadeLevel("symbol", symbolFadeLevel);
+                this.animateStart();
+            };
 
             buttons.push(this.allocate(button));
         }
