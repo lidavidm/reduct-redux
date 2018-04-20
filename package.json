@@ -29,7 +29,8 @@
         "eslint": "^4.13.1",
         "eslint-config-airbnb-base": "^12.1.0",
         "eslint-plugin-import": "^2.8.0",
-        "parcel-bundler": "^1.5.0"
+        "parcel-bundler": "^1.5.0",
+        "spritesheet-js": "^1.2.6"
     },
     "scripts": {
         "serve": "parcel --no-hmr --public-url / index.html",
