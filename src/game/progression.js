@@ -139,13 +139,21 @@ export function getSyntaxDefinition(name) {
     return ACTIVE_PROGRESSION_DEFINITION.progression.syntax[name];
 }
 
+const __fadeOverrides = {};
 export function getFadeLevel(exprType, level=null) {
     level = level === null ? currentLevel() : level;
     const fadeLevels = ACTIVE_PROGRESSION_DEFINITION.progression.levels[level].fade;
-    if (typeof fadeLevels[exprType] === "number") {
+    if (typeof __fadeOverrides[exprType] === "number") {
+        return __fadeOverrides[exprType];
+    }
+    else if (typeof fadeLevels[exprType] === "number") {
         return fadeLevels[exprType];
     }
     return 0;
+}
+
+export function forceFadeLevel(exprType, level) {
+    __fadeOverrides[exprType] = level;
 }
 
 export function isFadeBorder(exprType) {
