@@ -14,8 +14,12 @@ mkdir ./png/
 
 for filepath in ./svg/*.svg; do
     filename=$(basename ${filepath})
+    density=300
+    if [[ $filename = *"food"* ]]; then
+        density=100
+    fi
     echo Converting ${filename}
-    convert -trim -background none -antialias -density 300 ${filepath} ./png/${filename%.*}.png
+    convert -trim -background none -antialias -density ${density} ${filepath} ./png/${filename%.*}.png
 done
 
 # Add drop shadow
