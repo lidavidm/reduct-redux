@@ -168,6 +168,8 @@ export default class TitleStage extends BaseStage {
     }
 
     animateStart() {
+        this.state = "transitioning";
+
         Promise.all([
             animate.tween(this.getView(this.title), {
                 scale: { x: 0.4, y: 0.4 },
@@ -210,6 +212,8 @@ export default class TitleStage extends BaseStage {
     }
 
     getNodeAtPos(pos, selectedId=null) {
+        if (this.state !== "initialized") return [ null, null ];
+
         const offset = this.makeBaseOffset();
         const buttonLayout = this.getView(this.layout);
         if (buttonLayout.containsPoint(pos, offset)) {
