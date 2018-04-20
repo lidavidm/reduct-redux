@@ -295,10 +295,10 @@ function spriteProjector(definition) {
 
         const size = { w, h };
 
-        return gfx.sprite({
+        return gfx.exprify(gfx.sprite({
             image,
             size,
-        });
+        }));
     };
 }
 

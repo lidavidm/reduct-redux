@@ -1,4 +1,5 @@
 import { baseProjection, debugDraw } from "./core";
+import * as primitive from "./primitive";
 import * as util from "./util";
 
 export function sprite(options={}) {
@@ -29,6 +30,88 @@ export function sprite(options={}) {
 
         ctx.restore();
     };
+    return projection;
+}
+
+export function exprify(projection) {
+    const { draw } = projection;
+
+    projection.draw = function(id, exprId, state, stage, offset) {
+        let glowColor = null;
+
+        const { ctx } = stage;
+        ctx.save();
+
+        const node = state.getIn([ "nodes", exprId ]);
+        const hasParent = node && Number.isInteger(node.get("parent"));
+        const locked = !node || node.get("locked");
+
+        const { x, y } = util.topLeftPos(this, offset);
+        const w = offset.sx * projection.scale.x * projection.size.w;
+        const h = offset.sy * projection.scale.y * projection.size.h;
+
+        if (this.stroke) {
+            glowColor = this.stroke.color;
+        }
+        else if (hasParent && !locked) {
+            const [ sx, sy ] = util.absoluteScale(projection, offset);
+            ctx.fillStyle = "#000";
+            primitive.setStroke(ctx, {
+                lineWidth: 2,
+                color: projection.highlightColor || "yellow",
+            });
+            primitive.roundRect(
+                ctx,
+                x, y,
+                w, h,
+                sx * 22,
+                true, stage.isHovered(exprId), null
+            );
+            ctx.fillStyle = "#555";
+            primitive.roundRect(
+                ctx,
+                x, y,
+                w, h,
+                sx * 22,
+                true, stage.isHovered(exprId), null
+            );
+        }
+        else if ((!hasParent || !locked) && stage.isHovered(exprId)) {
+            glowColor = this.highlightColor || "yellow";
+        }
+
+        if (glowColor) {
+            const cx = x + (w / 2);
+            const cy = y + (h / 2);
+
+            const tw = 1.1 * w;
+            const th = 1.1 * h;
+
+            const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(tw, th) / 2);
+            gradient.addColorStop(0, glowColor);
+            gradient.addColorStop(1, "rgba(255, 255, 255, 0.0)");
+            ctx.fillStyle = gradient;
+
+            let tx = x - (0.25 * w);
+            let ty = y - (0.25 * h);
+            if (w > h) {
+                ty -= (tw - th) / 2;
+            }
+            else if (h > w) {
+                tx -= (th - tw) / 2;
+            }
+
+            // ctx.fillRect(tx, ty, Math.max(tw, th), Math.max(tw, th));
+            ctx.beginPath();
+            ctx.arc(cx, cy, Math.max(tw, th) / 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+        }
+
+        ctx.restore();
+
+        draw.call(this, id, exprId, state, stage, offset);
+    };
+
     return projection;
 }
 
