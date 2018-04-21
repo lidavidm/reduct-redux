@@ -17,7 +17,7 @@
                 "C",
                 "C"
             ],
-            "textgoal": "Create two triangles",
+            "textgoal": "Create two {triangles}",
             "toolbox": [
                 "A",
                 "B",
@@ -36,7 +36,7 @@
                 "B",
                 "C"
             ],
-            "textgoal": "Create a square and a triangle",
+            "textgoal": "Create {a square} and {a triangle}",
             "toolbox": [
                 "A",
                 "B"
@@ -54,7 +54,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a star",
+            "textgoal": "Create {a star}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -68,29 +68,11 @@
                 "A",
                 "B"
             ],
-            "textgoal": "Create a star and a square",
+            "textgoal": "Create {a star} and {a square}",
             "toolbox": [
                 "A",
                 "x",
                 "x => _"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => xx",
-                "x => C",
-                "A"
-            ],
-            "goal": [
-                "B",
-                "C"
-            ],
-            "textgoal": "Create a square and a triangle",
-            "toolbox": [
-                "B"
             ],
             "globals": {},
             "syntax": [],

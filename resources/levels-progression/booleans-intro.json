@@ -314,7 +314,7 @@
                 "false",
                 "true"
             ],
-            "textgoal": "Define a function that outputs true if x is a star, otherwise false",
+            "textgoal": "Define a function that outputs true if x is {a star}, otherwise false",
             "toolbox": [
                 "__unlimited; isStar;",
                 "x == _",
@@ -397,7 +397,7 @@
                 "true",
                 "true"
             ],
-            "textgoal": "Define a function that outputs anything but a star",
+            "textgoal": "Define a function that outputs anything but {a star}",
             "toolbox": [
                 "__unlimited; noStar;",
                 "'star'",

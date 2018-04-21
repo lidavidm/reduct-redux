@@ -16,7 +16,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Make me a star!",
+            "textgoal": "Make me {a star}!",
             "toolbox": [
                 "star"
             ],
@@ -35,7 +35,7 @@
                 "B",
                 "A"
             ],
-            "textgoal": "Make me two rectangles and a star!",
+            "textgoal": "Make me two {squares} and {a star}!",
             "toolbox": [
                 "__unlimited;star",
                 "__unlimited;rect"
@@ -75,7 +75,7 @@
                 "C",
                 "C"
             ],
-            "textgoal": "Define a function that outputs a triangle",
+            "textgoal": "Define a function that outputs {a triangle}",
             "toolbox": [
                 "__unlimited;triangle"
             ],
@@ -95,7 +95,7 @@
                 "C",
                 "C"
             ],
-            "textgoal": "Define a function that takes an input and outputs a triangle",
+            "textgoal": "Define a function that takes an input and outputs {a triangle}",
             "toolbox": [
                 "__unlimited;trianglify"
             ],
@@ -118,7 +118,7 @@
                 "B",
                 "B"
             ],
-            "textgoal": "Define a function that outputs a square",
+            "textgoal": "Define a function that outputs {a square}",
             "toolbox": [
                 "__unlimited;squarify"
             ],

@@ -20,7 +20,7 @@
                 "B",
                 "C"
             ],
-            "textgoal": "Create a square and a triangle",
+            "textgoal": "Create {a square} and {a triangle}",
             "toolbox": [
                 "B"
             ],
@@ -42,7 +42,7 @@
                 "A",
                 "B"
             ],
-            "textgoal": "Create a star and a square",
+            "textgoal": "Create {a star} and {a square}",
             "toolbox": [
                 "x",
                 "y"

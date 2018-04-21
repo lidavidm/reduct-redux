@@ -18,7 +18,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a star",
+            "textgoal": "Create {a star}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -32,7 +32,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a star",
+            "textgoal": "Create {a star}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -48,7 +48,7 @@
                 "A",
                 "C"
             ],
-            "textgoal": "Create a star and a triangle",
+            "textgoal": "Create {a star} and {a triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -66,7 +66,7 @@
                 "A",
                 "C"
             ],
-            "textgoal": "Create a star and a triangle",
+            "textgoal": "Create {a star} and {a triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -78,7 +78,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a star",
+            "textgoal": "Create {a star}",
             "toolbox": [
                 "A",
                 "B",
@@ -98,7 +98,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a star",
+            "textgoal": "Create {a star}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -112,7 +112,7 @@
                 "A",
                 "C"
             ],
-            "textgoal": "Create a star and a triangle",
+            "textgoal": "Create {a star} and {a triangle}",
             "toolbox": [
                 "A",
                 "B",
@@ -136,7 +136,7 @@
                 "A",
                 "C"
             ],
-            "textgoal": "Create a star and a triangle",
+            "textgoal": "Create {a star} and {a triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -155,7 +155,7 @@
                 "A",
                 "B"
             ],
-            "textgoal": "Create a star and a square",
+            "textgoal": "Create {a star} and {a square}",
             "toolbox": [
                 "x",
                 "y"
@@ -177,7 +177,7 @@
             "goal": [
                 "B"
             ],
-            "textgoal": "Create a square",
+            "textgoal": "Create {a square}",
             "toolbox": [
                 "x",
                 "y"

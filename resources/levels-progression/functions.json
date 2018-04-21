@@ -17,7 +17,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Drop the star onto the function!",
+            "textgoal": "Drop the {star} onto the function!",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -32,7 +32,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Use these functions to get a star.",
+            "textgoal": "Use these functions to get {a star}.",
             "globals": {},
             "syntax": [
                 "syntax-lambda"
@@ -61,7 +61,7 @@
                 "B",
                 "B"
             ],
-            "textgoal": "Use the toolbox at the bottomg of the screen to place two square on the board",
+            "textgoal": "Use the toolbox at the bottom of the screen to place two {squares} on the board",
             "toolbox": [
                 "C",
                 "B",
@@ -75,13 +75,13 @@
             "board": [
                 "x => A",
                 "A",
-                "B"
+                "D"
             ],
             "goal": [
                 "A",
                 "A"
             ],
-            "textgoal": "Creat two stars",
+            "textgoal": "Create two {stars}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -100,7 +100,7 @@
                 "B",
                 "A"
             ],
-            "textgoal": "Create a star, square, and triangle",
+            "textgoal": "Create a {star}, {square}, and {triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -112,7 +112,7 @@
             "goal": [
                 "B"
             ],
-            "textgoal": "Build you own function to create a square and use it to create a square",
+            "textgoal": "Build you own function to create a {square} and use it to create {a square}",
             "toolbox": [
                 "A",
                 "B"
@@ -128,7 +128,7 @@
             "goal": [
                 "A"
             ],
-            "textgoal": "Create a function that gives back the input and create a star",
+            "textgoal": "Create a function that gives back the input and create {a star}",
             "toolbox": [
                 "A",
                 "x",
@@ -149,7 +149,7 @@
             "goal": [
                 "B"
             ],
-            "textgoal": "Create a square using functions",
+            "textgoal": "Create {a square} using functions",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -159,11 +159,11 @@
                 "x => x"
             ],
             "goal": [
-                "B"
+                "D"
             ],
-            "textgoal": "Create a square",
+            "textgoal": "Create {a circle}",
             "toolbox": [
-                "x => B",
+                "x => D",
                 "x => C",
                 "A"
             ],
@@ -178,7 +178,7 @@
             "goal": [
                 "B"
             ],
-            "textgoal": "Create a square (again)",
+            "textgoal": "Create {a square}",
             "toolbox": [
                 "x => B",
                 "x => C"
