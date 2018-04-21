@@ -50,6 +50,8 @@ export default class ChapterEndStage extends BaseStage {
         let newStarX = 0;
         let newStarY = 0;
 
+        let newCenterStar = null;
+
         for (let j = 0; j < numChapters; j++) {
             const lit = j < progression.chapterIdx();
             const lighting = j === progression.chapterIdx();
@@ -115,6 +117,21 @@ export default class ChapterEndStage extends BaseStage {
                 if (lighting) {
                     this.newStars.push([ id, star ]);
                 }
+            }
+
+            // Add center star
+            if (lit || lighting) {
+                const starIdx = j % 3;
+                const star = gfx.sprite({
+                    image: Loader.images[`star_${starIdx + 1}`],
+                    size: { h: 25, w: 25 },
+                    anchor: { x: 0.5, y: 0.5 },
+                    pos: { x: clusterX, y: clusterY },
+                    opacity: lighting ? 0 : 1,
+                    scale: { x: lighting ? 0 : 1, y: lighting ? 0 : 1 },
+                });
+                this.stars.push(this.allocateInternal(star));
+                newCenterStar = star;
             }
         }
 
@@ -194,6 +211,14 @@ export default class ChapterEndStage extends BaseStage {
                     this.bgStars.push(id);
                     newStar.opacity = Math.random();
                 }
+                animate.tween(newCenterStar, {
+                    opacity: 1,
+                    scale: { x: 1, y: 1 },
+                }, {
+                    easing: animate.Easing.Anticipate.BackOut(10),
+                    duration: 500,
+                    setAnimatingFlag: false,
+                });
             });
 
         animate.infinite((dt) => {
