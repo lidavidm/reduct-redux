@@ -977,7 +977,7 @@ export default class Stage extends BaseStage {
 
                 let i = 0;
                 while (i < starList.length) {
-                    let j = i;
+                    const j = i;
                     rows.push(this.allocate(gfxCore.layout.hbox(
                         () => starList.slice(j, j + 9),
                         {},

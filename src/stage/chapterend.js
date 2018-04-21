@@ -1,3 +1,5 @@
+import * as chroma from "chroma-js";
+
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import * as progression from "../game/progression";
@@ -33,51 +35,148 @@ export default class ChapterEndStage extends BaseStage {
 
         this.stars = [];
         this.bgStars = [];
+        this.newStars = [];
+        this.levelStars = [];
 
-        this.spawnFirework(
-            { x: (this.width / 2) - 100, y: this.height - 100 },
-            { x: this.width / 2, y: this.height / 2 },
-            0
-        );
+        // this.spawnFirework(
+        //     { x: (this.width / 2) - 100, y: this.height - 100 },
+        //     { x: this.width / 2, y: this.height / 2 },
+        //     0
+        // );
 
-        const count = progression.chapterIdx() + (progression.isGameEnd() ? 10 : 0);
-        for (let i = 0; i < count; i++) {
-            const offset = random.getRandInt(-250, 250);
-            const angle = random.getRandInt(0, 24) * ((2 * Math.PI) / 24);
-            this.spawnFirework(
-                { x: (this.width / 2) - offset, y: this.height - 100 },
-                {
-                    x: (this.width / 2) + (100 * Math.cos(angle)),
-                    y: (this.height / 2) + (100 * Math.sin(angle)),
-                },
-                i * 750
-            );
+        // const count = progression.chapterIdx() + (progression.isGameEnd() ? 10 : 0);
+        // for (let i = 0; i < count; i++) {
+        //     const offset = random.getRandInt(-250, 250);
+        //     const angle = random.getRandInt(0, 24) * ((2 * Math.PI) / 24);
+        //     this.spawnFirework(
+        //         { x: (this.width / 2) - offset, y: this.height - 100 },
+        //         {
+        //             x: (this.width / 2) + (100 * Math.cos(angle)),
+        //             y: (this.height / 2) + (100 * Math.sin(angle)),
+        //         },
+        //         i * 750
+        //     );
+        // }
+
+        const numChapters = progression.ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters.length;
+        const bandWidth = this.width / numChapters;
+        for (let j = 0; j < numChapters; j++) {
+            const lit = j < progression.chapterIdx();
+            const lighting = j === progression.chapterIdx();
+
+            for (let i = 0; i < (lighting ? 20 : 8); i++) {
+                const idx = random.getRandInt(1, 15);
+                const size = random.getRandInt(10, 20);
+                const star = gfx.sprite({
+                    image: Loader.images[`mainmenu-star${idx}`],
+                    size: { h: size, w: size },
+                });
+                star.anchor = { x: 0.5, y: 0.5 };
+                const x = random.getRandInt(j * bandWidth, (j + 1) * bandWidth);
+                star.pos = {
+                    x,
+                    y: random.getRandInt(0, 150) + (0.6 * this.height) + (80 * Math.sin((2 * Math.PI * (x / this.width)))),
+                };
+                star.opacity = 0.0;
+                star.opacityDelta = 0.05;
+
+                const id = this.allocateInternal(star);
+                this.stars.push(id);
+                if (lit) {
+                    this.bgStars.push(id);
+                    animate.tween(star, { opacity: (0.5 * Math.random()) + 0.3 }, {
+                        duration: 2500,
+                        easing: animate.Easing.Cubic.Out,
+                    });
+                }
+                else {
+                    animate.tween(star, { opacity: 0.1 }, {
+                        duration: 2500,
+                        easing: animate.Easing.Cubic.Out,
+                    });
+                }
+
+                if (lighting) {
+                    this.newStars.push([ id, star ]);
+                }
+            }
         }
 
-        for (let i = 0; i < 60; i++) {
-            const idx = random.getRandInt(1, 15);
-            const size = random.getRandInt(10, 20);
-            const star = gfx.sprite({
-                image: Loader.images[`mainmenu-star${idx}`],
-                size: { h: size, w: size },
+        let newStarX = 0;
+        let newStarY = 0;
+        for (const [ _, newStar ] of this.newStars) {
+            newStarX += newStar.pos.x;
+            newStarY += newStar.pos.y;
+        }
+        newStarX /= this.newStars.length;
+        newStarY /= this.newStars.length;
+
+        const chapter = progression.currentChapter();
+        const spacing = 60;
+        const rowStart = (this.width / 2) - (4 * spacing);
+        const colStart = this.height / 3;
+        const starTweens = [];
+        const levelStars = [];
+        for (let i = 0; i < chapter.levels.length; i++) {
+            const star = gfx.shapes.star({
+                color: "gold",
             });
+            star.opacity = 0;
             star.anchor = { x: 0.5, y: 0.5 };
-            star.pos = {
-                x: random.getRandInt(0, this.width),
-                y: random.getRandInt(0, this.height),
-            };
-            star.opacity = 0.0;
-            star.opacityDelta = 0.05;
+            const col = i % 9;
+            const row = Math.floor(i / 9);
+            star.pos = { x: rowStart + (col * spacing), y: colStart + (row * spacing) };
+
+            starTweens.push(animate.tween(star, { opacity: 1 }, {
+                easing: animate.Easing.Cubic.In,
+                duration: 300,
+                setAnimatingFlag: false,
+            }).delay(i * 50));
 
             const id = this.allocateInternal(star);
-            this.stars.push(id);
-            this.bgStars.push(id);
-
-            animate.tween(star, { opacity: (0.5 * Math.random()) + 0.3 }, {
-                duration: 2500,
-                easing: animate.Easing.Cubic.Out,
-            });
+            this.levelStars.push(id);
+            levelStars.push([ id, star ]);
         }
+
+        Promise.all(starTweens)
+            .then(() => {
+                const scale = chroma.scale("Spectral").mode("lab");
+                const splosions = [];
+                for (let i = 0; i < levelStars.length; i++) {
+                    const [ id, star ] = levelStars[i];
+                    splosions.push(animate.tween(star, {
+                        pos: {
+                            x: newStarX + random.getRandInt(-20, 21),
+                            y: newStarY + random.getRandInt(-20, 21),
+                        },
+                        scale: { x: 0.3, y: 0.3 },
+                    }, {
+                        easing: animate.Easing.Cubic.In,
+                        duration: 500,
+                    }).delay(i * 150)
+                        .then(() => {
+                            this.levelStars.splice(this.levelStars.indexOf(id), 1);
+                            this.newStars.forEach(([ _, newStar ]) => {
+                                newStar.opacity = Math.min(1.0, newStar.opacity + 0.1);
+                            });
+
+                            return animate.fx.splosion(this, star.pos, {
+                                explosionRadius: 400,
+                                numOfParticles: 10,
+                                duration: 1500,
+                                color: idx => scale(idx / 10.0),
+                                angle: idx => 2 * Math.PI * (idx / 10),
+                            });
+                        }));
+                }
+                return Promise.all(splosions);
+            })
+            .then(() => {
+                for (const [ id, newStar ] of this.newStars) {
+                    this.bgStars.push(id);
+                    newStar.opacity = Math.random();
+                }
+            });
 
         animate.infinite((dt) => {
             for (const id of this.bgStars) {
@@ -206,8 +305,16 @@ export default class ChapterEndStage extends BaseStage {
         for (const starId of this.stars) {
             this.drawInternalProjection(state, starId);
         }
+        for (const starId of this.levelStars) {
+            this.drawInternalProjection(state, starId);
+        }
 
         this.drawInternalProjection(state, this.title);
+
+        for (const fx of Object.values(this.effects)) {
+            fx.prepare();
+            fx.draw();
+        }
 
         if (this.continueButtonId) {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
