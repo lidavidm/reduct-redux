@@ -23,8 +23,9 @@ export default class ChapterEndStage extends BaseStage {
 
         this.title = this.allocateInternal(gfx.layout.sticky(
             gfx.text(progression.isGameEnd() ? "You win!" : "Chapter Finished!", {
-                fontSize: 64,
+                fontSize: 96,
                 color: "#FFF",
+                font: gfx.text.script,
             }),
             "top",
             {
@@ -63,8 +64,11 @@ export default class ChapterEndStage extends BaseStage {
         for (let j = 0; j < numChapters; j++) {
             const lit = j < progression.chapterIdx();
             const lighting = j === progression.chapterIdx();
+            const clusterX = ((j + 0.5) * bandWidth);
+            const clusterY = (0.6 * this.height) + (0.2 * this.height * Math.sin((2 * Math.PI * (clusterX / this.width))));
+            const clusterR = 0.4 * bandWidth;
 
-            for (let i = 0; i < (lighting ? 20 : 8); i++) {
+            for (let i = 0; i < 10; i++) {
                 const idx = random.getRandInt(1, 15);
                 const size = random.getRandInt(10, 20);
                 const star = gfx.sprite({
@@ -72,10 +76,10 @@ export default class ChapterEndStage extends BaseStage {
                     size: { h: size, w: size },
                 });
                 star.anchor = { x: 0.5, y: 0.5 };
-                const x = random.getRandInt(j * bandWidth, (j + 1) * bandWidth);
+                const theta = Math.random() * 2 * Math.PI;
                 star.pos = {
-                    x,
-                    y: random.getRandInt(0, 150) + (0.6 * this.height) + (80 * Math.sin((2 * Math.PI * (x / this.width)))),
+                    x: clusterX + (Math.random() * clusterR * Math.cos(theta)),
+                    y: clusterY + (Math.random() * clusterR * Math.sin(theta)),
                 };
                 star.opacity = 0.0;
                 star.opacityDelta = 0.05;
@@ -316,13 +320,14 @@ export default class ChapterEndStage extends BaseStage {
             fx.draw();
         }
 
+        const title = this.getView(this.title);
         if (this.continueButtonId) {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
             this.continueButton.draw(
                 this.continueButtonId, this.continueButtonId, state, this,
                 this.makeBaseOffset({
                     x: this.width / 2,
-                    y: this.height / 2,
+                    y: title.pos.y + title.size.h + 25,
                 })
             );
         }
@@ -333,7 +338,7 @@ export default class ChapterEndStage extends BaseStage {
                 this.challengeButtonId, this.challengeButtonId, state, this,
                 this.makeBaseOffset({
                     x: this.width / 2,
-                    y: (this.height / 2) + 150,
+                    y: title.pos.y + title.size.h + 25 + 150,
                 })
             );
         }
