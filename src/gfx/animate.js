@@ -125,6 +125,16 @@ export const Easing = {
     Sinusoid: (mag0, mag1, magEasing, freq) => (start, stop, t) =>
         start + (t * (stop - start)) +
         (magEasing(mag0, mag1, t) * Math.sin(2 * Math.PI * t * freq)),
+
+    /**
+     * Tweens that overshoot/undershoot their target.
+     * See https://github.com/d3/d3-ease.
+     */
+    Anticipate: {
+        BackOut: s => (start, stop, t) =>
+            start + ((stop - start) *
+                     (((t - 1) * (t - 1) * (((s + 1) * (t - 1)) + s)) + 1)),
+    },
 };
 
 /**
