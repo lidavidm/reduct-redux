@@ -91,7 +91,7 @@ export default {
                     circle: {
                         type: "sprite",
                         image: "food_2",
-                        size: { w: 50 },
+                        size: { h: 50 },
                     },
                     triangle: {
                         type: "sprite",
