@@ -44,6 +44,8 @@ export default class ChapterEndStage extends BaseStage {
               .progression.linearChapters.length;
         const bandWidth = this.width / numChapters;
 
+        const scale = chroma.scale("Spectral").mode("lab");
+
         // Center of cluster of stars representing just-finished chapter
         let newStarX = 0;
         let newStarY = 0;
@@ -61,10 +63,26 @@ export default class ChapterEndStage extends BaseStage {
                 newStarY = clusterY;
             }
 
+            let lineWidth = 1;
+            if (lighting) lineWidth = 5;
+            else if (lit) lineWidth = 3;
+            this.stars.push(this.allocateInternal(gfx.shapes.circle({
+                color: null,
+                shadow: false,
+                pos: { x: clusterX, y: clusterY },
+                size: { w: 2.2 * clusterR, h: 2.2 * clusterR },
+                anchor: { x: 0.5, y: 0.5 },
+                stroke: {
+                    color: scale(j / numChapters),
+                    lineWidth,
+                    lineDash: [10, 5],
+                },
+            })));
+
             for (let i = 0; i < 10; i++) {
                 const idx = random.getRandInt(1, 15);
                 const size = random.getRandInt(10, 20);
-                const theta = Math.random() * 2 * Math.PI;
+                const theta = (i * 2 * Math.PI) / 10;
 
                 const star = gfx.sprite({
                     image: Loader.images[`mainmenu-star${idx}`],
@@ -72,8 +90,8 @@ export default class ChapterEndStage extends BaseStage {
                 });
                 star.anchor = { x: 0.5, y: 0.5 };
                 star.pos = {
-                    x: clusterX + (Math.random() * clusterR * Math.cos(theta)),
-                    y: clusterY + (Math.random() * clusterR * Math.sin(theta)),
+                    x: clusterX + (0.6 * clusterR * Math.cos(theta)),
+                    y: clusterY + (0.6 * clusterR * Math.sin(theta)),
                 };
                 star.opacity = 0.0;
                 star.opacityDelta = 0.01 + (Math.random() / 10);
@@ -139,7 +157,6 @@ export default class ChapterEndStage extends BaseStage {
 
         Promise.all(starTweens)
             .then(() => {
-                const scale = chroma.scale("Spectral").mode("lab");
                 const splosions = [];
                 for (let i = 0; i < levelStars.length; i++) {
                     const [ id, star ] = levelStars[i];
@@ -182,6 +199,7 @@ export default class ChapterEndStage extends BaseStage {
         animate.infinite((dt) => {
             for (const id of this.bgStars) {
                 const view = this.internalViews[id];
+
                 view.opacity += view.opacityDelta * (dt / 100);
                 if (view.opacity > 1.0) {
                     view.opacity = 1.0;
@@ -215,10 +233,14 @@ export default class ChapterEndStage extends BaseStage {
             }).delay(1000);
 
             if (progression.hasChallengeChapter()) {
-                const challengeButton = gfx.ui.button(this, "Try Challenges", {
+                const challengeButton = gfx.layout.sticky(gfx.ui.button(this, "Try Challenges", {
+                    color: "#e95888",
                     click: () => {
                         window.next(true);
                     },
+                }), "top", {
+                    align: "center",
+                    margin: 200,
                 });
                 this.challengeButtonId = this.allocateInternal(challengeButton);
                 challengeButton.opacity = 0;
@@ -316,12 +338,6 @@ export default class ChapterEndStage extends BaseStage {
 
         this.drawInternalProjection(state, this.title);
 
-        for (const fx of Object.values(this.effects)) {
-            fx.prepare();
-            fx.draw();
-        }
-
-        const title = this.getView(this.title);
         if (this.continueButtonId) {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
             this.continueButton.draw(
@@ -334,11 +350,13 @@ export default class ChapterEndStage extends BaseStage {
             view.prepare(this.challengeButtonId, this.challengeButtonId, state, this);
             view.draw(
                 this.challengeButtonId, this.challengeButtonId, state, this,
-                this.makeBaseOffset({
-                    x: this.width / 2,
-                    y: title.pos.y + title.size.h + 25 + 150,
-                })
+                this.makeBaseOffset()
             );
+        }
+
+        for (const fx of Object.values(this.effects)) {
+            fx.prepare();
+            fx.draw();
         }
     }
 
