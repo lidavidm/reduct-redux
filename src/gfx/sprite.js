@@ -3,7 +3,7 @@ import * as primitive from "./primitive";
 import * as util from "./util";
 
 export function sprite(options={}) {
-    const projection = baseProjection();
+    const projection = baseProjection(options);
     projection.type = "sprite";
     projection.size.w = (options.size && options.size.w) ? options.size.w : 50;
     projection.size.h = (options.size && options.size.h) ? options.size.h : 50;
