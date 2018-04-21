@@ -30,7 +30,7 @@ export default class ChapterEndStage extends BaseStage {
             "top",
             {
                 align: "center",
-                margin: 50,
+                margin: 20,
             }
         ));
 
@@ -38,26 +38,6 @@ export default class ChapterEndStage extends BaseStage {
         this.bgStars = [];
         this.newStars = [];
         this.levelStars = [];
-
-        // this.spawnFirework(
-        //     { x: (this.width / 2) - 100, y: this.height - 100 },
-        //     { x: this.width / 2, y: this.height / 2 },
-        //     0
-        // );
-
-        // const count = progression.chapterIdx() + (progression.isGameEnd() ? 10 : 0);
-        // for (let i = 0; i < count; i++) {
-        //     const offset = random.getRandInt(-250, 250);
-        //     const angle = random.getRandInt(0, 24) * ((2 * Math.PI) / 24);
-        //     this.spawnFirework(
-        //         { x: (this.width / 2) - offset, y: this.height - 100 },
-        //         {
-        //             x: (this.width / 2) + (100 * Math.cos(angle)),
-        //             y: (this.height / 2) + (100 * Math.sin(angle)),
-        //         },
-        //         i * 750
-        //     );
-        // }
 
         const numChapters = progression.ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters.length;
         const bandWidth = this.width / numChapters;
@@ -150,8 +130,8 @@ export default class ChapterEndStage extends BaseStage {
                     const [ id, star ] = levelStars[i];
                     splosions.push(animate.tween(star, {
                         pos: {
-                            x: newStarX + random.getRandInt(-20, 21),
-                            y: newStarY + random.getRandInt(-20, 21),
+                            x: newStarX + ((Math.random() - 0.5) * bandWidth),
+                            y: newStarY + ((Math.random() - 0.5) * bandWidth),
                         },
                         scale: { x: 0.3, y: 0.3 },
                     }, {
@@ -164,12 +144,14 @@ export default class ChapterEndStage extends BaseStage {
                                 newStar.opacity = Math.min(1.0, newStar.opacity + 0.1);
                             });
 
+                            const particles = random.getRandInt(10, 25);
+                            const rotation = Math.random() * (Math.PI / 2);
                             return animate.fx.splosion(this, star.pos, {
-                                explosionRadius: 400,
-                                numOfParticles: 10,
-                                duration: 1500,
-                                color: idx => scale(idx / 10.0),
-                                angle: idx => 2 * Math.PI * (idx / 10),
+                                explosionRadius: 300,
+                                numOfParticles: particles,
+                                duration: 750,
+                                color: idx => scale(idx / particles),
+                                angle: idx => rotation + (2 * Math.PI * (idx / particles)),
                             });
                         }));
                 }
@@ -200,10 +182,14 @@ export default class ChapterEndStage extends BaseStage {
         this.draw();
 
         if (!progression.isGameEnd()) {
-            const continueButton = gfx.ui.button(this, "Next Chapter", {
+            const continueButton = gfx.layout.sticky(gfx.ui.button(this, "Next Chapter", {
+                color: "#e95888",
                 click: () => {
                     window.next();
                 },
+            }), "top", {
+                align: "center",
+                margin: 150,
             });
             this.continueButtonId = this.allocateInternal(continueButton);
             this.continueButton = this.internalViews[this.continueButtonId];
@@ -325,10 +311,7 @@ export default class ChapterEndStage extends BaseStage {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
             this.continueButton.draw(
                 this.continueButtonId, this.continueButtonId, state, this,
-                this.makeBaseOffset({
-                    x: this.width / 2,
-                    y: title.pos.y + title.size.h + 25,
-                })
+                this.makeBaseOffset()
             );
         }
         if (this.challengeButtonId) {
@@ -346,9 +329,7 @@ export default class ChapterEndStage extends BaseStage {
 
     getNodeAtPos(pos, selectedId=null) {
         const projection = this.continueButton;
-        const offset = this.makeBaseOffset({
-            x: this.width / 2, y: this.height / 2,
-        });
+        const offset = this.makeBaseOffset();
 
         if (this.continueButtonId) {
             if (projection.containsPoint(pos, offset)) {
@@ -357,7 +338,6 @@ export default class ChapterEndStage extends BaseStage {
         }
 
         if (this.challengeButtonId) {
-            offset.y += 150;
             if (this.internalViews[this.challengeButtonId].containsPoint(pos, offset)) {
                 return [ this.challengeButtonId, this.challengeButtonId ];
             }
