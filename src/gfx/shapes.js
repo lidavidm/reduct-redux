@@ -8,6 +8,7 @@ function shadow(ctx, exprId, projection, state, f) {
     if (projection.shadow || (node && (!node.get("parent") || !node.get("locked")))) {
         ctx.fillStyle = projection.shadowColor;
         f(projection.shadowOffset);
+        ctx.fill();
     }
 }
 
@@ -64,6 +65,7 @@ function drawPrimitive(exprId, projection, state, stage, offset,
     shadow(ctx, exprId, projection, state, drawFunction);
     if (projection.color) ctx.fillStyle = projection.color;
     drawFunction(0);
+    if (projection.color) ctx.fill();
     if (stroke && strokeFunction) strokeFunction();
     else if (stroke) ctx.stroke();
 
@@ -103,7 +105,6 @@ export function triangle(options={}) {
             ctx.lineTo(x + w, y + h + dy);
             ctx.lineTo(x + w/2.0, y + dy);
             ctx.closePath();
-            ctx.fill();
         });
     };
     return projection;
@@ -128,7 +129,6 @@ export function circle(options={}) {
 
             ctx.beginPath();
             ctx.arc(x + rad, y + rad + dy, rad, 0, 2*Math.PI);
-            ctx.fill();
         });
     };
     return projection;
@@ -150,6 +150,7 @@ export function rectangle(options={}) {
         h *= 0.7;
 
         drawPrimitive(id, this, state, stage, offset, (dy) => {
+            ctx.beginPath();
             ctx.fillRect(x, y + dy, w, h);
         }, (dy) => {
             ctx.strokeRect(x, y, w, h);
@@ -174,7 +175,7 @@ export function star(options={}) {
         h *= 0.7;
 
         drawPrimitive(id, this, state, stage, offset, (dy) => {
-            primitive.drawStar(ctx, x + w/2, y + h/2 + dy, 5, w/2, 0.5*w/2, true, false);
+            primitive.drawStar(ctx, x + w/2, y + h/2 + dy, 5, w/2, 0.5*w/2, false, false);
         });
     };
     return projection;
