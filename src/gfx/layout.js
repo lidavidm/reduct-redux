@@ -300,3 +300,14 @@ export function ratioSizer(projection, ratio, percentage) {
 
     return projection;
 }
+
+export function ratioPlacer(projection, x, y) {
+    const { prepare } = projection;
+    projection.prepare = function(id, exprId, state, stage) {
+        this.pos.x = x * stage.width;
+        this.pos.y = y * stage.height;
+        prepare.call(this, id, exprId, state, stage);
+    };
+
+    return projection;
+}
