@@ -39,6 +39,38 @@ export default class ChapterEndStage extends BaseStage {
         this.newStars = [];
         this.levelStars = [];
 
+        // Generate random background stars (distributed across grid
+        // cells to make it more even)
+        const X_CELLS = 5;
+        const Y_CELLS = 5;
+        const X_WIDTH = 1.0 / X_CELLS;
+        const Y_WIDTH = 1.0 / Y_CELLS;
+        for (let i = 0; i < X_CELLS; i++) {
+            for (let j = 0; j < Y_CELLS; j++) {
+                for (let k = 0; k < 5; k++) {
+                    const idx = random.getRandInt(1, 15);
+                    const x = (X_WIDTH * i) + (X_WIDTH * Math.random());
+                    const y = (Y_WIDTH * j) + (Y_WIDTH * Math.random());
+
+                    const star = gfx.layout.ratioPlacer(gfx.sprite({
+                        image: Loader.images[`mainmenu-star${idx}`],
+                        size: { h: 10, w: 10 },
+                        anchor: { x: 0.5, y: 0.5 },
+                        opacity: 0.0,
+                        opacityDelta: 0.01 + (Math.random() / 10),
+                    }), x, y);
+
+                    const id = this.allocateInternal(star);
+                    this.stars.push(id);
+                    this.bgStars.push(id);
+                    animate.tween(star, { opacity: (0.5 * Math.random()) + 0.3 }, {
+                        duration: 2500,
+                        easing: animate.Easing.Cubic.Out,
+                    });
+                }
+            }
+        }
+
         // Generate clusters of stars representing each chapter
         const numChapters = progression.ACTIVE_PROGRESSION_DEFINITION
               .progression.linearChapters.length;
@@ -81,50 +113,12 @@ export default class ChapterEndStage extends BaseStage {
                 },
             })));
 
-            for (let i = 0; i < 10; i++) {
-                const idx = random.getRandInt(1, 15);
-                const size = random.getRandInt(10, 20);
-                const theta = (i * 2 * Math.PI) / 10;
-
-                const star = gfx.sprite({
-                    image: Loader.images[`mainmenu-star${idx}`],
-                    size: { h: size, w: size },
-                });
-                star.anchor = { x: 0.5, y: 0.5 };
-                star.pos = {
-                    x: clusterX + (0.6 * clusterR * Math.cos(theta)),
-                    y: clusterY + (0.6 * clusterR * Math.sin(theta)),
-                };
-                star.opacity = 0.0;
-                star.opacityDelta = 0.01 + (Math.random() / 10);
-
-                const id = this.allocateInternal(star);
-                this.stars.push(id);
-                if (lit) {
-                    this.bgStars.push(id);
-                    animate.tween(star, { opacity: (0.5 * Math.random()) + 0.3 }, {
-                        duration: 2500,
-                        easing: animate.Easing.Cubic.Out,
-                    });
-                }
-                else {
-                    animate.tween(star, { opacity: 0.1 }, {
-                        duration: 2500,
-                        easing: animate.Easing.Cubic.Out,
-                    });
-                }
-
-                if (lighting) {
-                    this.newStars.push([ id, star ]);
-                }
-            }
-
             // Add center star
             if (lit || lighting) {
                 const starIdx = j % 3;
                 const star = gfx.sprite({
                     image: Loader.images[`star_${starIdx + 1}`],
-                    size: { h: 25, w: 25 },
+                    size: { h: clusterR, w: clusterR },
                     anchor: { x: 0.5, y: 0.5 },
                     pos: { x: clusterX, y: clusterY },
                     opacity: lighting ? 0 : 1,
