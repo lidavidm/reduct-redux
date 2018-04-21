@@ -9,7 +9,13 @@ export function templateText(semantics, text) {
     return text.replace(/\{([\w\s]+)\}/g, (wholeMatch, groupMatch) => {
         const defn = semantics.definitionOf("symbol");
         const matchParts = groupMatch.split(" ");
-        return defn.goalNames[matchParts[matchParts.length - 1]][matchParts.length > 1 ? 1 : 0];
+        let key = matchParts[matchParts.length - 1];
+        let offset = matchParts.length > 1 ? 1 : 0;
+        if (!defn.goalNames[key] && key.endsWith("s")) {
+            key = key.slice(0, -1);
+            offset = 2;
+        }
+        return defn.goalNames[key][offset];
     });
 }
 

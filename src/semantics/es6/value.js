@@ -40,10 +40,10 @@ export default {
             fields: ["name"],
             subexpressions: [],
             goalNames: {
-                "star": [ "star", "a star" ],
-                "circle": [ "circle", "a circle" ],
-                "triangle": [ "triangle", "a triangle" ],
-                "rect": [ "rect", "a square" ],
+                "star": [ "star", "a star", "stars" ],
+                "circle": [ "circle", "a circle", "circles" ],
+                "triangle": [ "triangle", "a triangle", "triangles" ],
+                "square": [ "square", "a square", "squares" ],
             },
             projection: {
                 type: "case",
@@ -74,10 +74,10 @@ export default {
             fields: ["name"],
             subexpressions: [],
             goalNames: {
-                "star": [ "burger", "a burger" ],
-                "circle": [ "lollipop", "a lollipop" ],
-                "triangle": [ "fries", "some fries" ],
-                "rect": [ "candy", "a piece of candy" ],
+                "star": [ "burger", "a burger", "burgers" ],
+                "circle": [ "lollipop", "a lollipop", "lollipops" ],
+                "triangle": [ "fries", "some fries", "bags of fries" ],
+                "square": [ "candy", "a piece of candy", "pieces of candy" ],
             },
             projection: {
                 type: "case",
