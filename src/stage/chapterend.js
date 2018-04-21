@@ -39,30 +39,44 @@ export default class ChapterEndStage extends BaseStage {
         this.newStars = [];
         this.levelStars = [];
 
-        const numChapters = progression.ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters.length;
+        // Generate clusters of stars representing each chapter
+        const numChapters = progression.ACTIVE_PROGRESSION_DEFINITION
+              .progression.linearChapters.length;
         const bandWidth = this.width / numChapters;
+
+        // Center of cluster of stars representing just-finished chapter
+        let newStarX = 0;
+        let newStarY = 0;
+
         for (let j = 0; j < numChapters; j++) {
             const lit = j < progression.chapterIdx();
             const lighting = j === progression.chapterIdx();
             const clusterX = ((j + 0.5) * bandWidth);
-            const clusterY = (0.6 * this.height) + (0.2 * this.height * Math.sin((2 * Math.PI * (clusterX / this.width))));
+            const clusterY = (0.6 * this.height) +
+                  (0.2 * this.height * Math.sin((2 * Math.PI * (clusterX / this.width))));
             const clusterR = 0.4 * bandWidth;
+
+            if (lighting) {
+                newStarX = clusterX;
+                newStarY = clusterY;
+            }
 
             for (let i = 0; i < 10; i++) {
                 const idx = random.getRandInt(1, 15);
                 const size = random.getRandInt(10, 20);
+                const theta = Math.random() * 2 * Math.PI;
+
                 const star = gfx.sprite({
                     image: Loader.images[`mainmenu-star${idx}`],
                     size: { h: size, w: size },
                 });
                 star.anchor = { x: 0.5, y: 0.5 };
-                const theta = Math.random() * 2 * Math.PI;
                 star.pos = {
                     x: clusterX + (Math.random() * clusterR * Math.cos(theta)),
                     y: clusterY + (Math.random() * clusterR * Math.sin(theta)),
                 };
                 star.opacity = 0.0;
-                star.opacityDelta = 0.05;
+                star.opacityDelta = 0.01 + (Math.random() / 10);
 
                 const id = this.allocateInternal(star);
                 this.stars.push(id);
@@ -86,36 +100,37 @@ export default class ChapterEndStage extends BaseStage {
             }
         }
 
-        let newStarX = 0;
-        let newStarY = 0;
-        for (const [ _, newStar ] of this.newStars) {
-            newStarX += newStar.pos.x;
-            newStarY += newStar.pos.y;
-        }
-        newStarX /= this.newStars.length;
-        newStarY /= this.newStars.length;
-
+        // Create rows of stars representing levels of current chapter
         const chapter = progression.currentChapter();
         const spacing = 60;
-        const rowStart = (this.width / 2) - (4 * spacing);
+        let rowStart = (this.width / 2) - (4 * spacing);
         const colStart = this.height / 3;
         const starTweens = [];
         const levelStars = [];
         for (let i = 0; i < chapter.levels.length; i++) {
-            const star = gfx.shapes.star({
-                color: "gold",
-            });
-            star.opacity = 0;
-            star.anchor = { x: 0.5, y: 0.5 };
+            const remainingLevels = chapter.levels.length - i;
+            if (remainingLevels < 9 && i % 9 === 0) {
+                let spacingOffset = Math.floor(remainingLevels / 2);
+                if (remainingLevels % 2 === 0) spacingOffset -= 0.5;
+                rowStart = (this.width / 2) - (spacingOffset * spacing);
+            }
+
             const col = i % 9;
             const row = Math.floor(i / 9);
-            star.pos = { x: rowStart + (col * spacing), y: colStart + (row * spacing) };
+            const star = gfx.shapes.star({
+                color: "gold",
+                anchor: { x: 0.5, y: 0.5 },
+                pos: { x: rowStart + (col * spacing), y: colStart + (row * spacing) },
+                scale: { x: 0, y: 0 },
+            });
 
-            starTweens.push(animate.tween(star, { opacity: 1 }, {
-                easing: animate.Easing.Cubic.In,
-                duration: 300,
+            starTweens.push(animate.tween(star, {
+                scale: { x: 1, y: 1 },
+            }, {
+                easing: animate.Easing.Anticipate.BackOut(1.8),
+                duration: 500,
                 setAnimatingFlag: false,
-            }).delay(i * 50));
+            }).delay(i * 75));
 
             const id = this.allocateInternal(star);
             this.levelStars.push(id);
