@@ -1,6 +1,6 @@
 import * as gfx from "./core";
 
-export function button(stage, label, handlers) {
+export function button(stage, label, options) {
     if (typeof label === "string") {
         label = gfx.constant(stage.allocate(gfx.text(label, {
             fontSize: 32,
@@ -8,7 +8,7 @@ export function button(stage, label, handlers) {
         })));
     }
     const projection = gfx.layout.hbox(label, {
-        color: "lightblue",
+        color: options.color || "lightblue",
         padding: {
             left: 20,
             right: 20,
@@ -28,14 +28,14 @@ export function button(stage, label, handlers) {
 
     projection.onclick = function() {
         this.shadow = true;
-        this.pos.y -= 3;
+        this.offset.y -= 3;
 
-        if (handlers.click) handlers.click();
+        if (options.click) options.click();
     };
 
     projection.onmousedown = function() {
         this.shadow = false;
-        this.pos.y += 3;
+        this.offset.y += 3;
     };
 
     return projection;
