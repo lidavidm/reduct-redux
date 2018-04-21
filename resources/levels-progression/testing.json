@@ -1,6 +1,6 @@
 {
-    "chapterName": "Function Definition",
-    "description": "Introduction to function definitions",
+    "chapterName": "Testing",
+    "description": "Test blocks",
     "language": "JavaScript",
     "macros": {
         "A": "'star'",
@@ -11,14 +11,17 @@
     "levels": [
         {
             "board": [
-                "function star() { return A; }"
+                "_(3)",
+                "_(8)",
+                "addOne(_)"
             ],
             "goal": [
-                "A"
+                "4",
+                "8"
             ],
-            "textgoal": "Make me {a star}!",
             "toolbox": [
-                "star"
+                "__unlimited;addOne;",
+                "__unlimited;doNothing;"
             ],
             "globals": {},
             "syntax": [],
@@ -27,124 +30,20 @@
         },
         {
             "board": [
-                "function star() { return A; }",
-                "function rect() { return B; }"
+                "_(addOne(4))",
+                "_(_(1))",
+                "addOne(_(10))"
             ],
             "goal": [
-                "B",
-                "B",
-                "A"
-            ],
-            "textgoal": "Make me two {squares} and {a star}!",
-            "toolbox": [
-                "__unlimited;star",
-                "__unlimited;rect"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function makeStar(x) { return A; }",
-                "D",
-                "B",
-                "C"
-            ],
-            "goal": [
-                "A",
-                "A",
-                "A"
-            ],
-            "toolbox": [
-                "__unlimited;makeStar"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function triangle() { return _; }",
-                "C"
-            ],
-            "goal": [
-                "C",
-                "C",
-                "C"
-            ],
-            "textgoal": "Define a function that outputs {a triangle}",
-            "toolbox": [
-                "__unlimited;triangle"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function trianglify(x) { return _; }",
-                "A",
-                "B",
-                "C"
-            ],
-            "goal": [
-                "C",
-                "C"
-            ],
-            "textgoal": "Define a function that takes an input and outputs {a triangle}",
-            "toolbox": [
-                "__unlimited;trianglify"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "let squarify = _;",
-                "x => _",
-                "A",
-                "A",
-                "B",
-                "C"
-            ],
-            "goal": [
-                "B",
-                "B",
-                "B"
-            ],
-            "textgoal": "Define a function that outputs {a square}",
-            "toolbox": [
-                "__unlimited;squarify"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function addOne(x) { return _; }",
                 "2",
-                "4"
+                "6",
+                "11"
             ],
-            "goal": [
-                "3",
-                "6"
-            ],
-            "textgoal": "Define a function that computes x plus 1",
             "toolbox": [
-                "__unlimited;addOne",
-                "x",
-                "_ + 1"
-            ],
-            "defines": [
-                "function addOne(x) { return x + 1; }"
+                "addOne",
+                "addOne",
+                "doNothing",
+                "doNothing"
             ],
             "globals": {},
             "syntax": [],
@@ -153,12 +52,43 @@
         },
         {
             "board": [
+                "x => C",
+                "__tests(f(A), f(B))"
+            ],
+            "goal": [
+                "C",
+                "C"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
+        },
+        {
+            "board": [
+                "__tests(f(A), f(C))"
+            ],
+            "goal": [
+                "A",
+                "A"
+            ],
+            "toolbox": [
+                "x => A",
+                "x => B",
+                "x => C"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
+        },
+        {
+            "board": [
+                "__tests(f(2), f(6))"
+            ],
+            "goal": [
                 "3",
                 "7"
-            ],
-            "goal": [
-                "6",
-                "9"
             ],
             "toolbox": [
                 "__unlimited;addOne;"
@@ -166,28 +96,21 @@
             "globals": {},
             "syntax": [],
             "animationScales": {},
-            "fade": {
-                "reference": 1
-            }
+            "fade": {}
         },
         {
             "board": [
-                "addOne(7)",
-                "addOne(_)"
+                "function starify(x) { return A; }",
+                "function squarify(x) { return B; }",
+                "__tests(f(C), f(B))"
             ],
             "goal": [
-                "7",
-                "8"
+                "A",
+                "A"
             ],
             "toolbox": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8"
+                "__unlimited; starify",
+                "__unlimited; squarify"
             ],
             "globals": {},
             "syntax": [],
@@ -196,23 +119,25 @@
         },
         {
             "board": [
-                "__argumentAnnotated; function doNothing(x) { return _ }",
-                "_(7)",
-                "_(3)"
+                "__argumentAnnotated; function threeify(x) { return _; }",
+                "__tests(f(1), f(2), f(3))"
             ],
             "goal": [
-                "4",
-                "7"
+                "3",
+                "3",
+                "3"
             ],
-            "textgoal": "Define a function that outputs the input it is given",
+            "textgoal": "Define a function that outputs 3",
             "toolbox": [
-                "__unlimited;addOne;",
-                "__unlimited; doNothing",
+                "__unlimited; threeify",
                 "x => _",
-                "x"
+                "x",
+                "1",
+                "2",
+                "3"
             ],
             "defines": [
-                "function doNothing(x) { return x; }"
+                "function threeify(x) { return 3; }"
             ],
             "globals": {},
             "syntax": [],
@@ -221,125 +146,45 @@
         },
         {
             "board": [
-                "_(3)",
-                "_(4)",
-                "_(8)"
-            ],
-            "goal": [
-                "3",
-                "6",
-                "8"
-            ],
-            "toolbox": [
-                "__unlimited;addOne;",
-                "__unlimited;doNothing;",
-                "_(_)"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function first(left, right) { return left; }",
-                "__tests(f(3, 6), f(7, 3), f(_, _))"
-            ],
-            "goal": [
-                "3",
-                "7",
-                "9"
-            ],
-            "textgoal": "Define a function that outputs the first input",
-            "toolbox": [
-                "first",
-                "8",
-                "9",
-                "10"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function second(left, right) { return _; }",
-                "__tests(f(_, _), f(_, 8))"
-            ],
-            "goal": [
-                "5",
-                "8"
-            ],
-            "textgoal": "Define a function that outputs the second input",
-            "toolbox": [
-                "left",
-                "right",
-                "second",
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function secondPlusOne(a, b) { return _; }",
-                "__tests(f(1, 6), f(_, _), f(_, _))",
-                "addOne(_)"
+                "__tests(f(2), f(3), f(1))"
             ],
             "goal": [
                 "2",
-                "6",
-                "7"
-            ],
-            "textgoal": "Define a function that adds 1 to the second input",
-            "toolbox": [
-                "secondPlusOne",
-                "a",
-                "b",
-                "5",
-                "1",
                 "3",
-                "8"
+                "4"
             ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {},
-            "fade": {}
-        },
-        {
-            "board": [
-                "function firstPlusTwo(left, right) { return _; }",
-                "__tests(f(_, _), f(_, _), f(7, 9))",
-                "2",
-                "3",
-                "4",
-                "5"
-            ],
-            "goal": [
-                "4",
-                "7",
-                "9"
-            ],
-            "textgoal": "Define a function that adds 2 to the first input",
             "toolbox": [
-                "firstPlusTwo",
+                "threeify",
                 "addOne",
-                "addTwo",
-                "left",
-                "right",
-                "_(_)"
+                "doNothing"
             ],
-            "globals": {
-                "twice": "function twice(f) { return (x) => f(f(x)); }",
-                "triple": "function triple(x) { return (repeat(x, addTwo))(x); }"
-            },
+            "globals": {},
+            "syntax": [],
+            "animationScales": {},
+            "fade": {}
+        },
+        {
+            "board": [
+                "function addThree(x) { return _; }",
+                "__tests(f(2), f(6))",
+                "x"
+            ],
+            "goal": [
+                "5",
+                "9"
+            ],
+            "textgoal": "Define a function that computes x plus 3",
+            "toolbox": [
+                "__unlimited; addThree",
+                "addOne",
+                "addOne",
+                "addOne",
+                "__unlimited;doNothing;"
+            ],
+            "defines": [
+                "function addThree(x) { return addOne(addOne(addOne(x))); }"
+            ],
+            "globals": {},
             "syntax": [],
             "animationScales": {},
             "fade": {}
