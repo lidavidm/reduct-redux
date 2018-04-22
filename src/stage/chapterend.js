@@ -15,6 +15,7 @@ export default class ChapterEndStage extends BaseStage {
     constructor(...args) {
         super(...args);
 
+        this.opacity = 1.0;
         this.color = "#594764";
 
         if (progression.isGameEnd()) {
@@ -54,7 +55,7 @@ export default class ChapterEndStage extends BaseStage {
 
                     const star = gfx.layout.ratioPlacer(gfx.sprite({
                         image: Loader.images[`mainmenu-star${idx}`],
-                        size: { h: 10, w: 10 },
+                        size: { h: 15, w: 15 },
                         anchor: { x: 0.5, y: 0.5 },
                         opacity: 0.0,
                         opacityDelta: 0.01 + (Math.random() / 10),
@@ -97,9 +98,8 @@ export default class ChapterEndStage extends BaseStage {
                 newStarY = clusterY;
             }
 
-            let lineWidth = 1;
-            if (lighting) lineWidth = 5;
-            else if (lit) lineWidth = 3;
+            let lineWidth = 2;
+            if (lighting) lineWidth = 4;
             this.stars.push(this.allocateInternal(gfx.shapes.circle({
                 color: null,
                 shadow: false,
@@ -237,7 +237,22 @@ export default class ChapterEndStage extends BaseStage {
             const continueButton = gfx.layout.sticky(gfx.ui.button(this, "Next Chapter", {
                 color: "#e95888",
                 click: () => {
-                    window.next();
+                    animate.tween(this, {
+                        color: "#EEE",
+                    }, {
+                        duration: 800,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Color(animate.Easing.Cubic.Out, this.color, "#EEE"),
+                    }).then(() => {
+                        window.next();
+                    });
+                    animate.tween(this, {
+                        opacity: 0.0,
+                    }, {
+                        duration: 500,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Cubic.Out,
+                    });
                 },
             }), "top", {
                 align: "center",
@@ -349,19 +364,19 @@ export default class ChapterEndStage extends BaseStage {
         this.ctx.restore();
 
         for (const starId of this.stars) {
-            this.drawInternalProjection(state, starId);
+            this.drawInternalProjection(state, starId, starId, this.makeBaseOffset({ opacity: this.opacity }));
         }
         for (const starId of this.levelStars) {
-            this.drawInternalProjection(state, starId);
+            this.drawInternalProjection(state, starId, starId, this.makeBaseOffset({ opacity: this.opacity }));
         }
 
-        this.drawInternalProjection(state, this.title);
+        this.drawInternalProjection(state, this.title, this.title, this.makeBaseOffset({ opacity: this.opacity }));
 
         if (this.continueButtonId) {
             this.continueButton.prepare(this.continueButtonId, this.continueButtonId, state, this);
             this.continueButton.draw(
                 this.continueButtonId, this.continueButtonId, state, this,
-                this.makeBaseOffset()
+                this.makeBaseOffset({ opacity: this.opacity })
             );
         }
         if (this.challengeButtonId) {
@@ -369,7 +384,7 @@ export default class ChapterEndStage extends BaseStage {
             view.prepare(this.challengeButtonId, this.challengeButtonId, state, this);
             view.draw(
                 this.challengeButtonId, this.challengeButtonId, state, this,
-                this.makeBaseOffset()
+                this.makeBaseOffset({ opacity: this.opacity })
             );
         }
 
