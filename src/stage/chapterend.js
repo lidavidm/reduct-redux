@@ -37,7 +37,6 @@ export default class ChapterEndStage extends BaseStage {
 
         this.stars = [];
         this.bgStars = [];
-        this.newStars = [];
         this.levelStars = [];
 
         // Generate random background stars (distributed across grid
@@ -159,7 +158,7 @@ export default class ChapterEndStage extends BaseStage {
                 easing: animate.Easing.Anticipate.BackOut(1.8),
                 duration: 500,
                 setAnimatingFlag: false,
-            }).delay(i * 75));
+            }).delay(i * 30));
 
             const id = this.allocateInternal(star);
             this.levelStars.push(id);
@@ -180,31 +179,26 @@ export default class ChapterEndStage extends BaseStage {
                     }, {
                         easing: animate.Easing.Cubic.In,
                         duration: 500,
-                    }).delay(i * 150)
+                    }).delay(i * 30)
                         .then(() => {
                             this.levelStars.splice(this.levelStars.indexOf(id), 1);
-                            this.newStars.forEach(([ _, newStar ]) => {
-                                newStar.opacity = Math.min(1.0, newStar.opacity + 0.1);
-                            });
-
-                            const particles = random.getRandInt(10, 25);
-                            const rotation = Math.random() * (Math.PI / 2);
-                            return animate.fx.splosion(this, star.pos, {
-                                explosionRadius: 300,
-                                numOfParticles: particles,
-                                duration: 750,
-                                color: idx => scale(idx / particles),
-                                angle: idx => rotation + (2 * Math.PI * (idx / particles)),
-                            });
+                            if (i % 3 === 0) {
+                                const particles = random.getRandInt(20, 50);
+                                const rotation = Math.random() * (Math.PI / 2);
+                                return animate.fx.splosion(this, star.pos, {
+                                    explosionRadius: 500,
+                                    numOfParticles: particles,
+                                    duration: 600,
+                                    color: idx => scale(idx / particles),
+                                    angle: idx => rotation + (2 * Math.PI * (idx / particles)),
+                                });
+                            }
+                            return null;
                         }));
                 }
                 return Promise.all(splosions);
             })
             .then(() => {
-                for (const [ id, newStar ] of this.newStars) {
-                    this.bgStars.push(id);
-                    newStar.opacity = Math.random();
-                }
                 animate.tween(newCenterStar, {
                     opacity: 1,
                     scale: { x: 1, y: 1 },
