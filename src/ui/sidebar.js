@@ -21,11 +21,38 @@ export default class Sidebar {
         gradient.addColorStop(1, "#594764");
         this.gradient = gradient;
 
+        // Make a dashed-outline to serve as a placeholder indicator
+        this.indicator = this.stage.allocate(gfx.layout.hbox(() => [], {
+            notches: [{
+                side: "left",
+                type: "inset",
+                shape: "wedge",
+                relpos: 0.8,
+            }],
+            stroke: {
+                lineWidth: 3,
+                color: "#000",
+                lineDash: [10, 5],
+            },
+            padding: {
+                top: 0,
+                bottom: 0,
+                left: 100,
+                right: 100,
+            },
+            color: null,
+            opacity: 0,
+        }));
+
         this.showing = false;
     }
 
-    resetBackground() {
-        this.color = "#594764";
+    resetIndicator() {
+        const indicator = this.stage.getView(this.indicator);
+        indicator.stroke.color = "#000";
+        indicator.opacity = 0;
+        indicator.padding.top = 0;
+        indicator.padding.bottom = 0;
     }
 
     startLevel(state) {
@@ -128,6 +155,13 @@ export default class Sidebar {
         const offset = this.stage.makeBaseOffset();
 
         let curY = 10;
+
+        this.stage.getView(this.indicator).pos = {
+            x: 10,
+            y: curY,
+        };
+        this.stage.drawProjection(state, this.indicator, offset);
+        curY += gfx.absoluteSize(this.stage.getView(this.indicator)).h + 10;
 
         for (const [ key ] of state.get("globals")) {
             if (!this.viewMap.has(key)) {

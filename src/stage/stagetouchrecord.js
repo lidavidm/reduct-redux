@@ -58,7 +58,7 @@ export default class TouchRecord extends BaseTouchRecord {
             }
         }
 
-        this.stage.sidebar.resetBackground();
+        this.stage.sidebar.resetIndicator();
 
         if (this.highlightAnimation) {
             this.highlightAnimation.stop();
@@ -76,6 +76,14 @@ export default class TouchRecord extends BaseTouchRecord {
         if (highlightSidebar) {
             sidebarScale = chroma.scale([ "#594764", "#02d8f9" ]).mode("lab");
             sidebarHoverScale = chroma.scale([ "#594764", "gold" ]).mode("lab");
+
+            animate.tween(this.stage.getView(this.stage.sidebar.indicator), {
+                padding: { top: 50, bottom: 50 },
+                opacity: 1,
+            }, {
+                duration: 500,
+                easing: animate.Easing.Cubic.In,
+            });
         }
 
         state.get("board").forEach((id) => {
@@ -113,9 +121,9 @@ export default class TouchRecord extends BaseTouchRecord {
             }
 
             if (highlightSidebar) {
-                const s = 0.2 + (0.8 * (1 - ((1 + Math.cos(time / 750)) / 2)));
+                const s = 0.3 + (0.7 * (1 - ((1 + Math.cos(time / 750)) / 2)));
                 const scale = this.hoverSidebar ? sidebarHoverScale : sidebarScale;
-                this.stage.sidebar.color = scale(s);
+                this.stage.getView(this.stage.sidebar.indicator).stroke.color = scale(s);
             }
         });
     }
