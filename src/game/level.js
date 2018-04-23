@@ -160,8 +160,8 @@ export function startLevel(description, parse, store, stage) {
         stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
         stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
         animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
-            duration: 250,
-            easing: animate.Easing.Cubic.In,
+            duration: 500,
+            easing: animate.Easing.Cubic.Out,
         });
     }
 

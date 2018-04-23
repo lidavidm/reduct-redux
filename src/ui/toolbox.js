@@ -108,31 +108,38 @@ export default class Toolbox {
                 i = 0;
             }
 
-            const nodeY = y + (curRow * this.rowHeight) + ((this.rowHeight - projection.size.h) / 2);
+            const nodeY = y + (curRow * this.rowHeight) + ((this.rowHeight) / 2);
 
             if (this.stage.isSelected(nodeId)) {
                 // Do nothing - don't override position
             }
             else if (this._firstRender) {
-                projection.pos.x = x + this.stage.width;
+                projection.pos.x = x + (this.stage.width / 3);
                 projection.pos.y = nodeY;
+                projection.scale.x = 0;
+                projection.scale.y = 0;
+                projection.anchor = { x: 0, y: 0.5 };
                 animate
-                    .tween(projection, { pos: { x } }, {
+                    .tween(projection, {
+                        pos: { x },
+                        scale: { x: 1, y: 1 },
+                    }, {
                         easing: animate.Easing.Cubic.Out,
                         duration: 400,
                     })
-                    .delay(400 * Math.log(2 + i));
+                    .delay(200 * Math.log(2 + i));
             }
             else if (projection.pos.x !== x && !projection.animating && !this._firstRender) {
                 animate
-                    .tween(projection, { pos: { x, y: nodeY }, anchor: { x: 0, y: 0 } }, {
-                        duration: 250,
+                    .tween(projection, { pos: { x, y: nodeY }, anchor: { x: 0, y: 0.5 } }, {
+                        duration: 400,
                         easing: animate.Easing.Cubic.Out,
                     });
             }
             else if (!projection.animating) {
                 projection.pos.x = x;
                 projection.pos.y = nodeY;
+                projection.anchor = { x: 0, y: 0.5 };
             }
 
             x += projection.size.w + TOOLBOX_INNER_MARGIN;
