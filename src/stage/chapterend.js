@@ -236,7 +236,7 @@ export default class ChapterEndStage extends BaseStage {
                     }, {
                         duration: 800,
                         setAnimatingFlag: false,
-                        easing: animate.Easing.Color(animate.Easing.Cubic.Out, this.color, "#EEE"),
+                        easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEE"),
                     }).then(() => {
                         window.next();
                     });
