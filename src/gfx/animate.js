@@ -131,6 +131,9 @@ export const Easing = {
      * See https://github.com/d3/d3-ease.
      */
     Anticipate: {
+        BackIn: s => (start, stop, t) =>
+            start + ((stop - start) *
+                     t * t * (((s + 1) * t) - s)),
         BackOut: s => (start, stop, t) =>
             start + ((stop - start) *
                      (((t - 1) * (t - 1) * (((s + 1) * (t - 1)) + s)) + 1)),
