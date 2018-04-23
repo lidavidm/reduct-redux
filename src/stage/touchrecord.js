@@ -18,6 +18,7 @@ export default class BaseTouchRecord {
         this.prevHoverNode = before;
         const [ _, target ] = this.stage.getNodeAtPos(pos, this.topNode);
         this.hoverNode = target;
+        this.hoverSidebar = pos.sidebar;
         this.stage.draw();
     }
 

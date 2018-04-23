@@ -72,8 +72,10 @@ export default class TouchRecord extends BaseTouchRecord {
         const topNode = nodes.get(this.topNode);
         const highlightSidebar = topNode.get("type") === "define";
         let sidebarScale = null;
+        let sidebarHoverScale = null;
         if (highlightSidebar) {
             sidebarScale = chroma.scale([ "#594764", "#02d8f9" ]).mode("lab");
+            sidebarHoverScale = chroma.scale([ "#594764", "gold" ]).mode("lab");
         }
 
         state.get("board").forEach((id) => {
@@ -111,7 +113,9 @@ export default class TouchRecord extends BaseTouchRecord {
             }
 
             if (highlightSidebar) {
-                this.stage.sidebar.color = sidebarScale(1 - ((1 + Math.sin(time / 750)) / 2));
+                const s = 0.2 + (0.8 * (1 - ((1 + Math.cos(time / 750)) / 2)));
+                const scale = this.hoverSidebar ? sidebarHoverScale : sidebarScale;
+                this.stage.sidebar.color = scale(s);
             }
         });
     }
