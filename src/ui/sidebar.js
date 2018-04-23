@@ -74,6 +74,17 @@ export default class Sidebar {
         return this.showing;
     }
 
+    addGlobal(state, name) {
+        const viewId = this.project(state, name, state.getIn([ "globals", name ]));
+        animate.fx.blink(this.stage, this.stage.getView(viewId), {
+            times: 2,
+            color: "magenta",
+            speed: 100,
+            lineWidth: 5,
+        });
+        this.viewMap.set(name, viewId);
+    }
+
     toggle() {
         if (this._tween) {
             this._tween.cancel();
