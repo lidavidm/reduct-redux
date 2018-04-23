@@ -312,7 +312,7 @@ export default class Stage extends BaseStage {
         const state = level.serialize(this.getState(), this.semantics);
         const changed = this.stateGraph.push(state, changeData);
         Logging.log("state-save", state);
-        Logging.log("state-path-save", this.stateGraph.toString());
+        Logging.log("state-path-save", this.stateGraph.serialize());
 
         if (changed && window.updateStateGraph) {
             // See index.js
@@ -331,7 +331,7 @@ export default class Stage extends BaseStage {
     pushState(label, edge=null) {
         this.stateGraph.push(label, edge);
         Logging.log("state-save", label);
-        Logging.log("state-path-save", this.stateGraph.toString());
+        Logging.log("state-path-save", this.stateGraph.serialize());
         if (window.updateStateGraph) {
             window.updateStateGraph(this.stateGraph.toVisJSNetworkData());
         }
