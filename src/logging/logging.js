@@ -324,6 +324,7 @@ class Logger {
                     replacement: saveNode(act.newNodeId),
                 });
             }
+            // TODO: handle DEFINE action
 
             // Put action as edge data
             // TODO: how to deal with all the intermediate states??

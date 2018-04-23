@@ -339,6 +339,12 @@ export function reduct(semantics, views) {
                 );
             });
         }
+        case action.DEFINE: {
+            return state.withMutations((s) => {
+                s.set("globals", state.get("globals").set(act.name, act.id));
+                s.set("board", state.get("board").filter(id => id !== act.id));
+            });
+        }
         default: return state;
         }
     }

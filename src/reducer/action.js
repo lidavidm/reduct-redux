@@ -12,6 +12,7 @@ export const START_LEVEL = "start-level";
 export const VICTORY = "victory";
 export const FADE = "fade";
 export const UNFADE = "unfade";
+export const DEFINE = "define";
 
 /**
  * Redux action to start a new level.
@@ -224,5 +225,13 @@ export function fade(source, unfadedId, fadedId) {
         source,
         unfadedId,
         fadedId,
+    };
+}
+
+export function define(name, id) {
+    return {
+        type: DEFINE,
+        name,
+        id,
     };
 }

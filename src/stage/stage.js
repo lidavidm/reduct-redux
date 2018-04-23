@@ -619,6 +619,9 @@ export default class Stage extends BaseStage {
             });
             return false;
         }
+
+        const name = nodes.getIn([ selectedNode, "name" ]);
+        this.store.dispatch(action.define(name, selectedNode));
     }
 
     /**
