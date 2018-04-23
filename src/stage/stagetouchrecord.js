@@ -1,3 +1,4 @@
+import chroma from "chroma-js";
 import * as immutable from "immutable";
 
 import * as action from "../reducer/action";
@@ -57,6 +58,8 @@ export default class TouchRecord extends BaseTouchRecord {
             }
         }
 
+        this.stage.sidebar.resetBackground();
+
         if (this.highlightAnimation) {
             this.highlightAnimation.stop();
         }
@@ -67,6 +70,12 @@ export default class TouchRecord extends BaseTouchRecord {
         const nodes = state.get("nodes");
 
         const topNode = nodes.get(this.topNode);
+        const highlightSidebar = topNode.get("type") === "define";
+        let sidebarScale = null;
+        if (highlightSidebar) {
+            sidebarScale = chroma.scale([ "#594764", "#02d8f9" ]).mode("lab");
+        }
+
         state.get("board").forEach((id) => {
             if (id === this.topNode) return;
 
@@ -99,6 +108,10 @@ export default class TouchRecord extends BaseTouchRecord {
                 else {
                     view.stroke = stroke;
                 }
+            }
+
+            if (highlightSidebar) {
+                this.stage.sidebar.color = sidebarScale(1 - ((1 + Math.sin(time / 750)) / 2));
             }
         });
     }

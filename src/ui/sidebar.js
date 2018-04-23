@@ -8,6 +8,8 @@ export default class Sidebar {
     constructor(stage) {
         this.stage = stage;
 
+        this.color = "#594764";
+
         this.viewMap = new Map();
         this.fullWidth = 250;
 
@@ -20,6 +22,10 @@ export default class Sidebar {
         this.gradient = gradient;
 
         this.showing = false;
+    }
+
+    resetBackground() {
+        this.color = "#594764";
     }
 
     startLevel(state) {
@@ -116,7 +122,7 @@ export default class Sidebar {
         const { ctx, sidebarWidth } = this.stage;
         ctx.save();
 
-        ctx.fillStyle = "#594764";
+        ctx.fillStyle = this.color;
         ctx.fillRect(0, 0, sidebarWidth, this.stage.height);
 
         const offset = this.stage.makeBaseOffset();
