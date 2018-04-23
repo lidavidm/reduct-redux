@@ -5,38 +5,6 @@
     "levels": [
         {
             "board": [
-                "1 + 1"
-            ],
-            "goal": [
-                "2"
-            ],
-            "textgoal": "Evaluate the expression ",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {
-                "expr-binop": 1.2
-            }
-        },
-        {
-            "board": [],
-            "goal": [
-                "5",
-                "8"
-            ],
-            "toolbox": [
-                "2 + 1",
-                "3 + 5",
-                "4 + 2",
-                "1 + 4"
-            ],
-            "globals": {},
-            "syntax": [
-                "syntax-add"
-            ],
-            "animationScales": {}
-        },
-        {
-            "board": [
                 "_ + 1",
                 "_ - 1"
             ],
@@ -113,80 +81,6 @@
         },
         {
             "board": [
-                "(x) => xx",
-                "_ + 7",
-                "4 + _"
-            ],
-            "goal": [
-                "5",
-                "5",
-                "9"
-            ],
-            "toolbox": [
-                "1",
-                "2",
-                "3"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => x + 1"
-            ],
-            "goal": [
-                "4"
-            ],
-            "toolbox": [
-                "2",
-                "3",
-                "4",
-                "5"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => x + 3",
-                "(y) => y + 1"
-            ],
-            "goal": [
-                "8"
-            ],
-            "toolbox": [
-                "2",
-                "3",
-                "4",
-                "5",
-                "6"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "2",
-                "7",
-                "x => xxx"
-            ],
-            "goal": [
-                "1",
-                "5"
-            ],
-            "toolbox": [
-                "x => x + 1",
-                "x => x - 1"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
                 "(x) => _ + 3",
                 "5"
             ],
@@ -197,45 +91,6 @@
             "toolbox": [
                 "x",
                 "y"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => xx",
-                "(x) => _ + x"
-            ],
-            "goal": [
-                "5",
-                "6"
-            ],
-            "textgoal": "Create a function to add 2 to the input",
-            "toolbox": [
-                "1",
-                "2",
-                "3",
-                "4"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => xx"
-            ],
-            "goal": [
-                "11"
-            ],
-            "textgoal": "Choose your functions wisely",
-            "toolbox": [
-                "(x) => x + 1",
-                "(x) => x + 2",
-                "6",
-                "7",
-                "8"
             ],
             "globals": {},
             "syntax": [],
@@ -460,69 +315,6 @@
                 "b",
                 "1",
                 "2"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => x + _",
-                "x => xx"
-            ],
-            "goal": [
-                "8"
-            ],
-            "toolbox": [
-                "x",
-                "0",
-                "1",
-                "2"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => (y) => _",
-                "x => xx"
-            ],
-            "goal": [
-                "15"
-            ],
-            "toolbox": [
-                "_ + _",
-                "x",
-                "y",
-                "1",
-                "3",
-                "5",
-                "7"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => xxx",
-                "(x) => (y) => _ + _"
-            ],
-            "goal": [
-                "16"
-            ],
-            "toolbox": [
-                "x",
-                "x",
-                "y",
-                "y",
-                "0",
-                "0",
-                "1",
-                "1",
-                "2",
-                "3"
             ],
             "globals": {},
             "syntax": [],

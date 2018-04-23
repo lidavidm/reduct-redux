@@ -50,6 +50,51 @@
             "globals": {},
             "syntax": [],
             "animationScales": {}
+        },
+        {
+            "board": [
+                "(x) => (y) => _",
+                "x => xx"
+            ],
+            "goal": [
+                "15"
+            ],
+            "toolbox": [
+                "_ + _",
+                "x",
+                "y",
+                "1",
+                "3",
+                "5",
+                "7"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => xxx",
+                "(x) => (y) => _ + _"
+            ],
+            "goal": [
+                "16"
+            ],
+            "toolbox": [
+                "x",
+                "x",
+                "y",
+                "y",
+                "0",
+                "0",
+                "1",
+                "1",
+                "2",
+                "3"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
         }
     ],
     "resources": {

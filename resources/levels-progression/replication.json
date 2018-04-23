@@ -29,6 +29,26 @@
         },
         {
             "board": [
+                "(x) => xx",
+                "_ + 7",
+                "4 + _"
+            ],
+            "goal": [
+                "5",
+                "5",
+                "9"
+            ],
+            "toolbox": [
+                "1",
+                "2",
+                "3"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
                 "x => xx",
                 "x => C"
             ],
@@ -73,6 +93,42 @@
                 "A",
                 "x",
                 "x => _"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "2",
+                "7",
+                "x => xxx"
+            ],
+            "goal": [
+                "1",
+                "5"
+            ],
+            "toolbox": [
+                "x => x + 1",
+                "x => x - 1"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "(x) => x + _",
+                "x => xx"
+            ],
+            "goal": [
+                "8"
+            ],
+            "toolbox": [
+                "x",
+                "0",
+                "1",
+                "2"
             ],
             "globals": {},
             "syntax": [],
