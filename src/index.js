@@ -189,8 +189,6 @@ function initialize() {
         const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
         start(() => progression.jumpToLevel(lvl));
     });
-
-    // start(null, { persistGraph: false });
 }
 
 function startGame() {

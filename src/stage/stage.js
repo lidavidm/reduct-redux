@@ -952,9 +952,9 @@ export default class Stage extends BaseStage {
                     });
                     star.opacity = 0;
 
-                    let delay = 750;
+                    let delay = 300;
                     if (chapter.startIdx + i <= progression.currentLevel()) {
-                        delay = i * (750 / (progression.currentLevel() - chapter.startIdx));
+                        delay = i * (300 / (progression.currentLevel() - chapter.startIdx));
                     }
 
                     animate.tween(star, { opacity: 1 }, {
@@ -1004,21 +1004,21 @@ export default class Stage extends BaseStage {
                     animate.tween(thisStar, {
                         color: "#F00",
                     }, {
-                        duration: 2000,
+                        duration: 1500,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Color(animate.Easing.Cubic.In, thisStar.color, "#F00"),
                     }),
                     animate.tween(thisStar, {
                         offset: { x: 0 },
                     }, {
-                        duration: 2000,
+                        duration: 1500,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 20),
                     }),
                     animate.tween(thisStar, {
                         offset: { y: 0 },
                     }, {
-                        duration: 2000,
+                        duration: 1500,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 22),
                     }),
@@ -1026,9 +1026,9 @@ export default class Stage extends BaseStage {
                     thisStar.color = "gold";
                     const scale = chroma.scale("Spectral").mode("lab");
                     return animate.fx.splosion(this, gfxCore.centerPos(thisStar), {
-                        explosionRadius: 400,
+                        explosionRadius: 600,
                         numOfParticles: 60,
-                        duration: 1500,
+                        duration: 800,
                         color: idx => scale(idx / 60.0),
                         angle: idx => 2 * Math.PI * (idx / 60.0),
                     });
@@ -1036,14 +1036,14 @@ export default class Stage extends BaseStage {
                     animate.tween(title, {
                         opacity: 0,
                     }, {
-                        duration: 300,
+                        duration: 200,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Cubic.In,
                     }),
                     animate.tween(layout, {
                         opacity: 0,
                     }, {
-                        duration: 300,
+                        duration: 200,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Cubic.In,
                     }),
