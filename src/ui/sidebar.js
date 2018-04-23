@@ -30,7 +30,7 @@ export default class Sidebar {
                 relpos: 0.8,
             }],
             stroke: {
-                lineWidth: 3,
+                lineWidth: 5,
                 color: "#000",
                 lineDash: [10, 5],
             },
@@ -49,6 +49,10 @@ export default class Sidebar {
 
     resetIndicator() {
         const indicator = this.stage.getView(this.indicator);
+        if (indicator.tween) {
+            indicator.tween.completed();
+            indicator.tween = null;
+        }
         indicator.stroke.color = "#000";
         indicator.opacity = 0;
         indicator.padding.top = 0;

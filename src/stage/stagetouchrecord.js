@@ -77,11 +77,12 @@ export default class TouchRecord extends BaseTouchRecord {
             sidebarScale = chroma.scale([ "#594764", "#02d8f9" ]).mode("lab");
             sidebarHoverScale = chroma.scale([ "#594764", "gold" ]).mode("lab");
 
-            animate.tween(this.stage.getView(this.stage.sidebar.indicator), {
+            const indicator = this.stage.getView(this.stage.sidebar.indicator);
+            indicator.tween = animate.tween(indicator, {
                 padding: { top: 50, bottom: 50 },
                 opacity: 1,
             }, {
-                duration: 500,
+                duration: 300,
                 easing: animate.Easing.Cubic.In,
             });
         }
@@ -121,7 +122,7 @@ export default class TouchRecord extends BaseTouchRecord {
             }
 
             if (highlightSidebar) {
-                const s = 0.3 + (0.7 * (1 - ((1 + Math.cos(time / 750)) / 2)));
+                const s = 0.5 + (0.5 * (1 - ((1 + Math.cos(time / 750)) / 2)));
                 const scale = this.hoverSidebar ? sidebarHoverScale : sidebarScale;
                 this.stage.getView(this.stage.sidebar.indicator).stroke.color = scale(s);
             }
