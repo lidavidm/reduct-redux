@@ -56,11 +56,9 @@ export function makeParser(jssemant) {
             }
             else if (modName === "__argumentAnnotated") {
                 result.body = jssemant.missing();
-                result = [ result, jssemant.defineAttach() ];
             }
             else if (modName.name === "__argumentAnnotated") {
                 result.params = modName.params;
-                result = [ result, jssemant.defineAttach() ];
             }
             else {
                 return fail(`Unrecognized expression modifier ${modName}`, program);
