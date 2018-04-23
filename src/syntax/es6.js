@@ -96,7 +96,8 @@ export function makeParser(jssemant) {
             if (node.name === "__defineAttach") return jssemant.defineAttach();
 
             // Each macro is a thunk
-            if (macros && macros[node.name]) return macros[node.name]();
+            const macroName = jssemant.parser.templatizeName(node.name);
+            if (macros && macros[macroName]) return macros[macroName]();
 
             if (node.name === "xx") {
                 return jssemant.vtuple([ jssemant.lambdaVar("x"), jssemant.lambdaVar("x") ]);
@@ -117,7 +118,7 @@ export function makeParser(jssemant) {
                 return jssemant.dynamicVariant(variant, value);
             }
 
-            return jssemant.lambdaVar(node.name);
+            return jssemant.lambdaVar(macroName);
         }
 
         case "Literal": {
@@ -193,7 +194,7 @@ export function makeParser(jssemant) {
         }
 
         case "FunctionDeclaration": {
-            const name = node.id.name;
+            const name = jssemant.parser.templatizeName(node.id.name);
             if (node.params.length === 0) {
                 return jssemant.define(name, [], parseNode(node.body, macros));
             }
@@ -201,8 +202,9 @@ export function makeParser(jssemant) {
             let result = parseNode(node.body, macros);
             const args = [];
             for (const arg of node.params.slice().reverse()) {
-                args.push(arg.name);
-                result = jssemant.lambda(jssemant.lambdaArg(arg.name), result);
+                const argName = jssemant.parser.templatizeName(arg.name);
+                args.push(argName);
+                result = jssemant.lambda(jssemant.lambdaArg(argName), result);
             }
             args.reverse();
             return jssemant.define(name, args, result);
@@ -216,7 +218,7 @@ export function makeParser(jssemant) {
                 return fail("parsers.es6: Only declaring 1 item at a time is supported", node);
             }
 
-            const name = node.declarations[0].id.name;
+            const name = jssemant.parser.templatizeName(node.declarations[0].id.name);
             const body = parseNode(node.declarations[0].init, macros);
 
             return jssemant.define(name, [], body);

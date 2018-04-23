@@ -503,6 +503,7 @@ export default function transform(definition) {
     module.clone = core.genericClone(nextId, module.subexpressions);
 
     module.parser = {};
+    module.parser.templatizeName = name => definition.parser.templatizeName(module, name);
     module.parser.parse = definition.parser.parse(module);
     module.parser.unparse = definition.parser.unparse(module);
     module.parser.postParse = definition.parser.postParse;

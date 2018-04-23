@@ -79,6 +79,15 @@ export default {
                 "triangle": [ "fries", "some fries", "bags of fries" ],
                 "square": [ "candy", "a piece of candy", "pieces of candy" ],
             },
+            nameReplacements: [
+                [ "trianglify", "gimmeFries" ],
+                [ "starify", "gimmeBurger" ],
+                [ "squarify", "gimmeCandy" ],
+                [ "makeStar", "makeBurger" ],
+                [ "star", "burger" ],
+                [ "rect", "candy" ],
+                [ "triangle", "fries" ],
+            ],
             projection: {
                 type: "case",
                 on: "name",

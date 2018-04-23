@@ -18,6 +18,16 @@ export default transform({
         parse: makeParser,
         unparse: makeUnparser,
 
+        templatizeName: (semant, name) => {
+            const defn = semant.definitionOf("symbol");
+            const replacements = defn.nameReplacements || [];
+
+            for (const [ key, replacement ] of replacements) {
+                name = name.replace(new RegExp(key, "g"), replacement);
+            }
+            return name;
+        },
+
         extractDefines: (semant, expr) => {
             if (expr.type !== "define") {
                 return null;
