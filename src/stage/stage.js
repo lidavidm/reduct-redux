@@ -613,7 +613,10 @@ export default class Stage extends BaseStage {
         });
 
         if (missingNodes.length > 0) {
-            // TODO: log event
+            Logging.log("define-failed", {
+                item: this.saveNode(selectedNode),
+                blocking: missingNodes.map(id => this.saveNode(id)),
+            });
             missingNodes.forEach((id) => {
                 animate.fx.error(this, this.getView(id));
             });

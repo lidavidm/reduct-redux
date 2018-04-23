@@ -324,7 +324,12 @@ class Logger {
                     replacement: saveNode(act.newNodeId),
                 });
             }
-            // TODO: handle DEFINE action
+            else if (act.type === action.DEFINE) {
+                this.log("define", {
+                    name: act.name,
+                    body: saveNode(act.id),
+                });
+            }
 
             // Put action as edge data
             // TODO: how to deal with all the intermediate states??
@@ -507,6 +512,8 @@ Logger.prototype.ACTIONS = {
     "state-path-save-edges": 112,
     "state-path-save-graph": 113,
     "dead-end": 114,
+    "define": 115,
+    "define-failed": 115,
 };
 
 const Logging = new Logger();
