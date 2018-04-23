@@ -120,29 +120,31 @@ export default class TitleStage extends BaseStage {
         animate.tween(this, {
             color: "#FFF",
         }, {
-            duration: 1000,
+            duration: 500,
             setAnimatingFlag: false,
             easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#FFF"),
         })
             .then(() => animate.tween(title, {
                 opacity: 1.0,
             }, {
-                duration: 1000,
+                duration: 500,
                 easing: animate.Easing.Cubic.Out,
             }).delay(1000))
-            .then(() => animate.tween(title, {
-                scale: { x: 0.7, y: 0.7 },
-                sticky: { marginY: -180 },
-            }, {
-                duration: 1000,
-                easing: animate.Easing.Cubic.Out,
-            }))
-            .then(() => animate.tween(layout, {
-                opacity: 1.0,
-            }, {
-                duration: 1000,
-                easing: animate.Easing.Cubic.Out,
-            }))
+            .then(() => Promise.all([
+                animate.tween(title, {
+                    scale: { x: 0.7, y: 0.7 },
+                    sticky: { marginY: -180 },
+                }, {
+                    duration: 800,
+                    easing: animate.Easing.Cubic.Out,
+                }),
+                animate.tween(layout, {
+                    opacity: 1.0,
+                }, {
+                    duration: 1000,
+                    easing: animate.Easing.Cubic.Out,
+                }),
+            ]))
             .then(() => {
                 this.state = "initialized";
             });
@@ -174,21 +176,26 @@ export default class TitleStage extends BaseStage {
             animate.tween(this.getView(this.title), {
                 scale: { x: 0.4, y: 0.4 },
                 opacity: 0.5,
+            }, {
+                duration: 800,
+                easing: animate.Easing.Cubic.In,
+            }),
+            animate.tween(this.getView(this.title), {
                 sticky: { marginY: -this.height },
             }, {
-                duration: 1500,
-                easing: animate.Easing.Cubic.In,
+                duration: 500,
+                easing: animate.Easing.Anticipate.BackIn(1.5),
             }),
             animate.tween(this.getView(this.layout), {
                 opacity: 0,
             }, {
-                duration: 1000,
+                duration: 500,
                 easing: animate.Easing.Cubic.In,
             }),
             animate.tween(this, {
                 color: "#EEEEEE",
             }, {
-                duration: 1000,
+                duration: 500,
                 setAnimatingFlag: false,
                 easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEEEEE"),
             }),
