@@ -378,11 +378,7 @@ export default class Stage extends BaseStage {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        if (x >= this.sidebarWidth) {
-            return { x: x - this.sidebarWidth, y, sidebar: false };
-        }
-
-        return { x, y, sidebar: true };
+        return { x: x - this.sidebarWidth, y, sidebar: x - this.sidebarWidth < 0 };
     }
 
     drawContents() {
@@ -1292,17 +1288,10 @@ export default class Stage extends BaseStage {
     }
 
     _mousemoveInner(e) {
-        if (this.getMousePos(e).sidebar) {
-            return;
-        }
         super._mousemove(e);
     }
 
     _mouseupInner(e) {
-        if (this.getMousePos(e).sidebar) {
-            return;
-        }
-
         super._mouseup(e);
     }
 
