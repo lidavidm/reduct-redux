@@ -351,6 +351,9 @@ export default class TouchRecord extends BaseTouchRecord {
         else if (this.isExpr && this.stage.snapNotches(this.topNode)) {
             // Prioritize snapping over filling
         }
+        else if (mousePos.sidebar && this.isExpr && this.stage.dropDefines(this.topNode)) {
+            // Drop definitions in sidebar to activate them
+        }
         else if (this.isExpr && this.dragged && this.hoverNode &&
                  this.stage.semantics.droppable(state, this.topNode, this.hoverNode) === "hole") {
             // Drag something into hole

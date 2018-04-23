@@ -590,6 +590,38 @@ export default class Stage extends BaseStage {
     }
 
     /**
+     * Helper to activate definitions by placing them in sidebar.
+     */
+    dropDefines(selectedNode) {
+        const state = this.getState();
+        const nodes = state.get("nodes");
+
+        if (nodes.get(selectedNode).get("type") !== "define") {
+            return false;
+        }
+
+        const missingNodes = this.semantics.search(
+            nodes,
+            selectedNode,
+            (nodes, id) => nodes.get(id).get("type") === "missing"
+        ).filter((id) => {
+            const node = nodes.get(id);
+            if (!node.get("parent")) return true;
+            const parent = nodes.get(node.get("parent"));
+            const substepFilter = this.semantics.interpreter.substepFilter(parent.get("type"));
+            return substepFilter(this.semantics, state, parent, node.get("parentField"));
+        });
+
+        if (missingNodes.length > 0) {
+            // TODO: log event
+            missingNodes.forEach((id) => {
+                animate.fx.error(this, this.getView(id));
+            });
+            return false;
+        }
+    }
+
+    /**
      * Helper to combine notches where needed.
      */
     snapNotches(selectedNode) {
