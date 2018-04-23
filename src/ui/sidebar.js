@@ -18,6 +18,8 @@ export default class Sidebar {
         gradient.addColorStop(0, "rgba(0,0,0,0)");
         gradient.addColorStop(1, "#594764");
         this.gradient = gradient;
+
+        this.showing = false;
     }
 
     startLevel(state) {
@@ -66,9 +68,10 @@ export default class Sidebar {
             this.viewMap.set(name, viewId);
         }
 
-        return names.size > 0 ||
+        this.showing = names.size > 0 ||
             state.get("board")
-                .some(id => state.getIn([ "nodes", id, "type" ]) === "define");
+            .some(id => state.getIn([ "nodes", id, "type" ]) === "define");
+        return this.showing;
     }
 
     toggle() {
@@ -76,8 +79,8 @@ export default class Sidebar {
             this._tween.cancel();
         }
 
-        if (this.viewMap.size === 0) {
-            // No entries, don't appear
+        if (!this.showing) {
+            // No entries/defines, don't appear
             this.stage.sidebarWidth = 0;
             return;
         }
