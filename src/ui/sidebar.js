@@ -66,7 +66,9 @@ export default class Sidebar {
             this.viewMap.set(name, viewId);
         }
 
-        return names.size;
+        return names.size > 0 ||
+            state.get("board")
+                .some(id => state.getIn([ "nodes", id, "type" ]) === "define");
     }
 
     toggle() {

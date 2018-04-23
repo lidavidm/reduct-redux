@@ -353,12 +353,12 @@ export default class Stage extends BaseStage {
     startLevel(textGoal, showConcreteGoal) {
         const state = this.getState();
 
-        const numSidebarEntries = this.sidebar.startLevel(state);
-        if (numSidebarEntries === 0) {
-            this.sidebarWidth = 0;
+        const showSidebar = this.sidebar.startLevel(state);
+        if (showSidebar) {
+            this.sidebarWidth = 250;
         }
         else {
-            this.sidebarWidth = 250;
+            this.sidebarWidth = 0;
         }
 
         this.goal.startLevel(textGoal, showConcreteGoal);
