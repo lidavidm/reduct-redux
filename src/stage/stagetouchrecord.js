@@ -71,6 +71,12 @@ export default class TouchRecord extends BaseTouchRecord {
 
         const topNode = nodes.get(this.topNode);
         const highlightSidebar = topNode.get("type") === "define";
+
+        if (topNode.get("type") === "lambdaVar") {
+            // Don't highlight for unbound lambdas
+            return;
+        }
+
         let sidebarScale = null;
         let sidebarHoverScale = null;
         if (highlightSidebar) {
