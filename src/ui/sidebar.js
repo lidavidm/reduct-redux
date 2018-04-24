@@ -42,6 +42,7 @@ export default class Sidebar {
             },
             color: null,
             opacity: 0,
+            minHeight: 0,
         }));
 
         this.showing = false;
@@ -112,14 +113,23 @@ export default class Sidebar {
     }
 
     addGlobal(state, name) {
-        const viewId = this.project(state, name, state.getIn([ "globals", name ]));
+        const nodeId = state.getIn([ "globals", name ]);
+        let viewId = nodeId;
+        if (this.stage.getView(nodeId)) {
+            const view = this.stage.getView(viewId);
+            view.anchor = { x: 0, y: 0 };
+            view.pos.x += this.stage.sidebarWidth;
+        }
+        else {
+            viewId = this.project(state, name, nodeId);
+        }
+        this.viewMap.set(name, viewId);
         animate.fx.blink(this.stage, this.stage.getView(viewId), {
             times: 2,
             color: "magenta",
-            speed: 100,
+            speed: 300,
             lineWidth: 5,
         });
-        this.viewMap.set(name, viewId);
     }
 
     toggle() {
