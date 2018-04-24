@@ -65,16 +65,17 @@ export function exprify(projection) {
             });
             primitive.roundRect(
                 ctx,
-                x, y,
-                w, h,
+                // Draw slightly bigger to make sure we're distinct
+                x, y - 2,
+                w, h + 8,
                 sx * 22,
                 true, stage.isHovered(exprId), null
             );
             ctx.fillStyle = "#555";
             primitive.roundRect(
                 ctx,
-                x, y,
-                w, h,
+                x, y - 4,
+                w, h + 8,
                 sx * 22,
                 true, stage.isHovered(exprId), null
             );
