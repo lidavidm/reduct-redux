@@ -483,7 +483,7 @@ text.script = "'Nanum Pen Script', 'Comic Sans', cursive";
  *
  * Note that all projections must have compatible fields.
  */
-export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
+export function dynamic(mapping, keyFunc, options) {
     let projection = {};
     for (const childProjection of Object.values(mapping)) {
         projection = Object.assign(projection, childProjection);
@@ -499,26 +499,29 @@ export function dynamic(mapping, keyFunc, resetFieldsList=[]) {
     }
 
     projection.prepare = function(id, exprId, state, stage) {
-        const fieldVal = keyFunc(state, exprId);
+        const newKey = keyFunc(state, exprId);
+        if (options.onKeyChange && this.dynamicKey && newKey !== this.dynamicKey) {
+            this.dynamicKey = newKey;
+            options.onKeyChange(this, id, exprId, state, stage);
+        }
+        this.dynamicKey = newKey;
 
         let proj = mapping["__default__"];
-        if (typeof mapping[fieldVal] !== "undefined") {
-            proj = mapping[fieldVal];
+        if (typeof mapping[this.dynamicKey] !== "undefined") {
+            proj = mapping[this.dynamicKey];
         }
         this.children = proj.children;
 
-        for (const fieldName of resetFieldsList) {
+        for (const fieldName of options.resetFields || []) {
             this[fieldName] = proj[fieldName];
         }
         proj.prepare.call(this, id, exprId, state, stage);
     };
 
     projection.draw = function(id, exprId, state, stage, offset) {
-        const fieldVal = keyFunc(state, exprId);
-
-        if (typeof mapping[fieldVal] !== "undefined") {
-            this.children = mapping[fieldVal].children;
-            mapping[fieldVal].draw.call(this, id, exprId, state, stage, offset);
+        if (typeof mapping[this.dynamicKey] !== "undefined") {
+            this.children = mapping[this.dynamicKey].children;
+            mapping[this.dynamicKey].draw.call(this, id, exprId, state, stage, offset);
         }
         else {
             this.children = mapping["__default__"].children;

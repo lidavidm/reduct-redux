@@ -154,7 +154,7 @@ function dynamicProjector(definition) {
         for (const [ key, subprojector ] of Object.entries(cases)) {
             projections[key] = subprojector(stage, nodes, expr);
         }
-        return gfx.dynamic(projections, fieldName, definition.projection.resetFields);
+        return gfx.dynamic(projections, fieldName, definition.projection);
     };
 }
 
