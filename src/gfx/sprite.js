@@ -100,6 +100,8 @@ export function exprify(projection) {
             gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
             ctx.fillStyle = gradient;
 
+            ctx.globalAlpha = offset.opacity * this.opacity;
+
             ctx.beginPath();
             ctx.arc(cx, cy, Math.max(tw, th) / 2, 0, 2 * Math.PI, false);
             ctx.fill();
