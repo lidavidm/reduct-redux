@@ -84,12 +84,69 @@ export default {
         fields: ["name"],
         subexpressions: [],
         projection: {
-            type: "preview",
-            content: {
-                type: "default",
+            type: "dynamic",
+            field: (state, exprId) => {
+                const nodes = state.get("nodes");
+                let current = nodes.get(exprId);
+                const myName = current.get("name");
+                while (current.get("parent")) {
+                    current = nodes.get(current.get("parent"));
+                    if (current.get("type") === "lambda" &&
+                        nodes.get(current.get("arg")).get("name") === myName) {
+                        return "enabled";
+                    }
+                }
+                return "default";
+            },
+            onKeyChange: (view, id, exprId, state, stage) => {
+                if (view.dynamicKey === "enabled") {
+                    animate.fx.blink(stage, view, {
+                        times: 3,
+                        speed: 100,
+                        color: "#6df902",
+                    });
+
+                    const nodes = state.get("nodes");
+                    let current = nodes.get(exprId);
+                    const myName = current.get("name");
+                    while (current.get("parent")) {
+                        current = nodes.get(current.get("parent"));
+                        if (current.get("type") === "lambda" &&
+                            nodes.get(current.get("arg")).get("name") === myName) {
+                            animate.fx.blink(stage, stage.getView(current.get("arg")), {
+                                times: 3,
+                                speed: 100,
+                                color: "#6df902",
+                                field: "outerStroke",
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            },
+            default: {
+                type: "hbox",
                 shape: "()",
                 strokeWhenChild: false,
-                fields: ["name"],
+                children: [
+                    {
+                        type: "text",
+                        text: "{name}",
+                        color: "gray",
+                    },
+                ],
+            },
+            cases: {
+                enabled: {
+                    type: "preview",
+                    content: {
+                        type: "default",
+                        shape: "()",
+                        strokeWhenChild: false,
+                        fields: ["name"],
+                    },
+                },
             },
         },
     },
