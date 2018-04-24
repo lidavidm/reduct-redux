@@ -291,7 +291,9 @@ export default function transform(definition) {
             }
         }
         else if (target.get("type") === "lambdaArg" &&
-                 !state.getIn([ "nodes", target.get("parent"), "parent" ])) {
+                 !state.getIn([ "nodes", target.get("parent"), "parent" ]) &&
+                 // Lambda vars can't be dropped into lambda args
+                 item.get("type") !== "lambdaVar") {
             return "arg";
         }
         return false;

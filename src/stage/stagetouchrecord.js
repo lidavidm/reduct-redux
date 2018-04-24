@@ -72,11 +72,6 @@ export default class TouchRecord extends BaseTouchRecord {
         const topNode = nodes.get(this.topNode);
         const highlightSidebar = topNode.get("type") === "define";
 
-        if (topNode.get("type") === "lambdaVar") {
-            // Don't highlight for unbound lambdas
-            return;
-        }
-
         let sidebarScale = null;
         let sidebarHoverScale = null;
         if (highlightSidebar) {
@@ -262,35 +257,6 @@ export default class TouchRecord extends BaseTouchRecord {
             }
         }
 
-        if (this.isExpr && this.topNode !== null) {
-            // Show previews for lambda application, if applicable
-            this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
-        }
-
-        if (this.topNode && this.isExpr) {
-            // Scale things down when they're over a hole
-            if (this.hoverNode) {
-                if (this.scaleAnimation) this.scaleAnimation.cancel();
-                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
-                    scale: { x: 0.6, y: 0.6 },
-                }, {
-                    easing: animate.Easing.Cubic.Out,
-                    setAnimatingFlag: false,
-                    duration: 300,
-                });
-            }
-            else if (this.stage.getView(this.topNode).scale.x < 1) {
-                if (this.scaleAnimation) this.scaleAnimation.cancel();
-                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
-                    scale: { x: 1, y: 1 },
-                }, {
-                    easing: animate.Easing.Cubic.Out,
-                    setAnimatingFlag: false,
-                    duration: 300,
-                });
-            }
-        }
-
         // onmouseenter/onmouseexit for views (e.g. buttons)
         if (this.hoverNode !== this.prevHoverNode) {
             const view = this.stage.getView(this.hoverNode);
@@ -337,6 +303,9 @@ export default class TouchRecord extends BaseTouchRecord {
                         this.dropTweens.set(this.hoverNode, [ tween, true ]);
                     }
                 }
+                else {
+                    this.hoverNode = null;
+                }
             }
 
             if (this.prevHoverNode !== null && this.dropTweens.has(this.prevHoverNode)) {
@@ -346,6 +315,35 @@ export default class TouchRecord extends BaseTouchRecord {
                     record[0] = record[0].undo(true);
                     record[1] = false;
                 }
+            }
+        }
+
+        if (this.isExpr && this.topNode !== null) {
+            // Show previews for lambda application, if applicable
+            this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);
+        }
+
+        if (this.topNode && this.isExpr) {
+            // Scale things down when they're over a hole
+            if (this.hoverNode) {
+                if (this.scaleAnimation) this.scaleAnimation.cancel();
+                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
+                    scale: { x: 0.6, y: 0.6 },
+                }, {
+                    easing: animate.Easing.Cubic.Out,
+                    setAnimatingFlag: false,
+                    duration: 300,
+                });
+            }
+            else if (this.stage.getView(this.topNode).scale.x < 1) {
+                if (this.scaleAnimation) this.scaleAnimation.cancel();
+                this.scaleAnimation = animate.tween(this.stage.getView(this.topNode), {
+                    scale: { x: 1, y: 1 },
+                }, {
+                    easing: animate.Easing.Cubic.Out,
+                    setAnimatingFlag: false,
+                    duration: 300,
+                });
             }
         }
 
