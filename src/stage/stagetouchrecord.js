@@ -303,9 +303,6 @@ export default class TouchRecord extends BaseTouchRecord {
                         this.dropTweens.set(this.hoverNode, [ tween, true ]);
                     }
                 }
-                else {
-                    this.hoverNode = null;
-                }
             }
 
             if (this.prevHoverNode !== null && this.dropTweens.has(this.prevHoverNode)) {
