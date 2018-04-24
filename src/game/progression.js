@@ -14,15 +14,17 @@ export const PROGRESSIONS = {
             "testing": ["higher-order-functions"],
             "higher-order-functions": ["define-challenges"],
             "define-challenges": ["booleans-intro"],
-            "booleans-intro": ["weekdays"],
-            "weekdays": ["recursion"],
-            "recursion": [],
+            "booleans-intro": ["booleans-definition"],
+            "booleans-definition": ["weekdays"],
+            "weekdays": ["recursion-basics"],
+            "recursion-basics": ["recursion-higher-order"],
+            "recursion-higher-order": [],
         },
         settings: { // This sets global flags.
             "__ALLOW_PARTIAL_REPLICATION": false,
             "__ALLOW_SKIPPING": true,
             "__ALLOW_ARRAY_EVENTS": false,
-        }
+        },
     },
 };
 

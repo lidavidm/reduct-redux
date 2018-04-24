@@ -1,78 +1,22 @@
 {
-    "chapterName": "Recursion",
-    "description": "Functions that call...themselves?",
+    "chapterName": "Booleans & Definitions",
+    "description": "Defining functions using Booleans",
     "language": "JavaScript",
-    "macros": {
-        "mon": "__variant_weekday_mon",
-        "tue": "__variant_weekday_tue",
-        "wed": "__variant_weekday_wed",
-        "thu": "__variant_weekday_thu",
-        "fri": "__variant_weekday_fri",
-        "sat": "__variant_weekday_sat",
-        "sun": "__variant_weekday_sun"
-    },
     "levels": [
         {
             "board": [
-                "function broken(x) { return broken(x); }",
-                "broken(2)"
-            ],
-            "goal": [],
-            "textgoal": "Click on the function to evaluate it. Once you have done that and waited for a while, feel free to move on to the next level.",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function infinite(x) { return infinite(x + 1); }",
-                "infinite(0)"
+                "function isTriangle(x) { return x == 'triangle'; }",
+                "__tests(f('triangle'), f('rect'))"
             ],
             "goal": [
-                "infinite(5)"
+                "true",
+                "false"
             ],
-            "textgoal": "Click on the function to see it's behavior!",
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function infinite(x) { return infinite(x - 1); }",
-                "infinite(_)"
-            ],
-            "goal": [
-                "infinite(0)"
-            ],
-            "textgoal": "Choose an input for the function",
             "toolbox": [
-                "3",
-                "5",
-                "10"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function countdown(x) { return _; }",
-                "_(0)",
-                "_(1)",
-                "_(2)",
-                "isZero(x) ? 0 : countdown(x - 1)"
-            ],
-            "goal": [
-                "0",
-                "0",
-                "0"
-            ],
-            "textgoal": "Define a function that counts down from x to 0",
-            "toolbox": [
-                "__unlimited; countdown;"
+                "__unlimited; isTriangle;"
             ],
             "defines": [
-                "function countdown(x) { return isZero(x) ? 0 : countdown(x - 1); }"
+                "function isTriangle(x) { return x == 'triangle'; }"
             ],
             "globals": {},
             "syntax": [],
@@ -80,91 +24,24 @@
         },
         {
             "board": [
-                "function justOne(x) { return _ ? _ : justOne(x - 1); }",
-                "justOne(0)",
-                "justOne(1)",
-                "_ == 0",
-                "justOne(3)"
+                "function isStar(x) { return _; }",
+                "__tests(f('star'), f('rect'), f('star'))"
             ],
             "goal": [
-                "1",
-                "1",
-                "1"
+                "true",
+                "false",
+                "true"
             ],
-            "textgoal": "Define a function that outputs 1 no matter the input",
+            "textgoal": "Define a function that outputs true if x is {a star}, otherwise false",
             "toolbox": [
-                "__unlimited; justOne;",
-                "x",
-                "x",
-                "1",
-                "2"
-            ],
-            "defines": [
-                "function justOne(x) { return x == 1 ? 1 : justOne(x - 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function justTwo(x) { return _; }",
-                "_ ? _ : _(_)",
-                "justTwo",
-                "_(0)",
-                "_(2)"
-            ],
-            "goal": [
-                "2",
-                "2",
-                "2"
-            ],
-            "textgoal": "Define a function that outputs 2 no matter the input",
-            "toolbox": [
-                "__unlimited; justTwo;",
-                "x",
-                "x",
-                "x",
-                "_ == _",
-                "_ - 1",
-                "0",
-                "1",
-                "2"
-            ],
-            "defines": [
-                "function justTwo(x) { return x == 2 ? x : justTwo(x - 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function countToFive(x) { return _; }",
-                "_(0)",
-                "_(4)",
-                "_(5)",
+                "__unlimited; isStar;",
                 "x == _",
-                "5",
-                "countToFive(_)",
-                "_ ? 5 : _"
-            ],
-            "goal": [
-                "5",
-                "5",
-                "5"
-            ],
-            "textgoal": "Define a function that counts up from x to 5",
-            "toolbox": [
-                "__unlimited; countToFive;",
-                "x",
-                "x - 1",
-                "x + 1",
-                "x + 2",
-                "0"
+                "'triangle'",
+                "'rect'",
+                "'star'"
             ],
             "defines": [
-                "function countToFive(x) { return x == 5 ? x : countToFive(x + 1); }"
+                "function isStar(x) { return x == 'star'; }"
             ],
             "globals": {},
             "syntax": [],
@@ -172,62 +49,28 @@
         },
         {
             "board": [
-                "function howFarFromTen(x) { return _; }",
-                "__tests(f(3), f(8), f(10))",
+                "__argumentAnnotated; function isZero(x) { return _; }",
                 "_ == _",
-                "_ ? 0 : 1 + _",
-                "10",
-                "howFarFromTen"
+                "__tests(f(1), f(0), f(3), f(0))"
             ],
             "goal": [
-                "7",
-                "2",
-                "0"
+                "false",
+                "true",
+                "false",
+                "true"
             ],
-            "textgoal": "Define a function that outputs the difference between x and 10",
+            "textgoal": "Define a function that outputs true if x is 0, otherwise false",
             "toolbox": [
-                "__unlimited; howFarFromTen;",
-                "_ + 1",
-                "_ - 1",
+                "__unlimited; isZero;",
+                "(x) => _",
                 "x",
-                "x",
-                "_(_)"
-            ],
-            "defines": [
-                "function howFarFromTen(x) { return x == 10 ? 0 : 1 + howFarFromTen(x + 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function howFarFromWeekend(x) { return _; }",
-                "_(_) ? 0 : _",
-                "howFarFromWeekend",
-                "__tests(f(tue), f(sun), f(fri), f(sat))"
-            ],
-            "goal": [
-                "4",
+                "y",
                 "0",
                 "1",
-                "0"
-            ],
-            "textgoal": "Define a function that outputs the days left until weekend",
-            "toolbox": [
-                "__unlimited; howFarFromWeekend;",
-                "isWeekend",
-                "tomorrow",
-                "x",
-                "x",
-                "1 + _",
-                "_(_)",
-                "_(_)"
+                "2"
             ],
             "defines": [
-                "function howFarFromWeekend(x) { return isWeekend(x) ? 0 : 1 + howFarFromWeekend(tomorrow(x)); }",
-                "function addTwo(x) { return twice(addOne, x); }",
-                "function addFour(x) { return twice(addTwo, x); }"
+                "function isZero(x) { return x == 0; }"
             ],
             "globals": {},
             "syntax": [],
@@ -235,27 +78,27 @@
         },
         {
             "board": [
-                "function twice(f, x) { return _; }",
-                "_(_(_))",
-                "twice(addOne, 2)",
-                "twice(addTwo, 3)",
-                "twice(doNothing, 1)"
+                "__argumentAnnotated; function equals(x, y) { return _; }",
+                "_ == _",
+                "(y) => _",
+                "__tests(f(1, 2), f(2, 2), f(3, 3))"
             ],
             "goal": [
-                "4",
-                "7",
+                "false",
+                "true",
+                "true"
+            ],
+            "textgoal": "Define a function that outputs true if x and y are equal, otherwise false",
+            "toolbox": [
+                "__unlimited; equals;",
+                "(x) => _",
+                "x",
+                "y",
+                "0",
                 "1"
             ],
-            "textgoal": "Define a function that applies f twice on x",
-            "toolbox": [
-                "twice",
-                "f",
-                "f",
-                "x",
-                "x"
-            ],
             "defines": [
-                "function twice(f, x) { return f(f(x)); }"
+                "function equals(x, y) { return x == y; }"
             ],
             "globals": {},
             "syntax": [],
@@ -263,30 +106,81 @@
         },
         {
             "board": [
-                "function thrice(f, x) { return _; }",
-                "thrice(addTwo, 1)",
-                "thrice(addFour, 3)",
-                "thrice(addSix, 2)"
+                "function noStar(x) { return _ ? 'rect' : x; }",
+                "x == _",
+                "__tests(f('rect') == 'rect', f('star') == 'rect', f('triangle') == 'triangle')"
             ],
             "goal": [
-                "7",
-                "15",
-                "20"
+                "true",
+                "true",
+                "true"
             ],
-            "textgoal": "Define a function that applies f three times on x",
+            "textgoal": "Define a function that outputs anything but {a star}",
             "toolbox": [
-                "twice",
-                "thrice",
-                "f",
-                "f",
+                "__unlimited; noStar;",
+                "'star'",
+                "'rect'",
+                "'triangle'"
+            ],
+            "defines": [
+                "function noStar(x) { return x == 'star' ? 'rect' : x; }"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "__argumentAnnotated; function alwaysOne(x) { return _; }",
+                "_ ? x : 1",
+                "(x) => _",
+                "__tests(f(1) == 1, f(2) == 1, f(3) == 1)"
+            ],
+            "goal": [
+                "true",
+                "true",
+                "true"
+            ],
+            "textgoal": "Define a function that always outputs 1",
+            "toolbox": [
+                "__unlimited; alwaysOne;",
                 "x",
+                "_ == _",
+                "1 == _",
+                "2",
+                "3"
+            ],
+            "defines": [
+                "function alwaysOne(x) { return x == 1 ? x : 1; }"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "function firstNonZero(x, y) { return _; }",
+                "_ ? _ : x",
+                "__tests(f(1, 2) == 1, f(0, 1) == 1, f(2, 0) == 2, f(3, 2) == 3)"
+            ],
+            "goal": [
+                "true",
+                "true",
+                "true",
+                "true"
+            ],
+            "textgoal": "Define a function that outputs the first non zero value of x and y. ",
+            "toolbox": [
+                "__unlimited;isZero;",
+                "__unlimited; firstNonZero; ",
                 "x",
-                "_(_)",
-                "_(_)",
+                "y",
+                "x",
+                "y",
                 "_(_)"
             ],
             "defines": [
-                "function thrice(f, x) { return f(twice(f, x)); }"
+                "function firstNonZero(x, y) { return x == 0 ? x : y; }"
             ],
             "globals": {},
             "syntax": [],
@@ -294,352 +188,33 @@
         },
         {
             "board": [
-                "function double(y) { return _; }",
-                "_ ? 0 : 2 + _",
-                "double(_)",
-                "double(1)",
-                "double(0)",
-                "double(3)"
+                "function nextDayOfWeek(x) { return _; }",
+                "_ ? _ : _",
+                "__tests(f(2) == 3, f(7) == 1, f(5) == 6)"
             ],
             "goal": [
-                "2",
-                "0",
-                "6"
+                "true",
+                "true",
+                "true"
             ],
-            "textgoal": "Define a function that computes y times 2",
+            "textgoal": "Define a function that outputs the next day of the week in number, given the the current day x",
             "toolbox": [
-                "y",
-                "y - 1",
-                "y + 1",
-                "0",
-                "1",
-                "2",
-                "_ == _"
-            ],
-            "defines": [
-                "function double(y) { return y == 0 ? 0 : 2 + double(y - 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function triple(z) { return _; }",
-                "_ == _",
-                "_ ? 0 : _",
+                "__unlimited; addOne;",
+                "__unlimited; addTwo;",
+                "__unlimited; nextDayOfWeek;",
+                "x == _",
                 "_(_)",
-                "triple(0)",
-                "triple(2)",
-                "triple(1)",
-                "x"
-            ],
-            "goal": [
-                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
                 "6",
-                "3"
-            ],
-            "textgoal": "Define a function that computes z times 3",
-            "toolbox": [
-                "3 + _",
-                "2 + _",
-                "triple",
-                "triple",
-                "_ - _",
-                "0",
-                "1",
-                "2",
-                "4",
-                "x"
-            ],
-            "defines": [
-                "function triple(z) { return z == 0 ? 0 : 3 + triple(z - 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function multiplyBy4(x) { return _; }",
-                "_ ? 0 : _",
-                "_ - 1",
-                "_ + _",
-                "multiplyBy4(1)",
-                "multiplyBy4(4)",
-                "multiplyBy4(2)",
-                "multiplyBy4"
-            ],
-            "goal": [
-                "4",
-                "16",
-                "8"
-            ],
-            "textgoal": "Define a function that computes x times 4",
-            "toolbox": [
-                "__targetable; multiplyBy4",
-                "_ == _",
-                "0",
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "x",
-                "x",
-                "_(_)"
-            ],
-            "defines": [
-                "function multiplyBy4(x) { return x == 0 ? 0 : 4 + multiplyBy4(x - 1); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function xTimes4PlusY(x, y) { return _; }",
-                "_ + _",
-                "_ == _",
-                "_ ? y : _",
-                "xTimes4PlusY(1, 1)",
-                "xTimes4PlusY(4, 0)",
-                "xTimes4PlusY(2, 3)"
-            ],
-            "goal": [
-                "5",
-                "16",
-                "11"
-            ],
-            "textgoal": "Define a function that computes x times 4 plus y (x*4+2)",
-            "toolbox": [
-                "__targetable; xTimes4PlusY",
-                "x",
-                "y",
-                "0",
-                "1",
-                "2",
-                "3",
-                "4",
-                "_ - 1",
-                "x",
-                "_(_, _)"
-            ],
-            "defines": [
-                "function xTimes4PlusY(x, y) { return x == 0 ? y : x + xTimes4PlusY(x - 1, y); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function xTimes5PlusY(x, y) { return _; }",
-                "_ + _",
-                "_ - 1",
-                "_ ? _ : _",
-                "xTimes5PlusY(1, 2)",
-                "xTimes5PlusY(2, 3)",
-                "xTimes5PlusY(1, 0)"
-            ],
-            "goal": [
                 "7",
-                "13",
-                "5"
-            ],
-            "textgoal": "Define a function that computes x times 5 plus y (x*5+2)",
-            "toolbox": [
-                "__targetable; xTimes5PlusY",
-                "x",
-                "x",
-                "y",
-                "y",
-                "0",
-                "1",
-                "3",
-                "5",
-                "_ == _",
-                "_(_, _)"
-            ],
-            "defines": [
-                "function xTimes5PlusY(x, y) { return x == 0 ? y : x + xTimes5PlusY(x - 1, y); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function repeatAdd1(x,n) { return _; }",
-                "_ ? n : addOne(_)",
-                "_ == 0",
-                "repeatAdd1(0, 5)",
-                "repeatAdd1(1, 5)",
-                "repeatAdd1(0, 3)"
-            ],
-            "goal": [
-                "5",
-                "6",
-                "3"
-            ],
-            "textgoal": "Define a function to repeat the function addOne x times on the number n",
-            "toolbox": [
-                "repeatAdd1(x, n)",
-                "repeatAdd1(x - 1, n)",
-                "repeatAdd1(x, n-1)",
-                "x",
-                "n"
-            ],
-            "defines": [
-                "function repeatAdd1(x, n) { return x == 0 ? n : addOne(repeatAdd1(x - 1, n)); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function repeatAdd2(x, n) { return _; }",
-                "_ ? _ : addTwo(_)",
-                "repeatAdd2(_, _)",
-                "0",
-                "repeatAdd2(0, 5)",
-                "repeatAdd2(2, 3)",
-                "repeatAdd2(1, 2)"
-            ],
-            "goal": [
-                "10",
-                "7",
-                "4"
-            ],
-            "textgoal": "Define a function to repeat the function addTwo x times on the number n",
-            "toolbox": [
-                "repeatAdd2",
-                "_ == _",
-                "x - 1",
-                "n - 1",
-                "x - 2",
-                "n - 2",
-                "n",
-                "n",
                 "x"
             ],
             "defines": [
-                "function repeatAdd2(x, n) { return x == 0 ? n : addTwo(repeatAdd2(x - 1, n)); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function repeatAdd3(x, n) { return _; }",
-                "_ ? _ : _(_)",
-                "addThree",
-                "repeatAdd3(0, 1)",
-                "repeatAdd3(2, 2)",
-                "repeatAdd3(1, 3)"
-            ],
-            "goal": [
-                "6",
-                "8",
-                "1"
-            ],
-            "textgoal": "Define a function to repeat the function addThree x times on the number n",
-            "toolbox": [
-                "__targetable; repeatAdd3",
-                "_ == _",
-                "_ - 1",
-                "_ - 2",
-                "0",
-                "1",
-                "2",
-                "3",
-                "x",
-                "x",
-                "n",
-                "n",
-                "_(_, _)"
-            ],
-            "defines": [
-                "function repeatAdd3(x, n) { return x == 0 ? n : addThree(repeatAdd3(x - 1, n)); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function repeatAddA(x, n, a) { return _; }",
-                "_ ? _ : _",
-                "repeatAddA(_, _, _)",
-                "repeatAddA(0, 5, 1)",
-                "repeatAddA(1, 5, 2)",
-                "repeatAddA(3, 1, 3)"
-            ],
-            "goal": [
-                "5",
-                "10",
-                "7"
-            ],
-            "textgoal": "Define a function to add a to n for x times (a * x + n)",
-            "toolbox": [
-                "__targetable; repeatAddA",
-                "_ == _",
-                "_ + _",
-                "_ - _",
-                "x",
-                "x",
-                "n",
-                "n",
-                "a",
-                "a",
-                "0",
-                "1",
-                "2",
-                "3"
-            ],
-            "defines": [
-                "function repeatAddA(x, n, a) { return x == 0 ? n : a + repeatAddA(x - 1, n, a); }"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "function repeatFunction(x, n, f) { return _; }",
-                "_ ? _ : _",
-                "_(_)",
-                "_(_, _, _)",
-                "repeatFunction(5, 0, addOne)",
-                "repeatFunction(5, 0, addTwo)",
-                "repeatFunction(3, 1, addOne)",
-                "repeatFunction(3, 1, addTwo)"
-            ],
-            "goal": [
-                "5",
-                "10",
-                "4",
-                "7"
-            ],
-            "textgoal": "Define a function to apply the function f for x times on the input n",
-            "toolbox": [
-                "__targetable; repeatFunction",
-                "_ == _",
-                "_ - _",
-                "0",
-                "1",
-                "2",
-                "x",
-                "x",
-                "n",
-                "n",
-                "f",
-                "f"
-            ],
-            "defines": [
-                "function repeatFunction(x, n, f) { return x == 0 ? n : f(repeatFunction(x - 1, n, f)); }"
+                "function nextDayOfWeek(x) { return x == 7 ? 1 : addOne(x); }"
             ],
             "globals": {},
             "syntax": [],
@@ -650,13 +225,9 @@
         "planet": "planet-functiana",
         "aliens": [
             "alien-boolean-1",
-            "alien-conditional-1",
             "alien-boolean-2",
-            "alien-conditional-2",
             "alien-boolean-3",
-            "alien-conditional-3",
             "alien-boolean-4",
-            "alien-conditional-4",
             "alien-boolean-5"
         ],
         "curve": [

@@ -26,13 +26,13 @@
         {
             "board": [
                 "x => y => y",
-                "A",
-                "B"
+                "B",
+                "C"
             ],
             "goal": [
-                "A"
+                "C"
             ],
-            "textgoal": "Create {a star}",
+            "textgoal": "Create {a triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -106,7 +106,7 @@
         {
             "board": [
                 "x => y => C",
-                "x => x"
+                "x => y => x"
             ],
             "goal": [
                 "A",
@@ -116,8 +116,49 @@
             "toolbox": [
                 "A",
                 "B",
+                "C",
+                "D"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "(x) => (y) => x + 1",
+                "(x) => (y) => y + 3"
+            ],
+            "goal": [
+                "4",
+                "6"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "(a) => (b) => a + b"
+            ],
+            "goal": [
+                "7"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => _",
+                "y => _",
+                "C",
+                "B",
+                "A"
+            ],
+            "goal": [
                 "C"
             ],
+            "textgoal": "Create {a triangle}",
             "globals": {},
             "syntax": [],
             "animationScales": {}

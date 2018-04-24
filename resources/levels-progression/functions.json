@@ -108,10 +108,7 @@
             "board": [
                 "x => x",
                 "x => A",
-                "x => B",
-                "A",
-                "C",
-                "C"
+                "x => B"
             ],
             "goal": [
                 "C",
@@ -119,6 +116,12 @@
                 "A"
             ],
             "textgoal": "Create a {star}, {square}, and {triangle}",
+            "toolbox": [
+                "A",
+                "D",
+                "C",
+                "C"
+            ],
             "globals": {},
             "syntax": [],
             "animationScales": {}
@@ -155,55 +158,6 @@
                 "5",
                 "6"
             ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => _"
-            ],
-            "goal": [
-                "B"
-            ],
-            "textgoal": "Build you own function to create a {square} and use it to create {a square}",
-            "toolbox": [
-                "A",
-                "B"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => _"
-            ],
-            "goal": [
-                "A"
-            ],
-            "textgoal": "Create a function that gives back the input and create {a star}",
-            "toolbox": [
-                "A",
-                "x",
-                "y"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => _",
-                "y => _",
-                "A",
-                "B",
-                "C"
-            ],
-            "goal": [
-                "B"
-            ],
-            "textgoal": "Create {a square} using functions",
             "globals": {},
             "syntax": [],
             "animationScales": {}
