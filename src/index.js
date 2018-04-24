@@ -63,7 +63,10 @@ function initialize() {
 
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
-    const reduct = reducer.reduct(es6, views);
+    const reduct = reducer.reduct(es6, views, (id, { x, y }) => {
+        const { w, h } = gfx.absoluteSize(stg.getView(id));
+        return stg.findSafePosition(x, y, w, h);
+    });
     store = createStore(
         reduct.reducer,
         undefined,

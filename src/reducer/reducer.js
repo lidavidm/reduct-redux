@@ -32,7 +32,7 @@ function markDirty(nodes, id) {
     dirty.add(expr.get("id"));
 }
 
-export function reduct(semantics, views) {
+export function reduct(semantics, views, restorePos) {
     function program(state=initialProgram, act) {
         switch (act.type) {
         case action.START_LEVEL: {
@@ -413,7 +413,7 @@ export function reduct(semantics, views) {
                                 views[id].anchor.y = 0;
                                 views[id].scale.x = 1.0;
                                 views[id].scale.y = 1.0;
-                                animate.tween(views[id].pos, extraState[id], {
+                                animate.tween(views[id].pos, restorePos(id, extraState[id]), {
                                     duration: 250,
                                     easing: animate.Easing.Cubic.Out,
                                 });
