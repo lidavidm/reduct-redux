@@ -82,6 +82,7 @@ export function blink(stage, projection, opts) {
         speed: 600,
         lineWidth: 3,
         background: false,
+        field: "stroke",
     }, opts);
 
     if (options.background) {
@@ -103,12 +104,12 @@ export function blink(stage, projection, opts) {
 
     // TODO: refactor this into a helper
 
-    let updatedStroke = projection.stroke;
+    let updatedStroke = projection[options.field];
     const tempStroke = { color: options.color, lineWidth: 0 };
-    const descriptor = Object.getOwnPropertyDescriptor(projection, "stroke");
+    const descriptor = Object.getOwnPropertyDescriptor(projection, options.field);
     // Don't blink if fx already in progress
     if (!descriptor || !descriptor.get) {
-        Object.defineProperty(projection, "stroke", {
+        Object.defineProperty(projection, options.field, {
             configurable: true,
             get() {
                 return tempStroke;
@@ -122,8 +123,8 @@ export function blink(stage, projection, opts) {
             repeat: options.times * 2,
             duration: options.speed,
         }).then(() => {
-            delete projection.stroke;
-            projection.stroke = updatedStroke;
+            delete projection[options.field];
+            projection[options.field] = updatedStroke;
             stage.drawImpl();
         });
     }
