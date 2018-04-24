@@ -1233,8 +1233,12 @@ export default class Stage extends BaseStage {
                     this.views[node.get("id")] = this.semantics.project(this, tempNodes, node);
                 }
 
-                this.views[fullNodes[0].get("id")].pos.x = this.views[this.functionDef.referenceId].pos.x;
-                this.views[fullNodes[0].get("id")].pos.y = this.views[this.functionDef.referenceId].pos.y;
+                const newView = this.views[fullNodes[0].get("id")];
+                const oldView = this.views[this.functionDef.referenceId];
+                newView.anchor.x = oldView.anchor.x;
+                newView.anchor.y = oldView.anchor.y;
+                newView.pos.x = oldView.pos.x;
+                newView.pos.y = oldView.pos.y;
 
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
