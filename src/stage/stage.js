@@ -122,6 +122,7 @@ export default class Stage extends BaseStage {
 
         // Un-hide control panel
         document.querySelector("#overlay-nav").style.display = "block";
+        document.querySelector("#current-level").style.display = "block";
 
         this.sidebarWidth = 0;
 

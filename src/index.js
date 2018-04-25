@@ -17,6 +17,7 @@ import passwordPrompt from "./ui/instructor/password";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
+import { DEVELOPMENT_BUILD } from "./logging/logging";
 
 // Globals to help you debug
 window.gfx = gfx;
@@ -58,6 +59,13 @@ let stg;
 let canvas;
 
 function initialize() {
+    if (DEVELOPMENT_BUILD) {
+        const devEls = document.querySelectorAll(".dev");
+        for (let i = 0; i < devEls.length; i++) {
+            devEls[i].style.display = "block";
+        }
+    }
+
     canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
 
