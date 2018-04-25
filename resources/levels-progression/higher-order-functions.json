@@ -2,6 +2,7 @@
     "chapterName": "Higher Order Functions",
     "description": "Introduction to twice, apply, and repeat",
     "language": "JavaScript",
+    "password": "church",
     "macros": {
         "A": "'star'",
         "B": "'rect'",

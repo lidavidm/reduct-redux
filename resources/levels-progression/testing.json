@@ -2,6 +2,7 @@
     "chapterName": "Testing",
     "description": "Test blocks",
     "language": "JavaScript",
+    "password": "quickcheck",
     "macros": {
         "A": "'star'",
         "B": "'rect'",

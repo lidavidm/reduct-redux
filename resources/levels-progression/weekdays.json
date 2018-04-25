@@ -2,6 +2,7 @@
     "chapterName": "Weekdays",
     "description": "Introduction to days of the week",
     "language": "JavaScript",
+    "password": "calendar",
     "macros": {
         "mon": "__variant_weekday_Monday",
         "tue": "__variant_weekday_Tuesday",

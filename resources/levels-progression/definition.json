@@ -2,6 +2,7 @@
     "chapterName": "Function Definition",
     "description": "Introduction to function definitions",
     "language": "JavaScript",
+    "password": "hopper",
     "macros": {
         "A": "'star'",
         "B": "'rect'",

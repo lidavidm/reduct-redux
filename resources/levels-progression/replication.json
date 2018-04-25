@@ -2,6 +2,7 @@
     "chapterName": "Replication",
     "description": "Functions that make many things.",
     "language": "JavaScript",
+    "password": "clone",
     "macros": {
         "A": "'star'",
         "B": "'rect'",

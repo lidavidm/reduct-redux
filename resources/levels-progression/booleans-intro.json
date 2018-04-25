@@ -2,6 +2,7 @@
     "chapterName": "Booleans",
     "description": "Tests of equality and typing operators",
     "language": "JavaScript",
+    "password: "boole",
     "levels": [
         {
             "board": [

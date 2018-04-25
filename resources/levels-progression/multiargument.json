@@ -2,6 +2,7 @@
     "chapterName": "Multi-Argument Functions",
     "description": "Functions that take many things!",
     "language": "JavaScript",
+    "password": "curry",
     "macros": {
         "A": "'star'",
         "B": "'rect'",

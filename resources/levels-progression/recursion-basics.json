@@ -2,6 +2,7 @@
     "chapterName": "Recursion",
     "description": "Functions that call...themselves?",
     "language": "JavaScript",
+    "password": "haskell",
     "macros": {
         "mon": "__variant_weekday_mon",
         "tue": "__variant_weekday_tue",

@@ -2,6 +2,7 @@
     "chapterName": "Building Higher Order Functions",
     "description": "Functions that call...themselves?",
     "language": "JavaScript",
+    "password": "3110",
     "macros": {
         "mon": "__variant_weekday_mon",
         "tue": "__variant_weekday_tue",
