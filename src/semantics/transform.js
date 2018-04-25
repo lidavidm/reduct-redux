@@ -282,7 +282,10 @@ export default function transform(definition) {
         const item = state.getIn([ "nodes", itemId ]);
         const target = state.getIn([ "nodes", targetId ]);
 
-        if (target.get("type") === "missing") {
+        if (item.get("type") === "define") {
+            return false;
+        }
+        else if (target.get("type") === "missing") {
             // Use type inference to decide whether hole can be filled
             const holeType = target.get("ty");
             const exprType = item.get("ty");
