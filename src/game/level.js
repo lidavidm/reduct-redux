@@ -69,7 +69,9 @@ export function startLevel(description, parse, store, stage) {
             globals[name] = val;
         });
     for (const [ name, definition ] of Object.entries(description.globals)) {
-        const parsed = parse(definition, macros)
+        let rawParsed = parse(definition, macros);
+        if (!Array.isArray(rawParsed)) rawParsed = [ rawParsed ];
+        const parsed = rawParsed
               .reduce((a, b) => (Array.isArray(b) ? a.concat(b) : a.concat([b])), [])
               .map(expr => stage.semantics.parser.extractGlobals(stage.semantics, expr))
               .filter(name => name !== null);
