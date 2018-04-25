@@ -115,9 +115,27 @@ export function genericBetaReduce(semant, state, config) {
     const missingNodes = semant.search(
         nodes,
         topNode.get("id"),
-        (nodes, id) => nodes.get(id).get("type") === "missing"
+        (nodes, id) => {
+            const node = nodes.get(id);
+            if (node.get("type") === "missing") {
+                return true;
+            }
+            else if (node.get("type") === "lambdaVar") {
+                // Look for binder
+                let current = node;
+                while (current.get("parent")) {
+                    current = nodes.get(current.get("parent"));
+                    if (current.get("type") === "lambda" &&
+                        nodes.get(current.get("arg")).get("name") === node.get("name")) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
     ).filter((id) => {
         const node = nodes.get(id);
+        if (node.get("type") === "lambdaVar") return true;
         if (!node.get("parent")) return true;
         const parent = nodes.get(node.get("parent"));
         const substepFilter = semant.interpreter.substepFilter(parent.get("type"));
