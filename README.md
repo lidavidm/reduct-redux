@@ -66,7 +66,33 @@ again.
 Importing Levels
 ----------------
 
-TODO:
+1. Go to the `chapterutil` directory. Make sure you have Python 3 and
+   virtualenv installed.
+
+   MacOS instructions:
+   http://docs.python-guide.org/en/latest/starting/install3/osx/
+
+   Then install virtualenv: `pip install virtualenv`
+
+1. Set up chapterutil:
+
+   ```
+   # All of these must be run IN THE SAME TERMINAL
+   virtualenv -p python3 venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+1. Download the sheet from Google Sheets as XSLX.
+1. Create any JSON files for chapters that did not previously
+   exist. (Just copy an existing JSON file and edit its title/name. To
+   preserve continuity of what aliens appear, try to copy the chapter
+   immediately preceding the new chapter.)
+1. Run the following script: `bash automate.sh PATH/TO/XLSX/FILE.xlsx
+
+   It might spit out warnings about not being able to import things -
+   this is caused by the rows in the spreadsheet that just contain
+   notes.
 
 Generating Spritesheets
 -----------------------
