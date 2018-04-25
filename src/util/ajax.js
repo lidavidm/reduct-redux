@@ -2,7 +2,13 @@ export function getJSON(path) {
     return new Promise((resolve, reject) => {
         const xhr = new window.XMLHttpRequest();
         xhr.onload = function() {
-            resolve(JSON.parse(xhr.response));
+            try {
+                resolve(JSON.parse(xhr.response));
+            }
+            catch (e) {
+                console.error(path, e);
+                reject(e);
+            }
         };
 
         xhr.open("GET", path);
