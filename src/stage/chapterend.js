@@ -232,9 +232,16 @@ export default class ChapterEndStage extends BaseStage {
             const continueButton = gfx.layout.sticky(gfx.ui.button(this, "Next Chapter", {
                 color: "#e95888",
                 click: () => {
-                    passwordPrompt("Ask the teacher to continue on!", "cornell").then(() => {
+                    const chapter = progression.nextChapter();
+                    console.log(chapter);
+                    if (chapter && chapter.password) {
+                        passwordPrompt("Ask the teacher to continue on!", chapter.password).then(() => {
+                            this.continue(false);
+                        }, () => {});
+                    }
+                    else {
                         this.continue(false);
-                    }, () => {});
+                    }
                 },
             }), "top", {
                 align: "center",

@@ -111,6 +111,18 @@ export function isGameEnd() {
     return currentLevelIdx === ACTIVE_PROGRESSION_DEFINITION.progression.levels.length - 1;
 }
 
+export function nextChapter() {
+    const chapters = ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters;
+    for (let i = 0; i < chapters.length; i++) {
+        const chapterName = chapters[i];
+        const chapter = ACTIVE_PROGRESSION_DEFINITION.progression.chapters[chapterName];
+        if (currentLevelIdx < chapter.startIdx) {
+            return chapter;
+        }
+    }
+    return null;
+}
+
 export function hasChallengeChapter() {
     const chapters = ACTIVE_PROGRESSION_DEFINITION.progression.linearChapters;
     for (let i = 0; i < chapters.length; i++) {

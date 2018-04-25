@@ -2,6 +2,7 @@
     "chapterName": "Booleans & Definitions",
     "description": "Defining functions using Booleans",
     "language": "JavaScript",
+    "password": "knuth",
     "levels": [
         {
             "board": [

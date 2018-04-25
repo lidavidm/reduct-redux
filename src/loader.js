@@ -116,6 +116,7 @@ export class LoaderClass {
                 language: json.language,
                 levels: [],
                 dependencies: [],
+                password: json.password,
             };
             if (json.resources) d.resources = json.resources;
 
