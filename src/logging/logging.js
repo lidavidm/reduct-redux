@@ -19,7 +19,7 @@ import VERSION_ID from "../version";
 const GAME_ID = 7017019;
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
-const REMOTE_LOGGER_URL = "https://gdiac.cs.cornell.edu/";
+const REMOTE_LOGGER_URL = "https://gdiac.cs.cornell.edu/research_games/php/reduct/";
 const LOCAL_LOGGER_URL = "//localhost:3333";
 const URLS = {
     PAGE_LOAD: "page_load.php",
