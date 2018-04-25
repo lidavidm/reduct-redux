@@ -57,10 +57,19 @@ export default class StuckEffect {
     }
 
     draw() {
-        const { ctx } = this.stage;
+        const { ctx, width, height } = this.stage;
 
+        ctx.save();
         ctx.fillStyle = "#000";
         ctx.globalAlpha = this.opacity;
-        ctx.fillRect(0, 0, this.stage.width, this.stage.height);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(width - 200, 0);
+        ctx.arc(width, 0, 200, Math.PI, 1.5 * Math.PI, true);
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        ctx.fill("evenodd");
+        ctx.restore();
     }
 }
