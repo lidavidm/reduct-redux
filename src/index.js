@@ -188,9 +188,11 @@ function initialize() {
         document.querySelector("#chapter").appendChild(option);
     }
     document.querySelector("#chapter").addEventListener("change", () => {
-        if (stg.pushState) stg.pushState("change-chapter");
-        const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
-        start(() => progression.jumpToLevel(lvl));
+        passwordPrompt("Ask the teacher to skip this level!", "cornell").then(() => {
+            if (stg.pushState) stg.pushState("change-chapter");
+            const lvl = window.parseInt(document.querySelector("#chapter").value, 10);
+            start(() => progression.jumpToLevel(lvl));
+        }, () => {});
     });
 }
 
