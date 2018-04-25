@@ -7,6 +7,7 @@ import Audio from "../resource/audio";
 import * as random from "../util/random";
 
 import Loader from "../loader";
+import passwordPrompt from "../ui/instructor/password";
 
 import BaseStage from "./basestage";
 import BaseTouchRecord from "./touchrecord";
@@ -231,22 +232,9 @@ export default class ChapterEndStage extends BaseStage {
             const continueButton = gfx.layout.sticky(gfx.ui.button(this, "Next Chapter", {
                 color: "#e95888",
                 click: () => {
-                    animate.tween(this, {
-                        color: "#EEE",
-                    }, {
-                        duration: 800,
-                        setAnimatingFlag: false,
-                        easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEE"),
-                    }).then(() => {
-                        window.next();
-                    });
-                    animate.tween(this, {
-                        opacity: 0.0,
-                    }, {
-                        duration: 500,
-                        setAnimatingFlag: false,
-                        easing: animate.Easing.Cubic.Out,
-                    });
+                    passwordPrompt("Ask the teacher to continue on!", "cornell").then(() => {
+                        this.continue(false);
+                    }, () => {});
                 },
             }), "top", {
                 align: "center",
@@ -264,7 +252,7 @@ export default class ChapterEndStage extends BaseStage {
                 const challengeButton = gfx.layout.sticky(gfx.ui.button(this, "Try Challenges", {
                     color: "#e95888",
                     click: () => {
-                        window.next(true);
+                        this.continue(true);
                     },
                 }), "top", {
                     align: "center",
@@ -278,6 +266,25 @@ export default class ChapterEndStage extends BaseStage {
                 }).delay(1000);
             }
         }
+    }
+
+    continue(challenge) {
+        animate.tween(this, {
+            color: "#EEE",
+        }, {
+            duration: 800,
+            setAnimatingFlag: false,
+            easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEE"),
+        }).then(() => {
+            window.next(challenge, false);
+        });
+        animate.tween(this, {
+            opacity: 0.0,
+        }, {
+            duration: 500,
+            setAnimatingFlag: false,
+            easing: animate.Easing.Cubic.Out,
+        });
     }
 
     spawnFirework(startPos, targetPos, delay) {

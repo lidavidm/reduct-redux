@@ -325,7 +325,7 @@ window.reset = function reset() {
     if (stg.pushState) stg.pushState("reset");
     start();
 };
-window.next = function next(challenge) {
+window.next = function next(challenge, prompt=true) {
     const doNext = () => {
         if (stg.pushState) stg.pushState("next");
         nextLevel(challenge);
@@ -335,8 +335,13 @@ window.next = function next(challenge) {
         return;
     }
 
-    passwordPrompt("Ask the teacher to skip this level!", "cornell")
-        .then(() => doNext(), () => {});
+    if (prompt) {
+        passwordPrompt("Ask the teacher to skip this level!", "cornell")
+            .then(() => doNext(), () => {});
+    }
+    else {
+        doNext();
+    }
 };
 window.prev = function prev() {
     if (stg.pushState) stg.pushState("prev");
