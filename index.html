@@ -145,6 +145,9 @@
          #consent.visible, .fade-container.visible {
              bottom: 0;
              opacity: 1;
+             display: flex;
+             flex-direction: column;
+             justify-content: center;
          }
 
          #consent.visible #consent-inner, .fade-container.visible > div {
@@ -157,8 +160,6 @@
              width: 40em;
              margin: 0 auto;
              position: fixed;
-             top: 1.5em;
-             bottom: 1.5em;
              left: 50%;
              transform: translateX(-50%);
          }
