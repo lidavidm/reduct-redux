@@ -88,7 +88,12 @@ Importing Levels
    exist. (Just copy an existing JSON file and edit its title/name. To
    preserve continuity of what aliens appear, try to copy the chapter
    immediately preceding the new chapter.)
-1. Run the following script: `bash automate.sh PATH/TO/XLSX/FILE.xlsx
+1. Run the following script: `bash automate.sh
+   PATH/TO/XLSX/FILE.xlsx`. Again, this must be run from the same
+   terminal as previously.
+
+   If you're running this and have previously set it up, run `source
+   venv/bin/activate` first.
 
    It might spit out warnings about not being able to import things -
    this is caused by the rows in the spreadsheet that just contain
