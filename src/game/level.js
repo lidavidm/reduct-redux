@@ -30,7 +30,7 @@ export function startLevel(description, parse, store, stage) {
           .map(([ name, str ]) => {
               let parsed = parse(str, macros);
               if (!Array.isArray(parsed)) {
-                  return [ name, parsed ];
+                  parsed = [ parsed ];
               }
               [ parsed ] = parsed
                   .map(expr => stage.semantics.parser.extractDefines(stage.semantics, expr))
