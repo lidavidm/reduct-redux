@@ -4,21 +4,7 @@ reduct-redux
 Setup
 -----
 
-First, create a `resources` folder with the following (you can copy this from a build of Reduct 1.0):
-
-```
-resources/:
-graphics/  levels-progression/
-
-resources/graphics:
-assets.json*  assets.png  menu-assets.json  menu-assets.png
-
-resources/levels-progression:
-application.json  functions.json       recursion.json          weekdays.json
-arithmetic.json   booleans-intro.json  define-challenges.json  definition.json
-```
-
-Then install the necessary packages and run the bundler.
+Install the necessary packages and run the bundler.
 
 *Choose one of the two below:*
 
