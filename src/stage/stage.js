@@ -1089,8 +1089,17 @@ export default class Stage extends BaseStage {
     }
 
     animateStuck() {
-        this.addEffect(new StuckEffect(this));
+        this._stuckFxId = this.addEffect(new StuckEffect(this));
         this.alreadyWon = true;
+    }
+
+    unstuck() {
+        if (this._stuckFxId) {
+            this.effects[this._stuckFxId].cancel().then(() => {
+                this.removeEffect(this._stuckFxId);
+            });
+        }
+        this.alreadyWon = false;
     }
 
     /**

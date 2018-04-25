@@ -12,6 +12,23 @@ export default class StuckEffect {
             duration: 1000,
             easing: animate.Easing.Cubic.Out,
         }).then(() => this.highlightMismatches());
+
+        this.infinite = null;
+    }
+
+    cancel() {
+        if (this.infinite) this.infinite.stop();
+
+        for (const id of this.blinkers) {
+            this.stage.getView(id).stroke = null;
+        }
+
+        return animate.tween(this, {
+            opacity: 0,
+        }, {
+            duration: 400,
+            easing: animate.Easing.Cubic.Out,
+        });
     }
 
     highlightMismatches() {
@@ -44,7 +61,8 @@ export default class StuckEffect {
         }
 
         let time = 0;
-        animate.infinite((dt) => {
+        this.blinkers = blinkers;
+        this.infinite = animate.infinite((dt) => {
             time += dt;
             for (const id of blinkers) {
                 this.stage.getView(id).stroke.lineWidth = 2 * (1 + Math.sin(time / 100));

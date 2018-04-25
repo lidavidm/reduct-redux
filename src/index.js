@@ -141,6 +141,7 @@ function initialize() {
 
     document.querySelector("#undo").addEventListener("click", () => {
         store.dispatch(undo.undo());
+        if (stg.unstuck) stg.unstuck();
     });
     document.querySelector("#redo").addEventListener("click", () => {
         store.dispatch(undo.redo());
