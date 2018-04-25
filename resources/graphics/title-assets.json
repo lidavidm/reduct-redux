@@ -1,0 +1,121 @@
+{
+	"meta": {
+		"image": "title-assets.png",
+		"size": {"w":1021,"h":888},
+		"scale": "1"
+	},
+	"frames": {
+		"reduct_title.png":
+		{
+			"frame": {"x":2,"y":226,"w":901,"h":213},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":901,"h":213},
+			"sourceSize": {"w":901,"h":213}
+		},
+		"you_win.png":
+		{
+			"frame": {"x":2,"y":2,"w":1017,"h":220},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":1017,"h":220},
+			"sourceSize": {"w":1017,"h":220}
+		},
+		"heart.png":
+		{
+			"frame": {"x":2,"y":443,"w":243,"h":218},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":243,"h":218},
+			"sourceSize": {"w":243,"h":218}
+		},
+		"star_3.png":
+		{
+			"frame": {"x":2,"y":665,"w":226,"h":221},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":226,"h":221},
+			"sourceSize": {"w":226,"h":221}
+		},
+		"star_2.png":
+		{
+			"frame": {"x":232,"y":665,"w":226,"h":221},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":226,"h":221},
+			"sourceSize": {"w":226,"h":221}
+		},
+		"star_1.png":
+		{
+			"frame": {"x":462,"y":665,"w":226,"h":221},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":226,"h":221},
+			"sourceSize": {"w":226,"h":221}
+		},
+		"undo.png":
+		{
+			"frame": {"x":249,"y":443,"w":212,"h":186},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":212,"h":186},
+			"sourceSize": {"w":212,"h":186}
+		},
+		"food_3.png":
+		{
+			"frame": {"x":749,"y":523,"w":102,"h":98},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":102,"h":98},
+			"sourceSize": {"w":102,"h":98}
+		},
+		"hand.png":
+		{
+			"frame": {"x":692,"y":665,"w":191,"h":191},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":191,"h":191},
+			"sourceSize": {"w":191,"h":191}
+		},
+		"food_1.png":
+		{
+			"frame": {"x":681,"y":443,"w":129,"h":76},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":129,"h":76},
+			"sourceSize": {"w":129,"h":76}
+		},
+		"food_4.png":
+		{
+			"frame": {"x":814,"y":443,"w":127,"h":62},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":127,"h":62},
+			"sourceSize": {"w":127,"h":62}
+		},
+		"food_5.png":
+		{
+			"frame": {"x":907,"y":226,"w":71,"h":119},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":71,"h":119},
+			"sourceSize": {"w":71,"h":119}
+		},
+		"food_2.png":
+		{
+			"frame": {"x":681,"y":523,"w":64,"h":106},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":64,"h":106},
+			"sourceSize": {"w":64,"h":106}
+		},
+		"redo.png":
+		{
+			"frame": {"x":465,"y":443,"w":212,"h":186},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":212,"h":186},
+			"sourceSize": {"w":212,"h":186}
+		}
+	}
+}
