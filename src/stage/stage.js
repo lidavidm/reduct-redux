@@ -1035,6 +1035,8 @@ export default class Stage extends BaseStage {
                 });
 
                 const thisStar = this.getView(starList[progression.currentLevel() - chapter.startIdx]);
+                thisStar.offset.y = 400;
+                thisStar.opacity = 0;
                 return Promise.all([
                     animate.tween(thisStar, {
                         color: "#F00",
@@ -1044,18 +1046,18 @@ export default class Stage extends BaseStage {
                         easing: animate.Easing.Color(animate.Easing.Cubic.In, thisStar.color, "#F00"),
                     }),
                     animate.tween(thisStar, {
-                        offset: { x: 0 },
-                    }, {
-                        duration: 1500,
-                        setAnimatingFlag: false,
-                        easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 20),
-                    }),
-                    animate.tween(thisStar, {
                         offset: { y: 0 },
                     }, {
                         duration: 1500,
                         setAnimatingFlag: false,
-                        easing: animate.Easing.Sinusoid(0, 25, animate.Easing.Cubic.In, 22),
+                        easing: animate.Easing.Anticipate.BackOut(1.5),
+                    }),
+                    animate.tween(thisStar, {
+                        opacity: 1,
+                    }, {
+                        duration: 1500,
+                        setAnimatingFlag: false,
+                        easing: animate.Easing.Cubic.In,
                     }),
                 ]).then(() => {
                     thisStar.color = "gold";
