@@ -14,7 +14,7 @@ Yarn:
 yarn install
 mkdir dist
 # Symlink resources into the folder that our bundler serves
-ln -s resources/ dist/resources
+ln -s $(pwd)/resources/ dist/resources
 yarn serve
 open http://localhost:1234/index.html
 ```
@@ -25,7 +25,7 @@ NPM:
 npm install
 mkdir dist
 # Symlink resources into the folder that our bundler serves
-ln -s resources/ dist/resources
+ln -s $(pwd)/resources/ dist/resources
 npm run serve
 open http://localhost:1234/index.html
 ```
@@ -58,6 +58,10 @@ The password to skip levels in the production version is
 `cornell`. You can enable this during development by appending
 `?nodev` to the URL. Conversely, in production, appending `?dev` to
 the URL will enable development mode.
+
+If the build system gets confused and doesn't seem to pick up changes
+to files, delete the `.cache` folder in the project directory and try
+again.
 
 Importing Levels
 ----------------
