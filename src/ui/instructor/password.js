@@ -68,6 +68,6 @@ export default function password(promptText, password) {
 
         window.setTimeout(function() {
             outerContainer.classList.add("visible");
-        }, 500);
+        }, 200);
     });
 }
