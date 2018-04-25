@@ -15,50 +15,15 @@
     "levels": [
         {
             "board": [
-                "mon == mon"
+                "mon == mon",
+                "_ == tue"
             ],
             "goal": [
-                "true"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "mon == _"
-            ],
-            "goal": [
+                "true",
                 "false"
             ],
             "toolbox": [
-                "mon",
-                "tue"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "wed == thu",
-                "fri == fri"
-            ],
-            "goal": [
-                "true"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "sun == _"
-            ],
-            "goal": [
-                "false"
-            ],
-            "toolbox": [
+                "tue",
                 "sat",
                 "sun"
             ],
@@ -116,48 +81,15 @@
         },
         {
             "board": [
-                "_ == tue"
-            ],
-            "goal": [
-                "true"
-            ],
-            "toolbox": [
-                "tomorrow",
-                "yesterday",
-                "mon"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "(x) => yesterday(x)"
-            ],
-            "goal": [
-                "sat"
-            ],
-            "toolbox": [
-                "sun",
-                "mon"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "_ == _ ? 1 : 2"
+                "(x) => yesterday(x) == _ ? 2 : 1"
             ],
             "goal": [
                 "2"
             ],
             "toolbox": [
-                "mon",
                 "tue",
-                "tomorrow",
-                "yesterday",
-                "_(_)"
+                "sun",
+                "mon"
             ],
             "globals": {},
             "syntax": [],

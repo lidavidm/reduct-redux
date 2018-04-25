@@ -6,17 +6,6 @@
     "levels": [
         {
             "board": [
-                "'star' == 'star'"
-            ],
-            "goal": [
-                "true"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
                 "'triangle' == 'star'",
                 "_ == 'star'"
             ],
@@ -25,25 +14,6 @@
                 "false"
             ],
             "toolbox": [
-                "'star'",
-                "'triangle'",
-                "'rect'"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "_ == _"
-            ],
-            "goal": [
-                "false"
-            ],
-            "toolbox": [
-                "'triangle'",
-                "'star'",
-                "'rect'",
                 "'star'",
                 "'triangle'",
                 "'rect'"
@@ -118,20 +88,6 @@
         },
         {
             "board": [
-                "_ ? 'star' : 'triangle'"
-            ],
-            "goal": [
-                "'triangle'"
-            ],
-            "toolbox": [
-                "false"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
                 "_ ? 'rect' : _"
             ],
             "goal": [
@@ -162,24 +118,6 @@
                 "false",
                 "true",
                 "false"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "_ == _ ? 1 : 2"
-            ],
-            "goal": [
-                "1"
-            ],
-            "toolbox": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "3"
             ],
             "globals": {},
             "syntax": [],
