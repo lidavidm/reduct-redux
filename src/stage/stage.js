@@ -470,7 +470,6 @@ export default class Stage extends BaseStage {
         }
 
         this.toolbox.drawImpl(state);
-        this.navbar.drawImpl(state);
         // this.syntaxJournal.drawImpl(state);
 
         for (const id of this._newSyntax) {
@@ -486,6 +485,8 @@ export default class Stage extends BaseStage {
                 fx.draw();
             }
         }
+
+        this.navbar.drawImpl(state);
 
         this.ctx.restore();
     }

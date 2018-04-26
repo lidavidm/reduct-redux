@@ -79,6 +79,11 @@ export default class Navbar {
             () => topButtons,
             {
                 subexpScale: 1,
+                padding: {
+                    left: 0,
+                    right: 0,
+                    inner: 3,
+                },
             },
             gfx.baseProjection
         ));
@@ -86,6 +91,11 @@ export default class Navbar {
             () => bottomButtons,
             {
                 subexpScale: 1,
+                padding: {
+                    left: 0,
+                    right: 0,
+                    inner: 3,
+                },
             },
             gfx.baseProjection
         ));
@@ -94,12 +104,21 @@ export default class Navbar {
                 () => [ topRow, bottomRow ],
                 {
                     subexpScale: 1,
+                    padding: {
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        inner: 5,
+                    },
                 },
                 gfx.baseProjection
             ),
             "top",
             {
                 align: "right",
+                marginX: 5,
+                marginY: 5,
             }
         ));
     }

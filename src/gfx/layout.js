@@ -41,7 +41,7 @@ export function sticky(projection, direction, options) {
             this.pos.y = stage.height - h - this.sticky.margin;
         }
         else if (direction === "top") {
-            this.pos.y = this.sticky.margin;
+            this.pos.y = this.sticky.margin + this.sticky.marginY;
         }
         else if (direction === "left") {
             this.pos.x = 0;
@@ -60,7 +60,7 @@ export function sticky(projection, direction, options) {
                 this.pos.x = (stage.width - w) / 2;
             }
             else if (this.sticky.align === "right") {
-                this.pos.x = stage.width - w;
+                this.pos.x = stage.width - w - this.sticky.marginX;
             }
         }
     };
