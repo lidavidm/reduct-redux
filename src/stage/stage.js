@@ -1103,7 +1103,7 @@ export default class Stage extends BaseStage {
                 });
 
                 const thisStar = this.getView(starList[progression.currentLevel() - chapter.startIdx]);
-                thisStar.offset.y = 400;
+                thisStar.offset.y = 600;
                 thisStar.opacity = 0;
                 return Promise.all([
                     animate.tween(thisStar, {
@@ -1118,7 +1118,7 @@ export default class Stage extends BaseStage {
                     }, {
                         duration: 1500,
                         setAnimatingFlag: false,
-                        easing: animate.Easing.Anticipate.BackOut(1.5),
+                        easing: animate.Easing.Anticipate.BackOut(2),
                     }),
                     animate.tween(thisStar, {
                         opacity: 1,

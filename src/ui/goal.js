@@ -152,7 +152,7 @@ export default class Goal {
     victory() {
         if (this.text) {
             this.stage.views[this.text].text = "";
-            this.stage.getView(this.container).opacity = 0;
         }
+        this.stage.getView(this.container).opacity = 0;
     }
 }
