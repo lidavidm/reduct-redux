@@ -42,7 +42,9 @@ export function button(stage, label, options) {
 }
 
 export function imageButton(images, options={}) {
-    const projection = gfx.baseProjection();
+    const projection = gfx.baseProjection(Object.assign({}, {
+        enabled: true,
+    }, options));
 
     const sprites = {
         normal: gfx.sprite({ image: images.normal }),
@@ -58,27 +60,50 @@ export function imageButton(images, options={}) {
     let state = "normal";
 
     projection.onclick = function() {
+        if (!this.enabled) {
+            state = "normal";
+            return;
+        }
         if (options.click) options.click();
         state = "normal";
     };
 
     projection.onmousedown = function() {
+        if (!this.enabled) {
+            state = "normal";
+            return;
+        }
         state = "active";
     };
 
     projection.onmouseenter = function() {
+        if (!this.enabled) {
+            state = "normal";
+            return;
+        }
         state = "hover";
     };
 
     projection.onmouseexit = function() {
+        if (!this.enabled) {
+            state = "normal";
+            return;
+        }
         state = "normal";
     };
 
-    projection.draw = function(...args) {
-        sprites[state].draw.apply(this, args);
+    projection.draw = function(id, exprId, boardState, stage, offset) {
+        sprites[state].draw.call(this, id, exprId, boardState, stage, Object.assign({}, offset, {
+            opacity: offset.opacity * (this.enabled ? 1 : 0.3),
+        }));
     };
 
     projection.highlight = function() {
+        if (!this.enabled) {
+            state = "normal";
+            return;
+        }
+
         state = "hover";
     };
 

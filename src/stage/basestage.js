@@ -261,13 +261,13 @@ export default class BaseStage {
         else if (touchRecord.hoverNode !== null) {
             const node = this.getState().getIn([ "nodes", touchRecord.hoverNode ]);
             const view = this.getView(touchRecord.hoverNode);
-            if (view && view.onmousedown) {
+            if (view && view.onmousedown && (typeof view.enabled === "undefined" || view.enabled)) {
                 this.setCursor("pointer");
             }
             else if (node && this.semantics.kind(node) === "expression") {
                 this.setCursor("pointer");
             }
-            else {
+            else if (node) {
                 this.setCursor("grab");
             }
         }

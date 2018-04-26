@@ -264,7 +264,7 @@ export function baseShape(name, defaults, draw, baseShapeOptions={}) {
                 shouldStroke = true;
                 primitive.setStroke(ctx, this.stroke || this.outerStroke);
             }
-            else if (stage.isHovered(id)) {
+            else if (stage.isHovered(id) && (this.highlight !== false)) {
                 primitive.setStroke(ctx, {
                     lineWidth: 2,
                     color: this.highlightColor || "yellow",

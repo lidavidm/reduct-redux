@@ -113,6 +113,7 @@ export default class Navbar {
                         right: 0,
                         inner: 5,
                     },
+                    highlight: false,
                     color: null,
                 },
                 gfx.roundedRect
@@ -157,6 +158,10 @@ export default class Navbar {
     }
 
     drawImpl(state) {
+        const rawState = this.stage.store.getState().get("program");
+        this.stage.getView(this.undo).enabled = rawState.get("$past").size > 0;
+        this.stage.getView(this.redo).enabled = rawState.get("$future").size > 0;
+
         this.stage.getView(this.container).prepare(
             this.container, this.container,
             state, this.stage
