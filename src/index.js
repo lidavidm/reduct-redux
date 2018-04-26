@@ -206,8 +206,6 @@ function initialize() {
 }
 
 function startGame() {
-    // Un-hide control panel
-    document.querySelector("#overlay-nav").style.display = "block";
     start(null, { persistGraph: false });
 }
 

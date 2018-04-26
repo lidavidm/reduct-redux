@@ -9,6 +9,7 @@ import * as gfxCore from "../gfx/core";
 import * as progression from "../game/progression";
 
 import Goal from "../ui/goal";
+import Navbar from "../ui/navbar";
 import Toolbox from "../ui/toolbox";
 import Sidebar from "../ui/sidebar";
 import StuckEffect from "../ui/stuck";
@@ -132,6 +133,7 @@ export default class Stage extends BaseStage {
         this.timer = null;
         this.color = "#EEEEEE";
 
+        this.navbar = new Navbar(this);
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
         this.sidebar = new Sidebar(this);
@@ -290,6 +292,10 @@ export default class Stage extends BaseStage {
                 return [ root, result, true ];
             }
             [ result, root ] = this.syntaxJournal.getNodeAtPos(state, pos);
+            if (result) {
+                return [ root, result, true ];
+            }
+            [ result, root ] = this.navbar.getNodeAtPos(state, pos);
             if (result) {
                 return [ root, result, true ];
             }
@@ -455,6 +461,7 @@ export default class Stage extends BaseStage {
         }
 
         this.toolbox.drawImpl(state);
+        this.navbar.drawImpl(state);
         // this.syntaxJournal.drawImpl(state);
 
         for (const id of this._newSyntax) {
