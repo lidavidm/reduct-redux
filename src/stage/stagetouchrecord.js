@@ -179,7 +179,7 @@ export default class TouchRecord extends BaseTouchRecord {
             return;
         }
 
-        if (mouseDown && this.topNode !== null &&
+        if (mouseDown && this.topNode !== null && this.isExpr &&
             (!this.targetNode || !this.stage.isDetachable(this.targetNode))) {
             // Tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 10) {
@@ -248,11 +248,12 @@ export default class TouchRecord extends BaseTouchRecord {
         // "sticky".
         const oldHover = this.hoverNode;
         this.findHoverNode(mousePos);
-        if (this.topNode !== null && (this.hoverNode === null || !this.stage.semantics.droppable(
-            this.stage.getState(),
-            this.topNode,
-            this.hoverNode
-        )) &&
+        if (this.isExpr && this.topNode !== null &&
+            (this.hoverNode === null || !this.stage.semantics.droppable(
+                this.stage.getState(),
+                this.topNode,
+                this.hoverNode
+            )) &&
             oldHover !== null && this.hoverStartPos &&
             gfxCore.distance(mousePos, this.hoverStartPos) < 50) {
             this.hoverNode = oldHover;
@@ -368,19 +369,22 @@ export default class TouchRecord extends BaseTouchRecord {
     onend(state, mousePos) {
         this.stopHighlight();
         if (this.scaleAnimation) this.scaleAnimation.cancel();
-        if (this.isExpr && this.topNode) {
-            const view = this.stage.getView(this.topNode);
-            view.scale = { x: 1, y: 1 };
-            const cp = gfxCore.centerPos(view);
-            view.anchor = { x: 0.5, y: 0.5 };
-            view.pos = cp;
-        }
 
         if (!this.dragged) {
             const view = this.stage.getView(this.topNode);
             if (view && view.onclick) {
                 view.onclick();
             }
+        }
+
+        if (this.stage.alreadyWon) return;
+
+        if (this.isExpr && this.topNode) {
+            const view = this.stage.getView(this.topNode);
+            view.scale = { x: 1, y: 1 };
+            const cp = gfxCore.centerPos(view);
+            view.anchor = { x: 0.5, y: 0.5 };
+            view.pos = cp;
         }
 
         if (this.isExpr && !this.dragged && this.topNode !== null && !this.fromToolbox) {

@@ -262,6 +262,15 @@ export default class Stage extends BaseStage {
     }
 
     getNodeAtPos(pos, selectedId=null) {
+        if (this.alreadyWon) {
+            // If already won or stuck, only allow interaction with navbar
+            [ result, root ] = this.navbar.getNodeAtPos(state, pos);
+            if (result) {
+                return [ root, result, true ];
+            }
+            return [ null, null, false ];
+        }
+
         if (this.syntaxJournal.isOpen) {
             const [ result, root ] = this.syntaxJournal.getNodeAtPos(state, pos);
             if (result) {
@@ -524,7 +533,10 @@ export default class Stage extends BaseStage {
     isDetachable(targetNode) {
         const state = this.getState();
         const target = state.getIn([ "nodes", targetNode ]);
-        if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
+        if (!target) {
+            return false;
+        }
+        else if (!target.get("locked") && target.get("parent") && target.get("type") !== "missing") {
             return this.semantics.detachable(state, target.get("parent"), targetNode);
         }
         return false;
