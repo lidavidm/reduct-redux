@@ -165,6 +165,100 @@ export default class Stage extends BaseStage {
         return this._width - this.sidebarWidth;
     }
 
+    testNodeAtPos(state, curPos, curProjId, curExprId, curRoot, curOffset, targetable) {
+        const projection = this.getView(curProjId);
+        let res = null;
+
+        const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
+        if (projection.containsPoint(curPos, curOffset)) {
+            if (curRoot === null) {
+                curRoot = curExprId;
+                res = curExprId;
+            }
+            else if (targetable(curProjId, curExprId)) {
+                res = curExprId;
+            }
+
+            const subpos = {
+                x: curPos.x - topLeft.x,
+                y: curPos.y - topLeft.y,
+            };
+            for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
+                const subresult = this.testNodeAtPos(
+                    state,
+                    subpos,
+                    childId,
+                    subexprId,
+                    curRoot,
+                    {
+                        x: 0,
+                        y: 0,
+                        sx: curOffset.sx * projection.scale.x,
+                        sy: curOffset.sy * projection.scale.y,
+                    },
+                    targetable
+                );
+                if (subresult) {
+                    return subresult;
+                }
+            }
+            if (res) {
+                return [ curRoot, res ];
+            }
+        }
+        return null;
+    }
+
+    testExprAtPos(state, curPos, curProjId, curExprId, curRoot, curOffset) {
+        const curNode = state.getIn([ "nodes", curExprId ]);
+        const projection = this.getView(curProjId);
+        let res = null;
+
+        const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
+        if (projection.containsPoint(curPos, curOffset)) {
+            if (curRoot === null) {
+                curRoot = curExprId;
+                res = curExprId;
+            }
+            else if (curNode && this.semantics.targetable(state, curNode)) {
+                res = curExprId;
+            }
+
+            // UGH, forgot why this is here
+            if (curRoot === curExprId && curNode &&
+                !this.semantics.targetable(state, curNode)) {
+                return null;
+            }
+
+            const subpos = {
+                x: curPos.x - topLeft.x,
+                y: curPos.y - topLeft.y,
+            };
+            for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
+                const subresult = this.testExprAtPos(
+                    state,
+                    subpos,
+                    childId,
+                    subexprId,
+                    curRoot,
+                    {
+                        x: 0,
+                        y: 0,
+                        sx: curOffset.sx * projection.scale.x,
+                        sy: curOffset.sy * projection.scale.y,
+                    }
+                );
+                if (subresult) {
+                    return subresult;
+                }
+            }
+            if (res) {
+                return [ curRoot, res ];
+            }
+        }
+        return null;
+    }
+
     getNodeAtPos(pos, selectedId=null) {
         if (this.syntaxJournal.isOpen) {
             const [ result, root ] = this.syntaxJournal.getNodeAtPos(state, pos);
@@ -176,53 +270,6 @@ export default class Stage extends BaseStage {
         }
 
         const state = this.getState();
-        const check = (curPos, curProjId, curExprId, curRoot, curOffset) => {
-            const curNode = state.getIn([ "nodes", curExprId ]);
-            const projection = this.views[curProjId];
-            let res = null;
-
-            const topLeft = gfxCore.util.topLeftPos(projection, curOffset);
-            if (projection.containsPoint(curPos, curOffset)) {
-                if (curRoot === null) {
-                    curRoot = curExprId;
-                    res = curExprId;
-                }
-                else if (curNode && this.semantics.targetable(state, curNode)) {
-                    res = curExprId;
-                }
-
-                if (curRoot === curExprId && curNode &&
-                    !this.semantics.targetable(state, curNode)) {
-                    return null;
-                }
-
-                const subpos = {
-                    x: curPos.x - topLeft.x,
-                    y: curPos.y - topLeft.y,
-                };
-                for (const [ childId, subexprId ] of projection.children(curExprId, state)) {
-                    const subresult = check(
-                        subpos,
-                        childId,
-                        subexprId,
-                        curRoot,
-                        {
-                            x: 0,
-                            y: 0,
-                            sx: curOffset.sx * projection.scale.x,
-                            sy: curOffset.sy * projection.scale.y,
-                        }
-                    );
-                    if (subresult) {
-                        return subresult;
-                    }
-                }
-                if (res) {
-                    return [ curRoot, res ];
-                }
-            }
-            return null;
-        };
 
         let result = null;
         let root = null;
@@ -230,7 +277,7 @@ export default class Stage extends BaseStage {
         for (const nodeId of state.get("board").toArray().reverse()) {
             if (nodeId === selectedId) continue;
 
-            const res = check(pos, nodeId, nodeId, null, this.makeBaseOffset());
+            const res = this.testExprAtPos(state, pos, nodeId, nodeId, null, this.makeBaseOffset());
             if (res) {
                 [ root, result ] = res;
                 break;
