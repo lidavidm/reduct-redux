@@ -14,6 +14,7 @@ export default class StuckEffect {
         }).then(() => this.highlightMismatches());
 
         this.infinite = null;
+        this.blinkers = [];
     }
 
     cancel() {
