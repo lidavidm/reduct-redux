@@ -3,6 +3,8 @@ import * as animate from "../gfx/animate";
 import * as undo from "../reducer/undo";
 import Loader from "../loader";
 
+import { DEVELOPMENT_BUILD } from "../logging/logging";
+
 export default class Navbar {
     constructor(stage) {
         this.stage = stage;
@@ -14,6 +16,17 @@ export default class Navbar {
         }, {
             click: () => {
                 window.reset();
+            },
+            size: { w: 60, h: 60 },
+        }));
+
+        this.prev = stage.allocate(gfx.ui.imageButton({
+            normal: Loader.images["btn-back-default"],
+            hover: Loader.images["btn-back-hover"],
+            active: Loader.images["btn-back-down"],
+        }, {
+            click: () => {
+                window.prev();
             },
             size: { w: 60, h: 60 },
         }));
@@ -56,6 +69,11 @@ export default class Navbar {
 
         const topButtons = [ this.reset, this.next ];
         const bottomButtons = [ this.undo, this.redo ];
+
+        if (DEVELOPMENT_BUILD) {
+            this.buttons.push(this.prev);
+            topButtons.unshift(this.prev);
+        }
 
         const topRow = stage.allocate(gfx.layout.hbox(
             () => topButtons,
