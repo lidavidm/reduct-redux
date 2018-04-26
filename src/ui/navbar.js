@@ -9,6 +9,8 @@ export default class Navbar {
     constructor(stage) {
         this.stage = stage;
 
+        this.stuck = false;
+
         this.reset = stage.allocate(gfx.ui.imageButton({
             normal: Loader.images["btn-reset-default"],
             hover: Loader.images["btn-reset-hover"],
@@ -76,7 +78,7 @@ export default class Navbar {
         }
 
         const topRow = stage.allocate(gfx.layout.hbox(
-            () => topButtons,
+            () => (this.stuck ? [ this.reset ] : topButtons),
             {
                 subexpScale: 1,
                 padding: {
@@ -88,7 +90,7 @@ export default class Navbar {
             gfx.baseProjection
         ));
         const bottomRow = stage.allocate(gfx.layout.hbox(
-            () => bottomButtons,
+            () => (this.stuck ? [ this.undo ] : bottomButtons),
             {
                 subexpScale: 1,
                 padding: {
@@ -111,8 +113,9 @@ export default class Navbar {
                         right: 0,
                         inner: 5,
                     },
+                    color: null,
                 },
-                gfx.baseProjection
+                gfx.roundedRect
             ),
             "top",
             {
@@ -163,5 +166,15 @@ export default class Navbar {
             state, this.stage,
             this.stage.makeBaseOffset()
         );
+    }
+
+    animateStuck() {
+        this.stuck = true;
+        this.stage.getView(this.container).color = "#FFF";
+    }
+
+    unstuck() {
+        this.stuck = false;
+        this.stage.getView(this.container).color = null;
     }
 }

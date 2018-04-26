@@ -1159,6 +1159,7 @@ export default class Stage extends BaseStage {
     animateStuck() {
         this._stuckFxId = this.addEffect(new StuckEffect(this));
         this.alreadyWon = true;
+        this.navbar.animateStuck();
     }
 
     unstuck() {
@@ -1167,6 +1168,7 @@ export default class Stage extends BaseStage {
                 this.removeEffect(this._stuckFxId);
             });
         }
+        this.navbar.unstuck();
         this.alreadyWon = false;
     }
 

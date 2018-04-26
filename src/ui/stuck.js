@@ -81,14 +81,7 @@ export default class StuckEffect {
         ctx.save();
         ctx.fillStyle = "#000";
         ctx.globalAlpha = this.opacity;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(width - 200, 0);
-        ctx.arc(width, 0, 200, Math.PI, 1.5 * Math.PI, true);
-        ctx.lineTo(width, height);
-        ctx.lineTo(0, height);
-        ctx.closePath();
-        ctx.fill("evenodd");
+        ctx.fillRect(0, 0, width, height);
         ctx.restore();
     }
 }
