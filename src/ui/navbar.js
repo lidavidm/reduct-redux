@@ -1,5 +1,6 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
+import * as undo from "../reducer/undo";
 import Loader from "../loader";
 
 export default class Navbar {
@@ -11,7 +12,9 @@ export default class Navbar {
             hover: Loader.images["btn-reset-hover"],
             active: Loader.images["btn-reset-down"],
         }, {
-            click: () => {},
+            click: () => {
+                window.reset();
+            },
             size: { w: 60, h: 60 },
         }));
 
@@ -20,7 +23,10 @@ export default class Navbar {
             hover: Loader.images["btn-back-hover"],
             active: Loader.images["btn-back-down"],
         }, {
-            click: () => {},
+            click: () => {
+                this.stage.store.dispatch(undo.undo());
+                this.stage.unstuck();
+            },
             size: { w: 60, h: 60 },
         }));
 
