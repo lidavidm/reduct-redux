@@ -41,7 +41,7 @@ export function button(stage, label, options) {
     return projection;
 }
 
-export function imageButton(images, handlers) {
+export function imageButton(images, options={}) {
     const projection = gfx.baseProjection();
 
     const sprites = {
@@ -50,15 +50,15 @@ export function imageButton(images, handlers) {
         active: gfx.sprite({ image: images.active }),
     };
 
-    projection.size = {
+    projection.size = Object.assign({}, {
         w: images.normal.naturalWidth,
         h: images.normal.naturalHeight,
-    };
+    }, options.size || {});
 
     let state = "normal";
 
     projection.onclick = function() {
-        if (handlers.click) handlers.click();
+        if (options.click) options.click();
         state = "normal";
     };
 
