@@ -1,5 +1,7 @@
 import * as immutable from "immutable";
 
+import * as actions from "./action";
+
 export const UNDO = "undo";
 export const REDO = "redo";
 
@@ -40,6 +42,12 @@ export function undoable(reducer, options={}) {
         const $futureExtra = state.get("$futureExtra");
 
         switch (action.type) {
+        case actions.START_LEVEL: {
+            return initialState.withMutations((is) => {
+                is.set("$present", reducer($present, action));
+                is.set("$presentExtra", {});
+            });
+        }
         case UNDO: {
             if ($past.isEmpty()) return state;
 
