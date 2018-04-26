@@ -137,8 +137,14 @@ export default class TouchRecord extends BaseTouchRecord {
     }
 
     onstart(mousePos) {
-        super.onstart(mousePos);
+        const view = this.stage.getView(this.topNode);
+        if (view && view.onmousedown) {
+            view.onmousedown();
+        }
 
+        if (this.stage.alreadyWon) return;
+
+        super.onstart(mousePos);
         this.isExpr = this.stage.getState().get("nodes").has(this.topNode);
         if (this.isExpr && this.topNode) {
             this.stage.store.dispatch(action.raise(this.topNode));
@@ -150,11 +156,6 @@ export default class TouchRecord extends BaseTouchRecord {
                 selected.get("__meta").toolbox.unlimited;
         }
 
-        const view = this.stage.getView(this.topNode);
-        if (view && view.onmousedown) {
-            view.onmousedown();
-        }
-
         const referenceId = this.stage.getReferenceNameAtPos(mousePos);
         if (referenceId) {
             this.stage.showReferenceDefinition(this.stage.getState(), referenceId);
@@ -162,6 +163,22 @@ export default class TouchRecord extends BaseTouchRecord {
     }
 
     onmove(mouseDown, mousePos) {
+        if (this.stage.alreadyWon) {
+            this.findHoverNode(mousePos);
+            if (this.hoverNode !== this.prevHoverNode) {
+                const view = this.stage.getView(this.hoverNode);
+                const prevView = this.stage.getView(this.prevHoverNode);
+                if (view && view.onmouseenter) {
+                    view.onmouseenter();
+                }
+                if (prevView && prevView.onmouseexit) {
+                    prevView.onmouseexit();
+                }
+            }
+
+            return;
+        }
+
         if (mouseDown && this.topNode !== null &&
             (!this.targetNode || !this.stage.isDetachable(this.targetNode))) {
             // Tolerance before a click becomes a drag

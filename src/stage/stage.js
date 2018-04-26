@@ -1421,22 +1421,18 @@ export default class Stage extends BaseStage {
 
     /* ~~~~ Implement a double-click layer on top of click methods ~~~~ */
     _mousedown(e) {
-        if (this.alreadyWon) return;
         this.clickWrapper.onmousedown(e);
     }
 
     _mousemove(e) {
-        if (this.alreadyWon) return;
         this.clickWrapper.onmousemove(e);
     }
 
     _mouseup(e) {
-        if (this.alreadyWon) return;
         this.clickWrapper.onmouseup(e);
     }
 
     _touchstart(e) {
-        if (this.alreadyWon) return;
         if (this.getMousePos(e).sidebar) {
             this.sidebar.toggle();
             return;
@@ -1450,7 +1446,6 @@ export default class Stage extends BaseStage {
     }
 
     _touchmove(e) {
-        if (this.alreadyWon) return;
         if (this.getMousePos(e).sidebar) {
             return;
         }
@@ -1459,7 +1454,6 @@ export default class Stage extends BaseStage {
     }
 
     _touchend(e) {
-        if (this.alreadyWon) return;
         if (this.getMousePos(e).sidebar) {
             return;
         }
