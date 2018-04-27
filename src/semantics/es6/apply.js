@@ -190,7 +190,7 @@ export default {
             const callee = state.getIn([ "nodes", expr.get("callee") ]);
             const kind = semant.kind(callee);
             if (kind === "value" && callee.get("type") !== "lambda") {
-                return expr.get("callee");
+                return [ expr.get("callee"), "I need a function on the left!" ];
             }
             return null;
         },

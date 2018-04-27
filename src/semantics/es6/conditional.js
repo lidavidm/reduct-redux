@@ -67,7 +67,7 @@ export default {
             const nodes = state.get("nodes");
             const condition = expr.get("condition");
             if (nodes.get(condition).get("ty") !== "boolean") {
-                return condition;
+                return [ condition, "My first slot needs to be <true> or <false>." ];
             }
 
             const positive = expr.get("positive");
@@ -75,7 +75,7 @@ export default {
             const posType = nodes.get(positive).get("ty");
             const negType = nodes.get(negative).get("ty");
             if (posType && negType && posType !== negType) {
-                return negative;
+                return [ negative, "My second and third slot need to be the same kind of thing!" ];
             }
             return null;
         },

@@ -37,7 +37,10 @@ const baseReference = {
     },
     validateStep: (semant, state, expr) => {
         if (!state.get("globals").has(expr.get("name"))) {
-            return expr.get("id");
+            return [
+                expr.get("id"),
+                `We don't know what '${expr.get("name")}' is yet! Look for a "def ${expr.get("name")}".`,
+            ];
         }
         return null;
     },

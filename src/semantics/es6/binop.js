@@ -89,15 +89,15 @@ export default {
 
             if (op === "+" || op === "-") {
                 if (leftExpr.get("ty") !== "number") {
-                    return left;
+                    return [ left, `I can only ${op === "+" ? "add" : "subtract"} numbers!` ];
                 }
                 else if (rightExpr.get("ty") !== "number") {
-                    return right;
+                    return [ right, `I can only ${op === "+" ? "add" : "subtract"} numbers!` ];
                 }
             }
             else if (op === "==") {
                 if (leftExpr.get("ty") !== rightExpr.get("ty")) {
-                    return right;
+                    return [ right, "Both sides of == need to be the same kind of thing." ];
                 }
             }
 

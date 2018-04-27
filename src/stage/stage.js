@@ -894,11 +894,15 @@ export default class Stage extends BaseStage {
 
                 return Promise.resolve(this.getState());
             },
-            error: (errorNodeId) => {
+            error: (errorNodeId, reason) => {
                 animate.fx.error(this, this.views[errorNodeId]);
+                if (reason) {
+                    this.feedback.update("#000", [ reason ]);
+                }
                 Logging.log("reduction-error", {
                     clicked: this.saveNode(selectedNode),
                     cause: this.saveNode(errorNodeId),
+                    reason,
                 });
             },
         }).catch((_errorNodeId) => {

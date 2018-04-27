@@ -98,7 +98,11 @@ export default function(module) {
         const kind = module.kind(expr);
         if (kind !== "expression") {
             console.debug(`semant.interpreter.singleStep: could not step since ${expr.get("id")} is '${kind}', not 'expression'`);
-            return [ "error", expr.get("id") ];
+            let reason = "This expression can't step!";
+            if (kind === "placeholder") {
+                reason = "There's a hole that needs to be filled in!";
+            }
+            return [ "error", expr.get("id"), reason ];
         }
 
         if (exprFilter === null) exprFilter = () => false;
@@ -132,13 +136,22 @@ export default function(module) {
             }
         }
 
-        const errorExpId = module.interpreter.validateStep(state, expr);
-        if (errorExpId !== null) {
+        const validation = module.interpreter.validateStep(state, expr);
+        if (validation !== null) {
+            let errorExpId;
+            let reason = "There's something wrong here.";
+            if (Array.isArray(validation)) {
+                [ errorExpId, reason ] = validation;
+            }
+            else {
+                errorExpId = validation;
+            }
+
             console.debug(`semant.interpreter.singleStep: could not step due to ${errorExpId}`);
-            return [ "error", errorExpId ];
+            return [ "error", errorExpId, reason ];
         }
 
-        return [ "success", expr.get("id") ];
+        return [ "success", expr.get("id"), null ];
     };
 
     function nullToError(exprId, callback) {
@@ -161,9 +174,9 @@ export default function(module) {
     ) {
         // Single-step mode
 
-        const [ result, exprId ] = module.interpreter.singleStep(state, exp);
+        const [ result, exprId, reason ] = module.interpreter.singleStep(state, exp);
         if (result === "error") {
-            callbacks.error(exprId);
+            callbacks.error(exprId, reason);
             return Promise.reject(exprId);
         }
 
@@ -245,10 +258,10 @@ export default function(module) {
             return true;
         };
 
-        const [ result, exprId ] = module.interpreter.singleStep(state, exp, shouldStepOver);
+        const [ result, exprId, reason ] = module.interpreter.singleStep(state, exp, shouldStepOver);
 
         if (result === "error") {
-            callbacks.error(exprId);
+            callbacks.error(exprId, reason);
             return Promise.reject(exprId);
         }
 
@@ -279,9 +292,9 @@ export default function(module) {
         let firstStep = true;
 
         const takeStep = (innerState, topExpr) => {
-            const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
+            const [ result, exprId, reason ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
-                callbacks.error(exprId);
+                callbacks.error(exprId, reason);
                 return Promise.reject();
             }
 
@@ -418,9 +431,9 @@ export default function(module) {
 
     module.interpreter.reducers.hybrid = function multiStepReducer(stage, state, exp, callbacks) {
         const takeStep = (innerState, topExpr) => {
-            const [ result, exprId ] = module.interpreter.singleStep(innerState, topExpr);
+            const [ result, exprId, reason ] = module.interpreter.singleStep(innerState, topExpr);
             if (result === "error") {
-                callbacks.error(exprId);
+                callbacks.error(exprId, reason);
                 return Promise.reject();
             }
 
