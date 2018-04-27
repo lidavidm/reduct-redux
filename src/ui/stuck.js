@@ -46,17 +46,34 @@ export default class StuckEffect {
         const goal = state.get("goal");
 
         const blinkers = [];
+        const msg = [ [ "Oh no, we're stuck!" ] ];
 
+        const extraMsg = [ "We have extra things: " ];
         for (const id of board) {
             if (typeof reverseMatching[id] === "undefined") {
                 blinkers.push(id);
+                // Clone view to avoid messing up positioning
+                extraMsg.push([ this.stage.allocate(Object.assign(
+                    {},
+                    this.stage.getView(id),
+                    { pos: { x: 0, y: 0 } }
+                )), id ]);
                 this.stage.getView(id).stroke = { color: "#F00", lineWidth: 0 };
             }
         }
 
+        const missingMsg = [ "We're still missing:" ];
         for (const id of goal) {
             if (typeof matching[id] === "undefined") {
+
                 blinkers.push(id);
+                // Clone view to avoid messing up positioning
+                missingMsg.push([ this.stage.allocate(Object.assign(
+                    {},
+                    this.stage.getView(id),
+                    { pos: { x: 0, y: 0 } }
+                )), id ]);
+
                 this.stage.getView(id).stroke = { color: "#F00", lineWidth: 0 };
             }
         }
@@ -69,6 +86,12 @@ export default class StuckEffect {
                 this.stage.getView(id).stroke.lineWidth = 2 * (1 + Math.sin(time / 100));
             }
         });
+
+        if (extraMsg.length > 1) msg.push(extraMsg);
+        if (missingMsg.length > 1) msg.push(missingMsg);
+
+        msg.push([ "Reset or undo and keep trying!" ]);
+        this.stage.feedback.update(...msg);
     }
 
     prepare() {

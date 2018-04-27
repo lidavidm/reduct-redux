@@ -8,6 +8,7 @@ import Audio from "../resource/audio";
 import * as gfxCore from "../gfx/core";
 import * as progression from "../game/progression";
 
+import Feedback from "../ui/feedback";
 import Goal from "../ui/goal";
 import Navbar from "../ui/navbar";
 import Toolbox from "../ui/toolbox";
@@ -133,6 +134,7 @@ export default class Stage extends BaseStage {
         this.timer = null;
         this.color = "#EEEEEE";
 
+        this.feedback = new Feedback(this);
         this.navbar = new Navbar(this);
         this.toolbox = new Toolbox(this);
         this.goal = new Goal(this);
@@ -487,6 +489,7 @@ export default class Stage extends BaseStage {
         }
 
         this.navbar.drawImpl(state);
+        this.feedback.drawImpl(state);
 
         this.ctx.restore();
     }
@@ -1163,6 +1166,7 @@ export default class Stage extends BaseStage {
     }
 
     unstuck() {
+        this.feedback.clear();
         if (this._stuckFxId) {
             this.effects[this._stuckFxId].cancel().then(() => {
                 this.removeEffect(this._stuckFxId);
