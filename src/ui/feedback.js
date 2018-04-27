@@ -37,15 +37,15 @@ export default class Feedback {
     /**
      * @param message List of strings and node IDs
      */
-    update(...rows) {
+    update(color, ...rows) {
         this.visible = rows.length > 0;
 
         if (rows.length === 1) {
-            this.contents = this._makeRow(rows[0]);
+            this.contents = this._makeRow(color, rows[0]);
         }
         else {
             const rowIds = rows
-                .map(items => this._makeRow(items))
+                .map(items => this._makeRow(color, items))
                 .map(ids => this.stage.allocate(gfx.layout.hbox(() => ids, {
                     subexpScale: 1,
                 }, gfx.baseProjection)));
@@ -57,13 +57,13 @@ export default class Feedback {
         }
     }
 
-    _makeRow(message) {
+    _makeRow(color, message) {
         return message.map((msgOrId) => {
             if (typeof msgOrId === "number" || Array.isArray(msgOrId)) {
                 return msgOrId;
             }
             return this.stage.allocate(gfx.text(msgOrId, {
-                color: "#FFF",
+                color,
                 font: gfx.text.script,
                 fontSize: 40,
             }));

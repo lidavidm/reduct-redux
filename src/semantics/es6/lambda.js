@@ -35,6 +35,10 @@ export default {
                 isCapturing: node => node.get("type") === "lambda",
                 captureName: (nodes, node) => nodes.get(node.get("arg")).get("name"),
                 animateInvalidArg: (id) => {
+                    const node = state.getIn([ "nodes", id ]);
+                    if (node.get("type") === "lambdaVar") {
+                        stage.feedback.update("#000", [ `I don't know what ${node.get("name")} is!` ]);
+                    }
                     animate.fx.error(stage, stage.views[id]);
                 },
             }),

@@ -91,7 +91,7 @@ export default class StuckEffect {
         if (missingMsg.length > 1) msg.push(missingMsg);
 
         msg.push([ "Reset or undo and keep trying!" ]);
-        this.stage.feedback.update(...msg);
+        this.stage.feedback.update("#FFF", ...msg);
     }
 
     prepare() {
