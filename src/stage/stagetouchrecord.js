@@ -183,6 +183,9 @@ export default class TouchRecord extends BaseTouchRecord {
             (!this.targetNode || !this.stage.isDetachable(this.targetNode))) {
             // Tolerance before a click becomes a drag
             if (this.dragged || gfxCore.distance(this.dragStart, mousePos) > 10) {
+                // Clear any feedback messages
+                this.stage.feedback.clear();
+
                 if (this.stage.functionDef) {
                     this.stage.functionDef = null;
                 }
@@ -375,6 +378,10 @@ export default class TouchRecord extends BaseTouchRecord {
             if (view && view.onclick) {
                 view.onclick();
             }
+        }
+        else if (this.isExpr) {
+            // Clear any feedback messages
+            this.stage.feedback.clear();
         }
 
         if (this.stage.alreadyWon) return;
