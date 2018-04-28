@@ -334,11 +334,11 @@ export default class TouchRecord extends BaseTouchRecord {
                     record[1] = false;
                 }
             }
+        }
 
-            if (this.topNode === null) {
-                // Display reduction toolbar
-                this.stage.reductToolbar.update(this.hoverNode);
-            }
+        if (this.topNode === null) {
+            // Display reduction toolbar
+            this.stage.reductToolbar.update(this.hoverNode, mousePos);
         }
 
         if (this.isExpr && this.topNode !== null) {
