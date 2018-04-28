@@ -7,7 +7,7 @@ export default class ReductToolbar {
         this.currentId = null;
     }
 
-    update(id, mousePos) {
+    update(id, mousePos=null) {
         const toolbar = document.querySelector("#reduct-toolbar");
 
         const offsetX = this.stage.sidebarWidth;
@@ -25,15 +25,17 @@ export default class ReductToolbar {
         if (id === null) {
             // Don't hide toolbar if mouse pokes out of the expression
             // region
-            const safeX0 = Math.min(absPos.x, toolbar.offsetLeft);
-            const safeX1 = Math.max(absPos.x + absSize.w, toolbar.offsetLeft + toolbar.offsetWidth);
-            const safeY0 = Math.min(absPos.y, toolbar.offsetTop + offsetX);
-            const safeY1 = Math.max(absPos.y + absSize.h, toolbar.offsetTop + toolbar.offsetHeight);
-            if (mousePos.x >= safeX0 &&
-                mousePos.x <= safeX1 &&
-                mousePos.y >= safeY0 &&
-                mousePos.y <= safeY1) {
-                return;
+            if (mousePos) {
+                const safeX0 = Math.min(absPos.x, toolbar.offsetLeft);
+                const safeX1 = Math.max(absPos.x + absSize.w, toolbar.offsetLeft + toolbar.offsetWidth);
+                const safeY0 = Math.min(absPos.y, toolbar.offsetTop + offsetX);
+                const safeY1 = Math.max(absPos.y + absSize.h, toolbar.offsetTop + toolbar.offsetHeight);
+                if (mousePos.x >= safeX0 &&
+                    mousePos.x <= safeX1 &&
+                    mousePos.y >= safeY0 &&
+                    mousePos.y <= safeY1) {
+                    return;
+                }
             }
 
             toolbar.style.display = "none";
@@ -49,5 +51,15 @@ export default class ReductToolbar {
               (absSize.w / 2) +
               offsetX;
         toolbar.style.left = `${posLeft}px`;
+    }
+
+    play() {
+
+    }
+
+    ffwd() {
+        // TODO: LOGGING
+        this.stage.step(this.stage.getState(), this.currentId, "big");
+        this.update(null);
     }
 }

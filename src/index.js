@@ -163,6 +163,15 @@ function initialize() {
     document.querySelector("#next").addEventListener("click", () => {
         window.next();
     });
+
+    document.querySelector("#toolbar-play").addEventListener("click", () => {
+        stg._toolbarplay();
+    });
+
+    document.querySelector("#toolbar-ffwd").addEventListener("click", () => {
+        stg._toolbarffwd();
+    });
+
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
