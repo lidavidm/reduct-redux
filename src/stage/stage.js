@@ -691,6 +691,7 @@ export default class Stage extends BaseStage {
             missingNodes.forEach((id) => {
                 animate.fx.error(this, this.getView(id));
             });
+            this.feedback.update("#000", [ "There's a hole that needs to be filled in!" ]);
             return false;
         }
 
