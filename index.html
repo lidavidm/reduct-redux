@@ -215,6 +215,31 @@
              color: inherit;
              text-decoration: none;
          }
+
+         #reduct-toolbar {
+             z-index: 9999;
+             position: absolute;
+             display: flex;
+
+             box-shadow: 0 5px 5px black;
+             border-radius: 10px;
+             display: none;
+         }
+
+         #reduct-toolbar button {
+
+         }
+
+         #reduct-toolbar button:active {
+             transform: translateY(5px);
+         }
+
+         #reduct-toolbar button:first-child {
+             border-radius: 10px 0 0 10px;
+         }
+         #reduct-toolbar button:last-child {
+             border-radius: 0 10px 10px 0;
+         }
         </style>
     </head>
     <body>
@@ -255,6 +280,15 @@
             <button class="dev" id="toggle-graph">Toggle State Graph</button>
             <button id="credits"><a href="credits.html">Credits</a></button>
         </div>
+
+        <nav id="reduct-toolbar">
+            <button id="toolbar-play">
+                <i class="material-icons">play_arrow</i>
+            </button>
+            <button id="toolbar-ffwd">
+                <i class="material-icons">skip_next</i>
+            </button>
+        </nav>
 
         <div id="consent">
             <div id="consent-inner">

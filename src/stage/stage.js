@@ -12,6 +12,7 @@ import Feedback from "../ui/feedback";
 import Goal from "../ui/goal";
 import Navbar from "../ui/navbar";
 import Toolbox from "../ui/toolbox";
+import ReductToolbar from "../ui/reductToolbar";
 import Sidebar from "../ui/sidebar";
 import StuckEffect from "../ui/stuck";
 import SyntaxJournal from "../ui/syntaxjournal";
@@ -140,6 +141,7 @@ export default class Stage extends BaseStage {
         this.goal = new Goal(this);
         this.sidebar = new Sidebar(this);
         this.syntaxJournal = new SyntaxJournal(this);
+        this.reductToolbar = new ReductToolbar(this);
         // TODO: this only allows one function definition be shown at
         // a time - this will break with multitouch
         this.functionDef = null;
@@ -1126,12 +1128,12 @@ export default class Stage extends BaseStage {
                     }, {
                         duration: 1500,
                         setAnimatingFlag: false,
-                        easing: animate.Easing.Anticipate.BackOut(2),
+                        easing: animate.Easing.Anticipate.BackOut(1.2),
                     }),
                     animate.tween(thisStar, {
                         opacity: 1,
                     }, {
-                        duration: 1500,
+                        duration: 500,
                         setAnimatingFlag: false,
                         easing: animate.Easing.Cubic.In,
                     }),
