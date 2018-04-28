@@ -120,7 +120,8 @@ export default class BaseStage {
         const minX = MARGIN;
         const maxX = this.width - MARGIN - w;
         const minY = MARGIN;
-        const maxY = this.height - this.toolbox.size.h - 20 - h;
+        // Extra margin on bottom to account for feedback message
+        const maxY = this.height - this.toolbox.size.h - (3 * MARGIN) - h;
 
         x = Math.max(minX, Math.min(x, maxX));
         y = Math.max(minY, Math.min(y, maxY));
