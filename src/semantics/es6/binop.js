@@ -89,10 +89,10 @@ export default {
 
             if (op === "+" || op === "-") {
                 if (leftExpr.get("ty") !== "number") {
-                    return [ left, `I can only ${op === "+" ? "add" : "subtract"} numbers!` ];
+                    return [ left, `${op} can only ${op === "+" ? "add" : "subtract"} numbers!` ];
                 }
                 else if (rightExpr.get("ty") !== "number") {
-                    return [ right, `I can only ${op === "+" ? "add" : "subtract"} numbers!` ];
+                    return [ right, `${op} can only ${op === "+" ? "add" : "subtract"} numbers!` ];
                 }
             }
             else if (op === "==") {
