@@ -336,11 +336,6 @@ export default class TouchRecord extends BaseTouchRecord {
             }
         }
 
-        if (this.topNode === null) {
-            // Display reduction toolbar
-            this.stage.reductToolbar.update(this.hoverNode, mousePos);
-        }
-
         if (this.isExpr && this.topNode !== null) {
             // Show previews for lambda application, if applicable
             this.stage.previewApplication(this.topNode, this.hoverNode, this.prevHoverNode);

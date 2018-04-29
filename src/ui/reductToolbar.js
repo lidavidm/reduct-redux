@@ -4,53 +4,42 @@ export default class ReductToolbar {
     constructor(stage) {
         this.stage = stage;
 
+        // Map of node ID to toolbox element
+        this.ids = new Map();
+
         this.currentId = null;
     }
 
-    update(id, mousePos=null) {
-        const toolbar = document.querySelector("#reduct-toolbar");
+    update(id, prevId=null) {
+        if (prevId === null || !this.ids.has(prevId)) {
+            const cloned = document.querySelector("#reduct-toolbar").cloneNode(true);
+            document.body.appendChild(cloned);
+            this.ids.set(id, cloned);
+            // TODO: bind event handlers
+        }
+        else {
+            const el = this.ids.get(prevId);
+            this.ids.remove(prevId);
+            if (id !== null) this.ids.set(id, el);
+        }
+    }
 
+    drawImpl(state) {
         const offsetX = this.stage.sidebarWidth;
         const offsetY = this.stage.canvas.offsetTop;
 
-        // TODO: find actual top-level ID
+        for (const [ id, toolbar ] of this.ids.entries()) {
+            const view = this.stage.getView(id);
+            const absPos = gfx.absolutePos(view);
+            const absSize = gfx.absoluteSize(view);
 
-        let view = this.stage.getView(id === null ? this.currentId : id);
-        if (!view) return;
-        while (view.parent) view = view.parent;
-
-        const absPos = gfx.absolutePos(view);
-        const absSize = gfx.absoluteSize(view);
-
-        if (id === null) {
-            // Don't hide toolbar if mouse pokes out of the expression
-            // region
-            if (mousePos) {
-                const safeX0 = Math.min(absPos.x, toolbar.offsetLeft);
-                const safeX1 = Math.max(absPos.x + absSize.w, toolbar.offsetLeft + toolbar.offsetWidth);
-                const safeY0 = Math.min(absPos.y, toolbar.offsetTop + offsetX);
-                const safeY1 = Math.max(absPos.y + absSize.h, toolbar.offsetTop + toolbar.offsetHeight);
-                if (mousePos.x >= safeX0 &&
-                    mousePos.x <= safeX1 &&
-                    mousePos.y >= safeY0 &&
-                    mousePos.y <= safeY1) {
-                    return;
-                }
-            }
-
-            toolbar.style.display = "none";
-            this.currentId = null;
-            return;
+            toolbar.style.display = "flex";
+            toolbar.style.top = `${absPos.y + absSize.h + offsetY}px`;
+            const posLeft = (absPos.x - (toolbar.clientWidth / 2)) +
+                  (absSize.w / 2) +
+                  offsetX;
+            toolbar.style.left = `${posLeft}px`;
         }
-
-        this.currentId = id;
-
-        toolbar.style.display = "flex";
-        toolbar.style.top = `${absPos.y + absSize.h + offsetY}px`;
-        const posLeft = (absPos.x - (toolbar.clientWidth / 2)) +
-              (absSize.w / 2) +
-              offsetX;
-        toolbar.style.left = `${posLeft}px`;
     }
 
     play() {

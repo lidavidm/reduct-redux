@@ -492,6 +492,7 @@ export default class Stage extends BaseStage {
 
         this.navbar.drawImpl(state);
         this.feedback.drawImpl(state);
+        this.reductToolbar.drawImpl(state);
 
         this.ctx.restore();
     }
@@ -886,6 +887,12 @@ export default class Stage extends BaseStage {
                 }
 
                 const updatedNodes = this.getState().get("nodes");
+
+                let prevNodeId = topNodeId;
+                while (updatedNodes.getIn([ prevNodeId, "parent" ])) {
+                    prevNodeId = updatedNodes.getIn([ prevNodeId, "parent" ]);
+                }
+
                 for (const id of newNodeIds) {
                     let n = updatedNodes.get(id);
                     while (n.has("parent")) {
@@ -893,6 +900,8 @@ export default class Stage extends BaseStage {
                     }
                     reducing.push(n.get("id"));
                     this._currentlyReducing[n.get("id")] = true;
+
+                    this.reductToolbar.update(n.get("id"), prevNodeId);
                 }
 
                 return Promise.resolve(this.getState());
