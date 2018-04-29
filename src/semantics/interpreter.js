@@ -470,8 +470,7 @@ export default function(module) {
                             topExpr = newState.getIn([ "nodes", topExpr.get("id") ]);
                         }
 
-                        if (module.kind(topExpr) !== "expression" ||
-                            stage.mode !== "hybrid") {
+                        if (module.kind(topExpr) !== "expression") {
                             return Promise.reject(topExpr.get("id"));
                         }
                         return [ newState, topExpr ];

@@ -74,8 +74,8 @@ export default class ReductToolbar {
         toDelete.forEach(id => this.update(null, id));
     }
 
-    play() {
-
+    play(id) {
+        this.stage.step(this.stage.getState(), id, "hybrid");
     }
 
     ffwd(id) {
