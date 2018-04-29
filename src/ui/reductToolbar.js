@@ -16,13 +16,18 @@ export default class ReductToolbar {
     }
 
     update(id, prevId=null) {
+        const state = this.stage.getState();
         if (id !== null && (prevId === null || !this.ids.has(prevId))) {
+            if (this.stage.semantics.kind(state.getIn([ "nodes", id ])) !== "expression") {
+                return;
+            }
+
             const cloned = document.querySelector("#reduct-toolbar-proto").cloneNode(true);
             cloned.setAttribute("id", "");
             document.body.appendChild(cloned);
             cloned.dataset.id = id;
             this.ids.set(id, cloned);
-            console.log(cloned);
+
             cloned.querySelector(".toolbar-ffwd")
                 .addEventListener("click", () => this.ffwd(parseInt(cloned.dataset.id, 10)));
             cloned.querySelector(".toolbar-play")
@@ -31,7 +36,8 @@ export default class ReductToolbar {
         else if (this.ids.has(prevId)) {
             const el = this.ids.get(prevId);
             this.ids.delete(prevId);
-            if (id !== null) {
+            if (id !== null &&
+                this.stage.semantics.kind(state.getIn([ "nodes", id ])) === "expression") {
                 this.ids.set(id, el);
                 el.dataset.id = id;
             }
@@ -73,7 +79,6 @@ export default class ReductToolbar {
     }
 
     ffwd(id) {
-        console.log(id);
         // TODO: LOGGING
         this.stage.step(this.stage.getState(), id, "big");
     }
