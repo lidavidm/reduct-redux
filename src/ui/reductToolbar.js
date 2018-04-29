@@ -33,7 +33,15 @@ export default class ReductToolbar {
         const offsetX = this.stage.sidebarWidth;
         const offsetY = this.stage.canvas.offsetTop;
 
+        const board = state.get("board");
+        const toDelete = [];
+
         for (const [ id, toolbar ] of this.ids.entries()) {
+            if (!board.includes(id)) {
+                toDelete.push(id);
+                continue;
+            }
+
             const view = this.stage.getView(id);
             const absPos = gfx.absolutePos(view);
             const absSize = gfx.absoluteSize(view);
@@ -45,6 +53,8 @@ export default class ReductToolbar {
                   offsetX;
             toolbar.style.left = `${posLeft}px`;
         }
+
+        toDelete.forEach(id => this.update(null, id));
     }
 
     play() {
