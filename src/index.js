@@ -147,23 +147,6 @@ function initialize() {
     const pauseButton = document.querySelector("#pause");
     const ffwdButton = document.querySelector("#ffwd");
 
-    document.querySelector("#undo").addEventListener("click", () => {
-        store.dispatch(undo.undo());
-        if (stg.unstuck) stg.unstuck();
-    });
-    document.querySelector("#redo").addEventListener("click", () => {
-        store.dispatch(undo.redo());
-    });
-    document.querySelector("#prev").addEventListener("click", () => {
-        window.prev();
-    });
-    document.querySelector("#reset").addEventListener("click", () => {
-        window.reset();
-    });
-    document.querySelector("#next").addEventListener("click", () => {
-        window.next();
-    });
-
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
     });
