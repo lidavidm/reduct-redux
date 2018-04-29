@@ -361,7 +361,4 @@ export default class BaseStage {
         this.updateCursor(mouse);
         this.draw();
     }
-
-    _toolbarplay() {}
-    _toolbarffwd() {}
 }

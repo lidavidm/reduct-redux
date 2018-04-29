@@ -216,28 +216,31 @@
              text-decoration: none;
          }
 
-         #reduct-toolbar {
+         .reduct-toolbar {
              z-index: 9999;
              position: absolute;
              display: flex;
 
-             box-shadow: 0 5px 5px black;
+             box-shadow: 0 5px 0 black;
              border-radius: 10px;
+         }
+
+         #reduct-toolbar-proto {
              display: none;
          }
 
-         #reduct-toolbar button {
+         .reduct-toolbar button {
 
          }
 
-         #reduct-toolbar button:active {
+         .reduct-toolbar button:active {
              transform: translateY(5px);
          }
 
-         #reduct-toolbar button:first-child {
+         .reduct-toolbar button:first-child {
              border-radius: 10px 0 0 10px;
          }
-         #reduct-toolbar button:last-child {
+         .reduct-toolbar button:last-child {
              border-radius: 0 10px 10px 0;
          }
         </style>
@@ -281,11 +284,11 @@
             <button id="credits"><a href="credits.html">Credits</a></button>
         </div>
 
-        <nav id="reduct-toolbar">
-            <button id="toolbar-play">
+        <nav class="reduct-toolbar" id="reduct-toolbar-proto">
+            <button class="toolbar-play">
                 <i class="material-icons">play_arrow</i>
             </button>
-            <button id="toolbar-ffwd">
+            <button class="toolbar-ffwd">
                 <i class="material-icons">skip_next</i>
             </button>
         </nav>

@@ -8,20 +8,32 @@ export default class ReductToolbar {
         this.ids = new Map();
 
         this.currentId = null;
+
+        // TODO: move this somewhere else
+        for (const el of document.querySelectorAll(".reduct-toolbar:not(#reduct-toolbar-proto)")) {
+            el.remove();
+        }
     }
 
     update(id, prevId=null) {
         if (id !== null && (prevId === null || !this.ids.has(prevId))) {
-            const cloned = document.querySelector("#reduct-toolbar").cloneNode(true);
+            const cloned = document.querySelector("#reduct-toolbar-proto").cloneNode(true);
+            cloned.setAttribute("id", "");
             document.body.appendChild(cloned);
+            cloned.dataset.id = id;
             this.ids.set(id, cloned);
-            // TODO: bind event handlers
+            console.log(cloned);
+            cloned.querySelector(".toolbar-ffwd")
+                .addEventListener("click", () => this.ffwd(parseInt(cloned.dataset.id, 10)));
+            cloned.querySelector(".toolbar-play")
+                .addEventListener("click", () => this.play(parseInt(cloned.dataset.id, 10)));
         }
         else if (this.ids.has(prevId)) {
             const el = this.ids.get(prevId);
             this.ids.delete(prevId);
             if (id !== null) {
                 this.ids.set(id, el);
+                el.dataset.id = id;
             }
             else {
                 el.remove();
@@ -46,7 +58,6 @@ export default class ReductToolbar {
             const absPos = gfx.absolutePos(view);
             const absSize = gfx.absoluteSize(view);
 
-            toolbar.style.display = "flex";
             toolbar.style.top = `${absPos.y + absSize.h + offsetY}px`;
             const posLeft = (absPos.x - (toolbar.clientWidth / 2)) +
                   (absSize.w / 2) +
@@ -61,9 +72,9 @@ export default class ReductToolbar {
 
     }
 
-    ffwd() {
+    ffwd(id) {
+        console.log(id);
         // TODO: LOGGING
-        this.stage.step(this.stage.getState(), this.currentId, "big");
-        this.update(null);
+        this.stage.step(this.stage.getState(), id, "big");
     }
 }

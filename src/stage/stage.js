@@ -1499,11 +1499,4 @@ export default class Stage extends BaseStage {
 
         super._touchend(e);
     }
-
-    _toolbarplay() {
-        this.reductToolbar.play();
-    }
-    _toolbarffwd() {
-        this.reductToolbar.ffwd();
-    }
 }
