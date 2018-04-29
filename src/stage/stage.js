@@ -902,7 +902,6 @@ export default class Stage extends BaseStage {
 
                     this.reductToolbar.update(n.get("id"), prevNodeId);
                     if (shouldStop && shouldStop(n.get("id"))) {
-                        console.log("STOPPING DUE TO PAUSE");
                         return Promise.reject();
                     }
                 }
@@ -926,7 +925,6 @@ export default class Stage extends BaseStage {
 
         if (this.mode === "big") {
             this.mode = "over";
-            document.querySelector("#ffwd").classList.remove("active");
         }
     }
 
@@ -1397,19 +1395,6 @@ export default class Stage extends BaseStage {
         ]).then(() => {
             this.removeEffect(fxId);
         });
-    }
-
-    togglePause() {
-        if (this.mode === "hybrid") {
-            this.mode = "over";
-        }
-        else {
-            this.mode = "hybrid";
-        }
-    }
-
-    setFfwd() {
-        this.mode = "big";
     }
 
     _mousedownInner(e) {

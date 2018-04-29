@@ -144,26 +144,8 @@ function initialize() {
 
     window.stage = stg;
 
-    const pauseButton = document.querySelector("#pause");
-    const ffwdButton = document.querySelector("#ffwd");
-
     document.querySelector("#download-log").addEventListener("click", () => {
         Logging.downloadStaticLog();
-    });
-    pauseButton.addEventListener("click", (b) => {
-        stg.togglePause();
-        const button = document.querySelector("#pause");
-        if (stg.mode === "over") {
-            button.classList.remove("paused");
-            ffwdButton.style.display = "block";
-        } else {
-            button.classList.add("paused");
-            ffwdButton.style.display = "none";
-        }
-    });
-    ffwdButton.addEventListener("click", (b) => {
-        ffwdButton.classList.add("active");
-        stg.setFfwd();
     });
     document.querySelector("#toggle-graph").addEventListener("click", () => {
         Logging.toggleStateGraph();
@@ -283,10 +265,6 @@ function start(updateLevel, options={}) {
     });
 
     // Reset buttons
-    const pauseButton = document.querySelector("#pause");
-    pauseButton.classList.forEach(x => pauseButton.classList.remove(x));
-    document.querySelector("#ffwd").style.display = "block";
-    document.querySelector("#ffwd").classList.remove("active");
     window.updateStateGraph();
 }
 
