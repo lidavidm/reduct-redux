@@ -789,7 +789,7 @@ export default class Stage extends BaseStage {
     /**
      * Helper that handles animation and updating the store for a small-step.
      */
-    step(state, selectedNode, overrideMode=null) {
+    step(state, selectedNode, overrideMode=null, shouldStop=null) {
         const nodes = state.get("nodes");
         const node = nodes.get(selectedNode);
 
@@ -837,8 +837,6 @@ export default class Stage extends BaseStage {
         this.semantics.interpreter.reduce(this, state, node, mode, {
             update: (topNodeId, newNodeIds, addedNodes, recordUndo) => {
                 if (this.alreadyWon) return Promise.resolve(this.getState());
-
-                const topView = this.views[topNodeId];
 
                 if (newNodeIds.length !== 1) {
                     throw "Stepping to produce multiple expressions is currently unsupported.";
@@ -893,6 +891,7 @@ export default class Stage extends BaseStage {
                     prevNodeId = updatedNodes.getIn([ prevNodeId, "parent" ]);
                 }
 
+                // TODO: actually handle multiple new nodes
                 for (const id of newNodeIds) {
                     let n = updatedNodes.get(id);
                     while (n.has("parent")) {
@@ -902,6 +901,10 @@ export default class Stage extends BaseStage {
                     this._currentlyReducing[n.get("id")] = true;
 
                     this.reductToolbar.update(n.get("id"), prevNodeId);
+                    if (shouldStop && shouldStop(n.get("id"))) {
+                        console.log("STOPPING DUE TO PAUSE");
+                        return Promise.reject();
+                    }
                 }
 
                 return Promise.resolve(this.getState());
