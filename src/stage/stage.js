@@ -123,9 +123,8 @@ export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
 
-        // Un-hide control panel
-        // document.querySelector("#overlay-nav").style.display = "block";
         document.querySelector("#current-level").style.display = "block";
+        document.querySelector("#chapter").style.display = "block";
 
         this.sidebarWidth = 0;
 

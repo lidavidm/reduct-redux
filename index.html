@@ -72,8 +72,11 @@
              text-align: center;
          }
 
-         #current-level {
+         #current-level, #chapter {
              display: none;
+         }
+
+         #current-level {
              font-family: "Nanum Pen Script", sans-serif;
              font-size: 2em;
              align-items: center;
@@ -87,55 +90,6 @@
              width:400px;
              height:400px;
              background: #111;
-         }
-
-         #overlay-nav {
-             display: none;
-             position: absolute;
-             top: 2.75em;
-             right: 0.25em;
-             text-align: right;
-             pointer-events: none;
-         }
-
-         #overlay-nav button {
-             background: #7a76ac;
-             color: #FFF;
-             width: 4em;
-             height: 4em;
-             border: 0;
-             border-radius: 4em;
-             margin: 0.1em;
-             position: relative;
-             pointer-events: all;
-         }
-
-         #overlay-nav button:hover {
-             background: #b780d9;
-         }
-
-         #overlay-nav button:active {
-             background: #4c2d75;
-         }
-
-         #overlay-nav button i {
-             font-size: 3em;
-         }
-
-         #overlay-nav button span {
-             font-size: 1.25rem;
-             top: 1rem;
-             text-align: center;
-             left: 0;
-             right: 0;
-             position: absolute;
-             opacity: 0;
-             transition: all ease-in-out 0.2s;
-         }
-
-         #overlay-nav button:hover span {
-             opacity: 1;
-             background: rgba(0,0,0,0.8);
          }
 
          #consent, .fade-container {
