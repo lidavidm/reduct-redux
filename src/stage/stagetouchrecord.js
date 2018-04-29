@@ -416,6 +416,7 @@ export default class TouchRecord extends BaseTouchRecord {
             if (this.fromToolbox) this.useToolboxItem();
 
             Audio.play("pop");
+            this.stage.reductToolbar.update(null, this.topNode);
             this.stage.store.dispatch(action.fillHole(this.hoverNode, this.topNode));
             animate.fx.expandingShape(this.stage, this.stage.getView(this.topNode));
         }

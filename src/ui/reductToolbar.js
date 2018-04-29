@@ -11,16 +11,21 @@ export default class ReductToolbar {
     }
 
     update(id, prevId=null) {
-        if (prevId === null || !this.ids.has(prevId)) {
+        if (id !== null && (prevId === null || !this.ids.has(prevId))) {
             const cloned = document.querySelector("#reduct-toolbar").cloneNode(true);
             document.body.appendChild(cloned);
             this.ids.set(id, cloned);
             // TODO: bind event handlers
         }
-        else {
+        else if (this.ids.has(prevId)) {
             const el = this.ids.get(prevId);
-            this.ids.remove(prevId);
-            if (id !== null) this.ids.set(id, el);
+            this.ids.delete(prevId);
+            if (id !== null) {
+                this.ids.set(id, el);
+            }
+            else {
+                el.remove();
+            }
         }
     }
 
