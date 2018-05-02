@@ -28,6 +28,12 @@ export default class TutorialStage extends Stage {
         if (!this.tutorialState.next() && this.tutorialState.allowEvents) {
             super._mousedown(e);
         }
+        else if (this._touches.get("mouse").hoverNode) {
+            const hovered = this._touches.get("mouse").hoverNode;
+            if (this.getView(hovered).onclick) {
+                this.getView(hovered).onclick();
+            }
+        }
     }
 
     _touchstart(e) {
