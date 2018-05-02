@@ -42,13 +42,13 @@ export default class ChapterEndStage extends BaseStage {
 
         // Generate random background stars (distributed across grid
         // cells to make it more even)
-        const X_CELLS = 5;
-        const Y_CELLS = 5;
+        const X_CELLS = 4;
+        const Y_CELLS = 4;
         const X_WIDTH = 1.0 / X_CELLS;
         const Y_WIDTH = 1.0 / Y_CELLS;
         for (let i = 0; i < X_CELLS; i++) {
             for (let j = 0; j < Y_CELLS; j++) {
-                for (let k = 0; k < 5; k++) {
+                for (let k = 0; k < 3; k++) {
                     const idx = random.getRandInt(1, 15);
                     const x = (X_WIDTH * i) + (X_WIDTH * Math.random());
                     const y = (Y_WIDTH * j) + (Y_WIDTH * Math.random());
