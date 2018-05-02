@@ -244,7 +244,7 @@ export default function transform(definition) {
             return result;
         };
 
-        for (const subset of powerset(board.toArray())) {
+        for (const subset of powerset(toolbox.toArray())) {
             const matching = checkVictory(state.withMutations((s) => {
                 s.set("toolbox", toolbox.filter(i => subset.indexOf(i) === -1));
                 s.set("board", board.concat(immutable.List(subset)));
