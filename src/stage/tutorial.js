@@ -14,13 +14,42 @@ export default class TutorialStage extends Stage {
         super(...args);
 
         this.tutorialState = new GoalTutorial(this);
+        this.skipButton = this.allocate(gfx.layout.sticky(gfx.ui.button(this, "Skip Tutorial", {
+            color: "#e95888",
+            click: () => {
+                this.tutorialState.state = "done";
+            },
+        }), "bottom", {
+            align: "right",
+            margin: 20,
+            marginX: 20,
+        }));
+    }
+
+    getNodeAtPos(pos, ...args) {
+        if (this.tutorialState.state !== "done") {
+            const state = this.getState();
+            const result = this.testNodeAtPos(
+                state, pos, this.skipButton, this.skipButton,
+                null, this.makeBaseOffset(),
+                id => id === this.skipButton
+            );
+            if (result) {
+                return [ result[1], result[1] ];
+            }
+        }
+        return super.getNodeAtPos(pos, ...args);
     }
 
     drawContents() {
         super.drawContents();
 
-        if (this.tutorialState) {
+        if (this.tutorialState.state !== "done") {
             this.tutorialState.drawContents();
+            const skip = this.getView(this.skipButton);
+            const state = this.getState();
+            skip.prepare(this.skipButton, this.skipButton, state, this);
+            skip.draw(this.skipButton, this.skipButton, state, this, this.makeBaseOffset());
         }
     }
 
