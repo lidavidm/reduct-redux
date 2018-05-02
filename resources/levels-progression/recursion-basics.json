@@ -192,7 +192,7 @@
                 "_ - 1",
                 "x",
                 "x",
-                "_(_)"
+                "__unlimited; _(_)"
             ],
             "defines": [
                 "function howFarFromTen(x) { return x == 10 ? 0 : 1 + howFarFromTen(x + 1); }"
@@ -222,8 +222,7 @@
                 "x",
                 "x",
                 "1 + _",
-                "_(_)",
-                "_(_)"
+                "__unlimited;_(_)"
             ],
             "defines": [
                 "function howFarFromWeekend(x) { return isWeekend(x) ? 0 : 1 + howFarFromWeekend(tomorrow(x)); }",

@@ -32,7 +32,7 @@
             ],
             "toolbox": [
                 "addTogether",
-                "_(_)",
+                "__unlimited; _(_)",
                 "5",
                 "6",
                 "7",
@@ -61,8 +61,7 @@
                 "7",
                 "8",
                 "x",
-                "_(_)",
-                "_(_)"
+                "__unlimited;_(_)"
             ],
             "defines": [
                 "function addEight(x) { return addTogether(8, x); }"
@@ -74,7 +73,6 @@
         {
             "board": [
                 "function multiplyByTwo(a) { return _; }",
-                "_(_)",
                 "__tests(f(2), f(3), f(5))"
             ],
             "goal": [
@@ -93,9 +91,7 @@
                 "1",
                 "2",
                 "3",
-                "_(_)",
-                "_(_)",
-                "_(_)"
+                "__unlimited;_(_)"
             ],
             "defines": [
                 "function multiplyByTwo(a) { return repeat(a, addTogether(2), 0); }"
@@ -109,8 +105,6 @@
                 "function multiplyTogether(a, b) { return _; }",
                 "a",
                 "b",
-                "_(_)",
-                "_(_)",
                 "__tests(f(1, 3), f(2, 4), f(3, 3))"
             ],
             "goal": [
@@ -124,8 +118,7 @@
                 "addTogether",
                 "repeat",
                 "0",
-                "_(_)",
-                "_(_)"
+                "__unlimited; _(_)"
             ],
             "defines": [
                 "function multiplyTogether(a, b) { return repeat(a, addTogether(b), 0); }"

@@ -178,7 +178,7 @@
                 "y",
                 "x",
                 "y",
-                "_(_)"
+                "__unlimited; _(_)"
             ],
             "defines": [
                 "function firstNonZero(x, y) { return x == 0 ? x : y; }"
@@ -204,7 +204,7 @@
                 "__unlimited; addTwo;",
                 "__unlimited; nextDayOfWeek;",
                 "x == _",
-                "_(_)",
+                "__unlimited; _(_)",
                 "1",
                 "2",
                 "3",

@@ -55,6 +55,18 @@
         },
         {
             "board": [
+                "1 + 1"
+            ],
+            "goal": [
+                "2"
+            ],
+            "textgoal": "Evaluate the expression ",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
                 "B"
             ],
             "goal": [

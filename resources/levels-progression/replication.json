@@ -168,6 +168,45 @@
         },
         {
             "board": [
+                "(x) => xx",
+                "(x) => _ + x"
+            ],
+            "goal": [
+                "5",
+                "6"
+            ],
+            "textgoal": "Create a function to add 2 to the input",
+            "toolbox": [
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => xx"
+            ],
+            "goal": [
+                "11"
+            ],
+            "textgoal": "Choose your functions wisely",
+            "toolbox": [
+                "(x) => x + 1",
+                "(x) => x + 2",
+                "6",
+                "7",
+                "8"
+            ],
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
                 "(x) => x + _",
                 "x => xx"
             ],

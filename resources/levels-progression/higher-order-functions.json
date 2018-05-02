@@ -122,7 +122,9 @@
                 "3",
                 "4"
             ],
-            "globals": {},
+            "globals": {
+                "twice": "function twice(f) { return (x) => f(f(x)); }"
+            },
             "syntax": [],
             "animationScales": {},
             "fade": {}
@@ -141,7 +143,9 @@
                 "5",
                 "6"
             ],
-            "globals": {},
+            "globals": {
+                "twice": "function twice(f) { return (x) => f(f(x)); }"
+            },
             "syntax": [],
             "animationScales": {},
             "fade": {}
@@ -241,7 +245,9 @@
             "toolbox": [
                 "double"
             ],
-            "globals": {},
+            "globals": {
+                "twice": "function twice(f) { return (x) => f(f(x)); }"
+            },
             "syntax": [],
             "animationScales": {},
             "fade": {}
@@ -294,7 +300,9 @@
                 "func",
                 "num"
             ],
-            "globals": {},
+            "globals": {
+                "twice": "function twice(f) { return (x) => f(f(x)); }"
+            },
             "syntax": [],
             "animationScales": {},
             "fade": {}
@@ -326,7 +334,9 @@
             "defines": [
                 "function addTogether(a, b) { return repeat(a, addOne)(b); }"
             ],
-            "globals": {},
+            "globals": {
+                "twice": "function twice(f) { return (x) => f(f(x)); }"
+            },
             "syntax": [],
             "animationScales": {},
             "fade": {}
