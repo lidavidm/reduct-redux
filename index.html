@@ -13,7 +13,7 @@
              padding: 0;
          }
 
-         button {
+         button, #nav > a {
              font-family: inherit;
              background: lightblue;
              font-size: 0.9rem;
@@ -23,6 +23,15 @@
              border-bottom: 0;
              border-radius: 10px;
              cursor: pointer;
+             line-height: 2rem;
+             text-align: center;
+         }
+
+         #nav > a {
+             text-decoration: none;
+             color: inherit;
+             display: block;
+             flex: 0 0;
          }
 
          button:hover {
@@ -251,7 +260,7 @@
 
             <button class="dev" id="download-log">Download Log JSON</button>
             <button class="dev" id="toggle-graph">Toggle State Graph</button>
-            <button id="credits"><a href="credits.html">Credits</a></button>
+            <a href="credits.html">Credits</a>
         </div>
 
         <nav class="reduct-toolbar" id="reduct-toolbar-proto">
