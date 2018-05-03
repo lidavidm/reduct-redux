@@ -24,13 +24,7 @@ export default class Feedback {
             subexpScale: 1,
         }, gfx.baseProjection);
         layout.anchor = { x: 0.5, y: 1 };
-        const container = stage.allocate(layout);
-        this.container = container;
-        // this.container = stage.allocate(gfx.patch3(gfx.constant(container), {
-        //     left: Loader.images["caption-long-left"],
-        //     middle: Loader.images["caption-long-mid"],
-        //     right: Loader.images["caption-long-right"],
-        // }));
+        this.container = stage.allocate(layout);
         this.visible = false;
     }
 

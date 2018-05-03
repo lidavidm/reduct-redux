@@ -56,7 +56,10 @@ export default class StuckEffect {
                 extraMsg.push([ this.stage.allocate(Object.assign(
                     {},
                     this.stage.getView(id),
-                    { pos: { x: 0, y: 0 } }
+                    {
+                        pos: { x: 0, y: 0 },
+                        animating: 0,
+                    }
                 )), id ]);
                 this.stage.getView(id).stroke = { color: "#F00", lineWidth: 0 };
             }
@@ -71,7 +74,10 @@ export default class StuckEffect {
                 missingMsg.push([ this.stage.allocate(Object.assign(
                     {},
                     this.stage.getView(id),
-                    { pos: { x: 0, y: 0 } }
+                    {
+                        pos: { x: 0, y: 0 },
+                        animating: 0,
+                    }
                 )), id ]);
 
                 this.stage.getView(id).stroke = { color: "#F00", lineWidth: 0 };
