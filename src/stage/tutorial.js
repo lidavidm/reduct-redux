@@ -17,6 +17,7 @@ export default class TutorialStage extends Stage {
         this.skipButton = this.allocate(gfx.layout.sticky(gfx.ui.button(this, "Skip Tutorial", {
             color: "#e95888",
             click: () => {
+                Logging.log("tutorial-skip", this.tutorialState.state);
                 this.tutorialState.state = "done";
             },
         }), "bottom", {
