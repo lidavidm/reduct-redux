@@ -17,6 +17,7 @@ import passwordPrompt from "./ui/instructor/password";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
+import { TITLE_LEVEL_ID } from "./logging/logging";
 import { DEVELOPMENT_BUILD } from "./logging/logging";
 
 // Globals to help you debug
@@ -169,6 +170,8 @@ function initialize() {
             start(() => progression.jumpToLevel(lvl));
         }, () => {});
     });
+
+    Logging.transitionToTask(TITLE_LEVEL_ID);
 }
 
 function startGame() {

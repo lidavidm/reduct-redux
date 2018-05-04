@@ -29,6 +29,7 @@ const URLS = {
 };
 
 export const VICTORY_LEVEL_ID = -1;
+export const TITLE_LEVEL_ID = -2;
 
 const params = new URL(window.location).searchParams;
 export const DEVELOPMENT_BUILD = typeof params.get("nodev") !== "string" && (
