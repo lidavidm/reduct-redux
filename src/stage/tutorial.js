@@ -197,6 +197,8 @@ class GoalTutorial {
                 easing: animate.Easing.Cubic.InOut,
             })
                 .then(() => {
+                    if (this.state === "done") return;
+
                     this.state = "board";
                     Logging.log("tutorial-state-next", this.state);
                     animate.tween(boardText, { opacity: 1 }, {
@@ -215,6 +217,8 @@ class GoalTutorial {
                 duration: 500,
                 easing: animate.Easing.Cubic.In,
             }).then(() => {
+                if (this.state === "done") return;
+
                 this.state = "done";
                 Logging.log("tutorial-state-next", this.state);
                 this.ready = true;
