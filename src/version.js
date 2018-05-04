@@ -1,3 +1,3 @@
-const VERSION_ID = 4;
+const VERSION_ID = 5;
 
 export default VERSION_ID;
