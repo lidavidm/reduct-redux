@@ -516,6 +516,7 @@ Logger.prototype.ACTIONS = {
     "define": 115,
     "define-failed": 115,
     "tutorial-skip": 116,
+    "theme": 117,
 };
 
 const Logging = new Logger();

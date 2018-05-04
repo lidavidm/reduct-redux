@@ -2,6 +2,7 @@ import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 import * as progression from "../game/progression";
 import Audio from "../resource/audio";
+import Logging from "../logging/logging";
 
 import Loader from "../loader";
 
@@ -92,6 +93,7 @@ export default class TitleStage extends BaseStage {
                 button.offset.y = 5;
             };
             button.onclick = () => {
+                Logging.log("theme", symbolFadeLevel);
                 progression.forceFadeLevel("symbol", symbolFadeLevel);
                 this.animateStart();
                 button.shadow = true;
