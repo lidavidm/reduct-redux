@@ -1186,9 +1186,16 @@ export default class Stage extends BaseStage {
     unstuck() {
         this.feedback.clear();
         if (this._stuckFxId) {
-            this.effects[this._stuckFxId].cancel().then(() => {
-                this.removeEffect(this._stuckFxId);
-            });
+            const id = this._stuckFxId;
+            if (this.effects[id]) {
+                this.effects[id].cancel().then(() => {
+                    this.removeEffect(id);
+                    this._stuckFxId = null;
+                });
+            }
+            else {
+                this._stuckFxId = null;
+            }
         }
         this.navbar.unstuck();
         this.alreadyWon = false;
