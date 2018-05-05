@@ -74,31 +74,19 @@ export default class TitleStage extends BaseStage {
                 fontSize: 50,
                 font: gfx.text.script,
             }));
-            const button = gfx.layout.hbox(
-                () => [ label, theme, label2 ],
-                {
-                    subexpScale: 1.0,
-                    color: "#e95888",
-                    shadow: true,
-                    shadowColor: "black",
-                }
-            );
-            button.onmouseexit = () => {
-                button.shadow = true;
-                button.offset.y = 0;
-            };
-            button.onmouseenter = () => {};
-            button.onmousedown = () => {
-                button.shadow = false;
-                button.offset.y = 5;
-            };
-            button.onclick = () => {
-                Logging.log("theme", symbolFadeLevel);
-                progression.forceFadeLevel("symbol", symbolFadeLevel);
-                this.animateStart();
-                button.shadow = true;
-                button.offset.y = 0;
-            };
+            const button = gfx.ui.button(this, () => [ label, theme, label2 ], {
+                color: "#e95888",
+                anchor: {
+                    x: 0,
+                    y: 0,
+                },
+                subexpScale: 1,
+                click: () => {
+                    Logging.log("theme", symbolFadeLevel);
+                    progression.forceFadeLevel("symbol", symbolFadeLevel);
+                    this.animateStart();
+                },
+            });
 
             buttons.push(this.allocate(button));
         }
