@@ -9,7 +9,7 @@ export function button(stage, label, options) {
             color: "#FFF",
         })));
     }
-    const projection = gfx.layout.hbox(label, {
+    const projection = gfx.layout.hbox(label, Object.assign({
         color: options.color || "lightblue",
         padding: {
             left: 20,
@@ -26,7 +26,7 @@ export function button(stage, label, options) {
         },
         shadow: true,
         shadowColor: "black",
-    });
+    }, options));
 
     projection.onclick = function() {
         this.shadow = true;
