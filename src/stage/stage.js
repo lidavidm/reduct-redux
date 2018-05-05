@@ -1120,6 +1120,7 @@ export default class Stage extends BaseStage {
                         layout.draw(layoutId, null, state, this, offset);
                     },
                 });
+                Audio.play("325805__wagna__collect");
 
                 const thisStar = this.getView(starList[progression.currentLevel() - chapter.startIdx]);
                 thisStar.offset.y = 600;
