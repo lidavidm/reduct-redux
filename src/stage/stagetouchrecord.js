@@ -460,6 +460,7 @@ export default class TouchRecord extends BaseTouchRecord {
             if (this.stage.toolbox.containsPoint(bottom) &&
                 !this.stage.getState().get("toolbox").includes(this.topNode)) {
                 Logging.log("toolbox-reject", this.stage.saveNode(this.topNode));
+                animate.fx.error(this.stage, this.stage.getView(this.topNode));
                 this.stage.feedback.update("#000", [ "We can't put things back in the toolbox!" ]);
             }
             this.stage.bumpAwayFromEdges(this.topNode);

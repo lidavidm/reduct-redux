@@ -1150,6 +1150,7 @@ export default class Stage extends BaseStage {
                 ]).then(() => {
                     thisStar.color = "gold";
                     const scale = chroma.scale("Spectral").mode("lab");
+                    Audio.play("firework2");
                     return animate.fx.splosion(this, gfxCore.centerPos(thisStar), {
                         explosionRadius: 600,
                         numOfParticles: 60,
