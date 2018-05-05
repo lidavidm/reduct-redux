@@ -1,5 +1,7 @@
 import * as gfx from "./core";
 
+import Audio from "../resource/audio";
+
 export function button(stage, label, options) {
     if (typeof label === "string") {
         label = gfx.constant(stage.allocate(gfx.text(label, {
@@ -30,6 +32,7 @@ export function button(stage, label, options) {
         this.shadow = true;
         this.offset.y -= 3;
 
+        Audio.play("fatbtn_click");
         if (options.click) options.click();
     };
 
@@ -64,6 +67,7 @@ export function imageButton(images, options={}) {
             state = "normal";
             return;
         }
+        Audio.play("fatbtn_click");
         if (options.click) options.click();
         state = "normal";
     };
