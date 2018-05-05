@@ -13,9 +13,15 @@ class AudioEngine {
     play(sound) {
         if (!Loader.sounds[sound]) {
             console.error(`@AudioEngine#play: could not find sound ${sound}`);
-            return;
+            return null;
         }
-        return Loader.sounds[sound].play(sound);
+        const id = Loader.sounds[sound].play(sound);
+
+        if (Loader.audioVolumes[sound]) {
+            Loader.sounds[sound].volume(Loader.audioVolumes[sound], id);
+        }
+
+        return id;
     }
 
     playSeries(sounds) {

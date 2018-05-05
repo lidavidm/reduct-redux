@@ -27,7 +27,7 @@ window.Logging = Logging;
 window.progression = progression;
 
 // Load assets.
-Loader.loadAudioSprite("sounds", "resources/audio/output.json", [
+Loader.loadAudioSprite("sounds", "resources/audio/output.json", "resources/audio/volumes.json", [
     "resources/audio/output.opus",
     "resources/audio/output.ogg",
     "resources/audio/output.mp3",

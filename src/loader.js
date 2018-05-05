@@ -31,6 +31,7 @@ export class LoaderClass {
         this.progressions = {};
         this.sounds = {};
         this.audioSprites = {};
+        this.audioVolumes = {};
     }
 
     get finished() {
@@ -69,9 +70,13 @@ export class LoaderClass {
         });
     }
 
-    loadAudioSprite(alias, jsonSrc, audioSrcs) {
+    loadAudioSprite(alias, jsonSrc, volumeSrc, audioSrcs) {
         this.startLoad();
-        getJSON(jsonSrc).then((json) => {
+        Promise.all([ getJSON(jsonSrc), getJSON(volumeSrc) ]).then(([ json, volumes ]) => {
+            for (const key of Object.keys(volumes)) {
+                this.audioVolumes[key] = volumes[key];
+            }
+
             this.audioSprites[alias] = new Howl({
                 src: audioSrcs,
                 sprite: json.sprite,
