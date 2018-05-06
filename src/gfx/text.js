@@ -21,7 +21,11 @@ export default function text(txt, options) {
         let curText = typeof this.text === "function" ? this.text(state, exprId) : this.text;
 
         if (this.wrapWidth !== null) {
-            curText = wordWrap(curText, this.wrapWidth).split("\n");
+            curText = wordWrap(curText, {
+                indent: 0,
+                width: this.wrapWidth,
+                trim: true,
+            }).split("\n");
         }
         else {
             curText = [ curText ];
