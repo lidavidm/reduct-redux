@@ -58,6 +58,7 @@ export default class StuckEffect {
                     this.stage.getView(id),
                     {
                         pos: { x: 0, y: 0 },
+                        anchor: { x: 0, y: 0 },
                         animating: 0,
                     }
                 )), id ]);
