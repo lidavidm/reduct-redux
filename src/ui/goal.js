@@ -45,6 +45,8 @@ export default class Goal {
             left: Loader.images["caption-long-left"],
             middle: Loader.images["caption-long-mid"],
             right: Loader.images["caption-long-right"],
+            leftSpill: 0.4,
+            rightSpill: 0.4,
         }));
 
         this.textGoal = null;
@@ -90,6 +92,8 @@ export default class Goal {
                 left: Loader.images["caption-long-left"],
                 middle: Loader.images["caption-long-mid"],
                 right: Loader.images["caption-long-right"],
+                leftSpill: 0.4,
+                rightSpill: 0.4,
             }));
         }
 
