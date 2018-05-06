@@ -1462,35 +1462,24 @@ export default class Stage extends BaseStage {
     }
 
     _touchstart(e) {
-        if (this.getMousePos(e).sidebar) {
+        const pos = this.getMousePos(e);
+
+        if (pos.sidebar) {
             this.sidebar.toggle();
             return;
         }
 
         if (this.syntaxJournal.isOpen) {
-            this.syntaxJournal.close();
+            const [ topNode ] = this.syntaxJournal.getNodeAtPos(this.getState(), pos);
+            if (topNode === null) {
+                this.syntaxJournal.close();
+            }
+        }
+
+        if (this.hideReferenceDefinition(pos)) {
+            return;
         }
 
         super._touchstart(e);
-    }
-
-    _touchmove(e) {
-        if (this.getMousePos(e).sidebar) {
-            return;
-        }
-
-        super._touchmove(e);
-    }
-
-    _touchend(e) {
-        if (this.getMousePos(e).sidebar) {
-            return;
-        }
-
-        if (this.hideReferenceDefinition(this.getMousePos(e))) {
-            return;
-        }
-
-        super._touchend(e);
     }
 }
