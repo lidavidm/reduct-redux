@@ -239,7 +239,7 @@ export class LoaderClass {
 
     waitForFonts(fonts) {
         this.startLoad();
-        Promise.all(fonts.map(name => new FontFaceObserver(name).load())).then(() => {
+        Promise.all(fonts.map(name => new FontFaceObserver(name).load(null, 5000))).then(() => {
             this.finishLoad();
         });
     }
