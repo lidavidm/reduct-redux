@@ -82,10 +82,18 @@ export default class ReductToolbar {
             const absPos = gfx.absolutePos(view);
             const absSize = gfx.absoluteSize(view);
 
-            toolbar.style.top = `${absPos.y + absSize.h + offsetY}px`;
-            const posLeft = (absPos.x - (toolbar.clientWidth / 2)) +
+            let posTop = absPos.y + absSize.h + offsetY;
+            let posLeft = (absPos.x - (toolbar.clientWidth / 2)) +
                   (absSize.w / 2) +
                   offsetX;
+
+            // TODO: refactor this to stage?
+            if (gfx.viewport.IS_PHONE) {
+                posTop *= 1.33;
+                posLeft *= 1.33;
+            }
+
+            toolbar.style.top = `${posTop}px`;
             toolbar.style.left = `${posLeft}px`;
         }
 

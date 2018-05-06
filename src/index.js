@@ -69,6 +69,7 @@ function initialize() {
     document.body.appendChild(canvas);
 
     if (gfx.viewport.IS_PHONE) {
+        document.body.classList.add("mobile-phone");
         canvas.style.width = "100%";
     }
 
