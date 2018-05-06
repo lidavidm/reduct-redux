@@ -57,9 +57,9 @@ export default class Goal {
             textGoal = templateText(this.stage.semantics, textGoal);
 
             this.text = this.stage.allocate(gfx.text(textGoal, {
-                fontSize: textGoal.split(" ").length > 10 ? 17 : 20,
+                fontSize: 20,
                 font: gfx.text.sans,
-                wrapWidth: 60,
+                wrapWidth: 70,
             }));
             let container = null;
             if (showConcreteGoal) {
