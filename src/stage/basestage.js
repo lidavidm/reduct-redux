@@ -52,10 +52,11 @@ export default class BaseStage {
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
         this._height = window.innerHeight - 40;
-        if (window.matchMedia("only screen and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
-            this._width = window.innerWidth;
+        if (gfxCore.viewport.IS_PHONE) {
+            this._width = window.innerWidth * 0.75;
+            this._height *= 0.75;
         }
-        else if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
+        else if (gfxCore.viewport.IS_TABLET) {
             this._width = window.innerWidth;
         }
         else {
@@ -104,11 +105,10 @@ export default class BaseStage {
 
     getMousePos(e) {
         const rect = this.canvas.getBoundingClientRect();
-        return {
-            // TODO: scale
-            x: (e.clientX - rect.left),
-            y: (e.clientY - rect.top),
-        };
+        // Scaling
+        const x = ((e.clientX - rect.left) / rect.width) * this._width;
+        const y = ((e.clientY - rect.top) / rect.height) * this.height;
+        return { x, y };
     }
 
     /**

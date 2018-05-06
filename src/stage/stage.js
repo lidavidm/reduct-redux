@@ -440,9 +440,7 @@ export default class Stage extends BaseStage {
     }
 
     getMousePos(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const { x, y } = super.getMousePos(e);
 
         return { x: x - this.sidebarWidth, y, sidebar: x - this.sidebarWidth < 0 };
     }

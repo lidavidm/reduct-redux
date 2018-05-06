@@ -68,6 +68,10 @@ function initialize() {
     canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
 
+    if (gfx.viewport.IS_PHONE) {
+        canvas.style.width = "100%";
+    }
+
     // Reducer needs access to the views in order to save their state
     // for undo/redo.
     const reduct = reducer.reduct(es6, views, (id, { x, y }) => {

@@ -488,7 +488,8 @@ import * as custom from "./custom";
 import * as layout from "./layout";
 import * as shapes from "./shapes";
 import * as ui from "./ui";
+import * as viewport from "./viewport";
 
 export { default as decal } from "./decal";
 export * from "./sprite";
-export { custom, layout, primitive, shapes, ui };
+export { custom, layout, primitive, shapes, ui, viewport };
