@@ -53,10 +53,10 @@ export default class BaseStage {
         this.ctx.scale(1.0, 1.0);
         this._height = window.innerHeight - 40;
         if (window.matchMedia("only screen and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
-            this._width = window.innerWidth - 150;
+            this._width = window.innerWidth;
         }
         else if (window.matchMedia("only screen and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1.5)").matches) {
-            this._width = 0.9 * window.innerWidth;
+            this._width = window.innerWidth;
         }
         else {
             this._width = Math.max(window.innerWidth, 1200);
