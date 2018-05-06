@@ -12,13 +12,11 @@ import Stage from "./stage/stage";
 import TutorialStage from "./stage/tutorial";
 import ChapterEndStage from "./stage/chapterend";
 import TitleStage from "./stage/title";
-import * as undo from "./reducer/undo";
 import passwordPrompt from "./ui/instructor/password";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
-import { TITLE_LEVEL_ID } from "./logging/logging";
-import { DEVELOPMENT_BUILD } from "./logging/logging";
+import { TITLE_LEVEL_ID, DEVELOPMENT_BUILD } from "./logging/logging";
 
 // Globals to help you debug
 window.gfx = gfx;
