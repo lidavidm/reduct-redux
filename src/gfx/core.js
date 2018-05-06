@@ -389,95 +389,6 @@ export const hexaRect = baseShape("hexaRect", {
         projection.stroke ? projection.stroke.opacity : null);
 });
 
-// TODO: make this part of the stage instead?
-const TEXT_SIZE_CACHE = {};
-
-export function text(txt, options) {
-    const projection = baseProjection(Object.assign({
-        text: txt,
-        fontSize: 28,
-        font: text.mono,
-        color: "#000",
-        type: "text",
-    }, options));
-
-    projection.prepare = function(id, exprId, state, stage) {
-        const curText = typeof this.text === "function" ? this.text(state, exprId) : this.text;
-
-        const cacheKey = `${this.fontSize};${this.font};${curText}`;
-        if (TEXT_SIZE_CACHE[cacheKey] === undefined) {
-            stage.ctx.font = `${this.fontSize}px ${this.font}`;
-            TEXT_SIZE_CACHE[cacheKey] = stage.ctx.measureText(curText).width;
-        }
-        this.size.h = this.fontSize * 1.35;
-        this.size.w = TEXT_SIZE_CACHE[cacheKey];
-    };
-    projection.draw = function(id, exprId, state, stage, offset) {
-        const curText = typeof this.text === "function" ? this.text(state, exprId) : this.text;
-        const ctx = stage.ctx;
-
-        const [ sx, sy ] = util.absoluteScale(this, offset);
-
-        ctx.save();
-
-        debugDraw(ctx, this, offset);
-
-        util.setOpacity(ctx, this.opacity, offset);
-
-        ctx.scale(sx, sy);
-        ctx.fillStyle = this.color;
-        ctx.textBaseline = "alphabetic";
-        ctx.font = `${this.fontSize}px ${this.font}`;
-        ctx.fillText(
-            curText,
-            (offset.x + (this.pos.x * offset.sx)) / sx,
-            ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
-        );
-        if (this.stroke) {
-            primitive.setStroke(ctx, this.stroke);
-            ctx.strokeText(
-                curText,
-                (offset.x + (this.pos.x * offset.sx)) / sx,
-                ((offset.y + (this.pos.y * offset.sy)) / sy) + this.fontSize
-            );
-        }
-        ctx.restore();
-
-        if (stage.isHovered(id) || this.outerStroke) {
-            ctx.save();
-            const { x, y } = util.topLeftPos(this, offset);
-
-            if (this.outerStroke) {
-                primitive.setStroke(ctx, this.outerStroke);
-            }
-            else {
-                primitive.setStroke(ctx, {
-                    lineWidth: 2,
-                    color: this.highlightColor || "yellow",
-                });
-            }
-
-            primitive.roundRect(
-                ctx,
-                x, y,
-                offset.sx * this.scale.x * this.size.w,
-                offset.sy * this.scale.y * this.size.h,
-                this.scale.x * offset.sx * (this.radius || 15),
-                false,
-                true,
-                this.stroke
-            );
-            ctx.restore();
-        }
-    };
-    return projection;
-}
-
-// Font family definitions
-text.mono = "'Fira Mono', Consolas, Monaco, monospace";
-text.sans = "'Fira Sans', Arial, sans-serif";
-text.script = "'Nanum Pen Script', 'Comic Sans', cursive";
-
 /**
  * Create a projection that renders based on an expression field or function.
  *
@@ -570,6 +481,8 @@ export function dynamicProperty(projection, keyFunc, mappings) {
 
     return projection;
 }
+
+export { default as text } from "./text";
 
 import * as custom from "./custom";
 import * as layout from "./layout";
