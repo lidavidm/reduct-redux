@@ -58,7 +58,7 @@ let stg;
 let canvas;
 
 function initialize() {
-    if (DEVELOPMENT_BUILD) {
+    if (DEVELOPMENT_BUILD && !gfx.viewport.IS_PHONE) {
         const devEls = document.querySelectorAll(".dev");
         for (let i = 0; i < devEls.length; i++) {
             devEls[i].style.display = "block";
