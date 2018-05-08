@@ -179,23 +179,6 @@
                 "x => x"
             ],
             "goal": [
-                "D"
-            ],
-            "textgoal": "Create {a circle}",
-            "toolbox": [
-                "x => D",
-                "x => C",
-                "A"
-            ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => x"
-            ],
-            "goal": [
                 "B"
             ],
             "textgoal": "Create {a square}",

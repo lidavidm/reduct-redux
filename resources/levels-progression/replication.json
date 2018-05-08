@@ -100,6 +100,20 @@
         {
             "board": [
                 "x => xx",
+                "x => x",
+                "A"
+            ],
+            "goal": [
+                "A"
+            ],
+            "textgoal": "Create {a star}",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
+        {
+            "board": [
+                "x => xx",
                 "x => C"
             ],
             "goal": [
@@ -111,20 +125,6 @@
                 "A",
                 "B"
             ],
-            "globals": {},
-            "syntax": [],
-            "animationScales": {}
-        },
-        {
-            "board": [
-                "x => xx",
-                "x => x",
-                "A"
-            ],
-            "goal": [
-                "A"
-            ],
-            "textgoal": "Create {a star}",
             "globals": {},
             "syntax": [],
             "animationScales": {}
