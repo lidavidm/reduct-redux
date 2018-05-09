@@ -12,6 +12,7 @@ Welcome to reduct-redux's documentation!
    starthere
    architecture
    resources
+   deployment
    modules/index
 
 Indices and tables

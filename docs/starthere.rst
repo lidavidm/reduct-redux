@@ -2,21 +2,7 @@
 Start Here
 ==========
 
-We will explain, at a broad level, how reduct-redux is structured,
-then link to module pages that explain how individual subsystems
-work.
-
-You should be comfortable with the following:
-
-- ECMAScript 6/2015+
-- DOM APIs like HTML5 Canvas
-- General Linux/Bash command line familiarity
-
-MDN_ is the best resource for Web API/ECMAScript questions. (W3schools
-might show up on Google, but isn't generally to be trusted.)
-
-Set Up
-======
+First, let's get the game running.
 
 *Choose one of the two below:*
 
@@ -36,10 +22,11 @@ NPM::
   ln -s $(pwd)/resources/ dist/resources
   npm run serve
 
+Now open http://localhost:1234/index.html in your browser. (If you
+have a Mac and it isn't set up right, you might instead have to visit
+http://127.0.0.1:1234/index.html.)
 
 Next Steps
 ==========
 
 Read :doc:`architecture` to learn about the overall system design.
-
-.. _MDN: https://developer.mozilla.org/en-US/docs/Web
