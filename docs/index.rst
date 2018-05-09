@@ -3,8 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to reduct-redux's documentation!
-========================================
+reduct-redux: A Game to Teach Programming Comprehension
+=======================================================
+
 
 .. toctree::
    :maxdepth: 2

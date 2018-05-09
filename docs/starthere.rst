@@ -4,6 +4,11 @@ Start Here
 
 First, let's get the game running.
 
+If you are on MacOS, you will need to install Node, NPM, and
+(optionally) Yarn through Homebrew. On Linux, use your distribution's
+package manager. Windows has not been tested, but the Windows
+Subsystem for Linux might work.
+
 *Choose one of the two below:*
 
 Yarn::

@@ -42,6 +42,31 @@ Levels are simply JSON objects, defined as follows:
        }
    }
 
+Notes on special fields:
+
+``animationScales``
+  Animations can be sped up or slowed down in particular levels. These
+  settings persist in future levels until overridden. The engine
+  generates a scale for each expression type, e.g. if an expression
+  ``conditional`` is defined, then there will be a scale called
+  ``expr-conditional``. There is also a scale called ``multi-step``
+  that controls the duration of the pause between steps in a
+  reduction.
+
+``fade``
+  Expressions can have different variants at different points in the
+  game. This is an application of *concreteness fading*, the focus of
+  the first version of Reduct. This property allows you to control
+  which variant of the specified expression is used, and is also
+  persistent in future levels.
+
+``syntax``
+  There is a (commented-out) feature called the syntax journal, which
+  gives a reference manual of constructs that the player has learned
+  so far. This field adds a new page to the manual. Values should be
+  the filename (without extension) of a syntax JSON file (look at
+  ``levels-progression/syntax-add.json`` for an example).
+
 Levels are arranged into chapters, which are JSON files:
 
 .. code-block:: javascript
@@ -71,11 +96,47 @@ Levels are arranged into chapters, which are JSON files:
 
 Chapters are organized within the code (``src/game/progression.js``):
 
-Concreteness Fading
--------------------
+.. code-block:: javascript
+
+   export const PROGRESSIONS = {
+       "Elementary": {
+           dir: "levels-progression/",
+           digraph: {
+               "functions": ["replication"],
+               "replication": ["multiargument"],
+               "multiargument": ["functions-challenge"],
+               "functions-challenge": ["application"],
+               "application": ["definition"],
+               "definition": ["testing"],
+               "testing": ["higher-order-functions"],
+               "higher-order-functions": ["define-challenges"],
+               "define-challenges": ["booleans-intro"],
+               "booleans-intro": ["booleans-definition"],
+               "booleans-definition": ["weekdays"],
+               "weekdays": ["recursion-basics"],
+               "recursion-basics": ["recursion-higher-order"],
+               "recursion-higher-order": [],
+           },
+       },
+   };
+
+Technically, this specifies a directed graph of chapter dependencies,
+where each key in the map specifies a list of chapters that depend on it.
 
 Sprites & Audio
 ===============
+
+To make loading faster, Reduct-Redux doesn't load individual sprites
+or audio files. Instead, it expects them to have been combined into
+spritesheets or audio sprites, and loads them all at once. (You can
+see this at the start of ``src/index.js``.) However, these have to be
+generated from the original sprites. There are some Bash scripts to
+somewhat automate this process, detailed below.
+
+As of right now, most of the original assets are not present in this
+repository, and will have to be pulled from the original Reduct. Some
+new sprites not present in the original Reduct are loaded in a
+separate spritesheet and can be generated from this repository.
 
 Command-Line Tools
 ==================
@@ -86,5 +147,37 @@ Spritesheets
 Audio Sprites
 -------------
 
-chapterutil: Importing/Exporting Levels from/to CSV
----------------------------------------------------
+These must be generated from the original Reduct.
+
+chapterutil
+===========
+
+This is a tool that can convert levels between the JSON representation
+and a CSV representation, allowing people to collaboratively edit the
+progression. It is not round-trippable, as it is fairly loose in the
+kinds of CSV files it accepts, but also does not preserve all columns
+in the CSV when converting to JSON. The best approach is to export
+levels from JSON to CSV once, then only ever edit the levels in CSV
+format.
+
+Requirements:
+- Python 3.6
+- virtualenv
+- Bash
+
+Setup:
+
+.. code-block:: bash
+
+   cd chapterutil/
+   virtualenv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+
+If you download the file from Google Docs as XSLX, this script will
+automatically import all sheets in the XSLX:
+
+.. code-blocK:: bash
+
+   source venv/bin/activate
+   ./automate.sh path/to/progression.xslx

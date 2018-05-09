@@ -90,7 +90,7 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    'logo_name': True,
+    'logo': 'logo.png',
     'github_button': True,
     'github_banner': True,
     'github_user': 'lidavidm',
