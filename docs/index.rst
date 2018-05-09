@@ -8,8 +8,9 @@ Welcome to reduct-redux's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   starthere
+   resources
    gfx
    gfx/animate
 
@@ -17,5 +18,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

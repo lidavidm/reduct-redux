@@ -12,7 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -41,9 +41,12 @@ release = '0.1'
 extensions = [
     'sphinx_js',
     'sphinx.ext.mathjax',
+    'sphinxcontrib.fulltoc',
 ]
 
-js_source_path = ["../src", "../src/gfx", "../src/gfx/fx"]
+js_source_path = []
+for (dirpath, _, _) in os.walk("../src"):
+    js_source_path.append(dirpath)
 root_for_relative_js_paths = "../src"
 primary_domain = "js"
 
