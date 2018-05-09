@@ -13,6 +13,7 @@ Welcome to reduct-redux's documentation!
    architecture
    resources
    deployment
+   improvements
    modules/index
 
 Indices and tables
