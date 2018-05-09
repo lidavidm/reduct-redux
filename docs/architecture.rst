@@ -90,18 +90,93 @@ specifying JavaScript objects containing details like:
 
 These are then combined by the engine with a set of general helper
 functions for performing substitutions, evaluating expressions,
-searching them, and so on.
+searching them, and so on. (In some sense, this is like an OCaml
+functor, where you provide a base module and the functor augments it.)
+
+Here's an example of an expression definition:
+
+.. code-block:: javascript
+
+   // Application block
+   {
+       kind: "expression",
+       fields: [],
+       subexpressions: ["callee", "argument"],
+       reductionOrder: ["argument", "callee"],
+       projection: {
+           type: "decal",
+           content: {
+               type: "default",
+               shape: "()",
+               fields: ["callee", "'('", "argument", "')'"],
+           },
+       },
+       stepAnimation: (semant, stage, state, expr) => {
+           // …snip…
+       },
+       stepSound: "heatup",
+       validateStep: (semant, state, expr) => {
+           const callee = state.getIn([ "nodes", expr.get("callee") ]);
+           const kind = semant.kind(callee);
+           if (kind === "value" && callee.get("type") !== "lambda") {
+               return [ expr.get("callee"), "We can only apply functions!" ];
+           }
+           return null;
+       },
+       smallStep: (semant, stage, state, expr) => {
+           const [ topNodeId, newNodeIds, addedNodes ] = semant.interpreter.betaReduce(
+               stage,
+               state, expr.get("callee"),
+               [ expr.get("argument") ]
+           );
+           return [ expr.get("id"), newNodeIds, addedNodes ];
+       },
+   },
+
+In particular, note the ``projection`` field, which is the convenient
+interface to the graphics abstraction described below.
 
 gfx: Graphics Abstraction
 =========================
 
 *Relevant source files:* ``src/gfx``
 
-:doc:`modules/gfx` is our ad-hoc graphics & layout library. It has several
-quirks, which will become apparent as we explain its structure.
+:doc:`modules/gfx` is our ad-hoc graphics & layout library.
+
+A *view* (also *projection*) is an object with two methods:
+``prepare(viewId, exprId, state, stage)`` and
+``draw(viewId, exprId, state, stage, offset)``. The former is used to
+do any layout calculations or update any state, and the latter
+actually draws to the canvas context.
+
+First, note that views aren't directly coupled to a particular node:
+it's passed when drawing. Views can't keep direct references to nodes,
+because if the store were to change, the view would have a reference
+to the old copy of the node (since they're immutable). Consequently,
+views can't even directly have child views: *view hierarchy is
+implicit*. A view that represents an expression and its children
+doesn't know what the expression is until it draws; thus, it can't
+know what the child views are either!
+
+Thus, we give views a unique numeric ID as well. This comes from the
+same pool as expression IDs; an expression, if drawn, has a top-level
+view with the same ID. However, an expression might have multiple
+views associated. (TODO: add gfx docs and explain how this happens).
+
+*Projecting* (verb) is what creates the associated views for an
+expression. This is what takes the JSON representation above and
+builds the view hierarchy.
 
 Stages
 ======
+
+Stages tie the previous three systems together: given a store and a
+semantics module, it creates and renders views. They are a relatively
+minimal abstraction; they don't even provide a scene graph, and need
+to manually specify everything to be rendered. Most helper code lives
+here; for instance, when an expression is clicked, the stage calls out
+to the semantics module, registering callbacks to update its store
+whenever a step is taken, and updates the views after each step.
 
 Areas of Improvement
 ====================
