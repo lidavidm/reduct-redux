@@ -15,72 +15,31 @@ You should be comfortable with the following:
 MDN_ is the best resource for Web API/ECMAScript questions. (W3schools
 might show up on Google, but isn't generally to be trusted.)
 
-Architecture
-============
-
-Reduct-Redux consists of five main components:
-
-- an immutable representation of the core game state (expressions,
-  globals, etc.), stored in Redux_,
-- a syntax & semantics module that defines core expressions, parsing,
-  evaluation, and other utilities,
-- a graphics abstraction to draw to the screen,
-- and the Stage which ties all these together.
-
-``index.js`` loads resources, sets up the game state, loads a
-semantics module, and creates the stage.
-
-Game State
-==========
-
-State consists of the following:
-
-These are all stored in an *immutable* store. This sounds odd, but
-it's because we're using Redux_ to manage this state. Broadly
-speaking, Redux follows this workflow:
-
-1. An immutable store represents current game state.
-2. In response to something the user does, the game dispatches an
-   *action* to the Redux store.
-3. A Redux *reducer* function interprets the action and generates a
-   new store, which replaces the old one.
-
-Syntax & Semantics
-==================
-
-gfx: Graphics Abstraction
-=========================
-
-:doc:`gfx` is our ad-hoc graphics & layout library. It has several
-quirks, which will become apparent as we explain its structure.
-
-Stages
+Set Up
 ======
 
-Areas of Improvement
-====================
+*Choose one of the two below:*
 
-If somehow Erik, François, and Andrew don't have enough work for you,
-you can try to tackle these improvements:
+Yarn::
 
-- HTML5 canvas performance
+  yarn install
+  mkdir dist
+  # Symlink resources into the folder that our bundler serves
+  ln -s $(pwd)/resources/ dist/resources
+  yarn serve
 
-  Rendering performance is rather unsatisfactory, particularly because
-  Reduct-Redux scales to fit the screen. I've done some limited
-  profiling, and these things could be improved:
+NPM::
 
-  - Static backgrounds
+  npm install
+  mkdir dist
+  # Symlink resources into the folder that our bundler serves
+  ln -s $(pwd)/resources/ dist/resources
+  npm run serve
 
-    Currently, everything is redrawn on every frame. However, some
-    things rarely change, like the goal, toolbox, background, and so
-    on. They could be drawn to a separate canvas or done in HTML, and
-    layered under the main canvas. They would need to be re-rendered
-    in some cases, like when the window is resized.
 
-- Animation & tweening system conveniences
-- More flexible semantics
-- Stage refactoring
-- Mobile support
+Next Steps
+==========
+
+Read :doc:`architecture` to learn about the overall system design.
 
 .. _MDN: https://developer.mozilla.org/en-US/docs/Web
-.. _Redux: https://redux.js.org/

@@ -10,9 +10,9 @@ Welcome to reduct-redux's documentation!
    :maxdepth: 2
 
    starthere
+   architecture
    resources
-   gfx
-   gfx/animate
+   modules/index
 
 Indices and tables
 ==================
