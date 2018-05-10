@@ -50,11 +50,18 @@ speaking, Redux follows this workflow:
 3. A Redux *reducer* function interprets the action and generates a
    new store, which replaces the old one.
 
+Some examples of actions might be:
+
+- Step an expression to another expression
+- Unfold a name and replace it with its definition
+- Undo the previous action
+
 Dealing with immutability in plain ECMAScript isn't fun, so instead,
 we use `Immutable.js`_, a library that provides a set of immutable
 data structures and ways to easily manipulate them. Because we can't
 override operators, we have to use methods like ``node.get("id")``
-instead of being able to just request ``node.id``, unfortunately.
+instead of being able to just request ``node.id``, unfortunately
+[#immrec]_.
 
 A further complication is that generally, Redux doesn't recommend
 directly storing deeply nested data, like our abstract syntax
@@ -65,6 +72,9 @@ other nodes, but instead store the IDs of parent or child
 nodes. Similarly, the board, goal, and toolbox are lists of node IDs,
 and the globals are a Map from name to node ID. These IDs are assigned
 by a monotonically increasing counter.
+
+This design has consequences for how the UI/graphics toolkit works, as
+we'll see.
 
 Read More: :doc:`modules/reducer` (in particular, :ref:`Mutable vs
 Immutable Expressions`).
@@ -184,3 +194,7 @@ whenever a step is taken, and updates the views after each step.
 .. _MDN: https://developer.mozilla.org/en-US/docs/Web
 .. _Redux: https://redux.js.org/
 .. _`Immutable.js`: https://facebook.github.io/immutable-js/
+.. _`Immutable.js Records`: https://facebook.github.io/immutable-js/docs/#/Record
+
+.. [#immrec] This could be solved by defining and using `Immutable.js
+             Records`_ everywhere.
