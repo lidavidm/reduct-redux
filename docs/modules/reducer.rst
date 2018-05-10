@@ -1,6 +1,6 @@
-=======
-reducer
-=======
+==================
+Actions & Reducers
+==================
 
 Mutable vs Immutable Expressions
 ================================
