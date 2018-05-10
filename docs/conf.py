@@ -20,8 +20,8 @@ import os
 # -- Project information -----------------------------------------------------
 
 project = 'reduct-redux'
-copyright = '2018, Ian Arawjo, David Li, Yiting Wang, and Yishu Zhang'
-author = 'Ian Arawjo, David Li, Yiting Wang, and Yishu Zhang'
+copyright = '2018, Ian Arawjo, David Li, Yiting Wang, Yishu Zhang, and Yuchang Zhou'
+author = 'Ian Arawjo, David Li, Yiting Wang, Yishu Zhang, and Yuchang Zhou'
 
 # The short X.Y version
 version = ''
