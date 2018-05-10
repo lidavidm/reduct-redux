@@ -5,12 +5,14 @@ import * as actions from "./action";
 export const UNDO = "undo";
 export const REDO = "redo";
 
+/** Undo the last action. */
 export function undo() {
     return {
         type: UNDO,
     };
 }
 
+/** Redo the last undone action. */
 export function redo() {
     return {
         type: REDO,
@@ -19,6 +21,17 @@ export function redo() {
 
 /**
  * Given a reducer, return a reducer that supports undo/redo.
+ *
+ * @param {Object} options
+ * @param {Function} options.restoreExtraState - After an undo or
+ * redo, given the previous and new state, restore any state that
+ * lives outside of Redux. (For instance, positions of expressions on
+ * the board.)
+ * @param {Function} options.actionFilter - Given an action, if true,
+ * then simply modify the state and do not add the previous state to
+ * the undo stack.
+ * @param {Function} options.extraState - Given the previous and new
+ * state, record any state that lives outside of Redux.
  */
 export function undoable(reducer, options={}) {
     const initialState = immutable.Map({

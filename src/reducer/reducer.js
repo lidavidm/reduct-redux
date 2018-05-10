@@ -17,6 +17,9 @@ const initialProgram = immutable.Map({
 
 let idCounter = 0;
 
+/**
+ * Returns the next unique ID. Used to assign IDs to nodes and views.
+ */
 export function nextId() {
     return idCounter++;
 }
@@ -32,6 +35,16 @@ function markDirty(nodes, id) {
     dirty.add(expr.get("id"));
 }
 
+/**
+ * The core reducer for Reduct-Redux. Interprets actions and generates
+ * the new state. Needs a semantics module and the views, in order to
+ * record positions of objects on the board for undo/redo.
+ *
+ * @param {Function} restorePos - a function that transforms the
+ * position of a view after undo/redo. Useful to adjust positions so
+ * that things stay within bounds (e.g. if the game has resized since
+ * the view's position was recorded).
+ */
 export function reduct(semantics, views, restorePos) {
     function program(state=initialProgram, act) {
         switch (act.type) {

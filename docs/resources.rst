@@ -161,6 +161,7 @@ levels from JSON to CSV once, then only ever edit the levels in CSV
 format.
 
 Requirements:
+
 - Python 3.6
 - virtualenv
 - Bash

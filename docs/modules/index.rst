@@ -7,3 +7,5 @@ Modules
 
    gfx
    gfx/animate
+
+   reducer

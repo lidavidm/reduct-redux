@@ -66,6 +66,9 @@ nodes. Similarly, the board, goal, and toolbox are lists of node IDs,
 and the globals are a Map from name to node ID. These IDs are assigned
 by a monotonically increasing counter.
 
+Read More: :doc:`modules/reducer` (in particular, :ref:`Mutable vs
+Immutable Expressions`).
+
 Syntax & Semantics
 ==================
 

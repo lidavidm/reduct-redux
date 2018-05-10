@@ -18,10 +18,18 @@ export const DEFINE = "define";
  * Redux action to start a new level.
  *
  * Takes trees of normal AST nodes and flattens them into immutable
- * nodes, suitable to store in Redux.
+ * nodes, suitable to store in Redux. Also runs the semantics module's
+ * postParse hook, if defined, and creates the initial views for these
+ * expressions.
  *
  * Flattened trees are doubly-linked: children know their parent, and
  * which parent field they are stored in.
+ *
+ * @param {basestage.BaseStage} stage
+ * @param {Array} goal - List of (mutable) expressions for the goal.
+ * @param {Array} board - List of (mutable) expressions for the board.
+ * @param {Array} toolbox - List of (mutable) expressions for the toolbox.
+ * @param {Object} globals - Map of (mutable) expressions for globals.
  */
 export function startLevel(stage, goal, board, toolbox, globals) {
     const semantics = stage.semantics;
@@ -71,7 +79,7 @@ export function startLevel(stage, goal, board, toolbox, globals) {
         }
     });
 
-    finalNodes.map((node, nodeId) => {
+    finalNodes.forEach((node, nodeId) => {
         stage.views[nodeId] = semantics.project(stage, finalNodes, node);
     });
 
@@ -86,8 +94,9 @@ export function startLevel(stage, goal, board, toolbox, globals) {
 }
 
 /**
- * Node `nodeId` took a small step to produce `newNode` which contains
- * `newNodes` as nested nodes.
+ * Node ``nodeId`` took a small step to produce ``newNode`` which
+ * contains ``newNodes`` as nested nodes. All of these are immutable
+ * nodes.
  */
 export function smallStep(nodeId, newNodeIds, newNodes) {
     return {
@@ -99,7 +108,8 @@ export function smallStep(nodeId, newNodeIds, newNodes) {
 }
 
 /**
- * Unfold the definition of ``nodeId``.
+ * Unfold the definition of ``nodeId``, producing ``newNodeId`` (and
+ * adding ``addedNodes`` to the store).
  */
 export function unfold(nodeId, newNodeId, addedNodes) {
     return {
@@ -111,10 +121,11 @@ export function unfold(nodeId, newNodeId, addedNodes) {
 }
 
 /**
- * Node `topNodeId` was applied to `argNodeId` to produce `newNodeIds`
- * which contain `addedNodes` as nested nodes.
+ * Node ``topNodeId`` was applied to ``argNodeId`` to produce
+ * ``newNodeIds`` which contain ``addedNodes`` as nested nodes.
  *
- * A beta-reduction can produce multiple result nodes due to replicators.
+ * A beta-reduction can produce multiple result nodes due to
+ * replicators.
  */
 export function betaReduce(topNodeId, argNodeId, newNodeIds, addedNodes) {
     return {
@@ -209,6 +220,9 @@ export function skipUndo(action) {
     return action;
 }
 
+/**
+ * Replace a node with its unfaded variant temporarily.
+ */
 export function unfade(source, nodeId, newNodeId, addedNodes) {
     return {
         type: UNFADE,
@@ -219,6 +233,9 @@ export function unfade(source, nodeId, newNodeId, addedNodes) {
     };
 }
 
+/**
+ * Replace an unfaded node with its faded variant.
+ */
 export function fade(source, unfadedId, fadedId) {
     return {
         type: FADE,
@@ -228,6 +245,9 @@ export function fade(source, unfadedId, fadedId) {
     };
 }
 
+/**
+ * Define the given name as the given node ID.
+ */
 export function define(name, id) {
     return {
         type: DEFINE,

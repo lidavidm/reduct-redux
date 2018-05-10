@@ -42,6 +42,7 @@ extensions = [
     'sphinx_js',
     'sphinx.ext.mathjax',
     'sphinxcontrib.fulltoc',
+    'sphinx.ext.autosectionlabel',
 ]
 
 js_source_path = []
