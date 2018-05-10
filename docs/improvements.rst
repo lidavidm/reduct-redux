@@ -98,5 +98,27 @@ you can try to tackle these improvements:
   instead. This should be an easy but tedious refactoring.
 
 - Stage refactoring
+
+  Without an explicit scene graph, there's a lot of duplicated code in
+  handling drawing. There's also a lot of redundancy in handling input
+  events. The stage could be refactored and split into smaller parts,
+  and a more uniform way of specifying the "contents" of a stage would
+  be helpful.
+
+  Input handling code could be refactored so that each stage doesn't
+  have to re-implement code to crawl the view hierarchy.
+
 - Mobile support
+
+  There's some support for this, but using pixel coordinates was a
+  clear mistake, in hindsight. We can and have hacked around this by
+  rendering at one resolution and scaling it.
+
 - Immutable.js
+
+  This library enables features like easy and reliable
+  undo-redo. However, it also hurts performance (particularly in
+  big-step reduction) and makes development more annoying. One thing
+  that would help slightly is using Immutable.js Records to represent
+  nodes and the overall state, instead of Maps; that way, we wouldn't
+  need calls to ``get`` everywhere.
