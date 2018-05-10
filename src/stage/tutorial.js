@@ -19,6 +19,7 @@ export default class TutorialStage extends Stage {
             click: () => {
                 Logging.log("tutorial-skip", this.tutorialState.state);
                 this.tutorialState.state = "done";
+                this.tutorialState.ready = true;
             },
         }), "bottom", {
             align: "right",
