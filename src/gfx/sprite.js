@@ -124,8 +124,10 @@ export function patch3(childFunc, options={}) {
     projection.prepare = function(id, exprId, state, stage) {
         const childId = childFunc(id, state);
         const childProjection = stage.views[childId];
-
         childProjection.prepare(childId, exprId, state, stage);
+
+        this.imageScale = 1.4 * (childProjection.size.h / options.middle.naturalHeight);
+
         let contentWidth = childProjection.size.w;
         if (options.leftSpill) {
             contentWidth -= options.leftSpill * (options.left.naturalWidth * this.imageScale);
@@ -133,8 +135,6 @@ export function patch3(childFunc, options={}) {
         if (options.rightSpill) {
             contentWidth -= options.rightSpill * (options.right.naturalWidth * this.imageScale);
         }
-
-        this.imageScale = 1.4 * (childProjection.size.h / options.middle.naturalHeight);
 
         this.middleSegments = Math.ceil(contentWidth /
                                         (options.middle.naturalWidth * this.imageScale));
