@@ -22,6 +22,7 @@ Levels are simply JSON objects, defined as follows:
            // List of strings of code
            "1"
        ],
+       "textgoal": "This is the textual goal (optional)",
        "globals": {
            // Map of names to strings of code
            "twice": "function twice(f) { return (x) => f(f(x)); }"
@@ -66,6 +67,12 @@ Notes on special fields:
   so far. This field adds a new page to the manual. Values should be
   the filename (without extension) of a syntax JSON file (look at
   ``levels-progression/syntax-add.json`` for an example).
+
+``textgoal``
+  A templating system allows you to refer to primitives (like
+  circles/hamburgers) without having to hardcode their names.
+
+  For more on customizing this, see :ref:`Miscellaneous Hooks`.
 
 Levels are arranged into chapters, which are JSON files:
 
