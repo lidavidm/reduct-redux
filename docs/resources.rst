@@ -43,7 +43,9 @@ Levels are simply JSON objects, defined as follows:
        }
    }
 
-Notes on special fields:
+The only required fields are ``board``, ``goal``, and
+``toolbox``. (Any of these can be an empty list, though.) Notes on
+special fields:
 
 ``animationScales``
   Animations can be sped up or slowed down in particular levels. These
@@ -69,10 +71,19 @@ Notes on special fields:
   ``levels-progression/syntax-add.json`` for an example).
 
 ``textgoal``
+  In addition to the goal, you can specify some text to serve as a
+  hint or description. The text will automatically wrap.
+
   A templating system allows you to refer to primitives (like
-  circles/hamburgers) without having to hardcode their names.
+  circles/hamburgers) without having to hardcode their names. For
+  instance, ``{star}`` and ``{a star}`` will change to "burger" and "a
+  burger" if the junk food theme is chosen.
 
   For more on customizing this, see :ref:`Miscellaneous Hooks`.
+
+``showConcreteGoal``
+  If ``textgoal`` is specified, set this to ``false`` to prevent the
+  regular goal from showing. Defaults to ``true``.
 
 Levels are arranged into chapters, which are JSON files:
 

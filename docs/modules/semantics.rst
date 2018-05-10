@@ -5,6 +5,8 @@ Semantics
 Defining Expressions
 ====================
 
+For working with expression objects, see :ref:`Expression Fields`.
+
 Concreteness Fading
 -------------------
 

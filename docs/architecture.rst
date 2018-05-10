@@ -76,8 +76,8 @@ by a monotonically increasing counter.
 This design has consequences for how the UI/graphics toolkit works, as
 we'll see.
 
-Read More: :doc:`modules/reducer` (in particular, :ref:`Mutable vs
-Immutable Expressions`).
+.. seealso:: :doc:`modules/reducer`, :ref:`Mutable vs Immutable
+             Expressions`, and :ref:`Expression Fields`
 
 Syntax & Semantics
 ==================
@@ -151,7 +151,7 @@ interface to the graphics abstraction described below. (See
 :ref:`JSON-Defined Views` for documentation specifically about
 defining views via this interface.)
 
-Read More: :doc:`modules/semantics`.
+.. seealso:: :doc:`modules/semantics` and :ref:`Expression Fields`
 
 gfx: Graphics Abstraction
 =========================
@@ -184,8 +184,8 @@ views associated. (TODO: add gfx docs and explain how this happens).
 expression. This is what takes the JSON representation above and
 builds the view hierarchy.
 
-Read More: :doc:`modules/gfx` (in particular, :ref:`JSON-Defined
-Views`), :doc:`modules/gfx/animate`.
+.. seealso:: :doc:`modules/gfx` (in particular, :ref:`JSON-Defined
+             Views`), :doc:`modules/gfx/animate`
 
 Stages
 ======
@@ -198,7 +198,7 @@ here; for instance, when an expression is clicked, the stage calls out
 to the semantics module, registering callbacks to update its store
 whenever a step is taken, and updates the views after each step.
 
-Read More: :doc:`modules/stage`, :doc:`modules/ui`.
+.. seealso:: :doc:`modules/stage`, :doc:`modules/ui`
 
 .. _MDN: https://developer.mozilla.org/en-US/docs/Web
 .. _Redux: https://redux.js.org/
