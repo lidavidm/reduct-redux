@@ -147,7 +147,11 @@ Here's an example of an expression definition:
    },
 
 In particular, note the ``projection`` field, which is the convenient
-interface to the graphics abstraction described below.
+interface to the graphics abstraction described below. (See
+:ref:`JSON-Defined Views` for documentation specifically about
+defining views via this interface.)
+
+Read More: :doc:`modules/semantics`.
 
 gfx: Graphics Abstraction
 =========================
@@ -180,6 +184,9 @@ views associated. (TODO: add gfx docs and explain how this happens).
 expression. This is what takes the JSON representation above and
 builds the view hierarchy.
 
+Read More: :doc:`modules/gfx` (in particular, :ref:`JSON-Defined
+Views`), :doc:`modules/gfx/animate`.
+
 Stages
 ======
 
@@ -190,6 +197,8 @@ to manually specify everything to be rendered. Most helper code lives
 here; for instance, when an expression is clicked, the stage calls out
 to the semantics module, registering callbacks to update its store
 whenever a step is taken, and updates the views after each step.
+
+Read More: :doc:`modules/stage`, :doc:`modules/ui`.
 
 .. _MDN: https://developer.mozilla.org/en-US/docs/Web
 .. _Redux: https://redux.js.org/
