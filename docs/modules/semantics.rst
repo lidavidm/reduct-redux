@@ -89,7 +89,7 @@ Optional fields:
 
   This is what defines how an expression takes a small step. If
   called, and if ``validateStep`` is defined, you can assume that
-  ``validateStep`` returned true.
+  ``validateStep`` did not return an error.
 
   The result can be one of three things.
 
@@ -151,10 +151,33 @@ Optional fields:
   returns such a string.
 
 ``validateStep``
+  *Type:* string or function ``(semant, state, expr) => [ NodeID,
+  string ] | null``
+
+  Used to validate "side conditions" in small step semantics. If there
+  is an error, return a 2-tuple of the offending node ID and a
+  descriptive error message; otherwise, return null.
 
 ``reductionOrder``
+  *Type:* ``string[]``
+
+  If present, controls the order in which subexpressions are reduced
+  before trying to small-step the parent expression. Should be a list
+  of subexpression field names.
 
 ``substepFilter``
+  *Type:* ``(semant, state, expr, field) => boolean``
+
+  If present, controls whether a subexpression should even be reduced
+  before reducing the parent. For instance, an ``if`` statement does
+  not want to reduce its branches before itself! This is also used to
+  control whether a subexpression "matters"; the engine will prevent
+  things like evaluation if an expression hole isn't filled, but some
+  expressions, like references-with-holes, don't require that they are
+  filled.
+
+  The function is given the name of a subexpression field and should
+  return true or false.
 
 ``notches``
   See :ref:`Notches` below.
