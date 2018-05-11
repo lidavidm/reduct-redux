@@ -151,21 +151,17 @@ see this at the start of ``src/index.js``.) However, these have to be
 generated from the original sprites. There are some Bash scripts to
 somewhat automate this process, detailed below.
 
-As of right now, most of the original assets are not present in this
-repository, and will have to be pulled from the original Reduct. Some
-new sprites not present in the original Reduct are loaded in a
-separate spritesheet and can be generated from this repository.
+Assets are generated from a separate repository. They should not be
+committed to this repository. I've created a script that will generate
+all the necessary assets, so to update, simply run the following:
 
-Command-Line Tools
-==================
+.. code-block:: bash
 
-Spritesheets
-------------
-
-Audio Sprites
--------------
-
-These must be generated from the original Reduct.
+   # First, cd into the reduct-assets repository.
+   ./build.sh
+   # Now, cd into the reduct-redux repository.
+   cp ../reduct-assets/output/output.* resources/audio/
+   cp ../reduct-assets/output/*assets.* resources/graphics
 
 chapterutil
 ===========
