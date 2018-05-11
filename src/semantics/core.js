@@ -108,6 +108,9 @@ export function genericClone(nextId, subexpressions) {
     };
 }
 
+/**
+ * A generic function to apply a list of arguments to an expression.
+ */
 export function genericBetaReduce(semant, state, config) {
     const { topNode, targetNode, argIds } = config;
     const nodes = state.get("nodes");

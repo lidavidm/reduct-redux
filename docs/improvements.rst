@@ -122,3 +122,7 @@ you can try to tackle these improvements:
   that would help slightly is using Immutable.js Records to represent
   nodes and the overall state, instead of Maps; that way, we wouldn't
   need calls to ``get`` everywhere.
+
+  For performance, most of the issues come during evaluation. It might
+  be possible to "JIT" Reduct expressions to JavaScript and just
+  ``eval`` them (safety/security issues notwithstanding).

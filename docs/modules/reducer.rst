@@ -2,6 +2,14 @@
 Actions & Reducers
 ==================
 
+The Redux State
+===============
+
+You'll see a ``state`` parameter a lot. This is the Redux state, which
+stores all the game state, as described in :ref:`Architecture`. It is
+an Immutable.js Map with fields ``nodes``, ``globals``, ``board``,
+``toolbox``, and ``goal``.
+
 Mutable vs Immutable Expressions
 ================================
 

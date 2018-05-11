@@ -1,3 +1,6 @@
+/**
+ * @module transform
+ */
 import * as immutable from "immutable";
 
 import * as progression from "../game/progression";
@@ -24,9 +27,17 @@ const NotchRecord = immutable.Record({
  * This module turns a JSON-plus-functions specification of language
  * semantics and builds a module for the rest of Reduct to interact
  * with the semantics.
+ *
+ * @alias transform
  */
 export default function transform(definition) {
+    /**
+     * The generated semantics module.
+     */
     const module = {};
+    /**
+     * The original semantics definition.
+     */
     module.definition = definition;
     module.projections = {};
 
