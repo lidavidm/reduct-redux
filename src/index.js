@@ -13,6 +13,7 @@ import TutorialStage from "./stage/tutorial";
 import ChapterEndStage from "./stage/chapterend";
 import TitleStage from "./stage/title";
 import passwordPrompt from "./ui/instructor/password";
+import consent from "./consent";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
@@ -37,9 +38,8 @@ Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "res
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
-Promise.all([ Loader.finished ])
-    .then(([ _ ]) => {
-        const consented = false;
+Promise.all([ Loader.finished, consent() ])
+    .then(([ _, consented ]) => {
         console.log(`User consented to logging: ${consented}`);
         if (!consented) {
             Logging.resetState();
