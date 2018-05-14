@@ -47,6 +47,22 @@ export default class TitleStage extends BaseStage {
                     h: (image.naturalHeight / image.naturalWidth) * 50,
                 },
         })));
+        const sportsIds = [
+            Loader.images["sport_1"],
+            Loader.images["sport_2"],
+        ].map(image => this.allocate(gfx.sprite({
+            image,
+            size: image.naturalHeight / image.naturalWidth > 1.5 ?
+                {
+                    w: 25,
+                    h: (image.naturalHeight / image.naturalWidth) * 25,
+                } :
+                {
+                    w: 50,
+                    h: (image.naturalHeight / image.naturalWidth) * 50,
+                },
+        })));
+
         const views = [
             [0, gfx.layout.hbox(
                 () => shapeIds,
@@ -57,6 +73,13 @@ export default class TitleStage extends BaseStage {
             )],
             [1, gfx.layout.hbox(
                 () => foodIds,
+                {
+                    subexpScale: 1.0,
+                },
+                gfx.baseProjection
+            )],
+            [2, gfx.layout.hbox(
+                () => sportsIds,
                 {
                     subexpScale: 1.0,
                 },

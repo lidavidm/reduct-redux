@@ -115,6 +115,53 @@ export default {
                 },
             },
         },
+        {
+            kind: "value",
+            type: "symbol",
+            fields: ["name"],
+            subexpressions: [],
+            goalNames: {
+                "star": [ "basketball", "a basketball", "basketballs" ],
+                "circle": [ "soccer ball", "a soccer ball", "soccer balls" ],
+                "triangle": [ "football", "a football", "footballs" ],
+                "square": [ "tennis ball", "a tennis ball", "tennis balls" ],
+            },
+            nameReplacements: [
+                [ "trianglify", "footballify" ],
+                [ "starify", "basketballify" ],
+                [ "squarify", "tennisify" ],
+                [ "makeStar", "makeBasketball" ],
+                [ "star", "basketball" ],
+                [ "rect", "tennisball" ],
+                [ "triangle", "football" ],
+            ],
+            projection: {
+                type: "case",
+                on: "name",
+                cases: {
+                    star: {
+                        type: "sprite",
+                        image: "sport_1",
+                        size: { w: 50 },
+                    },
+                    circle: {
+                        type: "sprite",
+                        image: "sport_2",
+                        size: { w: 50 },
+                    },
+                    triangle: {
+                        type: "sprite",
+                        image: "sport_3",
+                        size: { w: 50 },
+                    },
+                    rect: {
+                        type: "sprite",
+                        image: "sport_4",
+                        size: { w: 50 },
+                    },
+                },
+            },
+        },
     ],
 
     bool: {
