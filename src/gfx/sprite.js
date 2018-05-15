@@ -126,7 +126,7 @@ export function patch3(childFunc, options={}) {
         const childProjection = stage.views[childId];
         childProjection.prepare(childId, exprId, state, stage);
 
-        this.imageScale = 1.4 * (childProjection.size.h / options.middle.naturalHeight);
+        this.imageScale = 1.3 * (childProjection.size.h / options.middle.naturalHeight);
 
         let contentWidth = childProjection.size.w;
         if (options.leftSpill) {
@@ -136,17 +136,17 @@ export function patch3(childFunc, options={}) {
             contentWidth -= options.rightSpill * (options.right.naturalWidth * this.imageScale);
         }
 
-        this.middleSegments = Math.ceil(contentWidth /
-                                        (options.middle.naturalWidth * this.imageScale));
-        const middleWidth = this.middleSegments * this.imageScale * options.middle.naturalWidth;
-        childProjection.pos.x = (options.left.naturalWidth * this.imageScale) +
-            ((middleWidth - childProjection.size.w) / 2);
+        const midStripWidth = (options.middle.naturalWidth * this.imageScale) - 1;
+        const leftWidth = (options.left.naturalWidth * this.imageScale) - 1;
+        const rightWidth = options.right.naturalWidth * this.imageScale;
+        this.middleSegments = Math.ceil(contentWidth / midStripWidth);
+        const middleWidth = this.middleSegments * midStripWidth;
+        childProjection.pos.x = leftWidth + ((middleWidth - childProjection.size.w) / 2);
         childProjection.pos.y =
             ((options.middle.naturalHeight * this.imageScale) - childProjection.size.h) / 2;
         childProjection.parent = this;
 
-        this.size.w = middleWidth +
-            ((options.left.naturalWidth + options.right.naturalWidth) * this.imageScale);
+        this.size.w = middleWidth + leftWidth + rightWidth;
     };
 
     projection.draw = function(id, exprId, state, stage, offset) {
@@ -170,6 +170,7 @@ export function patch3(childFunc, options={}) {
         );
 
         let x = offset.x + (this.pos.x * offset.sx) + (sx * options.left.naturalWidth);
+        x -= 1;
 
         for (let i = 0; i < this.middleSegments; i++) {
             const w = sx * options.middle.naturalWidth;
@@ -178,7 +179,7 @@ export function patch3(childFunc, options={}) {
         }
 
         options.right.draw(
-            ctx, x, topY,
+            ctx, x - 1, topY,
             sx * options.right.naturalWidth,
             sy * options.right.naturalHeight
         );
