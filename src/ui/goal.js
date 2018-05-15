@@ -29,9 +29,14 @@ export default class Goal {
                                        ((chapter.endIdx - chapter.startIdx) + 1)) *
                                       chapter.resources.aliens.length);
         const image = Loader.images[chapter.resources.aliens[alienIndex]];
+        const alienSize = { h: 100, w: 100 * (image.frame.w / image.frame.h) };
+        if (alienSize.w > 120) {
+            alienSize.w = 120;
+            alienSize.h = 120 * (image.frame.h / image.frame.w);
+        }
         const alien = stage.allocate(gfx.sprite({
             image,
-            size: { h: 100, w: 100 * (image.frame.w / image.frame.h) },
+            size: alienSize,
         }));
 
         const alienBox = Loader.images["alien_box"];
@@ -141,12 +146,12 @@ export default class Goal {
 
         animate.tween(this.stage.getView(this.container), {
             pos: {
-                y: 25,
+                y: 15,
             },
         }, {
             duration: 500,
-            easing: animate.Easing.Anticipate.BackOut(1.1),
-        })
+            easing: animate.Easing.Anticipate.BackOut(1.2),
+        }).delay(500);
     }
 
     drawImpl(state) {

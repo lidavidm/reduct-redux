@@ -92,10 +92,10 @@ export function startLevel(description, parse, store, stage) {
 
     // Lay out the board.
     const positions = layout.repulsorPacking(stage, {
-        x: 20,
-        y: 150,
-        w: stage.width - 40,
-        h: (stage.height - (stage.toolbox.size.h) - 25 - 10 - 150),
+        x: 30,
+        y: 200,
+        w: stage.width - 60,
+        h: (stage.height - (stage.toolbox.size.h) - 25 - 10 - 200),
     }, state.get("board").toArray().filter(id => nodes.get(id).get("type") !== "defineAttach"));
 
     if (positions !== null) {
@@ -164,7 +164,7 @@ export function startLevel(description, parse, store, stage) {
         stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
         animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
             duration: 500,
-            easing: animate.Easing.Anticipate.BackOut(1.1),
+            easing: animate.Easing.Anticipate.BackOut(1.01),
         }).delay(300 - (300 / (i + 1)));
         i += 1;
     }
