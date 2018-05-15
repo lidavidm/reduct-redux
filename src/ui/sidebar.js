@@ -8,7 +8,7 @@ export default class Sidebar {
     constructor(stage) {
         this.stage = stage;
 
-        this.color = "#594764";
+        this.color = "#8ab7db";
 
         this.viewMap = new Map();
         this.fullWidth = 250;
@@ -18,7 +18,7 @@ export default class Sidebar {
 
         const gradient = stage.ctx.createLinearGradient(0, 0, 15, 0);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(1, "#594764");
+        gradient.addColorStop(1, "#8ab7db");
         this.gradient = gradient;
 
         // Make a dashed-outline to serve as a placeholder indicator

@@ -4,7 +4,7 @@ import Loader from "../loader";
 
 const TOOLBOX_ROW_HEIGHT = 90;
 const TOOLBOX_LEFT_MARGIN = 40;
-const TOOLBOX_RIGHT_MARGIN = 90;
+const TOOLBOX_RIGHT_MARGIN = 40;
 const TOOLBOX_INNER_MARGIN = 20;
 
 export default class Toolbox {
@@ -17,6 +17,8 @@ export default class Toolbox {
 
         this._firstRender = true;
         this.rows = 1;
+        this._size = { w: 0, h: 0 };
+        this._pos = { x: 0, y: 0 };
     }
 
     containsPoint(pos) {
@@ -85,17 +87,22 @@ export default class Toolbox {
 
     drawBase(state) {
         this.stage.internalViews[this.bg].prepare(null, null, state, this.stage);
-        this.stage.internalViews[this.bg].draw(null, null, state, this.stage, {
-            x: 0,
-            y: 0,
-            sx: 1,
-            sy: 1,
-        });
+        const { ctx } = this.stage;
+        ctx.fillStyle = "#1a3849";
+        gfx.primitive.roundRect(
+            ctx,
+            25,
+            this.stage.internalViews[this.bg].pos.y,
+            this.stage.internalViews[this.bg].size.w - 50,
+            this.stage.internalViews[this.bg].size.h - 10,
+            25,
+            true, false
+        );
     }
 
     drawImpl(state) {
         let x = TOOLBOX_LEFT_MARGIN;
-        const y = this.stage.internalViews[this.bg].pos.y;
+        const y = this.stage.internalViews[this.bg].pos.y - 5;
 
         let curRow = 0;
         x = TOOLBOX_LEFT_MARGIN;

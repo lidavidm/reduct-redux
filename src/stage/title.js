@@ -14,7 +14,7 @@ export default class TitleStage extends BaseStage {
         super(...args);
 
         this.startGame = startGame;
-        this.color = "#594764";
+        this.color = "#8ab7db";
 
         const title = gfx.layout.sticky(
             gfx.layout.ratioSizer(gfx.sprite({

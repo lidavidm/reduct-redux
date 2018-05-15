@@ -132,7 +132,7 @@ export default class Stage extends BaseStage {
         this.alreadyWon = false;
 
         this.timer = null;
-        this.color = "#EEEEEE";
+        this.color = "#FFF";
 
         this.feedback = new Feedback(this);
         this.navbar = new Navbar(this);
@@ -452,8 +452,10 @@ export default class Stage extends BaseStage {
 
         this.ctx.save();
         this.ctx.translate(this.sidebarWidth, 0);
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "#8ab7db";
         this.ctx.fillRect(0, 0, this.width, this.height);
+        this.ctx.fillStyle = this.color;
+        gfxCore.primitive.roundRect(this.ctx, 25, 25, this.width - 50, this.height - this.toolbox.size.h - 50, 25, true, false);
 
         this.toolbox.drawBase(state);
         // this.syntaxJournal.drawBase(state);

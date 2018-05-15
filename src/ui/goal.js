@@ -128,7 +128,7 @@ export default class Goal {
         ctx.fill();
 
         ctx.beginPath();
-        ctx.fillStyle = "#594764";
+        ctx.fillStyle = "#8ab7db";
         ctx.moveTo(0, padding + alien.pos.y + alien.size.h);
         ctx.quadraticCurveTo(
             padding + alien.pos.x + alien.size.w,

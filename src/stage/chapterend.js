@@ -17,7 +17,7 @@ export default class ChapterEndStage extends BaseStage {
         super(...args);
 
         this.opacity = 1.0;
-        this.color = "#594764";
+        this.color = "#8ab7db";
 
         if (progression.isGameEnd()) {
             Audio.play("game-complete");
