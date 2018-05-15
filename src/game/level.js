@@ -158,13 +158,15 @@ export function startLevel(description, parse, store, stage) {
     state.get("toolbox").forEach(checkFade("toolbox"));
 
     // "Inflate" animation.
+    let i = 0;
     for (const nodeId of stage.getState().get("board")) {
         stage.views[nodeId].scale = { x: 0.0, y: 0.0 };
         stage.views[nodeId].anchor = { x: 0.5, y: 0.5 };
         animate.tween(stage.views[nodeId].scale, { x: 1.0, y: 1.0 }, {
             duration: 500,
-            easing: animate.Easing.Cubic.Out,
-        });
+            easing: animate.Easing.Anticipate.BackOut(1.1),
+        }).delay(300 - (300 / (i + 1)));
+        i += 1;
     }
 
     // Bump things away from edges
