@@ -57,13 +57,40 @@ let store;
 let stg;
 let canvas;
 
-function initialize() {
-    if (DEVELOPMENT_BUILD && !gfx.viewport.IS_PHONE) {
-        const devEls = document.querySelectorAll(".dev");
+function toggleDev() {
+    const nav = document.querySelector("#nav");
+    const devEls = document.querySelectorAll(".dev");
+    if (nav.style.display === "none") {
+        nav.style.display = "flex";
         for (let i = 0; i < devEls.length; i++) {
             devEls[i].style.display = "block";
         }
     }
+    else {
+        nav.style.display = "none";
+    }
+}
+
+function initialize() {
+    if (DEVELOPMENT_BUILD && !gfx.viewport.IS_PHONE) {
+        toggleDev();
+    }
+
+    document.body.addEventListener("keyup", (e) => {
+        console.log(e);
+        if (e.ctrlKey && e.code === "F6") {
+            window.prev();
+            e.preventDefault();
+        }
+        else if (e.ctrlKey && e.code === "F7") {
+            window.next();
+            e.preventDefault();
+        }
+        else if (e.ctrlKey && e.code === "F8") {
+            toggleDev();
+            e.preventDefault();
+        }
+    });
 
     canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
