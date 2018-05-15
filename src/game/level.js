@@ -93,9 +93,9 @@ export function startLevel(description, parse, store, stage) {
     // Lay out the board.
     const positions = layout.repulsorPacking(stage, {
         x: 20,
-        y: 120,
+        y: 150,
         w: stage.width - 40,
-        h: (stage.height - (stage.toolbox.size.h * 1.5) - 140),
+        h: (stage.height - (stage.toolbox.size.h) - 25 - 10 - 150),
     }, state.get("board").toArray().filter(id => nodes.get(id).get("type") !== "defineAttach"));
 
     if (positions !== null) {
