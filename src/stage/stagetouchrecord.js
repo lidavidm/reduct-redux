@@ -75,7 +75,7 @@ export default class TouchRecord extends BaseTouchRecord {
         let sidebarScale = null;
         let sidebarHoverScale = null;
         if (highlightSidebar) {
-            sidebarScale = chroma.scale([ "#8ab7db", "#02d8f9" ]).mode("lab");
+            sidebarScale = chroma.scale([ "#8ab7db", "OrangeRed" ]).mode("lab");
             sidebarHoverScale = chroma.scale([ "#8ab7db", "gold" ]).mode("lab");
 
             const indicator = this.stage.getView(this.stage.sidebar.indicator);
