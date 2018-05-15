@@ -1,4 +1,5 @@
 import * as gfx from "../gfx/core";
+import * as animate from "../gfx/animate";
 import * as progression from "../game/progression";
 import Loader from "../loader";
 
@@ -125,8 +126,17 @@ export default class Goal {
         const alien = this.stage.getView(this.alien);
         this.stage.getView(this.container).pos = {
             x: gfx.absolutePos(alien).x + alien.size.w,
-            y: 5,
+            y: -300,
         };
+
+        animate.tween(this.stage.getView(this.container), {
+            pos: {
+                y: 25,
+            },
+        }, {
+            duration: 500,
+            easing: animate.Easing.Anticipate.BackOut(1.1),
+        })
     }
 
     drawImpl(state) {
