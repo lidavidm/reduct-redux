@@ -256,7 +256,6 @@ function start(updateLevel, options={}) {
         level.startLevel(levelDefinition, es6.parser.parse, store, stg);
         stg.drawImpl();
 
-        document.querySelector("#level").innerText = progression.currentLevel().toString();
         // Sync chapter dropdown with current level
         let prevOption = null;
         for (const option of document.querySelectorAll("#chapter option")) {

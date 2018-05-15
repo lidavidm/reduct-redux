@@ -174,7 +174,7 @@ export function patch3(childFunc, options={}) {
         for (let i = 0; i < this.middleSegments; i++) {
             const w = sx * options.middle.naturalWidth;
             options.middle.draw(ctx, x, topY, w, sy * options.middle.naturalHeight);
-            x += w;
+            x += w - 1;
         }
 
         options.right.draw(

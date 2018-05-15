@@ -1,51 +1,47 @@
 import * as gfx from "../gfx/core";
-import * as animate from "../gfx/animate";
+import * as progression from "../game/progression";
 import * as undo from "../reducer/undo";
 import Loader from "../loader";
-
-import { DEVELOPMENT_BUILD } from "../logging/logging";
 
 export default class Navbar {
     constructor(stage) {
         this.stage = stage;
 
-        this.stuck = false;
-
         this.reset = stage.allocate(gfx.ui.imageButton({
-            normal: Loader.images["btn-reset-default"],
+            normal: Loader.images["blureset"],
             hover: Loader.images["btn-reset-hover"],
             active: Loader.images["btn-reset-down"],
         }, {
             click: () => {
                 window.reset();
             },
-            size: { w: 60, h: 60 },
+            size: { w: 65, h: 65 },
         }));
 
-        this.prev = stage.allocate(gfx.ui.imageButton({
-            normal: Loader.images["btn-back-default"],
-            hover: Loader.images["btn-back-hover"],
-            active: Loader.images["btn-back-down"],
-        }, {
-            click: () => {
-                window.prev();
-            },
-            size: { w: 60, h: 60 },
-        }));
+        // this.prev = stage.allocate(gfx.ui.imageButton({
+        //     normal: Loader.images["btn-back-default"],
+        //     hover: Loader.images["btn-back-hover"],
+        //     active: Loader.images["btn-back-down"],
+        // }, {
+        //     click: () => {
+        //         window.prev();
+        //     },
+        //     size: { w: 60, h: 60 },
+        // }));
 
-        this.next = stage.allocate(gfx.ui.imageButton({
-            normal: Loader.images["btn-next-default"],
-            hover: Loader.images["btn-next-hover"],
-            active: Loader.images["btn-next-down"],
-        }, {
-            click: () => {
-                window.next();
-            },
-            size: { w: 60, h: 60 },
-        }));
+        // this.next = stage.allocate(gfx.ui.imageButton({
+        //     normal: Loader.images["btn-next-default"],
+        //     hover: Loader.images["btn-next-hover"],
+        //     active: Loader.images["btn-next-down"],
+        // }, {
+        //     click: () => {
+        //         window.next();
+        //     },
+        //     size: { w: 60, h: 60 },
+        // }));
 
         this.undo = stage.allocate(gfx.ui.imageButton({
-            normal: Loader.images["btn-back-default"],
+            normal: Loader.images["bluundo"],
             hover: Loader.images["btn-back-hover"],
             active: Loader.images["btn-back-down"],
         }, {
@@ -53,77 +49,81 @@ export default class Navbar {
                 this.stage.store.dispatch(undo.undo());
                 this.stage.unstuck();
             },
-            size: { w: 60, h: 60 },
+            size: { w: 65, h: 65 },
         }));
 
         this.redo = stage.allocate(gfx.ui.imageButton({
-            normal: Loader.images["btn-next-default"],
+            normal: Loader.images["bluredo"],
             hover: Loader.images["btn-next-hover"],
             active: Loader.images["btn-next-down"],
         }, {
             click: () => {
                 this.stage.store.dispatch(undo.redo());
             },
-            size: { w: 60, h: 60 },
+            size: { w: 65, h: 65 },
         }));
 
-        this.buttons = [ this.reset, this.next, this.undo, this.redo ];
+        this.buttons = [ this.undo, this.reset, this.redo ];
 
-        const topButtons = [ this.reset, this.next ];
-        const bottomButtons = [ this.undo, this.redo ];
-
-        if (DEVELOPMENT_BUILD) {
-            this.buttons.push(this.prev);
-            topButtons.unshift(this.prev);
-        }
+        const topButtons = [ this.undo, this.reset, this.redo ];
 
         const topRow = stage.allocate(gfx.layout.hbox(
-            () => (this.stuck ? [ this.reset ] : topButtons),
+            () => topButtons,
             {
                 subexpScale: 1,
                 padding: {
                     left: 0,
                     right: 0,
-                    inner: 3,
+                    inner: 10,
                 },
             },
             gfx.baseProjection
         ));
-        const bottomRow = stage.allocate(gfx.layout.hbox(
-            () => (this.stuck ? [ this.undo ] : bottomButtons),
+        this.container = stage.allocate(gfx.layout.vbox(
+            () => [ topRow ],
             {
                 subexpScale: 1,
                 padding: {
+                    top: 0,
+                    bottom: 0,
                     left: 0,
                     right: 0,
-                    inner: 3,
+                    inner: 5,
                 },
+                highlight: false,
+                color: null,
+                anchor: { x: 1, y: 1 },
             },
-            gfx.baseProjection
+            gfx.roundedRect
         ));
-        this.container = stage.allocate(gfx.layout.sticky(
-            gfx.layout.vbox(
-                () => [ topRow, bottomRow ],
-                {
-                    subexpScale: 1,
-                    padding: {
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        inner: 5,
-                    },
-                    highlight: false,
-                    color: null,
-                },
-                gfx.roundedRect
-            ),
-            "top",
+        const chapter = stage.allocate(gfx.text(`Chapter ${progression.chapterIdx() + 1}`, {
+            font: gfx.text.sans,
+            color: "#FFF",
+        }));
+        const level = stage.allocate(gfx.text(`Level ${progression.currentLevel() + 1}`, {
+            font: gfx.text.sans,
+            color: "#FFF",
+        }));
+        this.levelDisplay = stage.allocate(gfx.layout.vbox(
+            () => [
+                chapter,
+                level,
+            ],
             {
-                align: "right",
-                marginX: 5,
-                marginY: 5,
-            }
+                subexpScale: 1,
+                padding: {
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    inner: 5,
+                },
+                anchor: { x: 1, y: 1 },
+                horizontalAlign: 0,
+                highlight: false,
+                color: null,
+            },
+            gfx.roundedRect
         ));
     }
 
@@ -162,11 +162,27 @@ export default class Navbar {
         this.stage.getView(this.undo).enabled = rawState.get("$past").size > 0;
         this.stage.getView(this.redo).enabled = rawState.get("$future").size > 0;
 
-        this.stage.getView(this.container).prepare(
+        const levelDisplay = this.stage.getView(this.levelDisplay);
+        levelDisplay.pos.x = this.stage.width - 25;
+        levelDisplay.pos.y = 100;
+        levelDisplay.prepare(
+            this.levelDisplay, this.levelDisplay,
+            state, this.stage
+        );
+        this.stage.getView(this.levelDisplay).draw(
+            this.levelDisplay, this.levelDisplay,
+            state, this.stage,
+            this.stage.makeBaseOffset()
+        );
+
+        const container = this.stage.getView(this.container);
+        container.pos.x = levelDisplay.pos.x - levelDisplay.size.w - 25;
+        container.pos.y = 100;
+        container.prepare(
             this.container, this.container,
             state, this.stage
         );
-        this.stage.getView(this.container).draw(
+        container.draw(
             this.container, this.container,
             state, this.stage,
             this.stage.makeBaseOffset()
@@ -174,12 +190,10 @@ export default class Navbar {
     }
 
     animateStuck() {
-        this.stuck = true;
         this.stage.getView(this.container).color = "#FFF";
     }
 
     unstuck() {
-        this.stuck = false;
         this.stage.getView(this.container).color = null;
     }
 }

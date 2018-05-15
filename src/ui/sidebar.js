@@ -11,7 +11,7 @@ export default class Sidebar {
         this.color = "#8ab7db";
 
         this.viewMap = new Map();
-        this.fullWidth = 250;
+        this.fullWidth = 150;
 
         this._tween = null;
         this.status = "closed";
@@ -152,7 +152,7 @@ export default class Sidebar {
         }
         else {
             this.status = "closed";
-            this._tween = animate.tween(this.stage, { sidebarWidth: 250 }, {
+            this._tween = animate.tween(this.stage, { sidebarWidth: 150 }, {
                 duration: 500,
                 easing: animate.Easing.Cubic.Out,
             });

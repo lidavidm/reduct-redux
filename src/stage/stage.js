@@ -123,7 +123,6 @@ export default class Stage extends BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         super(canvas, width, height, store, views, semantics);
 
-        document.querySelector("#current-level").style.display = "block";
         document.querySelector("#chapter").style.display = "block";
 
         this.sidebarWidth = 0;
@@ -421,7 +420,7 @@ export default class Stage extends BaseStage {
 
         const showSidebar = this.sidebar.startLevel(state);
         if (showSidebar) {
-            this.sidebarWidth = 250;
+            this.sidebarWidth = 150;
         }
         else {
             this.sidebarWidth = 0;
@@ -455,7 +454,14 @@ export default class Stage extends BaseStage {
         this.ctx.fillStyle = "#8ab7db";
         this.ctx.fillRect(0, 0, this.width, this.height);
         this.ctx.fillStyle = this.color;
-        gfxCore.primitive.roundRect(this.ctx, 25, 25, this.width - 50, this.height - this.toolbox.size.h - 50, 25, true, false);
+        gfxCore.primitive.roundRect(
+            this.ctx,
+            25, 125,
+            this.width - 50,
+            this.height - this.toolbox.size.h - 50 - 100,
+            25,
+            true, false
+        );
 
         this.toolbox.drawBase(state);
         // this.syntaxJournal.drawBase(state);

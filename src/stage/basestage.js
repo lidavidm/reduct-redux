@@ -51,7 +51,7 @@ export default class BaseStage {
 
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
-        this._height = window.innerHeight - 40;
+        this._height = window.innerHeight - document.querySelector("#nav").offsetHeight;
         if (gfxCore.viewport.IS_PHONE) {
             this._width = window.innerWidth * 0.75;
             this._height *= 0.75;
@@ -116,25 +116,15 @@ export default class BaseStage {
      * stage bounds.
      */
     findSafePosition(x, y, w, h) {
-        const MARGIN = 20;
+        const MARGIN = 25;
         const minX = MARGIN;
         const maxX = this.width - MARGIN - w;
-        const minY = MARGIN;
+        const minY = 100 + MARGIN;
         // Extra margin on bottom to account for feedback message
         const maxY = this.height - this.toolbox.size.h - (3 * MARGIN) - h;
 
         x = Math.max(minX, Math.min(x, maxX));
         y = Math.max(minY, Math.min(y, maxY));
-
-        if (x >= this.width - w - 250 && y <= 120) {
-            // Overlaps buttons in corner
-            if (y >= 60) {
-                y = 130;
-            }
-            else {
-                x = this.width - w - 250;
-            }
-        }
 
         return { x, y };
     }

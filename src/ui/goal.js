@@ -30,11 +30,36 @@ export default class Goal {
         const image = Loader.images[chapter.resources.aliens[alienIndex]];
         const alien = stage.allocate(gfx.sprite({
             image,
-            size: { h: 80, w: 80 * (image.frame.w / image.frame.h) },
+            size: { h: 100, w: 100 * (image.frame.w / image.frame.h) },
         }));
-        this.stage.views[alien].pos = { x: 5, y: 5 };
+
+        const alienBox = Loader.images["alien_box"];
+
+        let bgSize = {
+            h: 1.5 * this.stage.getView(alien).size.h * (alienBox.frame.h / alienBox.frame.w),
+        };
+        bgSize.w = bgSize.h * (alienBox.frame.w / alienBox.frame.h);
+        if (image.frame.w > image.frame.h) {
+            bgSize = {
+                w: 1.5 * this.stage.getView(alien).size.w,
+                h: 1.5 * this.stage.getView(alien).size.w * (alienBox.frame.h / alienBox.frame.w),
+            };
+        }
+        const background = stage.allocate(gfx.sprite({
+            image: alienBox,
+            size: bgSize,
+        }));
+        this.stage.views[background].pos = { x: 5, y: 5 };
+        this.stage.views[alien].anchor = { x: 0.5, y: 0.5 };
+        const bg = this.stage.getView(background);
+        this.stage.views[alien].pos = {
+            x: 5 + (bg.size.w / 2),
+            // Yes w not h
+            y: 5 + (bg.size.w / 2),
+        };
 
         this.alien = alien;
+        this.background = background;
 
         const container = stage.allocate(gfx.layout.hbox((_id, state) => {
             return state.get("goal");
@@ -97,53 +122,25 @@ export default class Goal {
             }));
         }
 
+        const alien = this.stage.getView(this.alien);
         this.stage.getView(this.container).pos = {
-            x: this.stage.getView(this.alien).size.w,
+            x: gfx.absolutePos(alien).x + alien.size.w,
             y: 5,
         };
-
-        if (textGoal) {
-            this.stage.getView(this.container).pos.x -= 20;
-        }
     }
 
     drawImpl(state) {
+        const background = this.stage.views[this.background];
+        background.prepare(null, null, state, this.stage);
+
         const alien = this.stage.views[this.alien];
         alien.prepare(null, null, state, this.stage);
 
-        const { ctx } = this.stage;
-        const shadowSize = 3;
-        const padding = 20;
-        ctx.save();
-        ctx.beginPath();
-        ctx.fillStyle = "#000";
-        ctx.moveTo(0, padding + shadowSize + alien.pos.y + alien.size.h);
-        ctx.quadraticCurveTo(
-            padding + alien.pos.x + alien.size.w,
-            padding + shadowSize + alien.pos.y + alien.size.h,
-            padding + alien.pos.x + alien.size.w,
-            0
-        );
-        ctx.lineTo(0, 0);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.fillStyle = "#8ab7db";
-        ctx.moveTo(0, padding + alien.pos.y + alien.size.h);
-        ctx.quadraticCurveTo(
-            padding + alien.pos.x + alien.size.w,
-            padding + alien.pos.y + alien.size.h,
-            padding + alien.pos.x + alien.size.w,
-            0
-        );
-        ctx.lineTo(0, 0);
-        ctx.fill();
-        ctx.restore();
-
-        alien.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
-
         const view = this.stage.views[this.container];
         view.prepare(null, null, state, this.stage);
+
+        background.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
+        alien.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
         view.draw(null, null, state, this.stage, this.stage.makeBaseOffset());
     }
 

@@ -206,11 +206,11 @@ export default class TitleStage extends BaseStage {
                 easing: animate.Easing.Cubic.In,
             }),
             animate.tween(this, {
-                color: "#EEEEEE",
+                color: "#8ab7db",
             }, {
                 duration: 500,
                 setAnimatingFlag: false,
-                easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEEEEE"),
+                easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#8ab7db"),
             }),
         ]).then(() => this.startGame());
     }
