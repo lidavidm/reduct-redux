@@ -19,10 +19,6 @@ export default class ChapterEndStage extends BaseStage {
         this.opacity = 1.0;
         this.color = "#8ab7db";
 
-        if (progression.isGameEnd()) {
-            Audio.play("game-complete");
-        }
-
         this.title = this.allocateInternal(gfx.layout.sticky(
             gfx.text(progression.isGameEnd() ? "You win!" : "Chapter Finished!", {
                 fontSize: 96,
@@ -35,6 +31,21 @@ export default class ChapterEndStage extends BaseStage {
                 margin: 20,
             }
         ));
+
+        animate.tween(this, {
+            color: "#594764",
+        }, {
+            duration: 500,
+            setAnimatingFlag: false,
+            easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#594764"),
+        });
+
+        if (progression.isGameEnd()) {
+            Audio.play("game-complete");
+        }
+        else {
+            Audio.play("chapter-complete");
+        }
 
         this.stars = [];
         this.bgStars = [];
@@ -281,7 +292,7 @@ export default class ChapterEndStage extends BaseStage {
         }, {
             duration: 800,
             setAnimatingFlag: false,
-            easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#EEE"),
+            easing: animate.Easing.Color(animate.Easing.Cubic.In, this.color, "#8ab7db"),
         }).then(() => {
             window.next(challenge, false);
         });
