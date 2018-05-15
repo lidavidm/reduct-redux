@@ -18,28 +18,6 @@ export default class Navbar {
             size: { w: 65, h: 65 },
         }));
 
-        // this.prev = stage.allocate(gfx.ui.imageButton({
-        //     normal: Loader.images["btn-back-default"],
-        //     hover: Loader.images["btn-back-hover"],
-        //     active: Loader.images["btn-back-down"],
-        // }, {
-        //     click: () => {
-        //         window.prev();
-        //     },
-        //     size: { w: 60, h: 60 },
-        // }));
-
-        // this.next = stage.allocate(gfx.ui.imageButton({
-        //     normal: Loader.images["btn-next-default"],
-        //     hover: Loader.images["btn-next-hover"],
-        //     active: Loader.images["btn-next-down"],
-        // }, {
-        //     click: () => {
-        //         window.next();
-        //     },
-        //     size: { w: 60, h: 60 },
-        // }));
-
         this.undo = stage.allocate(gfx.ui.imageButton({
             normal: Loader.images["bluundo"],
             hover: Loader.images["btn-back-hover"],

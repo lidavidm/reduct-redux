@@ -66,13 +66,18 @@ export default class Goal {
             return state.get("goal");
         }, {
             subexpScale: 1,
+            padding: {
+                left: 10,
+                right: 10,
+                top: 5,
+                bottom: 5,
+            },
         }, gfx.baseProjection));
         this.container = stage.allocate(gfx.patch3(gfx.constant(container), {
-            left: Loader.images["caption-long-left"],
-            middle: Loader.images["caption-long-mid"],
-            right: Loader.images["caption-long-right"],
+            left: Loader.images["dialog_box_left"],
+            middle: Loader.images["dialog_box_mid"],
+            right: Loader.images["dialog_box_right"],
             leftSpill: 0.4,
-            rightSpill: 0.4,
         }));
 
         this.textGoal = null;
@@ -85,7 +90,7 @@ export default class Goal {
             this.text = this.stage.allocate(gfx.text(textGoal, {
                 fontSize: 20,
                 font: gfx.text.sans,
-                wrapWidth: 70,
+                wrapWidth: 50,
             }));
             let container = null;
             if (showConcreteGoal) {
@@ -105,6 +110,13 @@ export default class Goal {
                     }, gfx.baseProjection))
                 ), {
                     subexpScale: 1,
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        inner: 5,
+                    },
                 }, gfx.baseProjection));
             }
             else {
@@ -115,17 +127,15 @@ export default class Goal {
             }
 
             this.container = this.stage.allocate(gfx.patch3(gfx.constant(container), {
-                left: Loader.images["caption-long-left"],
-                middle: Loader.images["caption-long-mid"],
-                right: Loader.images["caption-long-right"],
-                leftSpill: 0.4,
-                rightSpill: 0.4,
+                left: Loader.images["dialog_box_left"],
+                middle: Loader.images["dialog_box_mid"],
+                right: Loader.images["dialog_box_right"],
             }));
         }
 
-        const alien = this.stage.getView(this.alien);
+        const alien = this.stage.getView(this.background);
         this.stage.getView(this.container).pos = {
-            x: gfx.absolutePos(alien).x + alien.size.w,
+            x: gfx.absolutePos(alien).x + alien.size.w - 10,
             y: -300,
         };
 
