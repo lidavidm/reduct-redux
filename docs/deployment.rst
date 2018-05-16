@@ -35,6 +35,15 @@ For use in classroom:
 - :kbd:`Shift-F9` will reset the game. (It doesn't ask for
   confirmation, which is why it's on a different key.)
 
+Game is Slow
+============
+
+In Google Chrome:
+
+1. Visit chrome://flags/
+2. Find "Accelerated 2D canvas". Set this to "Disabled" and restart
+   Chrome.
+
 Logging
 =======
 
