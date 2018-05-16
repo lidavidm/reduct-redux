@@ -23,6 +23,18 @@ of ``dist/``. Also commit a `.nojekyll`_ file. Make sure to copy the
 contents of the resources folder into the GitHub Pages repository, and
 not just the symbolic link, otherwise it won't work.
 
+Administration
+==============
+
+For use in classroom:
+
+- The password between levels is ``cornell``.
+- :kbd:`Control-F6` and :kbd:`Control-F7` go to the previous/next
+  level.
+- :kbd:`Control-F8` will toggle the development toolbar.
+- :kbd:`Shift-F9` will reset the game. (It doesn't ask for
+  confirmation, which is why it's on a different key.)
+
 Logging
 =======
 
