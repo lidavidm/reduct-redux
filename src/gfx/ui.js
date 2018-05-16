@@ -32,7 +32,7 @@ export function button(stage, label, options) {
         this.shadow = true;
         this.offset.y -= 3;
 
-        Audio.play("fatbtn_click");
+        Audio.play("convert");
         if (options.click) options.click();
     };
 
@@ -67,7 +67,7 @@ export function imageButton(images, options={}) {
             state = "normal";
             return;
         }
-        Audio.play("fatbtn_click");
+        Audio.play("convert");
         if (options.click) options.click();
         state = "normal";
     };

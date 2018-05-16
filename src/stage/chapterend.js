@@ -216,7 +216,9 @@ export default class ChapterEndStage extends BaseStage {
                     easing: animate.Easing.Anticipate.BackOut(10),
                     duration: 500,
                     setAnimatingFlag: false,
-                });
+                }).delay(500);
+
+                animate.after(500).then(() => Audio.play("chapter-complete-2"));
             });
 
         animate.infinite((dt) => {
@@ -242,7 +244,6 @@ export default class ChapterEndStage extends BaseStage {
                 color: "#e95888",
                 click: () => {
                     const chapter = progression.nextChapter();
-                    console.log(chapter);
                     if (chapter && chapter.password) {
                         passwordPrompt("Ask the teacher to continue on!", chapter.password).then(() => {
                             this.continue(false);

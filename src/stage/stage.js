@@ -420,7 +420,7 @@ export default class Stage extends BaseStage {
 
         const showSidebar = this.sidebar.startLevel(state);
         if (showSidebar) {
-            this.sidebarWidth = 150;
+            this.sidebarWidth = 50;
         }
         else {
             this.sidebarWidth = 0;
@@ -706,6 +706,7 @@ export default class Stage extends BaseStage {
         const name = nodes.getIn([ selectedNode, "name" ]);
         this.store.dispatch(action.define(name, selectedNode));
         this.sidebar.addGlobal(this.getState(), name);
+        Audio.play("playcard");
     }
 
     /**
@@ -951,7 +952,7 @@ export default class Stage extends BaseStage {
             const topNodeRecord = state.getIn([ "nodes", topNode ]);
             if (topNodeRecord.get("body") && this.views[topNodeRecord.get("body")]) {
                 const body = topNodeRecord.get("body");
-                Audio.play("pop");
+                Audio.play("371270__mafon2__water-drip-2");
 
                 this.views[topNode].pos = gfxCore.centerPos(this.views[topNode]);
                 this.views[topNode].anchor = { x: 0.5, y: 0.5 };
@@ -999,7 +1000,7 @@ export default class Stage extends BaseStage {
                     this.views[newNodeId].pos.x = this.views[topNode].pos.x;
                     this.views[newNodeId].pos.y = this.views[topNode].pos.y;
                 }
-                Audio.play("pop");
+                Audio.play("371270__mafon2__water-drip-2");
 
                 // Project after measuring sizes
                 for (const node of newNodes) {
@@ -1356,6 +1357,7 @@ export default class Stage extends BaseStage {
                 newView.pos.x = oldView.pos.x;
                 newView.pos.y = oldView.pos.y;
 
+                Audio.play("208111__planman__poof-of-smoke");
                 this.store.dispatch(action.unfold(
                     this.functionDef.referenceId,
                     fullNodes[0].get("id"),
@@ -1363,6 +1365,7 @@ export default class Stage extends BaseStage {
                 ));
             }
             else {
+                this.functionDef.cancel();
                 Logging.log("unfold-cancel", {
                     item: this.saveNode(this.functionDef.referenceId),
                 });

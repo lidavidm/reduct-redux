@@ -1,6 +1,8 @@
 import * as gfx from "../gfx/core";
 import * as animate from "../gfx/animate";
 
+import Audio from "../resource/audio";
+
 export default class FunctionDef {
     constructor(stage, name, nodeId, referenceId, delay=500) {
         this.stage = stage;
@@ -17,16 +19,26 @@ export default class FunctionDef {
                 duration: 350,
                 easing: animate.Easing.Cubic.In,
             }))
-            .then(() => animate.tween(this.view, {
-                pos: {
-                    x: centerPos.x,
-                    y: centerPos.y + (absSize.h / 2) + 5,
-                },
-                scale: { x: 1.0, y: 1.0 },
-            }, {
-                duration: 2000,
-                easing: animate.Easing.Cubic.InOut,
-            }).delay(100));
+            .then(() => animate.after(100))
+            .then(() => {
+                this.audioId = Audio.play("202753__sheepfilms__slide-whistle-3");
+                animate.tween(this.view, {
+                    pos: {
+                        x: centerPos.x,
+                        y: centerPos.y + (absSize.h / 2) + 5,
+                    },
+                    scale: { x: 1.0, y: 1.0 },
+                }, {
+                    duration: 2000,
+                    easing: animate.Easing.Cubic.InOut,
+                });
+            });
+    }
+
+    cancel() {
+        if (this.audioId) {
+            Audio.stop("202753__sheepfilms__slide-whistle-3", this.audioId);
+        }
     }
 
     project() {

@@ -142,22 +142,22 @@ export default {
                     star: {
                         type: "sprite",
                         image: "sport_1",
-                        size: { w: 50 },
+                        size: { h: 40 },
                     },
                     circle: {
                         type: "sprite",
                         image: "sport_2",
-                        size: { w: 50 },
+                        size: { h: 40 },
                     },
                     triangle: {
                         type: "sprite",
                         image: "sport_3",
-                        size: { w: 50 },
+                        size: { h: 40 },
                     },
                     rect: {
                         type: "sprite",
                         image: "sport_4",
-                        size: { w: 50 },
+                        size: { h: 40 },
                     },
                 },
             },

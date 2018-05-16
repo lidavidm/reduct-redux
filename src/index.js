@@ -77,7 +77,6 @@ function initialize() {
     }
 
     document.body.addEventListener("keyup", (e) => {
-        console.log(e);
         if (e.ctrlKey && e.code === "F6") {
             window.prev();
             e.preventDefault();

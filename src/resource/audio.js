@@ -24,6 +24,14 @@ class AudioEngine {
         return id;
     }
 
+    stop(sound, id) {
+        if (!Loader.sounds[sound]) {
+            console.error(`@AudioEngine#play: could not find sound ${sound}`);
+            return;
+        }
+        Loader.sounds[sound].stop(id);
+    }
+
     playSeries(sounds) {
         for (const sound of sounds) {
             if (!Loader.sounds[sound]) {

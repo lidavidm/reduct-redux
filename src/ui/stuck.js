@@ -1,11 +1,14 @@
 import * as animate from "../gfx/animate";
 import * as level from "../game/level";
 
+import Audio from "../resource/audio";
+
 export default class StuckEffect {
     constructor(stage) {
         this.stage = stage;
         this.opacity = 0.0;
 
+        Audio.play("stuck");
         animate.tween(this, {
             opacity: 0.5,
         }, {
