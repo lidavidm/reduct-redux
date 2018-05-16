@@ -137,6 +137,7 @@ export function argumentBar() {
                 );
 
                 txt.text = name;
+                txt.prepare(null, null, state, stage);
                 txt.draw(null, null, state, stage, Object.assign({}, offset, {
                     x: x + dx + Math.max(0, (w - width) / 2),
                     y: y + (5 * offset.sy),
