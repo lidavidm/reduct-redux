@@ -153,15 +153,23 @@ somewhat automate this process, detailed below.
 
 Assets are generated from a separate repository. They should not be
 committed to this repository. I've created a script that will generate
-all the necessary assets, so to update, simply run the following:
+all the necessary assets. First, you will need ImageMagick
+installed. (MacOS users should be able to find this in Homebrew.)
+Then, install the other dependencies:
 
 .. code-block:: bash
 
    # First, cd into the reduct-assets repository.
+   npm install
+
+Now you can build the assets:
+
+.. code-block:: bash
+
    ./build.sh
    # Now, cd into the reduct-redux repository.
    cp ../reduct-assets/output/output.* resources/audio/
-   cp ../reduct-assets/output/*assets.* resources/graphics
+   cp ../reduct-assets/output/*assets.* resources/graphics/
 
 chapterutil
 ===========
