@@ -191,21 +191,19 @@ export default class ChapterEndStage extends BaseStage {
                     }, {
                         easing: animate.Easing.Cubic.In,
                         duration: 500,
-                    }).delay(i * 30)
+                    }).delay(i * 200)
                         .then(() => {
                             this.levelStars.splice(this.levelStars.indexOf(id), 1);
-                            if (i % 3 === 0) {
-                                const particles = random.getRandInt(20, 50);
-                                const rotation = Math.random() * (Math.PI / 2);
-                                return animate.fx.splosion(this, star.pos, {
-                                    explosionRadius: 500,
-                                    numOfParticles: particles,
-                                    duration: 600,
-                                    color: idx => scale(idx / particles),
-                                    angle: idx => rotation + (2 * Math.PI * (idx / particles)),
-                                });
-                            }
-                            return null;
+                            Audio.play("acceptance");
+                            const particles = random.getRandInt(20, 50);
+                            const rotation = Math.random() * (Math.PI / 2);
+                            return animate.fx.splosion(this, star.pos, {
+                                explosionRadius: 500,
+                                numOfParticles: particles,
+                                duration: 600,
+                                color: idx => scale(idx / particles),
+                                angle: idx => rotation + (2 * Math.PI * (idx / particles)),
+                            });
                         }));
                 }
                 return Promise.all(splosions);
