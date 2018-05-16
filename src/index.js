@@ -89,6 +89,14 @@ function initialize() {
             toggleDev();
             e.preventDefault();
         }
+        else if (e.shiftKey && e.code === "F9") {
+            window.localStorage["version"] = "";
+            Logging.resetState();
+            Logging.clearStaticLog();
+            Logging.saveState();
+            e.preventDefault();
+            window.location.reload();
+        }
     });
 
     canvas = document.createElement("canvas");
