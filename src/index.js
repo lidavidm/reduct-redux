@@ -76,6 +76,8 @@ function initialize() {
         toggleDev();
     }
 
+    document.querySelector("#loading-container").remove();
+
     document.body.addEventListener("keyup", (e) => {
         if (e.ctrlKey && e.code === "F6") {
             window.prev();
