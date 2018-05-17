@@ -9,8 +9,8 @@ export default class Navbar {
 
         this.reset = stage.allocate(gfx.ui.imageButton({
             normal: Loader.images["blureset"],
-            hover: Loader.images["btn-reset-hover"],
-            active: Loader.images["btn-reset-down"],
+            hover: Loader.images["blureset-hover"],
+            active: Loader.images["blureset-down"],
         }, {
             click: () => {
                 window.reset();
@@ -20,8 +20,8 @@ export default class Navbar {
 
         this.undo = stage.allocate(gfx.ui.imageButton({
             normal: Loader.images["bluundo"],
-            hover: Loader.images["btn-back-hover"],
-            active: Loader.images["btn-back-down"],
+            hover: Loader.images["bluundo-hover"],
+            active: Loader.images["bluundo-down"],
         }, {
             click: () => {
                 this.stage.store.dispatch(undo.undo());
@@ -32,8 +32,8 @@ export default class Navbar {
 
         this.redo = stage.allocate(gfx.ui.imageButton({
             normal: Loader.images["bluredo"],
-            hover: Loader.images["btn-next-hover"],
-            active: Loader.images["btn-next-down"],
+            hover: Loader.images["bluredo-hover"],
+            active: Loader.images["bluredo-down"],
         }, {
             click: () => {
                 this.stage.store.dispatch(undo.redo());
