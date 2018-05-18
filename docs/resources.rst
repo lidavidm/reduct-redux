@@ -61,7 +61,7 @@ special fields:
   game. This is an application of *concreteness fading*, the focus of
   the first version of Reduct. This property allows you to control
   which variant of the specified expression is used, and is also
-  persistent in future levels.
+  persistent in future levels. See :ref:`Concreteness Fading`.
 
 ``syntax``
   There is a (commented-out) feature called the syntax journal, which
@@ -170,6 +170,9 @@ Now you can build the assets:
    # Now, cd into the reduct-redux repository.
    cp ../reduct-assets/output/output.* resources/audio/
    cp ../reduct-assets/output/*assets.* resources/graphics/
+
+The result will be in the ``output`` directory and should be copied to
+the ``resources`` directory in Reduct.
 
 chapterutil
 ===========

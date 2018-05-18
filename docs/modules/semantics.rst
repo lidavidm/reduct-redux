@@ -195,8 +195,23 @@ For working with expression objects, see :ref:`Expression Fields`.
 Concreteness Fading
 -------------------
 
+Reduct-Redux has limited support for *concreteness fading*, a
+technique for teaching abstract concepts by transitioning from
+concrete representations to more abstract ones. For more details, see
+`the original Reduct paper`_.
+
+To specify alternative versions of an expression, the definition of an
+expression can actually be a list of alternate definitions. A level
+can specify which version to use by providing the index of the
+expression to use. See :ref:`Level Definition Format`.
+
+.. _`the original Reduct paper`: http://www.cs.cornell.edu/andru/papers/reduct-chi17/reduct-chi17.pdf
+
 Dynamic Subexpressions
 ----------------------
+
+.. note:: This is an advanced feature. Look at how references are
+          implemented for more details.
 
 Type Checking
 -------------
@@ -212,8 +227,51 @@ Notches
 Defining Parsing
 ================
 
+In the overall semantics definition object, you should specify how to
+parse and unparse expressions in your language.
+
+.. code-block:: js
+
+   export default transform({
+       name: "ECMAScript 6",
+       parser: {
+           parse: makeParser,
+           unparse: makeUnparser,
+           // ⋮
+       },
+   });
+
+
+Simply provide the two functions as shown above. ``parse`` should be a
+curried function ``semant -> ((string -> macros) -> expression |
+expression[])``. That is, given the final semantics module, return a
+function that takes a code fragment and a set of macros, and returns a
+parsed expression or list of parsed expressions (or raises an
+exception). ``unparse`` is similar, except the resulting function
+should not expect any macros. Both of these operate on mutable
+expressions.
+
+Macros are a dictionary of names to functions that return expressions
+when invoked. You could also think of them as a namespace.
+
 Miscellaneous Hooks
 ===================
+
+You can also define other special functions in the parser field.
+
+``templatizeName``
+  Used to rename identifiers during parsing. (Available as
+  ``semant.parser.templatizeName``). This was implemented for the
+  primitive value theming functionality.
+
+``extractGlobals``
+  TODO
+
+``extractDefines``
+  TODO
+
+``extractGlobalNames``
+  TODO
 
 Semantics Functions
 ===================
@@ -229,7 +287,7 @@ of :func:`transform`). You might also see this referred to as
 There are also "core" semantics functions you can use outside of
 having a semantics module:
 
-.. code-block:: javascript
+.. code-block:: js
 
    import * as core from "./semantics/core";
 
