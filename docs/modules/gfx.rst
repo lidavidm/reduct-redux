@@ -44,6 +44,11 @@ to deal with this.
 JSON-Defined Views
 ==================
 
+The semantics definition system includes a system for defining how
+expressions are displayed in JSON (well, "JSON" since we embed
+functions). The best reference is to look at other expressions and
+modify them to suit your purposes.
+
 gfx Reference
 =============
 
