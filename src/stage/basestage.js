@@ -1,11 +1,12 @@
+/**
+ * Handle drawing responsibilites for Reduct.
+ * @module BaseStage
+ */
 import * as gfxCore from "../gfx/core";
 import { nextId } from "../reducer/reducer";
 
 import TouchRecord from "./touchrecord";
 
-/**
- * Handle drawing responsibilites for Reduct.
- */
 export default class BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
         this.store = store;
@@ -93,12 +94,18 @@ export default class BaseStage {
         return id;
     }
 
+    /**
+     * @deprecated Use :func:`allocate` instead.
+     */
     allocateInternal(projection) {
         const id = nextId();
         this.internalViews[id] = projection;
         return id;
     }
 
+    /**
+     * Get the view with the given ID.
+     */
     getView(id) {
         return this.views[id] || this.internalViews[id];
     }
@@ -129,6 +136,9 @@ export default class BaseStage {
         return { x, y };
     }
 
+    /**
+     * Get the current Redux state.
+     */
     getState() {
         return this.store.getState().getIn([ "program", "$present" ]);
     }

@@ -33,12 +33,54 @@ document.body.addEventListener("keyup", (e) => {
  */
 export function baseProjection(options) {
     const projection = Object.assign({
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.pos
+         * @instance
+         */
         pos: { x: 0, y: 0 },
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.anchor
+         * @instance
+         */
         anchor: { x: 0, y: 0 },
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.scale
+         * @instance
+         */
         scale: { x: 1, y: 1 },
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.size
+         * @instance
+         */
         size: { w: 0, h: 0 },
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.opacity
+         * @instance
+         */
         opacity: 1.0,
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.backgroundOpacity
+         * @instance
+         */
         backgroundOpacity: 1.0,
+        /**
+         * @member
+         * @memberof! gfx.baseProjection
+         * @alias gfx.baseProjection.offset
+         * @instance
+         */
         offset: { x: 0, y: 0 },
     }, options);
 
@@ -236,6 +278,15 @@ export function hoverOutline(id, projection, stage, offset) {
 }
 
 /**
+ * Given projection IDs, returns a function that always returns those
+ * IDs.
+ *
+ * Useful as the ``childrenFunc`` argument to a view when your
+ * children are static.
+ *
+ * @param {...*} projections - The view IDs. (This is a variadic
+ * function.)
+ *
  * @alias gfx.constant
  */
 export function constant(...projections) {
@@ -243,6 +294,10 @@ export function constant(...projections) {
 }
 
 /**
+ * Return the L2-norm distance between two views or point-like objects
+ * (i.e. the object should either have an ``x`` and ``y`` field, or
+ * have a ``pos`` field).
+ *
  * @alias gfx.distance
  */
 export function distance(proj1, proj2) {
@@ -252,6 +307,9 @@ export function distance(proj1, proj2) {
 }
 
 /**
+ * Return the canvas coordinates of the top left of this view,
+ * accounting for anchor (not the coordinates relative to its parent).
+ *
  * @alias gfx.absolutePos
  */
 export function absolutePos(projection) {
@@ -270,6 +328,9 @@ export function absolutePos(projection) {
 }
 
 /**
+ * Return the canvas size of this view (not the size relative to its
+ * parent).
+ *
  * @alias gfx.absoluteSize
  */
 export function absoluteSize(projection) {
@@ -285,6 +346,9 @@ export function absoluteSize(projection) {
 }
 
 /**
+ * Return the canvas coordinates of the center of this view
+ * (accounting for anchor).
+ *
  * @alias gfx.centerPos
  */
 export function centerPos(projection) {
@@ -393,6 +457,10 @@ export function baseShape(name, defaults, draw, baseShapeOptions={}) {
     };
 }
 
+/**
+ * @class
+ * @alias gfx.rect
+ */
 export const rect = baseShape("roundedRect", {
     color: "lightgray",
     radius: 20,
@@ -408,6 +476,10 @@ export const rect = baseShape("roundedRect", {
     // TODO: notches
 });
 
+/**
+ * @class
+ * @alias gfx.roundedRect
+ */
 export const roundedRect = baseShape("roundedRect", {
     color: "lightgray",
     radius: 18,
@@ -454,6 +526,10 @@ export const roundedRect = baseShape("roundedRect", {
     },
 });
 
+/**
+ * @class
+ * @alias gfx.hexaRect
+ */
 export const hexaRect = baseShape("hexaRect", {
     color: "lightgray",
     radius: 20,
@@ -473,6 +549,9 @@ export const hexaRect = baseShape("hexaRect", {
  * Create a projection that renders based on an expression field or function.
  *
  * Note that all projections must have compatible fields.
+ *
+ * @class
+ * @alias gfx.dynamic
  */
 export function dynamic(mapping, keyFunc, options) {
     let projection = {};
@@ -525,6 +604,9 @@ export function dynamic(mapping, keyFunc, options) {
 
 /**
  * Create a projection that changes values based on an expression field or function.
+ *
+ * @class
+ * @alias gfx.dynamicProperty
  */
 export function dynamicProperty(projection, keyFunc, mappings) {
     if (typeof keyFunc === "string") {

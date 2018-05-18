@@ -84,6 +84,10 @@ function shapeProjection(options) {
     }, options);
 }
 
+/**
+ * @class
+ * @alias gfx.shapes.triangle
+ */
 export function triangle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "triangle";
@@ -110,6 +114,10 @@ export function triangle(options={}) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.shapes.circle
+ */
 export function circle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "circle";
@@ -134,6 +142,10 @@ export function circle(options={}) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.shapes.rectangle
+ */
 export function rectangle(options={}) {
     const projection = shapeProjection(options);
     projection.type = "rectangle";
@@ -159,6 +171,10 @@ export function rectangle(options={}) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.shapes.star
+ */
 export function star(options={}) {
     const projection = shapeProjection(options);
     projection.type = "star";

@@ -14,6 +14,11 @@ unique numeric ID. Views are objects:
 Allocating IDs
 ==============
 
+Use :func:`module:BaseStage.allocate`. (You'll also see
+``allocateInternal``, but this should be considered deprecated.) Note
+that allocating an ID for a view does not mean it will be
+automatically drawn for you.
+
 How the View Hierarchy Works
 ============================
 
@@ -23,11 +28,24 @@ might have multiple associated views. To distinguish between these,
 ``prepare`` and ``draw`` are passed both the expression ID and the
 view ID.
 
+To give views children views, as with something like
+:class:`gfx.layout.hbox`, views take a function that returns a list of
+children. This function is passed an expression ID and the current
+state, and should return a list of either child expression IDs, or
+pairs of ``[ childViewId, childExprId ]``. (There is a utility
+function that normalizes these two cases.) This allows the children of
+a layout to change based on the state (e.g. so a ``+`` block can use
+an ``hbox`` to position its children). In case you don't need this
+dynamism, there is :func:`gfx.constant`.
+
+Most of the time, you will be using JSON-defined views, and won't have
+to deal with this.
+
 JSON-Defined Views
 ==================
 
-Reference
-=========
+gfx Reference
+=============
 
 Utility Functions
 -----------------
@@ -37,3 +55,24 @@ Utility Functions
 .. autofunction:: gfx.absolutePos
 .. autofunction:: gfx.absoluteSize
 .. autofunction:: gfx.centerPos
+
+Built-In Views
+--------------
+
+.. autoclass:: gfx.rect
+.. autoclass:: gfx.roundedRect
+.. autoclass:: gfx.hexaRect
+.. autoclass:: gfx.dynamic
+.. autoclass:: gfx.dynamicProperty
+.. autoclass:: gfx.text
+.. autoclass:: gfx.layout.expand
+.. autoclass:: gfx.layout.hexpand
+.. autoclass:: gfx.layout.sticky
+.. autoclass:: gfx.layout.hbox
+.. autoclass:: gfx.layout.vbox
+.. autoclass:: gfx.layout.ratioSizer
+.. autoclass:: gfx.layout.ratioPlacer
+.. autoclass:: gfx.shapes.circle
+.. autoclass:: gfx.shapes.rectangle
+.. autoclass:: gfx.shapes.star
+.. autoclass:: gfx.shapes.triangle

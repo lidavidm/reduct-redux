@@ -7,6 +7,11 @@ import * as util from "./util";
 // TODO: make this part of the stage instead?
 const TEXT_SIZE_CACHE = {};
 
+/**
+ *
+ * @class
+ * @alias gfx.text
+ */
 export default function text(txt, options) {
     const projection = baseProjection(Object.assign({
         text: txt,

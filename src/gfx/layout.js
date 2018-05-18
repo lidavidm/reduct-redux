@@ -2,10 +2,18 @@ import * as animate from "./animate";
 import { debugDraw, roundedRect } from "./core";
 import * as util from "./util";
 
+/**
+ * @class
+ * @alias gfx.layout.hexpand
+ */
 export function hexpand(projection) {
     return expand(projection, { horizontal: true });
 }
 
+/**
+ * @class
+ * @alias gfx.layout.expand
+ */
 export function expand(projection, options) {
     const origPrepare = projection.prepare;
     projection.expand = options;
@@ -21,6 +29,10 @@ export function expand(projection, options) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.layout.sticky
+ */
 export function sticky(projection, direction, options) {
     const origPrepare = projection.prepare;
     projection.sticky = Object.assign({
@@ -67,6 +79,10 @@ export function sticky(projection, direction, options) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.layout.hbox
+ */
 export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     if (options && options.padding) {
         options.padding = Object.assign({
@@ -141,6 +157,10 @@ export function hbox(childrenFunc, options={}, baseProjection=roundedRect) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.layout.vbox
+ */
 export function vbox(childrenFunc, options={}, baseProjection=roundedRect) {
     if (options && options.padding) {
         options.padding = Object.assign({
@@ -288,6 +308,10 @@ export function previewer(projection) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.layout.ratioSizer
+ */
 export function ratioSizer(projection, ratio, percentage) {
     const { prepare } = projection;
     projection.prepare = function(id, exprId, state, stage) {
@@ -301,6 +325,10 @@ export function ratioSizer(projection, ratio, percentage) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.layout.ratioPlacer
+ */
 export function ratioPlacer(projection, x, y) {
     const { prepare } = projection;
     projection.prepare = function(id, exprId, state, stage) {
