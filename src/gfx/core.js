@@ -21,6 +21,16 @@ document.body.addEventListener("keyup", (e) => {
     if (e.key === "F2") DEBUG = !DEBUG;
 });
 
+/**
+ * The base view type.
+ *
+ * Note that you do *not* use ``new`` with views. Views are just
+ * functions that construct objects. They may not necessarily
+ * construct a new object; some views are modifiers for other views.
+ *
+ * @class
+ * @alias gfx.baseProjection
+ */
 export function baseProjection(options) {
     const projection = Object.assign({
         pos: { x: 0, y: 0 },
@@ -36,13 +46,58 @@ export function baseProjection(options) {
         projection.notches = notch.parseDescriptions(options.notches);
     }
 
+    /**
+     * Perform any layout or update any state for this view. Called
+     * before drawing.
+     *
+     * @param {Number} id - The ID of this view.
+     * @param {Number} exprId - The ID of the associated expression,
+     * if any.
+     * @param state - The current Redux/Immutable.js state.
+     * @param stage - The containing stage.
+     *
+     * @alias gfx.baseProjection.prepare
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.prepare = function(id, exprId, state, stage) {};
+    /**
+     * Actually draw this view.
+     *
+     * @param {Number} id - The ID of this view.
+     * @param {Number} exprId - The ID of the associated expression,
+     * if any.
+     * @param state - The current Redux/Immutable.js state.
+     * @param stage - The containing stage.
+     * @param offset - An object containing a position (``x``, ``y``)
+     * offset to apply, a scale (``sx``, ``sy``) to apply, and the
+     * current cumulative opacity (``opacity``) value.
+     *
+     * @alias gfx.baseProjection.draw
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.draw = function(id, exprId, state, stage, offset) {};
 
+    /**
+     * Get the children of this view, based on the expression ID and
+     * current state.
+     *
+     * @return An iterable of ``[ childViewId, childExprId ]`` tuples.
+     *
+     * @alias gfx.baseProjection.children
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.children = function(exprId, state) {
         return [];
     };
 
+    /**
+     * @alias gfx.baseProjection.containsPoint
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.containsPoint = function(pos, offset) {
         const { x, y } = util.topLeftPos(this, offset);
         return pos.x >= x &&
@@ -51,7 +106,17 @@ export function baseProjection(options) {
             pos.y <= y + (this.size.h * offset.sy * this.scale.y);
     };
 
+    /**
+     * @alias gfx.baseProjection.notchOffset
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.notchOffset = function(id, exprId, notchId) {};
+    /**
+     * @alias gfx.baseProjection.notchPos
+     * @memberof! gfx.baseProjection
+     * @instance
+     */
     projection.notchPos = function(id, exprId, notchId) {
         const pos = util.topLeftPos(this, {
             x: 0,
@@ -170,16 +235,25 @@ export function hoverOutline(id, projection, stage, offset) {
     }
 }
 
+/**
+ * @alias gfx.constant
+ */
 export function constant(...projections) {
     return () => projections;
 }
 
+/**
+ * @alias gfx.distance
+ */
 export function distance(proj1, proj2) {
     const p1 = proj1.pos || proj1;
     const p2 = proj2.pos || proj2;
     return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 }
 
+/**
+ * @alias gfx.absolutePos
+ */
 export function absolutePos(projection) {
     let { x, y } = projection.pos;
     x -= projection.anchor.x * projection.size.w * projection.scale.x;
@@ -195,6 +269,9 @@ export function absolutePos(projection) {
     return { x, y };
 }
 
+/**
+ * @alias gfx.absoluteSize
+ */
 export function absoluteSize(projection) {
     let { w, h } = projection.size;
     w *= projection.scale.x;
@@ -207,6 +284,9 @@ export function absoluteSize(projection) {
     return { w, h };
 }
 
+/**
+ * @alias gfx.centerPos
+ */
 export function centerPos(projection) {
     const { x, y } = absolutePos(projection);
     const { w, h } = absoluteSize(projection);

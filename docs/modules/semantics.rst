@@ -293,5 +293,9 @@ having a semantics module:
 
 .. autofunction:: core.genericBetaReduce
 
+TODO: there are lots more
+
 Interpreter
 -----------
+
+TODO
