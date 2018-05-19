@@ -38,8 +38,9 @@ Loader.loadImageAtlas("menusprites", "resources/graphics/menu-assets.json", "res
 Loader.loadChapters("Elementary", progression.ACTIVE_PROGRESSION_DEFINITION);
 Loader.waitForFonts([ "Fira Mono", "Fira Sans", "Nanum Pen Script" ]);
 
-Promise.all([ Loader.finished, consent() ])
+Promise.all([ Loader.finished ])
     .then(([ _, consented ]) => {
+        consented = false;
         console.log(`User consented to logging: ${consented}`);
         if (!consented) {
             Logging.resetState();
