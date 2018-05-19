@@ -25,97 +25,6 @@ import Network from "../logging/network";
 import BaseStage from "./basestage";
 import StageTouchRecord from "./stagetouchrecord";
 
-const DOUBLE_CLICK_THRESHOLD_MS = 250;
-
-class DoubleClickLayer {
-    constructor(mousedown, mousemove, mouseup, doubleclick) {
-        this._mousedownInner = mousedown;
-        this._mousemoveInner = mousemove;
-        this._mouseupInner = mouseup;
-        this._doubleclickInner = doubleclick;
-
-        // Keep track of click times for double-click.
-        this.clickTimer = null;
-        this.clickStartTime = null;
-        this.clickState = "reset";
-        this.clickPos = null;
-    }
-
-    _resetmouse() {
-        if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-        this.clickState = "reset";
-        this.clickStartTime = null;
-        this.clickTimer = null;
-        this.clickPos = null;
-    }
-
-    onmousedown(e) {
-        if (this.clickState === "reset") {
-            this.clickState = "down";
-            this.clickStartTime = Date.now();
-            this.clickPos = e;
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(e);
-                this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS);
-        }
-        else if (this.clickState === "up") {
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this.clickState = "down2";
-            const cp = this.clickPos;
-            this.clickPos = e;
-
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(cp);
-                this._mouseupInner(cp);
-                this._mousedownInner(e);
-                this._resetmouse();
-            }, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime));
-        }
-    }
-
-    onmousemove(e) {
-        if (this.clickState !== "reset") {
-            this._mousedownInner(this.clickPos);
-            if (this.clickState === "up" || this.clickState === "down2") {
-                this._mouseupInner(this.clickPos);
-            }
-
-            if (this.clickState === "down2") {
-                this._mousedownInner(this.clickPos);
-            }
-
-            this._mousemoveInner(e);
-            this._resetmouse();
-            this.clickState = "reset";
-        }
-        else {
-            this._mousemoveInner(e);
-        }
-    }
-
-    onmouseup(e) {
-        if (this.clickState === "down") {
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this.clickState = "up";
-            this.clickTimer = window.setTimeout(() => {
-                this._mousedownInner(this.clickPos);
-                this._mouseupInner(e);
-                this._resetmouse();
-            }, Math.max(0, DOUBLE_CLICK_THRESHOLD_MS - (Date.now() - this.clickStartTime)));
-        }
-        else if (this.clickState === "down2") {
-            this._doubleclickInner(e);
-            if (this.clickTimer !== null) window.clearTimeout(this.clickTimer);
-            this._resetmouse();
-        }
-        else {
-            this._mouseupInner(e);
-            this._resetmouse();
-        }
-    }
-}
-
 /**
  * Handle drawing responsibilites for Reduct.
  */
@@ -152,13 +61,6 @@ export default class Stage extends BaseStage {
         this.newDefinedNames = [];
         // Keep track of the reduction mode.
         this.mode = "over";
-
-        this.clickWrapper = new DoubleClickLayer(
-            this._mousedownInner.bind(this),
-            this._mousemoveInner.bind(this),
-            this._mouseupInner.bind(this),
-            this._doubleclickInner.bind(this)
-        );
     }
 
     get touchRecordClass() {
@@ -1414,7 +1316,7 @@ export default class Stage extends BaseStage {
         });
     }
 
-    _mousedownInner(e) {
+    _mousedown(e) {
         const pos = this.getMousePos(e);
 
         if (pos.sidebar) {
@@ -1434,42 +1336,6 @@ export default class Stage extends BaseStage {
         }
 
         return super._mousedown(e);
-    }
-
-    _mousemoveInner(e) {
-        super._mousemove(e);
-    }
-
-    _mouseupInner(e) {
-        super._mouseup(e);
-    }
-
-    _doubleclickInner(e) {
-        const pos = this.getMousePos(e);
-        if (pos.sidebar) return;
-
-        const targetNode = this.getReferenceNameAtPos(pos);
-
-        if (targetNode !== null) {
-            const state = this.getState();
-            const node = state.getIn([ "nodes", targetNode ]);
-            if (node.get("type") === "reference") {
-                this.showReferenceDefinition(this.getState(), targetNode, true);
-            }
-        }
-    }
-
-    /* ~~~~ Implement a double-click layer on top of click methods ~~~~ */
-    _mousedown(e) {
-        this.clickWrapper.onmousedown(e);
-    }
-
-    _mousemove(e) {
-        this.clickWrapper.onmousemove(e);
-    }
-
-    _mouseup(e) {
-        this.clickWrapper.onmouseup(e);
     }
 
     _touchstart(e) {
