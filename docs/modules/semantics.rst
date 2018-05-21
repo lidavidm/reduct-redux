@@ -280,6 +280,14 @@ Here ``module`` refers to the generated semantics module (the result
 of :func:`transform`). You might also see this referred to as
 ``semant`` or ``semantics`` elsewhere.
 
+.. code-block:: js
+
+   // Various ways to get a reference to a semantics module. Usually
+   // it'll be passed as an argument called "semant" to a function you
+   // define, e.g. when defining an expression. Otherwise, it'll be
+   // part of the stage.
+   const module = stage.semantics;
+
 .. autoattribute:: module.definition
 
 .. autofunction:: module.subexpressions

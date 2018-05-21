@@ -1,3 +1,7 @@
+/**
+ * Handle input for Reduct.
+ * @module BaseTouchRecord
+ */
 export default class BaseTouchRecord {
     constructor(stage, topNode, targetNode, fromToolbox, dragAnchor, dragStart) {
         this.stage = stage;
