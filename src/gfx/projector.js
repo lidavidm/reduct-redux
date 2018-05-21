@@ -28,6 +28,8 @@ function shapeToProjection(shape, options) {
 /**
  * The default projector lays out children in a horizontal box with a
  * rounded or hexagonal background.
+ *
+ * @alias gfx.projector.defaultProjector
  */
 function defaultProjector(definition) {
     const options = {};
@@ -84,6 +86,23 @@ function defaultProjector(definition) {
     };
 }
 
+/**
+ * The text projector creates a text view.
+ *
+ * .. code-block:: js
+ *
+ *    {
+ *        type: "text",
+ *        text: textDefinition,
+ *    }
+ *
+ * ``textDefinition`` is either a string or a function. If a string,
+ * it can have substrings like ``{fieldName}`` which will be replaced
+ * with ``expr.get("fieldName")``. If a function, it should have the
+ * signature ``(state, exprId) => string``.
+ *
+ * @alias gfx.projector.textProjector
+ */
 function textProjector(definition) {
     const options = {};
 
@@ -302,6 +321,14 @@ function spriteProjector(definition) {
     };
 }
 
+/**
+ * Given an expression definition, construct a function ``(stage,
+ * nodes, expr) => view`` that will construct a view for an expression
+ * based on the definition, given the stage and the current set of
+ * nodes.
+ *
+ * @alias gfx.projector.projector
+ */
 export default function projector(definition) {
     switch (definition.projection.type) {
     case "default":

@@ -284,6 +284,8 @@ of :func:`transform`). You might also see this referred to as
 
 .. autofunction:: module.subexpressions
 
+.. autofunction:: module.project
+
 There are also "core" semantics functions you can use outside of
 having a semantics module:
 

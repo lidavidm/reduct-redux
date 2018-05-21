@@ -175,10 +175,12 @@ export default function transform(definition) {
     };
 
     /**
-     * Construct the gfx view for a node.
+     * Construct the gfx view for a node. Accounts for fade level.
      *
+     * @param stage
      * @param nodes - We have to provide the node map since the store
      * won't have been updated yet.
+     * @param expr - The immutable expression to create a view for.
      */
     module.project = function project(stage, nodes, expr) {
         const type = expr.get("type");

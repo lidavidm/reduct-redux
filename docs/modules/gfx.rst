@@ -17,7 +17,9 @@ Allocating IDs
 Use :func:`module:BaseStage.allocate`. (You'll also see
 ``allocateInternal``, but this should be considered deprecated.) Note
 that allocating an ID for a view does not mean it will be
-automatically drawn for you.
+automatically drawn for you. Also note that this shouldn't be used for
+views associated with a particular expression; use
+:func:`module.project` instead.
 
 How the View Hierarchy Works
 ============================
@@ -41,6 +43,28 @@ dynamism, there is :func:`gfx.constant`.
 Most of the time, you will be using JSON-defined views, and won't have
 to deal with this.
 
+This diagram might help::
+
+  Store                           Stage
+  ==============================  =======================
+
+  ID     Expression               ID     View
+  --     -----------------------  --     ----------------
+   0 --> { type: "number", ... }   0 --> { ... }
+   1 --> { type: "number", ... }   1 --> { ... }
+   2 --> { type: "binop",          2 --> { childrenFunc }
+           left: 0,
+           right: 1 }
+
+  childrenFunc:
+
+  for (const id of childrenFunc(2, state)) {
+      console.log(id);
+  }
+  // Prints:
+  // 0
+  // 1
+
 JSON-Defined Views
 ==================
 
@@ -48,6 +72,23 @@ The semantics definition system includes a system for defining how
 expressions are displayed in JSON (well, "JSON" since we embed
 functions). The best reference is to look at other expressions and
 modify them to suit your purposes.
+
+.. code-block:: js
+
+   import projector from "./gfx/projector";
+
+.. autofunction:: gfx.projector.projector
+
+   This is your interface to the JSON-defined view system; you
+   shouldn't need to call any of the other projectors listed below
+   directly. (Indeed, you shouldn't need to use this directly,
+   either.)
+
+.. autofunction:: gfx.projector.defaultProjector
+.. autofunction:: gfx.projector.textProjector
+
+There are many more projectors, just undocumented. Look at
+``src/gfx/projector.js``.
 
 gfx Reference
 =============
