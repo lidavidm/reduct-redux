@@ -278,7 +278,9 @@ Semantics Functions
 
 Here ``module`` refers to the generated semantics module (the result
 of :func:`transform`). You might also see this referred to as
-``semant`` or ``semantics`` elsewhere.
+``semant`` or ``semantics`` elsewhere. There are quite a few more
+functions than documented here, so it's worth reading through the
+sources.
 
 .. code-block:: js
 
@@ -288,11 +290,27 @@ of :func:`transform`). You might also see this referred to as
    // part of the stage.
    const module = stage.semantics;
 
+.. autofunction:: module.clone
+.. autoattribute:: module.collectTypes
 .. autoattribute:: module.definition
-
+.. autofunction:: module.definitionOf
+.. autofunction:: module.detachable
+.. autofunction:: module.droppable
+.. autofunction:: module.equal
+.. autofunction:: module.flatten
+.. autoattribute:: module.hasNotches
+.. autofunction:: module.hydrate
+.. autofunction:: module.ignoreForVictory
+.. autofunction:: module.kind
+.. autofunction:: module.map
+.. autofunction:: module.mightBeCompleted
+.. autofunction:: module.notchesAttachable
+.. autofunction:: module.notchesCompatible
+.. autofunction:: module.search
+.. autofunction:: module.searchNoncapturing
+.. autofunction:: module.shallowEqual
 .. autofunction:: module.subexpressions
-
-.. autofunction:: module.project
+.. autofunction:: module.targetable
 
 There are also "core" semantics functions you can use outside of
 having a semantics module:
@@ -308,4 +326,13 @@ TODO: there are lots more
 Interpreter
 -----------
 
-TODO
+These functions handle evaluating/stepping expressions. There are
+various "modes" of evaluation exposed.
+
+.. autoattribute:: module.interpreter
+
+.. autofunction:: module.interpreter.betaReduce
+.. autofunction:: module.interpreter.singleStep
+.. autofunction:: module.interpreter.smallStep
+
+.. autoattribute:: module.interpreter.reducers

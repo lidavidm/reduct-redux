@@ -41,6 +41,7 @@ export default function transform(definition) {
     module.definition = definition;
     module.projections = {};
 
+    /** Get the definition of the given expression, accounting for fade level. */
     module.definitionOf = function getDefinition(exprOrType, fadeLevel=null) {
         const type = exprOrType.get ? exprOrType.get("type") : (exprOrType.type || exprOrType);
         const result = module.definition.expressions[type];
@@ -188,6 +189,10 @@ export default function transform(definition) {
         return module.projections[type][progression.getFadeLevel(type)](stage, nodes, expr);
     };
 
+    /**
+     * Search for lambda variable nodes, ignoring ones bound by a
+     * lambda with the same parameter name deeper in the tree.
+     */
     module.searchNoncapturing = function(nodes, targetName, exprId) {
         const result = [];
         module.map(nodes, exprId, (nodes, id) => {
@@ -203,6 +208,7 @@ export default function transform(definition) {
         return result;
     };
 
+    /** Determine if a level could possibly be completed. */
     module.mightBeCompleted = function(state, checkVictory) {
         const nodes = state.get("nodes");
         const board = state.get("board");
@@ -277,6 +283,7 @@ export default function transform(definition) {
 
     makeInterpreter(module);
 
+    /** Check for equality of fields (but not of subexpressions). */
     module.shallowEqual = function shallowEqual(n1, n2) {
         if (n1.get("type") !== n2.get("type")) return false;
 
@@ -326,6 +333,7 @@ export default function transform(definition) {
         return !expr.get("parent") || !expr.get("locked") || (defn && defn.alwaysTargetable);
     };
 
+    /** Get the kind of an expression (e.g. "expression", "statement"). */
     module.kind = function(expr) {
         switch (expr.get("type")) {
         case "vtuple":
@@ -336,6 +344,7 @@ export default function transform(definition) {
         }
     };
 
+    /** Turn an immutable expression into a mutable one (recursively). */
     module.hydrate = function(nodes, expr) {
         return expr.withMutations((e) => {
             for (const field of module.subexpressions(e)) {
@@ -344,6 +353,7 @@ export default function transform(definition) {
         }).toJS();
     };
 
+    /** The remnants of type checking. */
     module.collectTypes = function collectTypes(state, rootExpr) {
         const result = new Map();
         const completeness = new Map();
@@ -417,10 +427,12 @@ export default function transform(definition) {
         return { types: result, completeness };
     };
 
+    /** Check whether a node has any notches. */
     module.hasNotches = function(node) {
         return node.get("notches");
     };
 
+    /** Check whether two nodes have an ycompatible notches. */
     module.notchesCompatible = function(node1, node2) {
         const notches1 = node1.get("notches");
         const notches2 = node2.get("notches");
@@ -446,6 +458,7 @@ export default function transform(definition) {
         return result;
     };
 
+    /** Check whether two notches on two nodes can attach. */
     module.notchesAttachable = function(stage, state, parentId, childId, notchPair) {
         const nodes = state.get("nodes");
         const parent = nodes.get(parentId);
@@ -483,6 +496,7 @@ export default function transform(definition) {
         return true;
     };
 
+    /** Check whether a node is detachable from its parent. */
     module.detachable = function(state, parentId, childId) {
         const nodes = state.get("nodes");
         const defn = module.definitionOf(nodes.get(parentId));
@@ -514,10 +528,15 @@ export default function transform(definition) {
         return module.kind(node) === "syntax" || (defn && defn.ignoreForVictory);
     };
 
+    /** Compare two nodes for equality (recursively). */
     module.equal = core.genericEqual(module.subexpressions, module.shallowEqual);
+    /** Convert a mutable node into an immutable one (recursively). */
     module.flatten = core.genericFlatten(nextId, module.subexpressions);
+    /** Apply a function to every node in a tree. */
     module.map = core.genericMap(module.subexpressions);
+    /** Search an immutable node and its children. */
     module.search = core.genericSearch(module.subexpressions);
+    /** Clone an immutable node and its children. */
     module.clone = core.genericClone(nextId, module.subexpressions);
 
     module.parser = {};

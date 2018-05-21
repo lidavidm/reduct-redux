@@ -11,7 +11,8 @@ export default function(module) {
      * Take a small step on this expression.
      *
      * Requires that pertinent subexpressions (as defined by
-     * substepFilter) have been reduced first.
+     * ``substepFilter``, if present in the expression definition,
+     * otherwise all subexpressions) have been reduced first.
      *
      * @returns {Array} The ID of the original expression, a list of
      * IDs of resulting nodes, and a list of added nodes (which have
@@ -81,6 +82,9 @@ export default function(module) {
     };
 
     const __substepFilter = () => true;
+    /**
+     * Get the substep filter for a particular expression type.
+     */
     module.interpreter.substepFilter = function getSubstepFilter(type) {
         const defn = module.definitionOf(type);
         if (defn && defn.substepFilter) {
@@ -168,6 +172,9 @@ export default function(module) {
      * A submodule containing evaluation strategies.
      */
     module.interpreter.reducers = {};
+    /**
+     * A single step reducer.
+     */
     module.interpreter.reducers.single = function singleStepReducer(
         stage, state, exp, callbacks,
         recordUndo=true
