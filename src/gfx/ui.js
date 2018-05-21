@@ -2,6 +2,10 @@ import * as gfx from "./core";
 
 import Audio from "../resource/audio";
 
+/**
+ * @class
+ * @alias gfx.ui.button
+ */
 export function button(stage, label, options) {
     if (typeof label === "string") {
         label = gfx.constant(stage.allocate(gfx.text(label, {
@@ -44,6 +48,10 @@ export function button(stage, label, options) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.ui.imageButton
+ */
 export function imageButton(images, options={}) {
     const projection = gfx.baseProjection(Object.assign({}, {
         enabled: true,

@@ -122,3 +122,12 @@ Built-In Views
 .. autoclass:: gfx.shapes.rectangle
 .. autoclass:: gfx.shapes.star
 .. autoclass:: gfx.shapes.triangle
+.. autoclass:: gfx.sprite
+.. autoclass:: gfx.patch3
+.. autoclass:: gfx.exprify
+.. autoclass:: gfx.ui.button
+.. autoclass:: gfx.ui.imageButton
+
+.. autoattribute:: gfx.viewport.IS_PHONE
+.. autoattribute:: gfx.viewport.IS_TABLET
+.. autoattribute:: gfx.viewport.IS_MOBILE

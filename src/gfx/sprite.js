@@ -2,6 +2,10 @@ import { baseProjection, debugDraw } from "./core";
 import * as primitive from "./primitive";
 import * as util from "./util";
 
+/**
+ * @class
+ * @alias gfx.sprite
+ */
 export function sprite(options={}) {
     const projection = baseProjection(options);
     projection.type = "sprite";
@@ -33,6 +37,10 @@ export function sprite(options={}) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.exprify
+ */
 export function exprify(projection) {
     const { draw } = projection;
 
@@ -117,6 +125,10 @@ export function exprify(projection) {
     return projection;
 }
 
+/**
+ * @class
+ * @alias gfx.patch3
+ */
 export function patch3(childFunc, options={}) {
     const projection = baseProjection();
     projection.type = "3patch";
