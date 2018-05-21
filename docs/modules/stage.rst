@@ -63,5 +63,7 @@ Stages Reference
 .. autoclass:: module:BaseStage
    :members:
 
+   There's a lot more stuff here, but I'm too lazy to document it all.
+
 .. autoclass:: module:BaseTouchRecord
    :members:

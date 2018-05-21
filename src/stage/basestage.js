@@ -9,11 +9,16 @@ import TouchRecord from "./touchrecord";
 
 export default class BaseStage {
     constructor(canvas, width, height, store, views, semantics) {
+        /** The Redux store. */
         this.store = store;
+        /** A dictionary of view ID to view object. */
         this.views = views;
-        // A set of views for the toolbox, etc. that aren't cleared
-        // when changing levels.
+        /**
+         * A set of views.
+         * @deprecated
+         */
         this.internalViews = {};
+        /** The semantics module. */
         this.semantics = semantics;
 
         this.effects = {};
@@ -25,10 +30,12 @@ export default class BaseStage {
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
 
+        /** The canvas drawing context. */
         this.ctx = this.canvas.getContext("2d");
 
         this.computeDimensions();
 
+        /** The background color. */
         this.color = "#EEEEEE";
 
         this._redrawPending = false;
@@ -46,10 +53,16 @@ export default class BaseStage {
         ));
     }
 
+    /**
+     * The TouchRecord class to use for touch/mouse events. Override
+     * to customize input handling.
+     * @member
+     */
     get touchRecordClass() {
         return TouchRecord;
     }
 
+    /** Compute and resize the canvas when the window is resized. */
     computeDimensions() {
         this.ctx.scale(1.0, 1.0);
         this._height = window.innerHeight - document.querySelector("#nav").offsetHeight;
@@ -68,10 +81,20 @@ export default class BaseStage {
         this.canvas.setAttribute("height", this._height);
     }
 
+    /**
+     * The usable width of the stage. (Things like the sidebar can
+     * change this.)
+     * @member
+     */
     get width() {
         return this._width;
     }
 
+    /**
+     * The usable width of the stage. (Things like the sidebar can
+     * change this.)
+     * @member
+     */
     get height() {
         return this._height;
     }
@@ -110,6 +133,10 @@ export default class BaseStage {
         return this.views[id] || this.internalViews[id];
     }
 
+    /**
+     * Convert a mouse/touch event into an { x, y } position,
+     * accounting for scaling.
+     */
     getMousePos(e) {
         const rect = this.canvas.getBoundingClientRect();
         // Scaling
@@ -143,6 +170,9 @@ export default class BaseStage {
         return this.store.getState().getIn([ "program", "$present" ]);
     }
 
+    /**
+     * Create a basic offset object for rendering.
+     */
     makeBaseOffset(opt={}) {
         return Object.assign({
             x: 0,
@@ -153,6 +183,7 @@ export default class BaseStage {
         }, opt);
     }
 
+    /** Helper to draw a given view. */
     drawProjection(state, nodeId, offset=null) {
         const projection = this.views[nodeId];
         // TODO: autoresizing
@@ -161,6 +192,7 @@ export default class BaseStage {
         projection.draw(nodeId, nodeId, state, this, offset || this.makeBaseOffset());
     }
 
+    /** @deprecated Use :func:`BaseStage.drawProjection` instead. */
     drawInternalProjection(state, nodeId, exprId=null, offset=null) {
         const projection = this.internalViews[nodeId];
         projection.parent = null;
@@ -168,6 +200,7 @@ export default class BaseStage {
         projection.draw(nodeId, exprId, state, this, offset || this.makeBaseOffset());
     }
 
+    /** Draw the contents of the stage. Override to customize. */
     drawContents() {
     }
 
@@ -177,6 +210,10 @@ export default class BaseStage {
         this._redrawPending = false;
     }
 
+    /**
+     * Request that the stage be redrawn. (Multiple calls have no
+     * effect if no redraw happens in between.)
+     */
     draw() {
         if (this._redrawPending) return;
         this._redrawPending = true;
@@ -206,6 +243,9 @@ export default class BaseStage {
         return dragAnchor;
     }
 
+    /**
+     * Add an effect to the stage.
+     */
     addEffect(fx) {
         const id = nextId();
         this.effects[id] = fx;
@@ -217,6 +257,9 @@ export default class BaseStage {
         this.draw();
     }
 
+    /**
+     * Check whether the given view ID is selected by any touch/mouse.
+     */
     isSelected(id) {
         if (id === null) return false;
 
@@ -228,6 +271,9 @@ export default class BaseStage {
         return false;
     }
 
+    /**
+     * Check whether the given view ID is hovered by any touch/mouse.
+     */
     isHovered(id) {
         if (id === null) return false;
 
@@ -240,6 +286,7 @@ export default class BaseStage {
         return false;
     }
 
+    /** Set the mouse cursor. */
     setCursor(cursor) {
         // Try fallbacks because Chrome (e.g. -webkit-grab is recognized, but not grab)
         this.canvas.style.cursor = `-moz-${cursor}`;
@@ -247,6 +294,7 @@ export default class BaseStage {
         this.canvas.style.cursor = cursor;
     }
 
+    /** Update the cursor based on the mouse/touch state. */
     updateCursor(touchRecord, moved=false) {
         if (moved &&
             touchRecord.isExpr &&
