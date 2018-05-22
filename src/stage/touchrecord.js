@@ -52,8 +52,8 @@ export default class BaseTouchRecord {
      * position. Defers to :func:`BaseStage.getNodeAtPos`, but also
      * tracks the previously hovered node (for things like mouse
      * enter/exit events).
-     * @see BaseTouchRecord.hoverNode
-     * @see BaseTouchRecord.prevHoverNode
+     * @see module:BaseTouchRecord.hoverNode
+     * @see module:BaseTouchRecord.prevHoverNode
      */
     findHoverNode(pos) {
         const before = this.hoverNode;
