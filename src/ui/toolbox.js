@@ -7,9 +7,16 @@ const TOOLBOX_LEFT_MARGIN = 40;
 const TOOLBOX_RIGHT_MARGIN = 40;
 const TOOLBOX_INNER_MARGIN = 20;
 
+/**
+ * Renders the toolbox at the bottom of the screen.
+ * @module Toolbox
+ */
 export default class Toolbox {
     constructor(stage) {
         this.stage = stage;
+        // TODO: leftover stuff - we used to use a sprite for the
+        // background, now it's drawn in canvas, but I never ported
+        // over stuff that assumed we had a sprite view
         this.bg = stage.allocateInternal(gfx.layout.sticky(gfx.layout.hexpand(gfx.sprite({
             image: Loader.images["toolbox-bg"],
             size: { h: TOOLBOX_ROW_HEIGHT },

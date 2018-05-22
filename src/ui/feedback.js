@@ -2,6 +2,10 @@ import * as gfx from "../gfx/core";
 import * as progression from "../game/progression";
 import Loader from "../loader";
 
+/**
+ * Draws error messages at the bottom of the screen.
+ * @module Feedback
+ */
 export default class Feedback {
     constructor(stage) {
         this.stage = stage;

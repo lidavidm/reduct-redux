@@ -20,6 +20,10 @@ export function templateText(semantics, text) {
     });
 }
 
+/**
+ * Renders the goal at the top of the screen.
+ * @module Goal
+ */
 export default class Goal {
     constructor(stage) {
         this.stage = stage;

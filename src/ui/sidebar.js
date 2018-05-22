@@ -4,6 +4,11 @@ import * as progression from "../game/progression";
 
 import Loader from "../loader";
 
+/**
+ * Renders the definition sidebar at the left of the screen. Expects
+ * support from its containing stage.
+ * @module Sidebar
+ */
 export default class Sidebar {
     constructor(stage) {
         this.stage = stage;

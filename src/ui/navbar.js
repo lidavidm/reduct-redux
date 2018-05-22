@@ -3,6 +3,11 @@ import * as progression from "../game/progression";
 import * as undo from "../reducer/undo";
 import Loader from "../loader";
 
+/**
+ * Renders the undo/redo/reset buttons and the level display at the
+ * top of the screen.
+ * @module Navbar
+ */
 export default class Navbar {
     constructor(stage) {
         this.stage = stage;

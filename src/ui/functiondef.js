@@ -3,6 +3,10 @@ import * as animate from "../gfx/animate";
 
 import Audio from "../resource/audio";
 
+/**
+ * Handles drawing the expanded version of a name.
+ * @module FunctionDef
+ */
 export default class FunctionDef {
     constructor(stage, name, nodeId, referenceId, delay=500) {
         this.stage = stage;

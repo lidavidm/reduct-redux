@@ -3,6 +3,10 @@ import * as level from "../game/level";
 
 import Audio from "../resource/audio";
 
+/**
+ * An effect (see :ref:`Stage`) for when the user is stuck.
+ * @module StuckEffect
+ */
 export default class StuckEffect {
     constructor(stage) {
         this.stage = stage;

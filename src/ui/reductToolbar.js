@@ -1,5 +1,15 @@
 import * as gfx from "../gfx/core";
 
+/**
+ * Handle the play/pause/big-step toolbar for reducing expressions.
+ *
+ * These are rendered in HTML, and positioned to match their
+ * corresponding expression. It does some work to recycle the toolbar
+ * nodes and make sure they stay attached to the same expression
+ * through reduction.
+ *
+ * @module ReductToolbar
+ */
 export default class ReductToolbar {
     constructor(stage) {
         this.stage = stage;
@@ -10,6 +20,7 @@ export default class ReductToolbar {
         this.currentId = null;
 
         // TODO: move this somewhere else
+        // Remove any toolbars from the previous level
         for (const el of document.querySelectorAll(".reduct-toolbar:not(#reduct-toolbar-proto)")) {
             el.remove();
         }
