@@ -6,6 +6,8 @@ export const PROGRESSIONS = {
         digraph: {
             "functions": ["replication"],
             "replication": ["multiargument"],
+            "booleans-intro": ["booleans-definition"],
+            "booleans-definition": ["weekdays"],
             "multiargument": ["functions-challenge"],
             "functions-challenge": ["application"],
             "application": ["definition"],
@@ -13,8 +15,6 @@ export const PROGRESSIONS = {
             "testing": ["higher-order-functions"],
             "higher-order-functions": ["define-challenges"],
             "define-challenges": ["booleans-intro"],
-            "booleans-intro": ["booleans-definition"],
-            "booleans-definition": ["weekdays"],
             "weekdays": ["recursion-basics"],
             "recursion-basics": ["recursion-higher-order"],
             "recursion-higher-order": [],
