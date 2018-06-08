@@ -4,9 +4,9 @@ export const PROGRESSIONS = {
     "Elementary": {
         dir: "levels-progression/",
         digraph: {
+            "booleans-intro": ["booleans-definition"],
             "functions": ["replication"],
             "replication": ["multiargument"],
-            "booleans-intro": ["booleans-definition"],
             "booleans-definition": ["weekdays"],
             "multiargument": ["functions-challenge"],
             "functions-challenge": ["application"],
