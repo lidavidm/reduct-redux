@@ -4,16 +4,16 @@ export const PROGRESSIONS = {
     "Elementary": {
         dir: "levels-progression/",
         digraph: {
-            "booleans-intro": ["booleans-definition"],
             "functions": ["replication"],
             "replication": ["multiargument"],
-            "booleans-definition": ["weekdays"],
             "multiargument": ["functions-challenge"],
             "functions-challenge": ["application"],
             "application": ["definition"],
             "definition": ["testing"],
             "testing": ["higher-order-functions"],
             "higher-order-functions": ["define-challenges"],
+            "booleans-intro": ["booleans-definition"],
+            "booleans-definition": ["weekdays"],
             "define-challenges": ["booleans-intro"],
             "weekdays": ["recursion-basics"],
             "recursion-basics": ["recursion-higher-order"],
