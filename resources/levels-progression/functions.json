@@ -9,6 +9,19 @@
         "D": "'circle'"
     },
     "levels": [
+         {
+            "board": [
+                "x => x",
+                "A"
+            ],
+            "goal": [
+                "A"
+            ],
+            "textgoal": "Drop the {star} onto the function!",
+            "globals": {},
+            "syntax": [],
+            "animationScales": {}
+        },
         {
             "board": [
                 "x => x",
