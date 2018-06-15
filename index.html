@@ -332,6 +332,15 @@
                  transform: scale(1.5);
              }
          }
+
+         #tutorial > div {
+             padding: 1em;
+             text-align: center;
+         }
+
+         #tutorial > div > p {
+             font-size: 1.25em;
+         }
         </style>
     </head>
     <body>
@@ -364,6 +373,16 @@
                 <i class="material-icons">skip_next</i>
             </button>
         </nav>
+
+        <div id="tutorial" class="fade-container">
+            <div id="tutorial-inner">
+                <p>Watch a tutorial before playing this level:</p>
+                <p>
+                    <a target="_blank">Watch Tutorial!</a>
+                </p>
+                <button id="tutorial-continue">Continue Playing!</button>
+            </div>
+        </div>
 
         <div id="consent">
             <div id="consent-inner">
