@@ -14,6 +14,7 @@ import ChapterEndStage from "./stage/chapterend";
 import TitleStage from "./stage/title";
 import passwordPrompt from "./ui/instructor/password";
 import consent from "./consent";
+import tutorial from "./ui/instructor/tutorial";
 
 import Loader from "./loader";
 import Logging from "./logging/logging";
@@ -289,22 +290,28 @@ function start(updateLevel, options={}) {
 
     const levelDefinition = Loader.progressions["Elementary"].levels[progression.currentLevel()];
 
-    Logging.transitionToTask(progression.currentLevel(), levelDefinition).finally(() => {
-        level.startLevel(levelDefinition, es6.parser.parse, store, stg);
-        stg.drawImpl();
+    Logging.transitionToTask(progression.currentLevel(), levelDefinition)
+        .finally(() => {
+            // Show tutorial if present
+            if (levelDefinition.tutorialUrl) {
+                tutorial(levelDefinition.tutorialUrl);
+            }
 
-        // Sync chapter dropdown with current level
-        let prevOption = null;
-        for (const option of document.querySelectorAll("#chapter option")) {
-            if (window.parseInt(option.getAttribute("value"), 10) <= progression.currentLevel()) {
-                prevOption = option;
+            level.startLevel(levelDefinition, es6.parser.parse, store, stg);
+            stg.drawImpl();
+
+            // Sync chapter dropdown with current level
+            let prevOption = null;
+            for (const option of document.querySelectorAll("#chapter option")) {
+                if (window.parseInt(option.getAttribute("value"), 10) <= progression.currentLevel()) {
+                    prevOption = option;
+                }
+                else {
+                    break;
+                }
             }
-            else {
-                break;
-            }
-        }
-        document.querySelector("#chapter").value = prevOption.getAttribute("value");
-    });
+            document.querySelector("#chapter").value = prevOption.getAttribute("value");
+        });
 
     // Reset buttons
     window.updateStateGraph();

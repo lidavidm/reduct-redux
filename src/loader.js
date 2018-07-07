@@ -143,6 +143,7 @@ export class LoaderClass {
                 if (!lvl.animationScales) lvl.animationScales = {};
 
                 if (typeof lvl.showConcreteGoal === "undefined") lvl.showConcreteGoal = true;
+                if (typeof lvl.tutorialUrl === "undefined") lvl.tutorialUrl = null;
 
                 d.levels.push(lvl);
             });
